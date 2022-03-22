@@ -1,0 +1,33 @@
+name: Validate pull request
+
+on:
+    pull_request:
+    workflow_dispatch:
+
+jobs:
+    validate:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Install node
+              uses: actions/setup-node@v2.4.0
+              with:
+                  node-version: 16
+                  cache: 'yarn'
+                  registry-url: https://npm.pkg.github.com/
+
+            - name: Install project dependencies
+              run: yarn install --frozen-lockfile
+              env:
+                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+            - name: Run tests
+              run: yarn run test -- --passWithNoTests
+
+            - name: Check code quality
+              run: yarn run checkcode
+
+            - name: Build library
+              run: yarn run build:lib

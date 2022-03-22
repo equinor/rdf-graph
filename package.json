@@ -1,0 +1,118 @@
+{
+	"name": "@equinor/sparql-graph",
+	"version": "0.1.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/equinor/sparql-graph"
+	},
+	"author": {
+		"name": "Dzianis Makeichyk",
+		"email": "dzm@equinor.com"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com/"
+	},
+	"license": "UNLICENSED",
+	"scripts": {
+		"test": "react-scripts test",
+		"lint": "eslint --ext .ts --ext .tsx src",
+		"ts:testcompile": "tsc --noEmit",
+		"dev": "yarn run storybook",
+		"storybook": "start-storybook -p 6006",
+		"build:storybook": "build-storybook",
+		"build:lib": "rollup -c --environment NODE_ENV:production",
+		"prettier:check": "prettier --check .",
+		"prettier:write": "prettier --write .",
+		"prepublishOnly": "yarn run build:lib",
+		"checkcode": "yarn run lint && yarn run ts:testcompile && yarn run prettier:check",
+		"bump:patch": "yarn --no-git-tag-version version --patch",
+		"bump:minor": "yarn --no-git-tag-version version --minor",
+		"bump:major": "yarn --no-git-tag-version version --major",
+		"prepare": "husky install"
+	},
+	"engines": {
+		"npm": "please-use-yarn",
+		"yarn": ">= 1.20.0"
+	},
+	"main": "build/index.cjs.js",
+	"types": "build/types/index.d.ts",
+	"module": "build/index.es.js",
+	"files": [
+		"/build",
+		"/docs"
+	],
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		],
+		"overrides": [
+			{
+				"files": [
+					"**/*.stories.*"
+				],
+				"rules": {
+					"import/no-anonymous-default-export": "off"
+				}
+			},
+			{
+				"files": [
+					"**/*/*.*"
+				],
+				"rules": {
+					"react/no-unknown-property": 2
+				}
+			}
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	},
+	"peerDependencies": {
+		"react": "^16.14.0 || ^17.0.0",
+		"react-dom": "^16.14.0 || ^17.0.0"
+	},
+	"dependencies": {
+		"@types/jest": "^27.0.3",
+		"@types/node": "^16.11.11",
+		"@types/react": "^17.0.37",
+		"@types/react-dom": "^17.0.11",
+		"@types/react-transition-group": "^4.4.3",
+		"lint-staged": "^12.0.3",
+		"react-transition-group": "^4.4.2",
+		"rollup": "^2.60.2",
+		"typescript": "^4.4.4"
+	},
+	"devDependencies": {
+		"@rollup/plugin-commonjs": "^21.0.0",
+		"@rollup/plugin-node-resolve": "^13.0.5",
+		"@rollup/plugin-typescript": "^8.3.0",
+		"@storybook/addon-actions": "^6.4.9",
+		"@storybook/addon-essentials": "^6.4.9",
+		"@storybook/addon-links": "^6.4.9",
+		"@storybook/node-logger": "^6.4.9",
+		"@storybook/preset-create-react-app": "^3.2.0",
+		"@storybook/react": "^6.4.9",
+		"@testing-library/dom": "^8.11.1",
+		"@testing-library/jest-dom": "^5.14.1",
+		"@testing-library/react": "^12.1.2",
+		"@testing-library/user-event": "^13.4.1",
+		"husky": "^7.0.0",
+		"prettier": "^2.6.0",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-scripts": "4.0.3",
+		"rollup-plugin-cleaner": "^1.0.0",
+		"rollup-plugin-peer-deps-external": "^2.2.4",
+		"storybook-addon-theme-playground": "^2.1.0"
+	}
+}

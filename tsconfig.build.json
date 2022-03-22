@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDirs": ["src", "src/stories", "src/lib"],
+		"baseUrl": ".",
+		"paths": {
+			"*": ["src/lib/*", "src/*"]
+		}
+	},
+	"include": ["src/lib/**/*"]
+}

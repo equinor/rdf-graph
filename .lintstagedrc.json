@@ -1,0 +1,3 @@
+{
+	"**/*.{js,jsx,json,html,ts,tsx,md,yml}": ["yarn run prettier:write"]
+}
