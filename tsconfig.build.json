@@ -4,8 +4,7 @@
 		"rootDirs": ["src", "src/stories", "src/lib"],
 		"baseUrl": ".",
 		"paths": {
-			"*": ["src/lib/*", "src/*"]
+			"*": ["src/*"]
 		}
-	},
-	"include": ["src/lib/**/*"]
+	}
 }

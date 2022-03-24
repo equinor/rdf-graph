@@ -19,5 +19,5 @@
 		"jsx": "react-jsx"
 	},
 	"include": ["src", ".storybook/preview.js"],
-	"exclude": ["**/*.stories.tsx", "src/lib/**/*.js", "src/lib/HylarWS.ts"]
+	"exclude": ["**/*.stories.tsx"]
 }
