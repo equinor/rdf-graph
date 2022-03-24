@@ -8,11 +8,35 @@ import { SparqlGraph } from '@equinor/sparql-graph';
 export const Page = (): ReactElement => {
 	return (
 		<>
-			<SparqlGraph preferredView={preferredView} environment={environment} setStatus={setStatus} refresh={refresh} query={query} />
+			<SparqlGraph
+				transformations={transformations}
+				preferredView={preferredView}
+				hasStrictMode={false}
+				environment="stid-dev"
+				setStatus={setStatus}
+				refresh={1}
+				layout="Cola"
+				query={query}
+			/>
 		</>
 	);
 };
 ```
+
+# Props
+
+**Required props are marked with `*`.**
+
+| Name              | Type                                                | Default    | Description                                |
+| ----------------- | --------------------------------------------------- | ---------- | ------------------------------------------ |
+| `transformations` | `TransformationsDefinition`                         |            | Graph transformations                      |
+| `preferredView`\* | `[key in DataType]: View`                           |            | Visual graph preference                    |
+| `hasStrictMode`   | `boolean`                                           | `false`    | Strick mode                                |
+| `environment`     | `localhost, dev, stid-dev, test, prod`              | `stid-dev` | Graph environment                          |
+| `setStatus`\*     | `React.Dispatch<React.SetStateAction<StatusProps>>` |            | Renders a button with pre-declaration size |
+| `refresh`\*       | `number`                                            |            | Graphe refresh state                       |
+| `layout`          | `Cola, Cose-Bilkent, Dagre`                         | `Cola`     | Layout name                                |
+| `query`\*         | `string`                                            |            | Data                                       |
 
 ## Dependabot
 

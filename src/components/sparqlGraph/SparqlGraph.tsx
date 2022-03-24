@@ -16,7 +16,7 @@ export const SparqlGraph = ({
 	environment,
 	refresh,
 	transformations,
-	hasStrictMode,
+	hasStrictMode = false,
 	layout = 'Cola',
 }: SparqlGraphProps) => {
 	const [viewType, setViewType] = useState<View>('empty');

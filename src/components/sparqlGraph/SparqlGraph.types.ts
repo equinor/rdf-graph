@@ -33,9 +33,8 @@ type SparqlQuery = {
 export type SparqlGraphProps = {
 	transformations: SparqlQuery['transformations'];
 	layout?: LayoutProps;
-	// preferredView: EnvironmentsViewProps;
 	preferredView: { [key in DataType]: View };
-	hasStrictMode: boolean;
+	hasStrictMode?: boolean;
 	environment: EnvironmentsViewProps;
 	setStatus: React.Dispatch<React.SetStateAction<StatusProps>>;
 	refresh: number;
