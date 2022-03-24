@@ -8,7 +8,7 @@ import json from '@rollup/plugin-json';
 import packageJson from './package.json';
 
 export default {
-	input: './src/lib/index.ts',
+	input: './src/components/index.ts',
 	output: [
 		{
 			file: packageJson.main,
