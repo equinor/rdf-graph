@@ -4,6 +4,7 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
 import json from '@rollup/plugin-json';
+import scss from 'rollup-plugin-scss';
 
 import packageJson from './package.json';
 
@@ -25,6 +26,7 @@ export default {
 		peerDepsExternal(),
 		resolve(),
 		json(),
+		scss(),
 		commonjs(),
 		typescript({
 			tsconfig: './tsconfig.build.json',
