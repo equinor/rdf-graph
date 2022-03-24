@@ -1,1 +1,0 @@
-export { ResultViewer } from './ResultViewer';

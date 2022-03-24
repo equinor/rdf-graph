@@ -18,7 +18,7 @@
 		"lint": "eslint --ext .ts --ext .tsx src",
 		"ts:testcompile": "tsc --noEmit",
 		"dev": "yarn run storybook",
-		"storybook": "start-storybook -p 6006",
+		"storybook": "start-storybook -p 3000",
 		"build:storybook": "build-storybook",
 		"build:lib": "rollup -c --environment NODE_ENV:production",
 		"prettier:check": "prettier --check .",
@@ -60,10 +60,15 @@
 					"**/*/*.*"
 				],
 				"rules": {
-					"react/no-unknown-property": 2
+					"react/no-unknown-property": 2,
+					"react-hooks/rules-of-hooks": "off",
+					"react-hooks/exhaustive-deps": "off"
 				}
 			}
 		]
+	},
+	"browser": {
+		"fs": false
 	},
 	"browserslist": {
 		"production": [
@@ -82,14 +87,34 @@
 		"react-dom": "^16.14.0 || ^17.0.0"
 	},
 	"dependencies": {
+		"@azure/msal-browser": "^2.22.1",
+		"@azure/msal-react": "^1.3.1",
+		"@equinor/eds-core-react": "^0.18.0",
+		"@rdfjs/types": "^1.1.0",
 		"@types/jest": "^27.0.3",
-		"@types/node": "^16.11.11",
+		"@types/n3": "^1.10.4",
+		"@types/node": "^12.20.33",
 		"@types/react": "^17.0.37",
+		"@types/react-cytoscapejs": "^1.2.2",
 		"@types/react-dom": "^17.0.11",
 		"@types/react-transition-group": "^4.4.3",
+		"bluebird": "^3.7.2",
+		"chalk": "^2.4.1",
+		"chalk-rainbow": "^1.0.0",
+		"cytoscape": "^3.21.0",
+		"cytoscape-cola": "^2.5.1",
+		"cytoscape-cose-bilkent": "^4.1.0",
+		"cytoscape-dagre": "^2.4.0",
 		"lint-staged": "^12.0.3",
+		"md5": "^2.3.0",
+		"n3": "^1.14.0",
+		"rdfstore": "^0.9.17",
+		"react-cytoscapejs": "^1.2.1",
 		"react-transition-group": "^4.4.2",
 		"rollup": "^2.60.2",
+		"sass": "^1.49.9",
+		"sparqljs": "^3.5.1",
+		"styled-components": "^5.3.3",
 		"typescript": "^4.4.4"
 	},
 	"devDependencies": {

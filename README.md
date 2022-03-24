@@ -3,22 +3,24 @@
 ### Example
 
 ```jsx
-import { Button } from '@equinor/sparql-graph';
+import { SparqlGraph } from '@equinor/sparql-graph';
 
-export const DummyPage = (): ReactElement => {
+export const Page = (): ReactElement => {
 	return (
 		<>
-			<Button size="s" />
+			<SparqlGraph preferredView={preferredView} environment={environment} setStatus={setStatus} refresh={refresh} query={query} />
 		</>
 	);
 };
 ```
 
-### Components
+## Dependabot
 
--   [Button](docs/components/Button.md)
+### DON'T UPDATT MAJOR VERSION:
 
-### Hooks
+-   `@storybook/preset-create-react-app`
+-   `react-scripts`
+-   `chalk`
 
 ## For development at the library
 
