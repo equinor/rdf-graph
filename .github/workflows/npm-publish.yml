@@ -12,8 +12,9 @@ jobs:
             - uses: actions/setup-node@v2
               with:
                   node-version: 16
+                  cache: 'yarn'
                   registry-url: https://npm.pkg.github.com/
-            - run: npm install --frozen-lockfile
+            - run: yarn install --frozen-lockfile
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
@@ -28,11 +29,11 @@ jobs:
             - uses: actions/setup-node@v2.4.0
               with:
                   node-version: 14
-                  cache: 'npm'
+                  cache: 'yarn'
                   registry-url: https://npm.pkg.github.com/
-            - run: npm install --frozen-lockfile
+            - run: yarn install --frozen-lockfile
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-            - run: npm publish --access=public
+            - run: yarn publish --access=public
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
