@@ -1,4 +1,5 @@
-import { HylarWS } from '../lib';
+import HylarWS from '../lib/HylarWS';
+
 import { TransformationsDefinition } from '../models';
 
 export async function applyReasoning(content: string, transformations: TransformationsDefinition[]) {
@@ -12,5 +13,6 @@ export async function applyReasoning(content: string, transformations: Transform
 
 	const query_result = await hylar.query('construct {?s ?p ?o} where {?s ?p ?o}');
 	console.log('Load result: ', query_result);
+	// @ts-ignore
 	return query_result.toNT();
 }

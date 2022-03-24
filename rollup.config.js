@@ -3,11 +3,14 @@ import resolve from '@rollup/plugin-node-resolve';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
+import json from '@rollup/plugin-json';
+import scss from 'rollup-plugin-scss';
+import svg from 'rollup-plugin-svg';
 
 import packageJson from './package.json';
 
 export default {
-	input: './src/lib/index.ts',
+	input: './src/components/index.ts',
 	output: [
 		{
 			file: packageJson.main,
@@ -23,7 +26,10 @@ export default {
 	plugins: [
 		peerDepsExternal(),
 		resolve(),
+		json(),
+		scss(),
 		commonjs(),
+		svg(),
 		typescript({
 			tsconfig: './tsconfig.build.json',
 		}),
