@@ -11,3 +11,10 @@ updates:
       directory: '/'
       schedule:
           interval: 'daily'
+      ignore:
+          - dependency-name: '@storybook/preset-create-react-app'
+            update-types: ['version-update:semver-major']
+          - dependency-name: 'react-scripts'
+            update-types: ['version-update:semver-major']
+          - dependency-name: 'chalk'
+            update-types: ['version-update:semver-major']
