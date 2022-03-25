@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/sparql-graph",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/equinor/sparql-graph"
@@ -12,7 +12,7 @@
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com/"
 	},
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"scripts": {
 		"test": "react-scripts test",
 		"lint": "eslint --ext .ts --ext .tsx src",
