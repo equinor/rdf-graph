@@ -13,7 +13,7 @@ jobs:
               with:
                   node-version: 16
                   cache: 'yarn'
-                  registry-url: https://npm.pkg.github.com/
+                  registry-url: https://registry.npmjs.org
             - run: yarn install --frozen-lockfile
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
@@ -30,7 +30,7 @@ jobs:
               with:
                   node-version: 14
                   cache: 'yarn'
-                  registry-url: https://npm.pkg.github.com/
+                  registry-url: https://registry.npmjs.org
             - run: yarn install --frozen-lockfile
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
