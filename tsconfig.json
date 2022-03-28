@@ -3,7 +3,7 @@
 		"declarationDir": "types",
 		"declaration": true,
 		"target": "ES6",
-		"lib": ["DOM", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include"],
+		"lib": ["DOM", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include", "ES2021.String"],
 		"allowJs": false,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
