@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/sparql-graph",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/equinor/sparql-graph"
@@ -10,7 +10,7 @@
 		"email": "dzm@equinor.com"
 	},
 	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/"
+		"registry": "https://registry.npmjs.org"
 	},
 	"license": "MIT",
 	"scripts": {
