@@ -73,22 +73,22 @@ $ npm login --registry=https://npm.pkg.github.com
 > Email: PUBLIC-EMAIL-ADDRESS
 ```
 
-### Install Yarn
+### Install Npm
 
 ```sh
-$ npm install --global yarn
+$ npm install --global npm
 ```
 
 ### Install project dependencies
 
 ```sh
-$ yarn
+$ npm
 ```
 
 ## Local development
 
 ```sh
-$ yarn run storybook # Runs up a local dev version of Storybook - Both good tools to use to quickly see changes along the way.
+$ npm run storybook # Runs up a local dev version of Storybook - Both good tools to use to quickly see changes along the way.
 ```
 
 ## Code quality
@@ -96,7 +96,7 @@ $ yarn run storybook # Runs up a local dev version of Storybook - Both good tool
 The project is set up with TypeScript, Eslint, Prettier, and the following is run when validating each pull request:
 
 ```sh
-$ yarn run checkcode
+$ npm run checkcode
 ```
 
 ## Testing
@@ -104,14 +104,14 @@ $ yarn run checkcode
 We will write unit tests on critical functionality.
 
 ```sh
-$ yarn run test
+$ npm run test
 ```
 
 ## Construction
 
 ```sh
-$ yarn run build:storybook # Builds Storybook for static files, and deploys for Vercel for pull requests and merging for main
-$ yarn run build:lib # Packs the library (not Storybook) - This step is run before `npm publish` is run
+$ npm run build:storybook # Builds Storybook for static files, and deploys for Vercel for pull requests and merging for main
+$ npm run build:lib # Packs the library (not Storybook) - This step is run before `npm publish` is run
 ```
 
 </details>

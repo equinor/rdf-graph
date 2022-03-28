@@ -15,19 +15,18 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16
-                  cache: 'yarn'
                   registry-url: https://npm.pkg.github.com/
 
             - name: Install project dependencies
-              run: yarn install --frozen-lockfile
+              run: npm ci
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
             - name: Run tests
-              run: yarn run test -- --passWithNoTests
+              run: npm run test -- --passWithNoTests
 
             - name: Check code quality
-              run: yarn run checkcode
+              run: npm run checkcode
 
             - name: Build library
-              run: yarn run build:lib
+              run: npm run build:lib
