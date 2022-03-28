@@ -12,9 +12,8 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 16
-                  cache: 'yarn'
                   registry-url: https://registry.npmjs.org
-            - run: yarn install --frozen-lockfile
+            - run: npm install --frozen-lockfile
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
@@ -29,15 +28,14 @@ jobs:
             - uses: actions/setup-node@v3
               with:
                   node-version: 16
-                  cache: 'yarn'
                   registry-url: https://registry.npmjs.org
                   scope: '@equinor'
-            - run: yarn install --frozen-lockfile
+            - run: npm ci
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-            - run: yarn login
+            - run: npm login
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-            - run: yarn publish --access=public
+            - run: npm publish --access=public
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
