@@ -3,7 +3,7 @@
 		"declarationDir": "types",
 		"declaration": true,
 		"target": "ES6",
-		"lib": ["DOM", "ES6", "DOM.Iterable", "ScriptHost", "ES2016.Array.Include", "ES2021.String"],
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": true,
 		"skipLibCheck": true,
 		"esModuleInterop": true,
@@ -16,8 +16,8 @@
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
-		"jsx": "react"
+		"jsx": "react-jsx"
 	},
-	"include": ["src", ".storybook/preview.js", "src/lib/hylar/*.js", "src/lib/hylar/core/*.js", "src/lib/hylar/core/**/*.js"],
+	"include": ["src", ".storybook/preview.js"],
 	"exclude": ["**/*.stories.tsx"]
 }
