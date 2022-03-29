@@ -38,7 +38,7 @@ export default {
 			targets: ['./build/'],
 		}),
 		babel({
-			babelHelpers: 'external',
+			babelHelpers: 'runtime',
 			plugins: [
 				'@babel/plugin-proposal-export-default-from',
 				'@babel/plugin-proposal-export-namespace-from',
@@ -47,12 +47,14 @@ export default {
 					{
 						helpers: true,
 						regenerator: true,
+						useESModules: true,
 					},
 				],
 			],
 			presets: [
 				[
 					'@babel/preset-env',
+					'@babel/preset-react',
 					{
 						targets: {
 							esmodules: true,
