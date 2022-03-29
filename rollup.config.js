@@ -47,7 +47,6 @@ export default {
 					{
 						helpers: true,
 						regenerator: true,
-						useESModules: true,
 					},
 				],
 			],
