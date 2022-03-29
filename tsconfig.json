@@ -18,6 +18,6 @@
 		"noEmit": true,
 		"jsx": "react"
 	},
-	"include": ["src", ".storybook/preview.js"],
+	"include": ["src", ".storybook/preview.js", "src/lib/hylar/*.js", "src/lib/hylar/core/*.js", "src/lib/hylar/core/**/*.js"],
 	"exclude": ["**/*.stories.tsx"]
 }
