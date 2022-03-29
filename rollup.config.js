@@ -6,7 +6,7 @@ import json from '@rollup/plugin-json';
 import scss from 'rollup-plugin-scss';
 import svg from 'rollup-plugin-svg';
 import babel from '@rollup/plugin-babel';
-import resolve, { nodeResolve } from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 import packageJson from './package.json';
 
@@ -27,7 +27,6 @@ export default {
 	plugins: [
 		peerDepsExternal(),
 		json(),
-		resolve(),
 		scss(),
 		commonjs(),
 		nodeResolve({ browser: true, preferBuiltins: false }),
