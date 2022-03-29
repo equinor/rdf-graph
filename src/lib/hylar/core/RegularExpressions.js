@@ -2,7 +2,7 @@
  * Created by aifb on 25.07.16.
  */
 
-export default {
+const RegularExpressions = {
 	LITERAL: /^("[\s\S]*")(@([a-zA-Z\-]+)|\^\^<?.+>?)?$/i,
 	LITERAL_UNFORMATTED: /("[\s\S]*"\^\^)([^<].+[^>])$/i,
 	BLANK_NODE: /^_:/i,
@@ -22,3 +22,5 @@ export default {
 	URI_AFTER_HASH_OR_SLASH: /[^/#]+$/g,
 	PREFIXED_URI: /([a-z0-9]+)\:[^/]{2}.*/i,
 };
+
+export default RegularExpressions;
