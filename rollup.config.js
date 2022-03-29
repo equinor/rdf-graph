@@ -38,7 +38,18 @@ export default {
 			targets: ['./build/'],
 		}),
 		babel({
-			babelHelpers: 'bundled',
+			babelHelpers: 'runtime',
+			plugins: [
+				'@babel/plugin-proposal-export-default-from',
+				'@babel/plugin-proposal-export-namespace-from',
+				[
+					'@babel/plugin-transform-runtime',
+					{
+						helpers: true,
+						regenerator: true,
+					},
+				],
+			],
 			presets: [
 				[
 					'@babel/preset-env',
