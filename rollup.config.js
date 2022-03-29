@@ -6,6 +6,7 @@ import cleaner from 'rollup-plugin-cleaner';
 import json from '@rollup/plugin-json';
 import scss from 'rollup-plugin-scss';
 import svg from 'rollup-plugin-svg';
+import amd from 'rollup-plugin-amd';
 
 import packageJson from './package.json';
 
@@ -26,6 +27,7 @@ export default {
 	plugins: [
 		peerDepsExternal(),
 		resolve(),
+		amd(),
 		json(),
 		scss(),
 		commonjs(),
