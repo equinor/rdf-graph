@@ -6,7 +6,7 @@ import cleaner from 'rollup-plugin-cleaner';
 import json from '@rollup/plugin-json';
 import scss from 'rollup-plugin-scss';
 import svg from 'rollup-plugin-svg';
-import amd from 'rollup-plugin-amd';
+import babel from '@rollup/plugin-babel';
 
 import packageJson from './package.json';
 
@@ -27,7 +27,6 @@ export default {
 	plugins: [
 		peerDepsExternal(),
 		resolve(),
-		amd(),
 		json(),
 		scss(),
 		commonjs(),
@@ -37,6 +36,20 @@ export default {
 		}),
 		cleaner({
 			targets: ['./build/'],
+		}),
+		babel({
+			babelHelpers: 'bundled',
+			presets: [
+				[
+					'@babel/preset-env',
+					{
+						targets: {
+							esmodules: true,
+						},
+					},
+				],
+				['@babel/preset-flow'],
+			],
 		}),
 	],
 };
