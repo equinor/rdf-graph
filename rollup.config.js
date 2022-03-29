@@ -29,7 +29,7 @@ export default {
 		json(),
 		scss(),
 		commonjs(),
-		nodeResolve(),
+		nodeResolve({ browser: true, preferBuiltins: false }),
 		svg(),
 		typescript({
 			tsconfig: './tsconfig.build.json',
