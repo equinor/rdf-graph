@@ -38,7 +38,7 @@ export default {
 			targets: ['./build/'],
 		}),
 		babel({
-			babelHelpers: 'runtime',
+			babelHelpers: 'external',
 			plugins: [
 				'@babel/plugin-proposal-export-default-from',
 				'@babel/plugin-proposal-export-namespace-from',
