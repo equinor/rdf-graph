@@ -93,7 +93,6 @@ import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
 import scss from 'rollup-plugin-scss';
 import svg from 'rollup-plugin-svg';
-import typescript from '@rollup/plugin-typescript';
 
 import packageJson from './package.json';
 
