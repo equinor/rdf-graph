@@ -7,7 +7,6 @@ import { executeSparql } from '../../network/sparql';
 import { getErrorMsg } from '../../utils/getErrorMSG';
 import { Details } from '../details';
 import { RawViewer } from '../rawViewer';
-import { applyReasoning } from '../../mapper/applyReasoning';
 
 export const SparqlGraph = ({
 	query,
