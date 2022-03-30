@@ -93,6 +93,7 @@ import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
 import sass from 'rollup-plugin-sass';
 import svg from 'rollup-plugin-svg';
+import ignore from 'rollup-plugin-ignore';
 
 import packageJson from './package.json';
 
@@ -111,6 +112,7 @@ export default {
 		},
 	],
 	plugins: [
+		ignore(['@equinor/hylar']),
 		peerDepsExternal(),
 		nodeResolve({
 			browser: true,
