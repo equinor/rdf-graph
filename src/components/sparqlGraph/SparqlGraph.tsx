@@ -22,19 +22,19 @@ export const SparqlGraph = ({
 	const [viewType, setViewType] = useState<View>('empty');
 	const [content, setContent] = useState<string>('');
 	const [transformedContent, setTransformedContent] = useState<string>('');
-	const translate = useCallback(async () => {
-		if (viewType !== 'graph' || !transformations || transformations.filter((t) => t.checked).length < 1) {
-			setTransformedContent(content);
-			return;
-		}
+	// const translate = useCallback(async () => {
+	// 	if (viewType !== 'graph' || !transformations || transformations.filter((t) => t.checked).length < 1) {
+	// 		setTransformedContent(content);
+	// 		return;
+	// 	}
 
-		const query_result = await applyReasoning(content, transformations);
-		setTransformedContent(query_result);
-	}, [content, transformations, hasStrictMode]);
+	// 	const query_result = await applyReasoning(content, transformations);
+	// 	setTransformedContent(query_result);
+	// }, [content, transformations, hasStrictMode]);
 
-	useEffect(() => {
-		translate().catch(console.error);
-	}, [translate]);
+	// useEffect(() => {
+	// 	translate().catch(console.error);
+	// }, [translate]);
 
 	useEffect(() => {
 		const hasConstruct = query.toLowerCase().includes('construct');
