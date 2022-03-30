@@ -87,11 +87,11 @@
 // 	],
 // };
 import commonjs from '@rollup/plugin-commonjs';
-import resolve from '@rollup/plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
-import scss from 'rollup-plugin-scss';
+import sass from 'rollup-plugin-sass';
 import svg from 'rollup-plugin-svg';
 
 import packageJson from './package.json';
@@ -112,8 +112,13 @@ export default {
 	],
 	plugins: [
 		peerDepsExternal(),
-		resolve(),
-		scss(),
+		nodeResolve({
+			browser: true,
+			preferBuiltins: false,
+		}),
+		sass({
+			insert: true,
+		}),
 		svg(),
 		commonjs(),
 		typescript({
