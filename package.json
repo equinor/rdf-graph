@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/sparql-graph",
-	"version": "0.2.22",
+	"version": "0.2.23",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/equinor/sparql-graph"
@@ -106,6 +106,7 @@
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
+		"hylar": "^10.0.4",
 		"lint-staged": "^12.0.3",
 		"md5": "^2.3.0",
 		"n3": "^1.16.0",
