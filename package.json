@@ -147,7 +147,7 @@
 		"react-scripts": "4.0.3",
 		"rollup-plugin-cleaner": "^1.0.0",
 		"rollup-plugin-peer-deps-external": "^2.2.4",
-		"rollup-plugin-sass": "^1.2.10",
+		"rollup-plugin-sass": "^1.2.12",
 		"storybook-addon-theme-playground": "^2.1.0"
 	}
 }
