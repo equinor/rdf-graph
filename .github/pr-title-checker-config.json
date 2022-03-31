@@ -4,7 +4,7 @@
 		"color": "7000ff"
 	},
 	"CHECKS": {
-		"prefixes": ["fix: ", "feat: ", "chore: ", "patch: ", "fixes: ", "major: ", "CI: "],
+		"prefixes": ["fix: ", "feat: ", "chore: ", "patch: ", "fixes: ", "major: ", "CI: ", "Bump"],
 		"regexp": "docs\\(v[0-9]\\): ",
 		"ignoreLabels": ["dont-check-PRs-with-this-label", "meta"]
 	}
