@@ -46,6 +46,18 @@ export const Page = (): ReactElement => {
 -   `react-scripts`
 -   `chalk`
 
+## PR's & releases version
+
+Consistent title names help maintainers organise their projects better 📚
+
+`Prefixes:`
+
+-   `patch: patch,fixes,fix,chore,Bump`
+-   `minor: feat`
+-   `major: major`
+
+Example: `chore: Update README.md`, | `fix: Colors for head`
+
 ## For development at the library
 
 <details>
