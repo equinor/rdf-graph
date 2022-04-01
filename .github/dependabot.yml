@@ -11,6 +11,8 @@ updates:
       directory: '/'
       schedule:
           interval: 'daily'
+      commit-message:
+          prefix: 'chore:'
       ignore:
           - dependency-name: '@storybook/preset-create-react-app'
             update-types: ['version-update:semver-major']
