@@ -131,7 +131,7 @@
 		"@storybook/addon-links": "^6.4.9",
 		"@storybook/node-logger": "^6.4.9",
 		"@storybook/preset-create-react-app": "^3.2.0",
-		"@storybook/react": "^6.4.9",
+		"@storybook/react": "^6.4.20",
 		"@testing-library/dom": "^8.11.4",
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^12.1.2",
