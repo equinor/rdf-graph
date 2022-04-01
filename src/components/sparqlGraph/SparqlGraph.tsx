@@ -71,8 +71,6 @@ export const SparqlGraph = ({
 		}
 	}, [refresh, preferredView, query]);
 
-	console.log(9999, content);
-
 	const view2jsx: { [key in View]: JSX.Element } = {
 		graph: <ChartInterface turtle={transformedContent} environment={environment} isStrictMode={hasStrictMode} layout={layout} />,
 		'progressive graph': <ProgressiveChart turtleQuery={query} setStatus={setStatus} environment={environment} />,
