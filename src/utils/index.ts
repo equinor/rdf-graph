@@ -1,5 +1,3 @@
-export * from './dataLayer/LoadAdjacentData';
-export * from './dataLayer/LoadLiteralData';
 export * from './cytoscapeMapping';
 export * from './getErrorMSG';
 export * from './onlyUnique';
