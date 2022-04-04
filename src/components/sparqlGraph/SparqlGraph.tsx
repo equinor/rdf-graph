@@ -9,6 +9,8 @@ import { Details } from '../details';
 import { RawViewer } from '../rawViewer';
 import { applyReasoning } from '../../mapper/applyReasoning';
 
+import { DataType } from '../../models/data';
+
 export const SparqlGraph = ({
 	query,
 	preferredView,
@@ -70,6 +72,8 @@ export const SparqlGraph = ({
 				});
 		}
 	}, [refresh, preferredView, query]);
+
+	console.log(9999, content);
 
 	const view2jsx: { [key in View]: JSX.Element } = {
 		graph: <ChartInterface turtle={transformedContent} environment={environment} isStrictMode={hasStrictMode} layout={layout} />,
