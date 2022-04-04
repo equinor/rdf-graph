@@ -5,6 +5,13 @@ on:
         branches: ['master']
         paths-ignore:
             - 'package.json'
+    pull_request_target:
+        types:
+            - opened
+            - edited
+            - synchronize
+            - labeled
+            - unlabeled
 
 jobs:
     check:
