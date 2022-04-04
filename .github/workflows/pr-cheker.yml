@@ -15,6 +15,7 @@ on:
 
 jobs:
     check:
+        name: 'PR title checker'
         runs-on: ubuntu-latest
         steps:
             - uses: thehanimo/pr-title-checker@v1.3.4
@@ -23,6 +24,7 @@ jobs:
                   pass_on_octokit_error: false
                   configuration_path: '.github/pr-title-checker-config.json'
     bump-version:
+        name: 'Bump version'
         runs-on: ubuntu-latest
         steps:
             - name: 'Checkout source code'
