@@ -3,6 +3,8 @@ name: 'Bump Version for master'
 on:
     pull_request:
         branches: ['master']
+        paths-ignore:
+            - 'package.json'
 
 jobs:
     check:
