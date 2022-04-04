@@ -1,13 +1,10 @@
 import { Quad } from '@rdfjs/types';
 import { Parser } from 'n3';
 
-import { useDataContext } from '../context/dataContext';
 import { Edge, NodeDescription } from '../models';
 
 export const useTurtleHelpers = () => {
-	const { setNodeDescriptions } = useDataContext();
-
-	const turtle2Edges = useTurtleParser(setNodeDescriptions);
+	const turtle2Edges = useTurtleParser();
 
 	return [turtle2Edges] as const;
 };

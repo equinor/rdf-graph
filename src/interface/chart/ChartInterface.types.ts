@@ -1,19 +1,11 @@
-import { EnvironmentsViewProps, LayoutProps } from '../../components';
+import { LayoutProps } from '../../components';
 
 export interface ChartInterfaceProps {
-	isStrictMode: boolean;
-	environment: EnvironmentsViewProps;
-	turtle: string;
-	layout?: LayoutProps;
+	turtleString: string;
+	layoutName: LayoutProps;
 }
 
 export interface LayoutWrapper {
-	name: CytoscapeLayout;
+	name: LayoutProps;
 	layout: any;
-}
-
-export enum CytoscapeLayout {
-	'Cose-Bilkent',
-	'Dagre',
-	'Cola',
 }

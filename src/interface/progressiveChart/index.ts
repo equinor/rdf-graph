@@ -1,1 +1,0 @@
-export { ProgressiveChart } from './ProgressiveChartInterface';
