@@ -3,15 +3,6 @@ name: 'Bump Version for master'
 on:
     pull_request:
         branches: ['master']
-        paths-ignore:
-            - 'package.json'
-    pull_request_target:
-        types:
-            - opened
-            - edited
-            - synchronize
-            - labeled
-            - unlabeled
 
 jobs:
     check:
@@ -20,7 +11,7 @@ jobs:
         steps:
             - uses: thehanimo/pr-title-checker@v1.3.4
               with:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
                   pass_on_octokit_error: false
                   configuration_path: '.github/pr-title-checker-config.json'
     bump-version:
@@ -42,4 +33,4 @@ jobs:
                   major-wording: 'major'
                   commit-message: 'CI: bumps version to {{version}} [skip ci]'
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
