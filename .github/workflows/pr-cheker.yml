@@ -1,18 +1,27 @@
 name: 'Bump Version for master'
 
 on:
+    # Triggers the workflow on push or pull request events but only for the develop branch
+    push:
+        branches: [master]
+
     pull_request:
-        branches: ['master']
+        branches: [master]
+        types:
+            - opened
+            - edited
+            - synchronize
+            - labeled
+            - unlabeled
 
 jobs:
     check:
         name: 'PR title checker'
         runs-on: ubuntu-latest
-        env:
-            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         steps:
             - uses: thehanimo/pr-title-checker@v1.3.4
               with:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
                   pass_on_octokit_error: false
                   configuration_path: '.github/pr-title-checker-config.json'
     bump-version:
