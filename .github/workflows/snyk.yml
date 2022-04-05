@@ -2,24 +2,8 @@ name: Snyk
 on: push
 jobs:
     security:
-        name: 'Snyk'
         runs-on: ubuntu-latest
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
-
-            - name: Install node
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 16
-                  registry-url: https://npm.pkg.github.com/
-
-            - name: Install project dependencies
-              run: npm ci
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
             - uses: actions/checkout@master
             - name: Run Snyk to check for vulnerabilities
               uses: snyk/actions/node@master
