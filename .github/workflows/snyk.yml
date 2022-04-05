@@ -12,7 +12,6 @@ jobs:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
               with:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
                   args: --sarif-file-output=snyk.sarif
             - name: Snyk version
               run: echo "${{ steps.snyk.outputs.version }}"
