@@ -1,4 +1,4 @@
-name: 'Bump Version for master'
+name: 'PR title checker'
 
 on:
     # Triggers the workflow on push or pull request events but only for the develop branch
@@ -24,23 +24,3 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
                   pass_on_octokit_error: false
                   configuration_path: '.github/pr-title-checker-config.json'
-    bump-version:
-        name: 'Bump version'
-        runs-on: ubuntu-latest
-        steps:
-            - name: 'Checkout source code'
-              uses: 'actions/checkout@v2'
-              with:
-                  ref: ${{ github.ref }}
-            - name: 'cat package.json'
-              run: cat ./package.json
-            - name: 'Automated Version Bump'
-              id: version-bump
-              uses: 'phips28/gh-action-bump-version@master'
-              with:
-                  patch-wording: 'patch,fixes,fix,chore,Bump'
-                  minor-wording: 'feat'
-                  major-wording: 'major'
-                  commit-message: 'CI: bumps version to {{version}} [skip ci]'
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
