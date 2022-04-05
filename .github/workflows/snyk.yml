@@ -1,7 +1,6 @@
 name: Snyk
 on: push
 jobs:
-    name: 'Snyk'
     security:
         runs-on: ubuntu-latest
         steps:
