@@ -65,24 +65,12 @@ Example: `chore: Update README.md`, | `fix: Colors for head`
   
   ### Install Node.js
 
-Install the latest [LTS] (https://nodejs.org) version of Node.js, and at the same time make sure you are on version 6 of the `npm`-CLI (We currently have some challenges with` npm 7`).
+Install the latest [LTS] (https://nodejs.org) version of Node.js, and at the same time make sure you are on version 6 of the `npm`-CLI.
 
 ```sh
 $ node -v && npm -v
-v14.17.6
-6.14.15
-```
-
-### Log on to the package register
-
--   Set up a [personal access token](https://github.com/settings/tokens) on your private GitHub account, and turn on SSO for the equinor organization.
--   Register your [email address](https://github.com/settings/emails) on your private GitHub account (no need to replace your default address)
-
-```sh
-$ npm login --registry=https://npm.pkg.github.com
-> Username: USERNAME
-> Password: PERSONAL-ACCESS-TOKEN
-> Email: PUBLIC-EMAIL-ADDRESS
+v16.14.0
+8.31.0
 ```
 
 ### Install Npm
@@ -94,13 +82,14 @@ $ npm install --global npm
 ### Install project dependencies
 
 ```sh
-$ npm
+$ npm i
 ```
 
 ## Local development
 
 ```sh
-$ npm run storybook # Runs up a local dev version of Storybook - Both good tools to use to quickly see changes along the way.
+$ npm run storybook
+$ npm run dev # Runs up a local dev version of Storybook - Both good tools to use to quickly see changes along the way.
 ```
 
 ## Code quality
