@@ -9,8 +9,6 @@ jobs:
               uses: snyk/actions/node@master
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-              with:
-                  args: --sarif-file-output=snyk.sarif
             - name: Snyk version
               run: echo "${{ steps.snyk.outputs.version }}"
             - name: Snyk monitor
