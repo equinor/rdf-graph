@@ -10,7 +10,6 @@ jobs:
               uses: snyk/actions/node@master
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
               with:
                   args: --sarif-file-output=snyk.sarif
             - name: Snyk version
