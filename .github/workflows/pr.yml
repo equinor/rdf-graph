@@ -17,12 +17,12 @@ jobs:
               with:
                   node-version: 16
                   registry-url: https://npm.pkg.github.com/
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
             - name: Install project dependencies
               run: npm ci
               env:
                   NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
             - name: Run tests
               run: npm run test -- --passWithNoTests
