@@ -6,29 +6,27 @@ on:
 
 jobs:
     validate:
-        name: 'Validate pull request'
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v2
 
             - name: Install node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v2.4.0
               with:
                   node-version: 16
                   registry-url: https://npm.pkg.github.com/
 
             - name: Install project dependencies
-              run: npm ci
+              working-directory: ./client
+              run: npm install --frozen-lockfile
               env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-
-            - name: Run tests
-              run: npm run test -- --passWithNoTests
+                  NODE_AUTH_TOKEN: ${{secrets.GH_TOKEN}}
 
             - name: Check code quality
+              working-directory: ./client
               run: npm run checkcode
 
             - name: Build library
-              run: npm run build:lib
+              working-directory: ./client
+              run: npm run build
