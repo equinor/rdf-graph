@@ -3,6 +3,12 @@ name: 'Bump Version for master'
 on:
     pull_request:
         branches: [master]
+        types:
+            - opened
+            - edited
+            - synchronize
+            - labeled
+            - unlabeled
 
 jobs:
     bump-version:
