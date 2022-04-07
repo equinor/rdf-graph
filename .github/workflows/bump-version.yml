@@ -3,6 +3,12 @@ name: 'Bump Version for master'
 on:
     pull_request:
         branches: [master]
+        types:
+            - opened
+            - edited
+            - synchronize
+            - labeled
+            - unlabeled
 
 jobs:
     bump-version:
@@ -17,7 +23,7 @@ jobs:
               run: cat ./package.json
             - name: 'Automated Version Bump'
               id: version-bump
-              uses: 'phips28/gh-action-bump-version@master'
+              uses: 'phips28/gh-action-bump-version@v9.0.16'
               with:
                   patch-wording: 'patch,fixes,fix,chore,Bump'
                   minor-wording: 'feat'
