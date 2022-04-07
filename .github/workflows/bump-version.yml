@@ -1,0 +1,27 @@
+name: 'Bump Version for master'
+
+on:
+    pull_request:
+        branches: [master]
+
+jobs:
+    bump-version:
+        name: 'Bump version'
+        runs-on: ubuntu-latest
+        steps:
+            - name: 'Checkout source code'
+              uses: 'actions/checkout@v2'
+              with:
+                  ref: ${{ github.ref }}
+            - name: 'cat package.json'
+              run: cat ./package.json
+            - name: 'Automated Version Bump'
+              id: version-bump
+              uses: 'phips28/gh-action-bump-version@master'
+              with:
+                  patch-wording: 'patch,fixes,fix,chore,Bump'
+                  minor-wording: 'feat'
+                  major-wording: 'major'
+                  commit-message: 'CI: bumps version to {{version}} [skip ci]'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}

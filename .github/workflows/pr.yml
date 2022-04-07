@@ -6,7 +6,6 @@ on:
 
 jobs:
     validate:
-        name: 'Validate pull request'
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
@@ -19,12 +18,9 @@ jobs:
                   registry-url: https://npm.pkg.github.com/
 
             - name: Install project dependencies
-              run: npm ci
+              run: npm install --frozen-lockfile
               env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-
-            - name: Run tests
-              run: npm run test -- --passWithNoTests
+                  NODE_AUTH_TOKEN: ${{secrets.GH_TOKEN}}
 
             - name: Check code quality
               run: npm run checkcode
