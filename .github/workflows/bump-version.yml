@@ -1,4 +1,4 @@
-name: 'Bump Version for master'
+name: 'Bump Version'
 
 on:
     push:
