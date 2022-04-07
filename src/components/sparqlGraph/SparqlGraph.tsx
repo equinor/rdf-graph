@@ -6,9 +6,7 @@ import { useEffect, useState } from 'react';
 import { useCytoscapeHelpers } from '../../hooks';
 import { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { RdfSelection } from '../../models/rdfSelection';
-import { RdfIndividual } from '../../models/rdfIndividual';
-import { RdfTriple } from '../../models';
+import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
 
 export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: SparqlGraphProps) => {
 	const layouts: LayoutWrapper[] = [
