@@ -7,14 +7,14 @@ export class DisplayControllingPredicate {
 		fallback: (originalSubject: string | undefined) => string | undefined
 	) {
 		this.predicate = predicate;
-		this.location = location;
+		this.dataProperty = location;
 		this.keepNode = keepNode;
 		this.mapping = mapping;
 		this.fallback = fallback;
 	}
 
 	predicate: string;
-	location: string;
+	dataProperty: string;
 	keepNode: boolean;
 	mapping: (originalObject: string | undefined) => string | undefined;
 	fallback: (originalSubject: string | undefined) => string | undefined;

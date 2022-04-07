@@ -1,7 +1,7 @@
 import { Quad } from '@rdfjs/types';
 import { Parser } from 'n3';
 
-import { Edge, NodeDescription } from '../models';
+import { RdfTriple, NodeDescription } from '../models';
 
 export const useTurtleHelpers = () => {
 	const turtle2Edges = useTurtleParser();
@@ -9,8 +9,8 @@ export const useTurtleHelpers = () => {
 	return [turtle2Edges] as const;
 };
 
-const quad2Edge = (quad: Quad): Edge => {
-	return new Edge(quad.subject.value, quad.object.value, quad.predicate.value);
+const quad2Edge = (quad: Quad): RdfTriple => {
+	return new RdfTriple(quad.subject.value, quad.predicate.value, quad.object.value);
 };
 
 const removeQuotedPrefixes = (turtle: string): string => {
@@ -18,12 +18,12 @@ const removeQuotedPrefixes = (turtle: string): string => {
 };
 
 export function useTurtleParser(setNodeDescriptions?: (descriptions: NodeDescription[]) => void) {
-	return (turtle: string): Promise<Edge[]> => {
+	return (turtle: string): Promise<RdfTriple[]> => {
 		const turtleParser = new Parser({ format: 'Turtle' });
 		const correctTurtle = removeQuotedPrefixes(turtle);
 
 		return new Promise((resolve, reject) => {
-			const edges: Edge[] = [];
+			const edges: RdfTriple[] = [];
 			const nodeDescriptions: NodeDescription[] = [];
 			turtleParser.parse(correctTurtle, (err, data, prefixes) => {
 				if (err) {

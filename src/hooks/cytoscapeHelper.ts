@@ -1,4 +1,5 @@
-import { Edge } from '../models/edge';
+import { ElementDefinition } from 'cytoscape';
+import { RdfTriple } from '../models/rdfTriple';
 import { onlyUnique, short } from '../utils';
 import { useMappers } from '../utils';
 import { DisplayControllingPredicate } from './displayControllingPredicate';
@@ -12,7 +13,6 @@ export const useCytoscapeHelpers = () => {
 	const nodeTypePredicate = 'http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType';
 	const labelPredicate = 'http://www.w3.org/2000/01/rdf-schema#label';
 	const colorPredicate = 'http://rdf.equinor.com/ui/color';
-	const connectionPredicate = 'http://rdf.equinor.com/ui/connectedTo';
 
 	const parentDisplayEdge = new DisplayControllingPredicate(
 		compoundNodePredicate,
@@ -46,40 +46,42 @@ export const useCytoscapeHelpers = () => {
 
 	const displayEdges = [parentDisplayEdge, iconDisplayEdge, labelDisplayEdge, colorEdge];
 
-	const getPrimaryEdges = (edges: Edge[]) => edges.filter(({ type }) => !displayEdges.map(({ predicate }) => predicate).includes(type));
-	const getCytoscapeElementsByEdges = (edges: Edge[], strict: boolean = false) => {
+	const getPrimaryEdges = (edges: RdfTriple[]) =>
+		edges.filter(({ rdfPredicate: type }) => !displayEdges.map(({ predicate }) => predicate).includes(type));
+	const getCytoscapeElementsByEdges = (edges: RdfTriple[]) => {
 		const displayPredicate2Edges: { [predicate: string]: UiEdge[] } = Object.fromEntries(
 			displayEdges.map(({ predicate, mapping }) => [
 				predicate,
-				edges.filter(({ type }) => predicate === type).map(({ from, to }) => new UiEdge(from, mapping(to))),
+				edges
+					.filter(({ rdfPredicate: type }) => predicate === type)
+					.map(({ rdfSubject: from, rdfObject: to }) => new UiEdge(from, mapping(to))),
 			])
 		);
 
-		const filteredEdges = strict ? edges.filter(({ type }) => type === connectionPredicate) : getPrimaryEdges(edges);
-		const displayNodesEdges = edges.filter(({ type }) =>
+		const displayNodesEdges = edges.filter(({ rdfPredicate: type }) =>
 			displayEdges
 				.filter(({ keepNode }) => keepNode)
 				.map(({ predicate }) => predicate)
 				.includes(type)
 		);
-
-		const cytoscapeNodes = filteredEdges
+		const primary = getPrimaryEdges(edges);
+		const cytoscapeNodes = primary
 			.concat(displayNodesEdges)
-			.flatMap((e) => [e.from, e.to])
+			.flatMap((e) => [e.rdfSubject, e.rdfObject])
 			.filter(onlyUnique)
 			.map((n) => {
-				const cyNode: any = { data: { id: n } };
-				displayEdges.forEach(({ predicate, location, fallback }) => {
+				const cyNode: ElementDefinition = { data: { id: n } };
+				displayEdges.forEach(({ predicate, dataProperty, fallback }) => {
 					let value = displayPredicate2Edges[predicate].find(({ from }) => from === n)?.to;
 					if (value === undefined) {
 						value = fallback(n);
 					}
-					cyNode.data[location] = value;
+					cyNode.data[dataProperty] = value;
 				});
 				return cyNode;
 			});
 
-		const cytoscapeEdges = edges2ElementDefinitions(filteredEdges);
+		const cytoscapeEdges = edges2ElementDefinitions(primary);
 
 		return [...cytoscapeNodes, ...cytoscapeEdges];
 	};
