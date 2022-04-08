@@ -1,5 +1,6 @@
 import { ElementDefinition } from 'cytoscape';
 import { nanoid } from 'nanoid';
+import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
 
 import { useNodeHelpers } from '../mapper';
 import { RdfTriple } from '../models';
@@ -15,26 +16,31 @@ export const useMappers = () => {
 	};
 
 	const cytoscapeEdgeId2Edge = (edgeElement: ElementDefinition): RdfTriple => {
-		return new RdfTriple(edgeElement.data.source, edgeElement.data.predicate, edgeElement.data.target);
+		return new RdfTriple(edgeElement.data[rdfSubjectKey], edgeElement.data[rdfPredicateKey], edgeElement.data[rdfObjectKey]);
 	};
 
 	const cytoscapeEdges2CytoscapeNodes = (cytoscapeEdges: ElementDefinition[]): ElementDefinition[] => {
 		return cytoscapeEdges
-			.flatMap((e) => [e.data.target, e.data.source])
+			.flatMap((e) => [e.data[rdfSubjectKey], e.data[rdfObjectKey]])
 			.filter(onlyUnique)
 			.map(uri2Node);
 	};
 
 	const edge2CytoscapeEdge = (triple: RdfTriple): ElementDefinition => {
-		return {
+		let edgeElement: ElementDefinition = {
 			data: {
-				id: nanoid(),
 				source: triple.rdfSubject,
 				target: triple.rdfObject,
-				predicate: triple.rdfPredicate,
+				id: nanoid(),
 				label: short(triple.rdfPredicate),
 			},
 		};
+
+		edgeElement.data[rdfSubjectKey] = triple.rdfSubject;
+		edgeElement.data[rdfPredicateKey] = triple.rdfPredicate;
+		edgeElement.data[rdfObjectKey] = triple.rdfObject;
+
+		return edgeElement;
 	};
 
 	return [edges2ElementDefinitions, cytoscapeEdgeId2Edge] as const;
