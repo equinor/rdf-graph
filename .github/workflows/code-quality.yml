@@ -67,7 +67,6 @@ jobs:
               run: npm ci
             - name: Test dependencies for known issues
               run: snyk test --fail-on=all --severity-threshold=high
-              continue-on-error: true
               env:
                   SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
             - name: Continuously monitor new vulnerabilities

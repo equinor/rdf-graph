@@ -115,7 +115,7 @@
 		"typescript": "^4.6.3"
 	},
 	"overrides": {
-		"lodash.set": "^4.17.21"
+		"lodash.set": "^4.3.2"
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-export-default-from": "^7.16.7",
