@@ -1,4 +1,5 @@
-name: Code quality
+name: 'Code quality'
+
 on:
     push:
         branches: [master]
