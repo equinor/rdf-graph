@@ -58,7 +58,7 @@ export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSele
 	return (
 		<CytoscapeComponent
 			elements={elements}
-			layout={layoutCoseBilKent}
+			layout={selectedLayout}
 			style={uiConfig?.css ?? defaultUiConfig.css}
 			stylesheet={[
 				{
