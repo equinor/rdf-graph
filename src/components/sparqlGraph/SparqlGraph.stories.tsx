@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import { SparqlGraph } from './SparqlGraph';
+import { RdfSelection } from '../../models';
 
 export default {
 	title: 'Graph',
@@ -69,6 +70,7 @@ example:2a  rdfs:label  "test2a" ;
 Example.args = {
 	turtleString: storyTurtle,
 	layoutName: 'Cola',
+	onElementsSelected: (selection: RdfSelection) => console.log(selection),
 };
 
 Example.storyName = 'Graph';
