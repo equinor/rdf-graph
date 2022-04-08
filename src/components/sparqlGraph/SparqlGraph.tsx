@@ -30,7 +30,7 @@ export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: Sp
 
 	useEffect(() => {
 		cy &&
-			cy.on('select unselect', () => {
+			cy.on('select', () => {
 				onElementsSelected(
 					new RdfSelection(
 						cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
