@@ -7,6 +7,7 @@ import { useCytoscapeHelpers } from '../../hooks';
 import { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
+import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 
 export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: SparqlGraphProps) => {
 	const layouts: LayoutWrapper[] = [
@@ -34,7 +35,7 @@ export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: Sp
 				onElementsSelected(
 					new RdfSelection(
 						cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
-						cy.$('edge:selected').map((n) => new RdfTriple(n.data('rdfSubject'), n.data('rdfPredicate'), n.data('rdfObject')))
+						cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
 					)
 				);
 			});
