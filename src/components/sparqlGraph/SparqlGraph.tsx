@@ -1,4 +1,4 @@
-import { LayoutWrapper, SparqlGraphProps } from './SparqlGraph.types';
+import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
 import { useTurtleHelpers } from '../../mapper';
@@ -9,15 +9,22 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 
-export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: SparqlGraphProps) => {
-	const layouts: LayoutWrapper[] = [
-		{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
-		{ name: 'Cola', layout: layoutCola },
-		{ name: 'Dagre', layout: layoutDagre },
-	];
+const defaultUiConfig: UiConfigProps = {
+	css: { height: '100vh', width: '100%' },
+	minZoom: 0.4,
+	maxZoom: 2,
+	zoom: undefined,
+	zoomingEnabled: true,
+};
 
+const layouts: LayoutWrapper[] = [
+	{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
+	{ name: 'Cola', layout: layoutCola },
+	{ name: 'Dagre', layout: layoutDagre },
+];
+
+export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSelected }: SparqlGraphProps) => {
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
-
 	const [turtle2Edges] = useTurtleHelpers();
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
 	const [getCytoscapeElementsByEdges] = useCytoscapeHelpers();
@@ -55,67 +62,67 @@ export const SparqlGraph = ({ turtleString, layoutName, onElementsSelected }: Sp
 	};
 
 	return (
-		<div className="SparqlGraph__content">
-			<CytoscapeComponent
-				elements={elements}
-				layout={selectedLayout}
-				style={{ width: '100%', height: '100vh' }}
-				stylesheet={[
-					{
-						selector: 'node',
-						style: {
-							label: 'data(label)',
-							width: '60%',
-							height: '60%',
-							//'text-transform': 'lowercase',
-							'text-max-width': '150px',
-							'text-wrap': 'wrap',
-							'text-halign': 'center',
-							'text-valign': 'bottom',
-							'background-fit': 'contain',
-						},
+		<CytoscapeComponent
+			elements={elements}
+			layout={selectedLayout}
+			style={uiConfig?.css ?? defaultUiConfig.css}
+			stylesheet={[
+				{
+					selector: 'node',
+					style: {
+						label: 'data(label)',
+						width: '60%',
+						height: '60%',
+						//'text-transform': 'lowercase',
+						'text-max-width': '150px',
+						'text-wrap': 'wrap',
+						'text-halign': 'center',
+						'text-valign': 'bottom',
+						'background-fit': 'contain',
 					},
-					{
-						selector: '[image]',
-						style: {
-							shape: 'rectangle',
-							'background-image': 'data(image)',
-							'background-opacity': 0,
-						},
+				},
+				{
+					selector: '[image]',
+					style: {
+						shape: 'rectangle',
+						'background-image': 'data(image)',
+						'background-opacity': 0,
 					},
-					{
-						selector: '[color]',
-						style: {
-							'background-color': 'data(color)',
-						},
+				},
+				{
+					selector: '[color]',
+					style: {
+						'background-color': 'data(color)',
 					},
-					{
-						selector: 'node:parent',
-						style: {
-							shape: 'cut-rectangle',
-							'padding-bottom': '5%',
-							'padding-top': '5%',
-							'padding-left': '5%',
-							'padding-right': '5%',
-						},
+				},
+				{
+					selector: 'node:parent',
+					style: {
+						shape: 'cut-rectangle',
+						'padding-bottom': '5%',
+						'padding-top': '5%',
+						'padding-left': '5%',
+						'padding-right': '5%',
 					},
-					{
-						selector: 'edge',
-						style: {
-							width: 4,
-							'line-color': '#ccc',
-							'target-arrow-color': '#ccc',
-							'target-arrow-fill': 'filled',
-							'target-arrow-shape': 'chevron',
-							'arrow-scale': 1.5,
-							'curve-style': 'bezier',
-						},
+				},
+				{
+					selector: 'edge',
+					style: {
+						width: 4,
+						'line-color': '#ccc',
+						'target-arrow-color': '#ccc',
+						'target-arrow-fill': 'filled',
+						'target-arrow-shape': 'chevron',
+						'arrow-scale': 1.5,
+						'curve-style': 'bezier',
 					},
-				]}
-				maxZoom={2}
-				minZoom={0.02}
-				cy={(x) => setCytoscapeHandle(x)}
-			/>
-		</div>
+				},
+			]}
+			maxZoom={uiConfig?.maxZoom ?? defaultUiConfig.maxZoom}
+			minZoom={uiConfig?.minZoom ?? defaultUiConfig.minZoom}
+			zoom={uiConfig?.zoom ?? defaultUiConfig.zoom}
+			zoomingEnabled={uiConfig?.zoomingEnabled ?? defaultUiConfig.zoomingEnabled}
+			cy={(x) => setCytoscapeHandle(x)}
+		/>
 	);
 };
