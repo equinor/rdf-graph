@@ -6,7 +6,7 @@ on:
 
 jobs:
     bump-version:
-        name: 🚀 Bump version
+        name: 'Bump version'
         runs-on: ubuntu-latest
         steps:
             - name: 'Checkout source code'
