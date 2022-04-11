@@ -19,6 +19,7 @@ jobs:
     bump-version:
         name: '🦆 Bump version'
         needs: [code-quality]
+        if: ${{ github.event.inputs.allow-deploy == 'true' }}
         runs-on: ubuntu-latest
         steps:
             - name: 'Checkout source code'
