@@ -3,6 +3,11 @@ name: 🪅 Release
 on:
     push:
         branches: ['master']
+    workflow_dispatch:
+        inputs:
+            allow-deploy:
+                description: 'Allow release'
+                default: false
 
 jobs:
     code-quality:
