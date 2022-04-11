@@ -6,7 +6,7 @@ on:
 
 jobs:
     bump-version:
-        name: 'Bump version'
+        name: 🚀 Bump version
         runs-on: ubuntu-latest
         steps:
             - name: 'Checkout source code'
@@ -19,7 +19,7 @@ jobs:
               id: version-bump
               uses: 'phips28/gh-action-bump-version@v9.0.16'
               with:
-                  patch-wording: 'patch,fixes,fix,chore,Bump'
+                  patch-wording: 'patch,fixes,fix,chore'
                   minor-wording: 'feat'
                   major-wording: 'major'
                   commit-message: 'CI: bumps version to {{version}} [skip ci]'
