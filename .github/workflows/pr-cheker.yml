@@ -1,4 +1,4 @@
-name: 🎫 PR title checker
+name: 🍒 PR title checker
 
 on:
     # Triggers the workflow on push or pull request events but only for the develop branch
@@ -16,7 +16,6 @@ on:
 
 jobs:
     check:
-        name: 🍒 PR title checker
         runs-on: ubuntu-latest
         steps:
             - uses: thehanimo/pr-title-checker@v1.3.1
