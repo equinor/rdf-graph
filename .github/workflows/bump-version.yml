@@ -7,7 +7,7 @@ on:
 jobs:
     code-quality:
         name: '💎 Code Quality'
-        uses: equinor/sparql-graph/.github/workflows/code-quality.yml@main
+        uses: equinor/sparql-graph/.github/workflows/code-quality.yml@master
         secrets:
             snyk-token: ${{ secrets.SNYK_TOKEN }}
 
