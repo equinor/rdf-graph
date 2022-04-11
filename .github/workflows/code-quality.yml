@@ -65,6 +65,10 @@ jobs:
             - uses: snyk/actions/setup@master
             - name: Install dependencies
               run: npm ci
+            - name: Authenticator
+              run: snyk auth
+              env:
+                  SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
             - name: Test dependencies for known issues
               run: snyk test --fail-on=all --severity-threshold=high
               env:
