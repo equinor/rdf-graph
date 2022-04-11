@@ -5,7 +5,7 @@ export type LayoutProps = 'Cola' | 'Cose-Bilkent' | 'Dagre';
 
 export type SparqlGraphProps = {
 	layoutName: LayoutProps;
-	uiConfig?: UiConfig;
+	uiConfig?: UiConfigProps;
 	turtleString: string;
 	onElementsSelected: (selection: RdfSelection) => void;
 };
@@ -15,7 +15,7 @@ export type LayoutWrapper = {
 	layout: LayoutOptions;
 };
 
-export interface UiConfig {
+export interface UiConfigProps {
 	css?: React.CSSProperties;
 	maxZoom?: number;
 	minZoom?: number;

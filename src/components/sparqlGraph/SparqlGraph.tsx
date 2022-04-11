@@ -1,4 +1,4 @@
-import { LayoutWrapper, SparqlGraphProps, UiConfig } from './SparqlGraph.types';
+import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
 import { useTurtleHelpers } from '../../mapper';
@@ -9,7 +9,7 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 
-const defaultUiConfig: UiConfig = {
+const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
 	minZoom: 0.4,
 	maxZoom: 2,
