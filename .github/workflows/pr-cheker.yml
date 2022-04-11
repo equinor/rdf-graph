@@ -16,7 +16,7 @@ on:
 
 jobs:
     check:
-        name: 'PR title checker'
+        name: 🎟 PR title checker
         runs-on: ubuntu-latest
         steps:
             - uses: thehanimo/pr-title-checker@v1.3.1
