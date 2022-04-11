@@ -30,6 +30,7 @@ jobs:
                   minor-wording: 'feat'
                   major-wording: 'major'
                   commit-message: 'CI: bumps version to {{version}} [skip ci]'
+                  default: ' '
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
