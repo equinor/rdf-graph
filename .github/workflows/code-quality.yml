@@ -9,7 +9,7 @@ on:
     workflow_dispatch:
     workflow_call:
         secrets:
-            snyk-token:
+            SNYK_TOKEN:
                 required: true
     schedule:
         - cron: '0 6 * * 1'
