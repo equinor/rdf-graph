@@ -1,4 +1,4 @@
-import { LayoutWrapper, SparqlGraphProps } from './SparqlGraph.types';
+import { LayoutWrapper, SparqlGraphProps, UiConfig } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
 import { useTurtleHelpers } from '../../mapper';
@@ -8,17 +8,23 @@ import { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
-import { defaultStyling as defaultUiConfig } from '../../models/uiConfig';
+
+const defaultUiConfig: UiConfig = {
+	css: { height: '100vh', width: '100%' },
+	minZoom: 0.4,
+	maxZoom: 2,
+	zoom: undefined,
+	zoomingEnabled: true,
+};
+
+const layouts: LayoutWrapper[] = [
+	{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
+	{ name: 'Cola', layout: layoutCola },
+	{ name: 'Dagre', layout: layoutDagre },
+];
 
 export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSelected }: SparqlGraphProps) => {
-	const layouts: LayoutWrapper[] = [
-		{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
-		{ name: 'Cola', layout: layoutCola },
-		{ name: 'Dagre', layout: layoutDagre },
-	];
-
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
-
 	const [turtle2Edges] = useTurtleHelpers();
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
 	const [getCytoscapeElementsByEdges] = useCytoscapeHelpers();

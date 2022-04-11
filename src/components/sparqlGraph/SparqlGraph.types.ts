@@ -1,6 +1,5 @@
 import { LayoutOptions } from 'cytoscape';
 import { RdfSelection } from '../../models/rdfSelection';
-import { UiConfig } from '../../models/uiConfig';
 
 export type LayoutProps = 'Cola' | 'Cose-Bilkent' | 'Dagre';
 
@@ -15,3 +14,11 @@ export type LayoutWrapper = {
 	name: string;
 	layout: LayoutOptions;
 };
+
+export interface UiConfig {
+	css?: React.CSSProperties;
+	maxZoom?: number;
+	minZoom?: number;
+	zoom?: number;
+	zoomingEnabled?: boolean;
+}
