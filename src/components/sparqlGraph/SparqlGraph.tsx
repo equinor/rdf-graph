@@ -46,6 +46,7 @@ export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSele
 					)
 				);
 			});
+		// TODO: update on onElementsSelected callback change?
 	}, [cy]);
 
 	useEffect(() => {
