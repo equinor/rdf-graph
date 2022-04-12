@@ -4,12 +4,9 @@ on:
     push:
         branches: ['master']
 
-env:
-    GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
 jobs:
     code-quality:
-        name: '💎 Code Quality'
+        name: 'Code Quality'
         uses: equinor/sparql-graph/.github/workflows/code-quality.yml@master
         secrets:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
@@ -32,13 +29,12 @@ jobs:
               id: version-bump
               uses: 'phips28/gh-action-bump-version@v9.0.16'
               with:
-                  GITHUB_TOKEN: ${{ env.GH_TOKEN }}
-                  patch-wording: 'patch,fixes,fix,chore'
-                  minor-wording: 'feat'
-                  major-wording: 'major'
+                  patch-wording: 'patch: ,fixes: ,fix: ,chore: '
+                  minor-wording: 'feat: '
+                  major-wording: 'major: '
                   commit-message: 'CI: bumps version to {{version}} [skip ci]'
               env:
-                  GITHUB_TOKEN: ${{ env.GH_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
     build:
         needs: [bump-version]
