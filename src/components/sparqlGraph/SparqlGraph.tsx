@@ -46,7 +46,7 @@ export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSele
 					)
 				);
 			});
-	}, [cy, onElementsSelected]);
+	}, [cy]);
 
 	useEffect(() => {
 		prepareCytoscapeElements();
