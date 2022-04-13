@@ -1,4 +1,4 @@
-name: Release
+name: Prepare a release
 
 on:
     push:
@@ -35,3 +35,16 @@ jobs:
                   commit-message: 'CI: bumps version to {{version}} [skip ci]'
               env:
                   GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+    build:
+        needs: bump-version
+        runs-on: ubuntu-latest
+        name: '🤹‍♀️ Build'
+        steps:
+            - uses: actions/checkout@v3
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+                  registry-url: https://registry.npmjs.org
+            - run: npm install --frozen-lockfile
+              env:
+                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
