@@ -1,5 +1,5 @@
 import { Button } from '@equinor/eds-core-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';
@@ -8,10 +8,6 @@ export type SparqlWrapperProps = {
 	turtleString: string;
 	layoutName: LayoutProps;
 };
-
-window.document.addEventListener('keypress', () => 'HELLO???');
-window.document.addEventListener('keydown', () => 'HELLO???');
-window.document.addEventListener('keyup', () => 'HELLO???');
 
 export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) => {
 	const dummyNode = 'NewNode';
