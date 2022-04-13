@@ -1,22 +1,21 @@
 import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
-import { SparqlGraph } from './SparqlGraph';
-import { RdfSelection } from '../../models';
+import { StoryWrapper } from './StoryWrapper';
 
 export default {
 	title: 'Graph',
-	component: SparqlGraph,
+	component: StoryWrapper,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
 		layoutName: { control: { type: 'inline-radio' } },
 	},
-} as ComponentMeta<typeof SparqlGraph>;
+} as ComponentMeta<typeof StoryWrapper>;
 
-const Template: ComponentStory<typeof SparqlGraph> = ({ ...args }) => (
+const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
 	<>
-		<SparqlGraph {...args} />
+		<StoryWrapper {...args} />
 	</>
 );
 
@@ -69,8 +68,7 @@ example:2a  rdfs:label  "test2a" ;
 
 Example.args = {
 	turtleString: storyTurtle,
-	layoutName: 'Cola',
-	onElementsSelected: (selection: RdfSelection) => console.log(selection),
+	layoutName: 'Cose-Bilkent',
 };
 
 Example.storyName = 'Graph';

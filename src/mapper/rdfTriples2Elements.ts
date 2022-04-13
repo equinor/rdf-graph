@@ -10,35 +10,11 @@ const nodeTypePredicate = 'http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType
 const labelPredicate = 'http://www.w3.org/2000/01/rdf-schema#label';
 const colorPredicate = 'http://rdf.equinor.com/ui/color';
 
-const parentDisplayEdge = new DisplayControllingPredicate(
-	compoundNodePredicate,
-	'parent',
-	true,
-	(o) => o,
-	() => ''
-);
-const iconDisplayEdge = new DisplayControllingPredicate(
-	nodeTypePredicate,
-	'image',
-	false,
-	(o) => node2ImageUri(o),
-	() => defaultUri
-);
-const labelDisplayEdge = new DisplayControllingPredicate(
-	labelPredicate,
-	'label',
-	false,
-	(o) => o,
-	(s) => short(s)
-);
+const parentDisplayEdge = new DisplayControllingPredicate(compoundNodePredicate, 'parent', true, (o) => o);
+const iconDisplayEdge = new DisplayControllingPredicate(nodeTypePredicate, 'image', false, (o) => node2ImageUri(o));
+const labelDisplayEdge = new DisplayControllingPredicate(labelPredicate, 'label', false, (o) => o);
 
-const colorEdge = new DisplayControllingPredicate(
-	colorPredicate,
-	'color',
-	false,
-	(o) => o,
-	() => undefined
-);
+const colorEdge = new DisplayControllingPredicate(colorPredicate, 'color', false, (o) => o);
 
 const displayEdges = [parentDisplayEdge, iconDisplayEdge, labelDisplayEdge, colorEdge];
 
@@ -70,12 +46,11 @@ export const rdfTriples2Elements = (edges: RdfTriple[]) => {
 		.filter(onlyUnique)
 		.map((n) => {
 			const cyNode: ElementDefinition = { data: { id: n } };
-			displayEdges.forEach(({ predicate, dataProperty, fallback }) => {
-				let value = displayPredicate2UiEdges[predicate].find(({ from }) => from === n)?.to;
-				if (value === undefined) {
-					value = fallback(n);
+			displayEdges.forEach(({ predicate, dataProperty }) => {
+				const value = displayPredicate2UiEdges[predicate].find(({ from }) => from === n)?.to;
+				if (value) {
+					cyNode.data[dataProperty] = value;
 				}
-				cyNode.data[dataProperty] = value;
 			});
 			return cyNode;
 		});
