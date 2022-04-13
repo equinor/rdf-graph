@@ -1,11 +1,11 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
-import { turtle2Elements } from '../../mapper';
+import { rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
-import { ElementDefinition } from 'cytoscape';
+import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
+import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 
 const defaultUiConfig: UiConfigProps = {
@@ -22,41 +22,79 @@ const layouts: LayoutWrapper[] = [
 	{ name: 'Dagre', layout: layoutDagre },
 ];
 
-export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSelected }: SparqlGraphProps) => {
+export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onElementsSelected }: SparqlGraphProps) => {
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
-	const [cy, setCy] = useState<cytoscape.Core>();
+
+	const [nullableCy, setCy] = useState<cytoscape.Core>();
 
 	const prepareCytoscapeElements = async () => {
 		const elements = await turtle2Elements(turtleString);
 		setElements(elements);
 	};
 
-	useEffect(() => {
-		cy &&
-			cy.on('select', () => {
-				onElementsSelected(
-					new RdfSelection(
-						cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
-						cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
-					)
-				);
-			});
-		// TODO: update on onElementsSelected callback change?
-	}, [cy]);
+	const initialize = (cy: cytoscape.Core) => {
+		cy.on('select', () => {
+			onElementsSelected(
+				new RdfSelection(
+					cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
+					cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
+				)
+			);
+		});
+
+		cy.on('unselect', () => {
+			if (cy.$(':selected').length === 0) {
+				onElementsSelected(new RdfSelection([], []));
+			}
+		});
+	};
 
 	useEffect(() => {
 		prepareCytoscapeElements();
 	}, [turtleString]);
 
 	useEffect(() => {
-		cy && cy.layout(selectedLayout).run();
-	}, [cy, elements]);
+		nullableCy && nullableCy.layout(selectedLayout).run();
+	}, [nullableCy, elements]);
 
-	const setCytoscapeHandle = (ct: Cytoscape.Core) => {
-		if (cy) return;
-		setCy(ct);
+	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
+		if (nullableCy) return; // Already initialized
+		initialize(cy);
+		setCy(cy);
 	};
+
+	const applyPatch = (patch: RdfPatch) => {
+		if (!nullableCy) return;
+		const cy = nullableCy;
+		const newTriples = rdfTriples2Elements(patch.tripleAdditions);
+
+		//Modify existing individuals
+		patch.tripleAdditions
+			.map((a) => a.rdfSubject)
+			.forEach((node) => {
+				const oldElement = cy.elements(`[id = "${node}"]`);
+				if (oldElement) {
+					// If old element exist we want to add new properties
+					const newElement = newTriples.find((e) => e.data.id === node)!;
+
+					// Order matters, if property exist on both old and new, new data is used
+					const combinedData = Object.assign({}, oldElement.data(), newElement.data);
+					oldElement.data(combinedData);
+				}
+			});
+
+		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
+
+		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
+
+		cy.add(newTriples);
+	};
+
+	useEffect(() => {
+		const patch = patches.length > 0 && patches.at(-1);
+		patch && applyPatch(patch);
+	}, [patches]);
 
 	return (
 		<CytoscapeComponent
