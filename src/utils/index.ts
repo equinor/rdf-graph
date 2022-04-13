@@ -1,4 +1,3 @@
-export * from './cytoscapeMapping';
 export * from './getErrorMSG';
 export * from './onlyUnique';
 export * from './layout';

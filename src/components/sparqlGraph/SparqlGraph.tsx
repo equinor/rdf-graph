@@ -1,9 +1,8 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
-import { useTurtleHelpers } from '../../mapper';
+import { turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
-import { useCytoscapeHelpers } from '../../hooks';
 import { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfSelection, RdfTriple } from '../../models';
@@ -25,14 +24,11 @@ const layouts: LayoutWrapper[] = [
 
 export const SparqlGraph = ({ turtleString, layoutName, uiConfig, onElementsSelected }: SparqlGraphProps) => {
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
-	const [turtle2Edges] = useTurtleHelpers();
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
-	const [getCytoscapeElementsByEdges] = useCytoscapeHelpers();
 	const [cy, setCy] = useState<cytoscape.Core>();
 
 	const prepareCytoscapeElements = async () => {
-		const edges = await turtle2Edges(turtleString);
-		const elements = getCytoscapeElementsByEdges(edges);
+		const elements = await turtle2Elements(turtleString);
 		setElements(elements);
 	};
 
