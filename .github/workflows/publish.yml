@@ -2,7 +2,7 @@ name: 🎀 Publish
 
 on:
     workflow_run:
-        workflows: ['Release']
+        workflows: ['bump-version']
         branches: [master]
         types:
             - completed
