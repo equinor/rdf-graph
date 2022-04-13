@@ -1,4 +1,4 @@
-export * from './nodeDescription';
+export * from './displayControllingPredicate';
 export * from './sparqlResult';
 export * from './sparqlType';
 export * from './data';
