@@ -8,6 +8,8 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 
+import { Button } from '@equinor/eds-core-react';
+
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
 	minZoom: 0.4,
