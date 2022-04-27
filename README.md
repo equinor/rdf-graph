@@ -118,7 +118,7 @@ $ npm run checkcode
 
 ## Testing
 
-We will write unit tests on critical functionality.
+We will write unit tests on critical functionality. Tests should be grouped under `src/tests/` and named after test file they are testing suffixed by test.tsx
 
 ```sh
 $ npm run test
