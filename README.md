@@ -2,41 +2,57 @@
 
 ### Example
 
-```jsx
-import { SparqlGraph } from '@equinor/sparql-graph';
+```tsx
+const dummyNode = 'NewNode';
+const colors = ['blue', 'green', 'red', 'yellow', 'purple', 'pink', 'cyan', 'grey'];
 
-export const Page = (): ReactElement => {
-	return (
-		<>
-			<SparqlGraph
-				transformations={transformations}
-				preferredView={preferredView}
-				hasStrictMode={false}
-				environment="stid-dev"
-				setStatus={setStatus}
-				refresh={1}
-				layout="Cola"
-				query={query}
-			/>
-		</>
-	);
+const [selection, setSelection] = useState<RdfSelection>(new RdfSelection([], []));
+
+const [patches, setPatches] = useState<Array<RdfPatch>>([]);
+
+const deleteSelection = () => {
+	const newPatch = new RdfPatch({ tripleRemovals: selection.rdfTriple, individualRemovals: selection.individuals });
+	let newPatches = [...patches, newPatch];
+	setPatches(newPatches);
 };
+
+const onElementsSelected = (selection: RdfSelection): void => {
+	setSelection(selection);
+	if (selection.individuals.length > 0) {
+		const selectedNode = selection.individuals[0].iri;
+		let newPatch: RdfPatch;
+		if (selectedNode === dummyNode) {
+			const randomColor = colors[Math.floor(Math.random() * colors.length)];
+			newPatch = new RdfPatch({ tripleAdditions: [new RdfTriple(selectedNode, 'http://rdf.equinor.com/ui/color', randomColor)] });
+		} else {
+			newPatch = new RdfPatch({
+				tripleAdditions: [
+					new RdfTriple(selectedNode, 'NewPredicate', 'NewNode'),
+					new RdfTriple('NewNode', 'http://www.w3.org/2000/01/rdf-schema#label', 'New cool node. Tap for random color'),
+				],
+			});
+		}
+		let newPatches = [...patches, newPatch];
+		setPatches(newPatches);
+	}
+};
+
+return (
+	<div>
+		<Button onClick={deleteSelection}> Delete selection </Button>
+		<SparqlGraph turtleString={turtleString} layoutName={layoutName} patches={patches} onElementsSelected={onElementsSelected} />
+	</div>
+);
 ```
 
 # Props
 
-**Required props are marked with `*`.**
-
-| Name              | Type                                                | Default    | Description                                |
-| ----------------- | --------------------------------------------------- | ---------- | ------------------------------------------ |
-| `transformations` | `TransformationsDefinition`                         |            | Graph transformations                      |
-| `preferredView`\* | `[key in DataType]: View`                           |            | Visual graph preference                    |
-| `hasStrictMode`   | `boolean`                                           | `false`    | Strick mode                                |
-| `environment`     | `localhost, dev, stid-dev, test, prod`              | `stid-dev` | Graph environment                          |
-| `setStatus`\*     | `React.Dispatch<React.SetStateAction<StatusProps>>` |            | Renders a button with pre-declaration size |
-| `refresh`\*       | `number`                                            |            | Graphe refresh state                       |
-| `layout`          | `Cola, Cose-Bilkent, Dagre`                         | `Cola`     | Layout name                                |
-| `query`\*         | `string`                                            |            | Data                                       |
+| Name               | Type                                | Description                                 |
+| ------------------ | ----------------------------------- | ------------------------------------------- |
+| `turtleString`     | `string`                            | Data                                        |
+| `layout`           | `Cola, Cose-Bilkent, Dagre`         | Layout name                                 |
+| `onElementChanged` | `(selection: RdfSelection) => void` | Callback when user (de)selects elements     |
+| `patches`          | `RdfPatch[]`                        | List of changes to facilitate interactivity |
 
 ## Dependabot
 
