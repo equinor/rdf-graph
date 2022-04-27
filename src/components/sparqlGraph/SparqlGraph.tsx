@@ -55,7 +55,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	}, [turtleString]);
 
 	useEffect(() => {
-		nullableCy && nullableCy.layout(selectedLayout).run();
+		nullableCy && nullableCy.nodes("nodeType != 'connector'").layout(selectedLayout).run();
 	}, [nullableCy, elements]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
@@ -85,7 +85,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 			});
 
 		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
-
 		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
 
 		cy.add(newTriples);
@@ -108,7 +107,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						label: 'data(label)',
 						width: '60%',
 						height: '60%',
-						//'text-transform': 'lowercase',
 						'text-max-width': '150px',
 						'text-wrap': 'wrap',
 						'text-halign': 'center',
@@ -120,8 +118,24 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: '[image]',
 					style: {
 						shape: 'rectangle',
+						'background-clip': 'none',
+						'background-fit': 'none',
 						'background-image': 'data(image)',
-						'background-opacity': 0,
+						'background-color': 'red',
+						'background-opacity': 0.1,
+						'border-width': 0,
+					},
+				},
+				{
+					selector: '[nodeType = "connector"]',
+					style: {
+						shape: 'rectangle',
+						height: '1',
+						width: '1',
+						'background-color': 'red',
+						'background-opacity': 0.5,
+						'border-width': 0,
+						events: 'no',
 					},
 				},
 				{
