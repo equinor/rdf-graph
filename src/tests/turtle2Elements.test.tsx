@@ -68,7 +68,7 @@ describe('Turtle to elements', () => {
 
 		example:seperator rdfs:label "seperator";
 				ui:color "pink";
-				ui:hasSvg "lorentzSvgIcon3_90_red";
+				ui:hasSvg "Separator_1";
 				ui:hasConnector example:3phaseIn;
 				ui:hasConnector example:GasOut;
 				ui:hasConnector example:OilWaterOut .
@@ -106,7 +106,7 @@ describe('Turtle to elements', () => {
 		expect(gasOut.data['nodeType']).toBe('connector');
 		expect(gasOut['grabbable']).toBe(false);
 		expect(gasOut['selectable']).toBe(false);
-		expect(gasOut.position!['x']).toBe(23.5);
-		expect(gasOut.position!['y']).toBe(0);
+		expect(gasOut.position!['x']).toBe(-18);
+		expect(34 - gasOut.position!['y']).toBeLessThan(0.1);
 	});
 });
