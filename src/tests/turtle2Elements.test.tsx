@@ -1,5 +1,6 @@
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
 import { turtle2Elements } from '../mapper';
+import { SymbolKey } from '../symbol-api/symbol-library';
 
 const a = 'http://example.com/a';
 const b = 'http://example.com/b';
@@ -68,7 +69,7 @@ describe('Turtle to elements', () => {
 
 		example:seperator rdfs:label "seperator";
 				ui:color "pink";
-				ui:hasSvg "Separator_1";
+				ui:hasSvg "${SymbolKey.Separator_1}";
 				ui:hasConnector example:3phaseIn;
 				ui:hasConnector example:GasOut;
 				ui:hasConnector example:OilWaterOut .
