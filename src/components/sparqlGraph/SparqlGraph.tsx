@@ -55,7 +55,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	}, [turtleString]);
 
 	useEffect(() => {
-		nullableCy && nullableCy.nodes("nodeType != 'connector'").layout(selectedLayout).run();
+		nullableCy && nullableCy.nodes("[nodeType != 'connector']").layout(selectedLayout).run();
 	}, [nullableCy, elements]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
@@ -102,20 +102,13 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 			style={uiConfig?.css ?? defaultUiConfig.css}
 			stylesheet={[
 				{
-					selector: 'node',
+					selector: 'node[label]',
 					style: {
 						label: 'data(label)',
-						width: '60%',
-						height: '60%',
-						'text-max-width': '150px',
-						'text-wrap': 'wrap',
-						'text-halign': 'center',
-						'text-valign': 'bottom',
-						'background-fit': 'contain',
 					},
 				},
 				{
-					selector: '[image]',
+					selector: '[nodeType = "symbol"]',
 					style: {
 						shape: 'rectangle',
 						'background-clip': 'none',
@@ -124,6 +117,8 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						'background-color': 'red',
 						'background-opacity': 0.1,
 						'border-width': 0,
+						width: 'data(imageWidth)',
+						height: 'data(imageHeight)',
 					},
 				},
 				{

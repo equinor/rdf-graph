@@ -2,6 +2,7 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 import { StoryWrapper } from './StoryWrapper';
+import { SymbolKey } from '../../symbol-api/symbol-library';
 
 export default {
 	title: 'Graph',
@@ -36,7 +37,7 @@ example:1  rdfs:label  "Well" ;
         example:connectedTo example:3phaseIn .
 
 example:valve  rdfs:label  "Valve";
-        ui:hasSvg "valve";
+        ui:hasSvg "${SymbolKey.Valve_1}";
         ui:hasConnector example:ValveIn;
         ui:hasConnector example:ValveOut .
 
@@ -47,7 +48,7 @@ example:3  rdfs:label  "Oil water processing";
         ui:color    "orange".
 
 example:seperator rdfs:label "seperator";
-        ui:hasSvg "seperator";
+        ui:hasSvg "${SymbolKey.Separator_1}";
         ui:hasConnector example:3phaseIn;
         ui:hasConnector example:GasOut;
         ui:hasConnector example:OilWaterOut .
