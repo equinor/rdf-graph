@@ -2,6 +2,7 @@ import { ElementDefinition } from 'cytoscape';
 import { nanoid } from 'nanoid';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
 import { DisplayControllingPredicate, RdfTriple } from '../models';
+import { NodeType } from '../models/nodeType';
 import { getSymbol } from '../symbol-api/getSymbol';
 import { onlyUnique, short } from '../utils';
 
@@ -20,15 +21,17 @@ const displayEdges = [parentDisplayEdge, labelDisplayEdge, colorEdge];
 
 /* This function is a bit complicated so it deserves a comment*/
 
-export const rdfTriples2Elements = (edges: RdfTriple[]) => {
+export const rdfTriples2Elements = (triples: RdfTriple[]) => {
 	const displayPredicate2UiEdges: { [predicate: string]: UiEdge[] } = Object.fromEntries(
 		displayEdges.map(({ predicate, mapping }) => [
 			predicate,
-			edges.filter(({ rdfPredicate: type }) => predicate === type).map(({ rdfSubject: from, rdfObject: to }) => new UiEdge(from, mapping(to))),
+			triples
+				.filter(({ rdfPredicate: type }) => predicate === type)
+				.map(({ rdfSubject: from, rdfObject: to }) => new UiEdge(from, mapping(to))),
 		])
 	);
 
-	const displayNodesEdges = edges.filter(({ rdfPredicate: type }) =>
+	const displayNodesEdges = triples.filter(({ rdfPredicate: type }) =>
 		displayEdges
 			.filter(({ keepNode }) => keepNode)
 			.map(({ predicate }) => predicate)
@@ -36,24 +39,24 @@ export const rdfTriples2Elements = (edges: RdfTriple[]) => {
 	);
 
 	const connector2Suffix: { [connector: string]: string } = Object.fromEntries(
-		edges
+		triples
 			.filter(({ rdfPredicate: type }) => type === hasConnectorSuffix)
 			.map(({ rdfSubject, rdfObject }) => [rdfSubject /*the connector*/, rdfObject /*the suffix*/])
 	);
 
 	const connector2Icon: { [connector: string]: string } = Object.fromEntries(
-		edges
+		triples
 			.filter(({ rdfPredicate: type }) => type === hasConnectorPredicate)
 			.map(({ rdfSubject, rdfObject }) => [rdfObject /*the connector*/, rdfSubject /*the icon*/])
 	);
 
 	const iconNode2Svg: { [iconNode: string]: string } = Object.fromEntries(
-		edges
+		triples
 			.filter(({ rdfPredicate: type }) => type === hasSvgPredicate)
 			.map(({ rdfSubject, rdfObject }) => [rdfSubject /*the node that requires an image*/, rdfObject /*the svg image*/])
 	);
 
-	const primaryEdges = edges.filter(
+	const primaryEdges = triples.filter(
 		({ rdfPredicate: type }) =>
 			!displayEdges
 				.map(({ predicate }) => predicate)
@@ -71,26 +74,42 @@ export const rdfTriples2Elements = (edges: RdfTriple[]) => {
 		.concat(uiSubjects)
 		.filter(onlyUnique)
 		.filter((n) => !connectors.map((c) => c.data.id).includes(n))
-		.map((n) => {
+		.flatMap((n) => {
 			const cyNode: ElementDefinition = { data: { id: n } };
+
 			displayEdges.forEach(({ predicate, dataProperty }) => {
 				const value = displayPredicate2UiEdges[predicate].find(({ from }) => from === n)?.to;
 				if (value) {
 					cyNode.data[dataProperty] = value;
 				}
 			});
-			if (Object.keys(iconNode2Svg).includes(n)) {
-				const svgId = iconNode2Svg[n];
-				const svg = getSymbol(svgId);
 
-				cyNode.data.nodeType = 'symbol';
-				cyNode.data.imageHeight = `${svg.height}px`;
-				cyNode.data.imageWidth = `${svg.width}px`;
-				cyNode.data.image = 'data:image/svg+xml;utf8,' + encodeURIComponent(svg.svg);
+			if (Object.keys(iconNode2Svg).includes(n)) {
+				const symbolId = iconNode2Svg[n];
+				const symbol = getSymbol(symbolId);
+
+				const symbolNode: ElementDefinition = {
+					data: {
+						id: `${n}-symbol`,
+						parent: n,
+						nodeType: NodeType.SymbolImage,
+						image: symbol.svgDataURI(),
+						layoutIgnore: true,
+						imageHeight: `${symbol.height}px`,
+						imageWidth: `${symbol.width}px`,
+					},
+				};
+
+				cyNode.data.layoutIgnore = false;
+				cyNode.data.nodeType = NodeType.SymbolContainer;
+				//cyNode.data.imageHeight = `${symbol.height}px`;
+				//cyNode.data.imageWidth = `${symbol.width}px`;
+				cyNode.data.rotation = 0;
 
 				console.log('Got image node ', cyNode);
+				return [cyNode, symbolNode];
 			}
-			return cyNode;
+			return [cyNode];
 		})
 		.concat(connectors);
 
@@ -122,12 +141,14 @@ const createConnectors = (
 			data: {
 				id: connectorId,
 				parent: connector2IconNode[connectorId],
-				nodeType: 'connector',
+				nodeType: NodeType.SymbolConnector,
+				layoutIgnore: true,
 			},
 			position: connectorData.point,
 			grabbable: false,
 			selectable: false,
 		};
+		console.log('Connector', connectorNode);
 		return connectorNode;
 	});
 };

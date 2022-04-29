@@ -8,5 +8,5 @@ export function rotatePoint(point: Point, rotation: number): Point {
 
 /** Converts a Point with origo TopLeft to a point with origo CenterCenter */
 export function pointToCenterCenter(point: Point, xRng: number, yRng: number): Point {
-	return new Point(-xRng / 2 + point.x, yRng / 2 - point.y);
+	return new Point(-xRng / 2 + point.x, -yRng / 2 + point.y);
 }

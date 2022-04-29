@@ -37,7 +37,7 @@ example:1  rdfs:label  "Well" ;
         example:connectedTo example:3phaseIn .
 
 example:valve  rdfs:label  "Valve";
-        ui:hasSvg "${SymbolKey.Valve_1}";
+        ui:hasSvg "${SymbolKey.Valve_3Way_1}";
         ui:hasConnector example:ValveIn;
         ui:hasConnector example:ValveOut .
 

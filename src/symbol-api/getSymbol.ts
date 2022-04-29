@@ -17,10 +17,9 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 	const height = options?.height ?? symbol.height;
 	const width = options?.width ?? symbol.width;
 
-	console.log(symbol.svg);
 	const svgEl = stringToSvgElement(symbol.svg);
 
-	svgEl.style.stroke = color;
+	//svgEl.style.stroke = color;
 
 	const connectors: NodeSymbolConnector[] = [];
 
