@@ -1,5 +1,6 @@
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
 import { turtle2Elements } from '../mapper';
+import { NodeType } from '../models/nodeType';
 import { SymbolKey } from '../symbol-api/symbol-library';
 
 const a = 'http://example.com/a';
@@ -104,10 +105,10 @@ describe('Turtle to elements', () => {
 
 		const gasOut = elements.find((e) => e.data.id === 'http://example.com#GasOut')!;
 		expect(gasOut.data['parent']).toBe('http://example.com#seperator');
-		expect(gasOut.data['nodeType']).toBe('connector');
+		expect(gasOut.data['nodeType']).toBe(NodeType.SymbolConnector);
 		expect(gasOut['grabbable']).toBe(false);
 		expect(gasOut['selectable']).toBe(false);
 		expect(gasOut.position!['x']).toBe(-18);
-		expect(34 - gasOut.position!['y']).toBeLessThan(0.1);
+		expect(34 + gasOut.position!['y']).toBeLessThan(0.1);
 	});
 });
