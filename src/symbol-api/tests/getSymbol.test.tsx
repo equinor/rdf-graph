@@ -5,7 +5,7 @@ describe('Symbol stuff', () => {
 	test('Symbol', async () => {
 		console.log('yazzy');
 
-		const sym = getSymbol(SymbolKey.Separator_1, { rotation: 90 });
+		const sym = getSymbol(SymbolKey.Separator_1, { rotation: 0 });
 
 		console.log(sym);
 

@@ -7,6 +7,7 @@ import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
+import { NodeType } from '../../models/nodeType';
 
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
@@ -55,7 +56,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	}, [turtleString]);
 
 	useEffect(() => {
-		nullableCy && nullableCy.layout(selectedLayout).run();
+		nullableCy && nullableCy.elements('[!layoutIgnore]').layout(selectedLayout).run();
 	}, [nullableCy, elements]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
@@ -85,7 +86,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 			});
 
 		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
-
 		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
 
 		cy.add(newTriples);
@@ -96,32 +96,62 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		patch && applyPatch(patch);
 	}, [patches]);
 
+	useEffect(() => {
+		if (nullableCy) {
+			const els = nullableCy.elements('[!layoutIgnore]');
+			console.log('Elements', els);
+			els.layout(selectedLayout).run();
+		}
+	}, [selectedLayout]);
+
 	return (
 		<CytoscapeComponent
 			elements={elements}
-			layout={selectedLayout}
 			style={uiConfig?.css ?? defaultUiConfig.css}
 			stylesheet={[
 				{
-					selector: 'node',
+					selector: 'node[label]',
 					style: {
 						label: 'data(label)',
-						width: '60%',
-						height: '60%',
-						//'text-transform': 'lowercase',
-						'text-max-width': '150px',
-						'text-wrap': 'wrap',
-						'text-halign': 'center',
-						'text-valign': 'bottom',
-						'background-fit': 'contain',
 					},
 				},
 				{
-					selector: '[image]',
+					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
 					style: {
 						shape: 'rectangle',
-						'background-image': 'data(image)',
+						'background-color': 'red',
 						'background-opacity': 0,
+						'border-width': 0,
+					},
+				},
+				{
+					selector: `[nodeType = "${NodeType.SymbolImage}"]`,
+					style: {
+						shape: 'rectangle',
+						'background-clip': 'none',
+						'background-fit': 'contain',
+						'background-image': 'data(image)',
+						'background-height': 'data(imageHeight)',
+						'background-width': 'data(imageWidth)',
+						width: 'data(imageHeight)',
+						height: 'data(imageHeight)',
+						'background-color': 'blue',
+						'background-opacity': 0,
+						'border-width': 0,
+						'padding-bottom': '0px',
+						events: 'no',
+					},
+				},
+				{
+					selector: `[nodeType = "${NodeType.SymbolConnector}"]`,
+					style: {
+						shape: 'rectangle',
+						height: '2px',
+						width: '2px',
+						'background-color': 'red',
+						'background-opacity': 0.7,
+						'border-width': 0,
+						events: 'no',
 					},
 				},
 				{
@@ -130,26 +160,25 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						'background-color': 'data(color)',
 					},
 				},
-				{
-					selector: 'node:parent',
-					style: {
-						shape: 'cut-rectangle',
-						'padding-bottom': '5%',
-						'padding-top': '5%',
-						'padding-left': '5%',
-						'padding-right': '5%',
-					},
-				},
+				// {
+				// 	selector: 'node:parent',
+				// 	style: {
+				// 		shape: 'cut-rectangle',
+				// 		'padding-bottom': '5%',
+				// 		'padding-top': '5%',
+				// 		'padding-left': '5%',
+				// 		'padding-right': '5%',
+				// 	},
+				// },
 				{
 					selector: 'edge',
 					style: {
-						width: 4,
-						'line-color': '#ccc',
-						'target-arrow-color': '#ccc',
-						'target-arrow-fill': 'filled',
-						'target-arrow-shape': 'chevron',
-						'arrow-scale': 1.5,
-						'curve-style': 'bezier',
+						'curve-style': 'taxi',
+						width: '1px',
+						color: 'black',
+						'line-color': 'black',
+						// 'taxi-direction': 'rightward',
+						// 'taxi-turn': '50px',
 					},
 				},
 			]}

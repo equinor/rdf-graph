@@ -72,6 +72,8 @@ export const layoutCoseBilKent = {
 	unconstrIter: 1,
 	userConstIter: 0,
 	allConstIter: 1,
+	// gravityCompound: 10,
+	// gravityRangeCompound: 100,
 	flow: { axis: 'x', minSeparation: -130 },
 	// nodeSpacing: function (node: any) {
 	//   return 50;

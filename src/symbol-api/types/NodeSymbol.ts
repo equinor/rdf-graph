@@ -17,4 +17,8 @@ export class NodeSymbol implements NodeSymbolTemplate {
 		readonly height: number,
 		readonly connectors: NodeSymbolConnector[]
 	) {}
+
+	public svgDataURI() {
+		return 'data:image/svg+xml;utf8,' + encodeURIComponent(this.svg);
+	}
 }
