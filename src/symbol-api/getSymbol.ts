@@ -10,17 +10,11 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 
 	const symbol = SymbolLibrary[id as keyof typeof SymbolKey];
 
-	// TODO: validate options?
-
 	const rotation = options?.rotation ?? 0;
-	const color = options?.color ?? 'grey';
 	const height = options?.height ?? symbol.height;
 	const width = options?.width ?? symbol.width;
 
 	const svgEl = stringToSvgElement(symbol.svg);
-
-	//svgEl.style.stroke = color;
-
 	const connectors: NodeSymbolConnector[] = [];
 
 	symbol.connectors.forEach((c) => {
@@ -33,7 +27,6 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 	});
 
 	if (rotation > 0) {
-		//svgEl.style.transform = `rotate(${rotation})`;
 		svgEl.setAttribute('transform', `rotate(${rotation})`);
 	}
 
