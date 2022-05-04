@@ -148,7 +148,6 @@ const createConnectors = (
 			grabbable: false,
 			selectable: false,
 		};
-		console.log('Connector', connectorNode);
 		return connectorNode;
 	});
 };
