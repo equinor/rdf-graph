@@ -106,7 +106,6 @@ export const rdfTriples2Elements = (triples: RdfTriple[]) => {
 				//cyNode.data.imageWidth = `${symbol.width}px`;
 				cyNode.data.rotation = 0;
 
-				console.log('Got image node ', cyNode);
 				return [cyNode, symbolNode];
 			}
 			return [cyNode];
