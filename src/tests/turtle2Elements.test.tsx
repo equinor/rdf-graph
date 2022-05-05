@@ -7,6 +7,7 @@ const a = 'http://example.com/a';
 const b = 'http://example.com/b';
 const connected = 'http://example.com/connected';
 const color = 'http://rdf.equinor.com/ui/color';
+const label = 'http://www.w3.org/2000/01/rdf-schema#label';
 
 describe('Turtle to elements', () => {
 	test('Simple turtle OK', async () => {
@@ -36,6 +37,7 @@ describe('Turtle to elements', () => {
 	test('Turtle with UI-edge OK', async () => {
 		const turtle = String.raw`
     		<${a}> <${color}> "green" .
+			<${a}> <${label}> "green node" .
   		`;
 
 		const elements = await turtle2Elements(turtle);
@@ -45,6 +47,7 @@ describe('Turtle to elements', () => {
 
 		const elementA = elements.find((e) => e.data.id === a)!;
 		expect(elementA.data['color']).toBe('green');
+		expect(elementA.data['label']).toBe('green node');
 	});
 
 	test('Turtle with Connector OK', async () => {

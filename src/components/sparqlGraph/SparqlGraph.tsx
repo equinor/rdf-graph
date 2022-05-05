@@ -99,7 +99,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	useEffect(() => {
 		if (nullableCy) {
 			const els = nullableCy.elements('[!layoutIgnore]');
-			console.log('Elements', els);
 			els.layout(selectedLayout).run();
 		}
 	}, [selectedLayout]);
@@ -110,15 +109,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 			style={uiConfig?.css ?? defaultUiConfig.css}
 			stylesheet={[
 				{
-					selector: 'node[label]',
-					style: {
-						label: 'data(label)',
-					},
-				},
-				{
 					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
 					style: {
 						shape: 'rectangle',
+						label: 'data(label)',
 						'background-color': 'red',
 						'background-opacity': 0,
 						'border-width': 0,
