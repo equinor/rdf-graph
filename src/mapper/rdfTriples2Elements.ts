@@ -1,5 +1,6 @@
 import { ElementDefinition } from 'cytoscape';
 import { RdfTriple } from '../models';
+import { mergeElementsById } from './mergeElements';
 import {
 	createPropertyTransform,
 	createConnectorTransform,
@@ -37,21 +38,6 @@ export const rdfTriples2Elements = (triples: RdfTriple[]) => {
 		[hasConnectorSuffix]: createConnectorTransform(connector2Icon, iconNode2Svg),
 	};
 
-	const elements = triples
-		.flatMap((triple) => (predicate2Transformation[triple.rdfPredicate] ?? defaultTransformation)(triple))
-		.reduce((acc, element) => {
-			//Group by id
-			const index = element.data.id!;
-			if (!acc[index]) {
-				acc[index] = [];
-			}
-			acc[index].push(element);
-			return acc;
-		}, {} as { [key: string]: ElementDefinition[] });
-
-	return Object.keys(elements).map((key) => elements[key].reduce((acc, current) => mergeElements(acc, current)));
-};
-
-const mergeElements = (first: ElementDefinition, second: ElementDefinition) => {
-	return { ...first, ...second, data: { ...first.data, ...second.data } };
+	const elements = triples.flatMap((triple) => (predicate2Transformation[triple.rdfPredicate] ?? defaultTransformation)(triple));
+	return mergeElementsById(elements);
 };
