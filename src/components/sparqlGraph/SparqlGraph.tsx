@@ -1,13 +1,17 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
-import { rdfTriples2Elements, turtle2Elements } from '../../mapper';
+import { postProcessElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
+import { mergeElementsByKey } from '../../mapper/mergeElements';
+import { postProcessSvgTag } from '../../mapper/transformations';
+import { getSymbol } from '../../symbol-api/getSymbol';
+import { SymbolRotation } from '../../symbol-api/types/SymbolRotation';
 
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
@@ -31,7 +35,8 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 
 	const prepareCytoscapeElements = async () => {
 		const elements = await turtle2Elements(turtleString);
-		setElements(elements);
+		const postProcessed = postProcessElements(elements);
+		setElements(postProcessed);
 	};
 
 	const initialize = (cy: cytoscape.Core) => {
@@ -56,7 +61,12 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	}, [turtleString]);
 
 	useEffect(() => {
-		nullableCy && nullableCy.elements('[!layoutIgnore]').layout(selectedLayout).run();
+		if (nullableCy) {
+			const cy = nullableCy!;
+			cy.ready(() => {
+				cy.ready(() => cy.elements('[!layoutIgnore]').layout(selectedLayout).run());
+			});
+		}
 	}, [nullableCy, elements]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
@@ -68,27 +78,55 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
-		const newTriples = rdfTriples2Elements(patch.tripleAdditions);
+		console.log('Applying patch', patch);
+		const newElements = rdfTriples2Elements(patch.tripleAdditions);
+		console.log('Applying patch', newElements);
 
-		//Modify existing individuals
-		patch.tripleAdditions
-			.map((a) => a.rdfSubject)
-			.forEach((node) => {
-				const oldElement = cy.elements(`[id = "${node}"]`);
-				if (oldElement) {
-					// If old element exist we want to add new properties
-					const newElement = newTriples.find((e) => e.data.id === node)!;
+		console.log(
+			'old nodes',
+			cy.nodes().map((n) => n.data().id!)
+		);
 
+		newElements.forEach((newElement) => {
+			console.log('Trying to get old element with id ' + newElement.data.id);
+			const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
+			if (oldElement) {
+				console.log('Found old element!');
+				console.log('new element data', newElement.data);
+				if (newElement.data[postProcessSvgTag]) {
+					console.log('Handling ', newElement);
+					console.log('Found old element ', oldElement);
 					// Order matters, if property exist on both old and new, new data is used
 					const combinedData = Object.assign({}, oldElement.data(), newElement.data);
-					oldElement.data(combinedData);
-				}
-			});
+					console.log('Combined data', combinedData);
 
+					const rotation = combinedData.rotation;
+					const sym = getSymbol(combinedData.symbolId, { rotation: parseInt(rotation) as SymbolRotation });
+					const imgNode = oldElement.children(`[nodeType = "${NodeType.SymbolImage}"]`)[0];
+					imgNode.data('image', sym.svgDataURI());
+
+					const connectorNodes = oldElement.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
+					const cnPos = oldElement.position();
+					for (let i = 0; i < sym.connectors.length; i++) {
+						const element = sym.connectors[i];
+						connectorNodes[i].position('x', element.point.x + cnPos.x);
+						connectorNodes[i].position('y', element.point.y + cnPos.y);
+					}
+				} else {
+					Object.keys(newElement.data).forEach((key) => {
+						oldElement.data(key, newElement.data[key]);
+					});
+				}
+			} else {
+				//cy.add(newElement);
+			}
+		});
+
+		//cy.add(mergedElements);
 		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
 		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
 
-		cy.add(newTriples);
+		newElements.map((e) => e.data.id!);
 	};
 
 	useEffect(() => {
@@ -112,7 +150,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
 					style: {
 						shape: 'rectangle',
-						label: 'data(label)',
 						'background-color': 'red',
 						'background-opacity': 0,
 						'border-width': 0,
@@ -146,6 +183,15 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						'background-opacity': 0.7,
 						'border-width': 0,
 						events: 'no',
+					},
+				},
+				{
+					selector: ':selected',
+					style: {
+						'border-style': 'dashed',
+						'border-color': 'blue',
+						'border-width': 5,
+						label: 'I AM SELECTED',
 					},
 				},
 				{

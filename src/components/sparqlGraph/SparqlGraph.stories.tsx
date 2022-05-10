@@ -39,13 +39,17 @@ example:1  rdfs:label  "Well" ;
 example:valve  rdfs:label  "Valve";
         ui:hasSvg "${SymbolKey.Valve_3Way_1}";
         ui:hasConnector example:ValveIn;
-        ui:hasConnector example:ValveOut .
+        ui:hasConnector example:ValveOut;
+        ui:hasConnector example:SomeTankTerminal .
 
 example:2  rdfs:label  "Stat pipe";
         ui:color    "red".
 
 example:3  rdfs:label  "Oil water processing";
         ui:color    "orange".
+
+example:4  rdfs:label  "Some tank" ;
+        ui:color    "blue" .
 
 example:seperator rdfs:label "seperator";
         ui:hasSvg "${SymbolKey.Separator_1}";
@@ -59,6 +63,10 @@ example:3phaseIn rdfs:label "3 phase in" ;
 example:GasOut rdfs:label "Gas out" ;
     ui:hasConnectorSuffix "c2" ;
     example:connectedTo example:ValveIn .
+
+example:SomeTankTerminal rdfs:label "Some tank terminal" ;
+    ui:hasConnectorSuffix "c3" ;
+    example:connectedTo example:4 .
 
 example:OilWaterOut rdfs:label "oil water out" ;
     ui:hasConnectorSuffix "c3" ;
