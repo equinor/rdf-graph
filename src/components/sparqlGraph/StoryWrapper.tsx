@@ -34,16 +34,20 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	const rotateSelection = () => {
 		if (selection.individuals.length > 0) {
 			const index = selection.individuals[0].iri;
-			let rotation = 90;
 
-			if (states[index]) {
-				rotation = ((states[index].rotation / 90 + 1) % 4) * 90;
-			} else {
-				setStates({ [index]: { rotation: rotation }, ...states });
-			}
+			const currentRotation = states[index] ? states[index].rotation : 0;
+			const newRotation = ((currentRotation / 90 + 1) % 4) * 90;
 
-			console.log('ROTATING', rotation);
-			addTriples([new RdfTriple(selection.individuals[0].iri, 'http://rdf.equinor.com/ui/rotation', rotation.toString())]);
+			setStates({ ...states, [index]: { rotation: newRotation } });
+			addTriples([new RdfTriple(index, 'http://rdf.equinor.com/ui/rotation', newRotation.toString())]);
+		}
+	};
+
+	const switchSvg = () => {
+		if (selection.individuals.length > 0) {
+			const index = selection.individuals[0].iri;
+
+			addTriples([new RdfTriple(index, 'http://rdf.equinor.com/ui/hasSvg', SymbolKey.Valve_3Way_1.toString())]);
 		}
 	};
 
@@ -63,6 +67,7 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 		<div>
 			<Button onClick={deleteSelection}> Delete selection </Button>
 			<Button onClick={rotateSelection}> Rotate selection </Button>
+			<Button onClick={switchSvg}> Switch svg selection </Button>
 			<SparqlGraph turtleString={turtleString} layoutName={layoutName} patches={patches} onElementsSelected={onElementsSelected} />
 		</div>
 	);

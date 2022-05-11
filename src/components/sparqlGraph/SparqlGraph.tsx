@@ -1,17 +1,13 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape from 'cytoscape';
-import { postProcessElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
+import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
-import { mergeElementsByKey } from '../../mapper/mergeElements';
-import { postProcessSvgTag } from '../../mapper/transformations';
-import { getSymbol } from '../../symbol-api/getSymbol';
-import { SymbolRotation } from '../../symbol-api/types/SymbolRotation';
 
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
@@ -80,47 +76,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		const cy = nullableCy;
 		console.log('Applying patch', patch);
 		const newElements = rdfTriples2Elements(patch.tripleAdditions);
-		console.log('Applying patch', newElements);
-
-		console.log(
-			'old nodes',
-			cy.nodes().map((n) => n.data().id!)
-		);
-
-		newElements.forEach((newElement) => {
-			console.log('Trying to get old element with id ' + newElement.data.id);
-			const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
-			if (oldElement) {
-				console.log('Found old element!');
-				console.log('new element data', newElement.data);
-				if (newElement.data[postProcessSvgTag]) {
-					console.log('Handling ', newElement);
-					console.log('Found old element ', oldElement);
-					// Order matters, if property exist on both old and new, new data is used
-					const combinedData = Object.assign({}, oldElement.data(), newElement.data);
-					console.log('Combined data', combinedData);
-
-					const rotation = combinedData.rotation;
-					const sym = getSymbol(combinedData.symbolId, { rotation: parseInt(rotation) as SymbolRotation });
-					const imgNode = oldElement.children(`[nodeType = "${NodeType.SymbolImage}"]`)[0];
-					imgNode.data('image', sym.svgDataURI());
-
-					const connectorNodes = oldElement.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
-					const cnPos = oldElement.position();
-					for (let i = 0; i < sym.connectors.length; i++) {
-						const element = sym.connectors[i];
-						connectorNodes[i].position('x', element.point.x + cnPos.x);
-						connectorNodes[i].position('y', element.point.y + cnPos.y);
-					}
-				} else {
-					Object.keys(newElement.data).forEach((key) => {
-						oldElement.data(key, newElement.data[key]);
-					});
-				}
-			} else {
-				//cy.add(newElement);
-			}
-		});
+		postUpdateElements(newElements, cy);
 
 		//cy.add(mergedElements);
 		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));

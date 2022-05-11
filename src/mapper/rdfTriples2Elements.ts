@@ -1,4 +1,4 @@
-import { ElementDefinition } from 'cytoscape';
+import cytoscape, { ElementDefinition } from 'cytoscape';
 import { RdfTriple } from '../models';
 import { NodeType } from '../models/nodeType';
 import { partition } from '../utils/partition';
@@ -48,8 +48,29 @@ export const postProcessElements = (elements: ElementDefinition[]) => {
 		elements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
 		'parent'
 	);
-	const svgTransform = createSvgTransformation(iconNode2Connectors);
+	const svgTransform = createSvgTransformation(iconNode2Connectors).transformNew;
 	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], elements);
 
 	return noPostProcess.filter((e) => !e.data.ignore).concat(postProcess.flatMap((e) => svgTransform(e)));
+};
+
+export const postUpdateElements = (elements: ElementDefinition[], cy: cytoscape.Core) => {
+	const iconNode2Connectors = groupElementsByKey(
+		elements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
+		'parent'
+	);
+	const svgTransform = createSvgTransformation(iconNode2Connectors).transformUpdate;
+
+	elements.forEach((newElement) => {
+		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
+		if (oldElement) {
+			Object.keys(newElement.data).forEach((key) => {
+				oldElement.data(key, newElement.data[key]);
+			});
+		}
+	});
+
+	const postProcess = elements.filter((e) => e.data[postProcessSvgTag]);
+	console.log('Processing elements: ', postProcess);
+	postProcess.forEach((e) => svgTransform(e, cy));
 };
