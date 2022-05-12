@@ -1,8 +1,10 @@
-import cytoscape, { ElementDefinition } from 'cytoscape';
+import cytoscape, { ElementDefinition, Position } from 'cytoscape';
 import { NodeType } from '../models/nodeType';
 import { getSymbol } from '../symbol-api/getSymbol';
 import { NodeSymbol } from '../symbol-api/types/NodeSymbol';
 import { SymbolRotation } from '../symbol-api/types/SymbolRotation';
+import { arrayEquals } from '../utils/arrayEquals';
+import { mergeElementsByKey } from './mergeElements';
 import { postProcessSvgTag } from './transformations';
 
 export type Transformation = {
@@ -36,39 +38,87 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 					selectable: false,
 				};
 			});
-		return [parentNode, createSymbolNode(element.data.id!, symbol), ...connectorElements];
+		return [parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), ...connectorElements];
 	};
 
 	const update = (newElement: ElementDefinition, cy: cytoscape.Core) => {
-		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
-		if (oldElement) {
-			const combinedData = Object.assign({}, oldElement.data(), newElement.data);
-			const symbol = createSymbol(combinedData);
-			const symbolNode = oldElement.children(`[nodeType = "${NodeType.SymbolImage}"]`)[0];
-			if (symbolNode) {
-				symbolNode.data('image', symbol.svgDataURI());
-				symbolNode.data('imageHeight', `${symbol.height}px`);
-				symbolNode.data('imageWidth', `${symbol.width}px`);
-			} else {
-				const newSymbolNode = createSymbolNode(newElement.data.id!, symbol);
-				cy.add(newSymbolNode);
-			}
-			const connectorNodes = oldElement.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
-			if (connectorNodes) {
-				const cnPos = oldElement.position();
-				for (let i = 0; i < symbol.connectors.length; i++) {
-					const element = symbol.connectors[i];
-					connectorNodes[i].position('x', element.point.x + cnPos.x);
-					connectorNodes[i].position('y', element.point.y + cnPos.y);
-				}
-			}
+		const id = newElement.data.id!;
+		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)?.[0];
+		const oldSymbolNode = oldElement?.children(`[nodeType = "${NodeType.SymbolImage}"]`)?.[0];
+		const oldConnectors = oldElement?.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
+		const oldConnectorElements = oldConnectors.map((c) => {
+			return { data: c.data() };
+		});
+		const newConnectors = iconNode2Connectors[id] ?? [];
+		const combinedData = Object.assign({}, oldElement.data(), newElement.data);
+
+		console.log(
+			'Merging ',
+			oldConnectorElements.map((e) => e.data)
+		);
+		console.log(
+			'with ',
+			newConnectors.map((e) => e.data)
+		);
+
+		const elementConnectors = mergeElementsByKey(oldConnectorElements.concat(newConnectors));
+		const elementConnectorIds = elementConnectors.map((c) => c.data.connectorId);
+
+		const symbol = createSymbol(combinedData);
+		const symbolConnectorIds = symbol.connectors.map((c) => c.id);
+
+		if (!arrayEquals(elementConnectorIds, symbolConnectorIds)) {
+			throw new TurtleGraphError(
+				`Unable to match connectors from ${id}[${elementConnectorIds.join(', ')}] with connectors from symbol ${
+					symbol.id
+				}[${symbolConnectorIds.join(', ')}]`
+			);
+		}
+
+		const position = oldElement ? oldElement.position() : { x: 0, y: 0 };
+
+		if (oldSymbolNode) {
+			oldSymbolNode.data('image', symbol.svgDataURI());
+			oldSymbolNode.data('imageHeight', `${symbol.height}px`);
+			oldSymbolNode.data('imageWidth', `${symbol.width}px`);
 		} else {
+			const newSymbolNode = createSymbolNode(id, symbol, position);
+			cy.add(newSymbolNode);
+		}
+
+		for (let i = 0; i < newConnectors.length; i++) {
+			cy.add({
+				data: newConnectors[i].data,
+				position: getPosition(symbol, position, newConnectors[i].data.connectorId),
+				grabbable: false,
+			});
+		}
+
+		for (let i = 0; i < oldConnectors.length; i++) {
+			const p = getPosition(symbol, position, oldConnectors[i].data('connectorId'));
+			oldConnectors[i].position('x', p.x);
+			oldConnectors[i].position('y', p.y);
 		}
 	};
 	return { transformNew: transform, transformUpdate: update };
 };
 
-const createSymbolNode = (parentId: string, symbol: NodeSymbol): ElementDefinition => {
+class TurtleGraphError extends Error {
+	constructor(msg: string) {
+		super(msg);
+		Object.setPrototypeOf(this, TurtleGraphError.prototype);
+	}
+}
+
+const getPosition = (symbol: NodeSymbol, parentPosition: Position, connectorId: string) => {
+	const relativePosition = symbol.connectors.find((c) => c.id === connectorId)!.point;
+	return {
+		x: relativePosition!.x + parentPosition.x,
+		y: relativePosition!.y + parentPosition.y,
+	};
+};
+
+const createSymbolNode = (parentId: string, symbol: NodeSymbol, position: Position): ElementDefinition => {
 	return {
 		data: {
 			id: `${parentId}-symbol`,
@@ -79,7 +129,7 @@ const createSymbolNode = (parentId: string, symbol: NodeSymbol): ElementDefiniti
 			imageHeight: `${symbol.height}px`,
 			imageWidth: `${symbol.width}px`,
 		},
-		position: { x: 0, y: 0 },
+		position: position,
 		grabbable: false,
 		selectable: false,
 	};
