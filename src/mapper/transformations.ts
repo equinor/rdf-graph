@@ -48,8 +48,8 @@ export const parentTransform = (triple: RdfTriple): ElementDefinition[] => {
 	return [
 		{
 			data: {
-				id: triple.rdfObject, //HasConnector means object is connector
-				parent: triple.rdfSubject, //HasConnector means subject is the node that will have an svg
+				id: triple.rdfObject,
+				parent: triple.rdfSubject,
 			},
 		},
 	];
@@ -59,8 +59,8 @@ export const hasChildrenTransform = (triple: RdfTriple): ElementDefinition[] => 
 	return [
 		{
 			data: {
-				id: triple.rdfObject, //HasConnector means object is connector
-				parent: triple.rdfSubject, //HasConnector means subject is the node that will have an svg
+				id: triple.rdfObject,
+				parent: triple.rdfSubject,
 			},
 		},
 	];
