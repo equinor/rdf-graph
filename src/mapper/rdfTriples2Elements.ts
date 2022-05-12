@@ -29,7 +29,7 @@ export const rdfTriples2Elements = (triples: RdfTriple[]) => {
 		[colorPredicate]: [createPropertyTransform('color')],
 		[hasSvgPredicate]: [createPropertyTransform('symbolId'), tagSubject(postProcessSvgTag), tagSubject('nodeType', NodeType.SymbolContainer)],
 		[rotationPredicate]: [createPropertyTransform('rotation'), tagSubject(postProcessSvgTag), tagSubject('nodeType', NodeType.SymbolContainer)],
-		[hasConnectorPredicate]: [hasChildrenTransform],
+		[hasConnectorPredicate]: [hasChildrenTransform, createPropertyTransform('hasConnector')],
 		[hasConnectorSuffix]: [
 			createPropertyTransform('connectorId'),
 			tagSubject('nodeType', NodeType.SymbolConnector),
@@ -67,10 +67,11 @@ export const postUpdateElements = (elements: ElementDefinition[], cy: cytoscape.
 			Object.keys(newElement.data).forEach((key) => {
 				oldElement.data(key, newElement.data[key]);
 			});
+			newElement.data.ignore = true;
 		}
 	});
 
-	const postProcess = elements.filter((e) => e.data[postProcessSvgTag]);
-	console.log('Processing elements: ', postProcess);
+	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], elements);
 	postProcess.forEach((e) => svgTransform(e, cy));
+	noPostProcess.filter((e) => !e.data.ignore).forEach((e) => cy.add(e));
 };

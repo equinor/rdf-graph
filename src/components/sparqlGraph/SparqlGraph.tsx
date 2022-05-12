@@ -1,6 +1,6 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
-import Cytoscape from 'cytoscape';
+import Cytoscape, { SingularElementArgument } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
@@ -39,7 +39,12 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		cy.on('select', () => {
 			onElementsSelected(
 				new RdfSelection(
-					cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
+					cy.$('node:selected').map((n) => {
+						const id = n.data('id');
+						const incoming = cy.$(`edge[target = "${id}"]`).map(createRdfTriple);
+						const outgoing = cy.$(`edge[source = "${id}"]`).map(createRdfTriple);
+						return new RdfIndividual(id, n.data(), incoming, outgoing);
+					}),
 					cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
 				)
 			);
@@ -50,6 +55,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 				onElementsSelected(new RdfSelection([], []));
 			}
 		});
+	};
+
+	const createRdfTriple = (element: SingularElementArgument) => {
+		return new RdfTriple(element.data(rdfSubjectKey), element.data(rdfPredicateKey), element.data(rdfObjectKey), { data: element.id() });
 	};
 
 	useEffect(() => {
@@ -133,12 +142,11 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: `[nodeType = "${NodeType.SymbolConnector}"]`,
 					style: {
 						shape: 'rectangle',
-						height: '2px',
-						width: '2px',
+						height: '8px',
+						width: '8px',
 						'background-color': 'red',
 						'background-opacity': 0.7,
 						'border-width': 0,
-						events: 'no',
 					},
 				},
 				{
@@ -146,8 +154,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					style: {
 						'border-style': 'dashed',
 						'border-color': 'blue',
-						'border-width': 5,
-						label: 'I AM SELECTED',
+						'border-width': 2,
 					},
 				},
 				{
@@ -156,16 +163,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						'background-color': 'data(color)',
 					},
 				},
-				// {
-				// 	selector: 'node:parent',
-				// 	style: {
-				// 		shape: 'cut-rectangle',
-				// 		'padding-bottom': '5%',
-				// 		'padding-top': '5%',
-				// 		'padding-left': '5%',
-				// 		'padding-right': '5%',
-				// 	},
-				// },
 				{
 					selector: 'edge',
 					style: {

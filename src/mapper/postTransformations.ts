@@ -35,7 +35,6 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 					data: child.data,
 					position: symbol.connectors.find((c) => c.id === child.data.connectorId)?.point,
 					grabbable: false,
-					selectable: false,
 				};
 			});
 		return [parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), ...connectorElements];

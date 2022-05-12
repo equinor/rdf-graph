@@ -123,7 +123,6 @@ export const createConnectorTransform = (
 		const iconNode = connector2IconNode[triple.rdfSubject];
 		const svgId = iconNode2Svg[iconNode];
 		const svg = getSymbol(svgId, { rotation: iconNode2rotation[iconNode] });
-		console.log('SVG', svg);
 		let connectorData = svg.connectors.find((c) => c.id === triple.rdfObject);
 		if (!connectorData) {
 			console.error(`Cannot find connector ${triple.rdfObject} for svg ${svgId}`);
