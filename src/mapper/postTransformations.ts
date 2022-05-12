@@ -51,15 +51,6 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 		const newConnectors = iconNode2Connectors[id] ?? [];
 		const combinedData = Object.assign({}, oldElement.data(), newElement.data);
 
-		console.log(
-			'Merging ',
-			oldConnectorElements.map((e) => e.data)
-		);
-		console.log(
-			'with ',
-			newConnectors.map((e) => e.data)
-		);
-
 		const elementConnectors = mergeElementsByKey(oldConnectorElements.concat(newConnectors));
 		const elementConnectorIds = elementConnectors.map((c) => c.data.connectorId);
 
