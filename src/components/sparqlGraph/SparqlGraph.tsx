@@ -83,7 +83,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
-		console.log('Applying patch', patch);
 		const newElements = rdfTriples2Elements(patch.tripleAdditions);
 		postUpdateElements(newElements, cy);
 
