@@ -1,9 +1,6 @@
-import cytoscape, { ElementDefinition } from 'cytoscape';
 import { RdfTriple } from '../models';
 import { NodeType } from '../models/nodeType';
-import { partition } from '../utils/partition';
-import { groupElementsByKey, mergeElementsByKey } from './mergeElements';
-import { createSvgTransformation } from './postTransformations';
+import { mergeElementsByKey } from './mergeElements';
 import {
 	createPropertyTransform,
 	defaultTransformation,

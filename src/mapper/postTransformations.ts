@@ -1,8 +1,6 @@
 import cytoscape, { ElementDefinition, Position } from 'cytoscape';
 import { NodeType } from '../models/nodeType';
-import { getSymbol } from '../symbol-api/getSymbol';
-import { NodeSymbol } from '../symbol-api/types/NodeSymbol';
-import { SymbolRotation } from '../symbol-api/types/SymbolRotation';
+import { getSymbol, NodeSymbol, SymbolRotation } from '../symbol-api';
 import { arrayEquals } from '../utils/arrayEquals';
 import { mergeElementsByKey } from './mergeElements';
 import { postProcessSvgTag } from './transformations';
@@ -29,11 +27,11 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 		const children = iconNode2Connectors[element.data.id!];
 
 		const connectorElements = children
-			.filter((child) => child.data.nodeType === NodeType.SymbolConnector)
-			.map((child) => {
+			.filter(({ data }) => data.nodeType === NodeType.SymbolConnector)
+			.map(({ data }) => {
 				return {
-					data: child.data,
-					position: symbol.connectors.find((c) => c.id === child.data.connectorId)?.point,
+					data: data,
+					position: symbol.connectors.find((c) => c.id === data.connectorId)?.point,
 					grabbable: false,
 				};
 			});

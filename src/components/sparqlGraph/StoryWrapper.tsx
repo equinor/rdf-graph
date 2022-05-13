@@ -1,8 +1,7 @@
 import { Button } from '@equinor/eds-core-react';
 import { useState } from 'react';
 import { RdfPatch, RdfSelection, RdfTriple } from '../../models';
-import { getSymbol } from '../../symbol-api/getSymbol';
-import { SymbolKey } from '../../symbol-api/symbol-library';
+import { getSymbol, SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';
 
