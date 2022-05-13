@@ -1,7 +1,7 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
-import Cytoscape from 'cytoscape';
-import { rdfTriples2Elements, turtle2Elements } from '../../mapper';
+import Cytoscape, { SingularElementArgument } from 'cytoscape';
+import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
@@ -31,14 +31,20 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 
 	const prepareCytoscapeElements = async () => {
 		const elements = await turtle2Elements(turtleString);
-		setElements(elements);
+		const postProcessed = postProcessElements(elements);
+		setElements(postProcessed);
 	};
 
 	const initialize = (cy: cytoscape.Core) => {
 		cy.on('select', () => {
 			onElementsSelected(
 				new RdfSelection(
-					cy.$('node:selected').map((n) => new RdfIndividual(n.data('id'))),
+					cy.$('node:selected').map((n) => {
+						const id = n.data('id');
+						const incoming = cy.$(`edge[target = "${id}"]`).map(createRdfTriple);
+						const outgoing = cy.$(`edge[source = "${id}"]`).map(createRdfTriple);
+						return new RdfIndividual(id, n.data(), incoming, outgoing);
+					}),
 					cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
 				)
 			);
@@ -51,12 +57,21 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		});
 	};
 
+	const createRdfTriple = (element: SingularElementArgument) => {
+		return new RdfTriple(element.data(rdfSubjectKey), element.data(rdfPredicateKey), element.data(rdfObjectKey), { data: element.id() });
+	};
+
 	useEffect(() => {
 		prepareCytoscapeElements();
 	}, [turtleString]);
 
 	useEffect(() => {
-		nullableCy && nullableCy.elements('[!layoutIgnore]').layout(selectedLayout).run();
+		if (nullableCy) {
+			const cy = nullableCy!;
+			cy.ready(() => {
+				cy.ready(() => cy.elements('[!layoutIgnore]').layout(selectedLayout).run());
+			});
+		}
 	}, [nullableCy, elements]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
@@ -68,27 +83,14 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
-		const newTriples = rdfTriples2Elements(patch.tripleAdditions);
+		const newElements = rdfTriples2Elements(patch.tripleAdditions);
+		postUpdateElements(newElements, cy);
 
-		//Modify existing individuals
-		patch.tripleAdditions
-			.map((a) => a.rdfSubject)
-			.forEach((node) => {
-				const oldElement = cy.elements(`[id = "${node}"]`);
-				if (oldElement) {
-					// If old element exist we want to add new properties
-					const newElement = newTriples.find((e) => e.data.id === node)!;
-
-					// Order matters, if property exist on both old and new, new data is used
-					const combinedData = Object.assign({}, oldElement.data(), newElement.data);
-					oldElement.data(combinedData);
-				}
-			});
-
+		//cy.add(mergedElements);
 		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
 		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
 
-		cy.add(newTriples);
+		newElements.map((e) => e.data.id!);
 	};
 
 	useEffect(() => {
@@ -112,7 +114,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
 					style: {
 						shape: 'rectangle',
-						label: 'data(label)',
 						'background-color': 'red',
 						'background-opacity': 0,
 						'border-width': 0,
@@ -140,12 +141,19 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: `[nodeType = "${NodeType.SymbolConnector}"]`,
 					style: {
 						shape: 'rectangle',
-						height: '2px',
-						width: '2px',
+						height: '8px',
+						width: '8px',
 						'background-color': 'red',
 						'background-opacity': 0.7,
 						'border-width': 0,
-						events: 'no',
+					},
+				},
+				{
+					selector: ':selected',
+					style: {
+						'border-style': 'dashed',
+						'border-color': 'blue',
+						'border-width': 2,
 					},
 				},
 				{
@@ -154,16 +162,6 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						'background-color': 'data(color)',
 					},
 				},
-				// {
-				// 	selector: 'node:parent',
-				// 	style: {
-				// 		shape: 'cut-rectangle',
-				// 		'padding-bottom': '5%',
-				// 		'padding-top': '5%',
-				// 		'padding-left': '5%',
-				// 		'padding-right': '5%',
-				// 	},
-				// },
 				{
 					selector: 'edge',
 					style: {
