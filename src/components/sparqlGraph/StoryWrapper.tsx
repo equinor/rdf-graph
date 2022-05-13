@@ -30,7 +30,6 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 		if (selection.individuals.length > 0) {
 			const index = selection.individuals[0].iri;
 			const data = selection.individuals[0].data;
-			console.log('data', data);
 			const currentRotation = parseInt(data.rotation ?? '0');
 			const newRotation = ((currentRotation / 90 + 1) % 4) * 90;
 

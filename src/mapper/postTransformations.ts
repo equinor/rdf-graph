@@ -30,7 +30,7 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 			.filter(({ data }) => data.nodeType === NodeType.SymbolConnector)
 			.map(({ data }) => {
 				return {
-					data: data,
+					data,
 					position: symbol.connectors.find((c) => c.id === data.connectorId)?.point,
 					grabbable: false,
 				};
