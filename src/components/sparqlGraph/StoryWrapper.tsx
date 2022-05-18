@@ -71,23 +71,24 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 
 			for (let i = 0; i < symbol.connectors.length; i++) {
 				const n3Connector = namedNode(nodeId + 'connector' + i);
-				const oldEdge = node.incoming[i];
-				const oldQuad = oldEdge?.quad;
+				const connectorSuffix = literal(symbol.connectors[i].id);
 
 				if (incomingCounter < node.incoming.length) {
+					const oldEdge = node.incoming[incomingCounter];
+					const oldQuad = oldEdge.quad;
 					additions.push(quad(oldQuad.subject, oldQuad.predicate, n3Connector));
 					removals.push(oldEdge);
 					incomingCounter++;
-				}
-
-				if (outgoingCounter < node.outgoing.length) {
+				} else if (outgoingCounter < node.outgoing.length) {
+					const oldEdge = node.outgoing[outgoingCounter];
+					const oldQuad = oldEdge.quad;
 					additions.push(quad(n3Connector, oldQuad.predicate, oldQuad.object));
 					removals.push(oldEdge);
 					outgoingCounter++;
 				}
 
 				additions.push(quad(n3Node, hasConnectorPredicate, n3Connector));
-				additions.push(quad(n3Connector, hasConnectorSuffix, literal(symbol.connectors[i].id)));
+				additions.push(quad(n3Connector, hasConnectorSuffix, connectorSuffix));
 			}
 			const newPatch = new RdfPatch({
 				tripleAdditions: additions,
