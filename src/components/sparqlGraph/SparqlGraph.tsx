@@ -8,7 +8,9 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { Edge, Node, RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
-import { NamedNode, Quad } from 'n3';
+import { Quad, DataFactory } from 'n3';
+
+const { namedNode } = DataFactory;
 
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
@@ -61,7 +63,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const createEdge = (element: SingularElementArgument): Edge => new Edge(element.id(), createRdfTriple(element));
 
 	const createRdfTriple = (element: SingularElementArgument): Quad =>
-		new Quad(new NamedNode(element.data(rdfSubjectKey)), new NamedNode(element.data(rdfPredicateKey)), new NamedNode(element.data(rdfObjectKey)));
+		new Quad(namedNode(element.data(rdfSubjectKey)), namedNode(element.data(rdfPredicateKey)), namedNode(element.data(rdfObjectKey)));
 
 	useEffect(() => {
 		prepareCytoscapeElements();
@@ -170,8 +172,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						width: '1px',
 						color: 'black',
 						'line-color': 'black',
-						// 'taxi-direction': 'rightward',
-						// 'taxi-turn': '50px',
+						'target-arrow-color': '#ccc',
+						'target-arrow-fill': 'filled',
+						'target-arrow-shape': 'chevron',
+						'arrow-scale': 1.5,
 					},
 				},
 			]}
