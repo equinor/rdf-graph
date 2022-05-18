@@ -1,6 +1,6 @@
-import { RdfIndividual } from './rdfIndividual';
-import { RdfTriple } from './rdfTriple';
+import { Edge } from './edge';
+import { Node } from './node';
 
-export class RdfSelection {
-	constructor(readonly individuals: RdfIndividual[], readonly rdfTriple: RdfTriple[]) {}
+export class GraphSelection {
+	constructor(readonly individuals: Node[], readonly edges: Edge[]) {}
 }

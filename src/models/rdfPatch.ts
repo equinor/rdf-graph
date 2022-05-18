@@ -1,24 +1,25 @@
-import { RdfIndividual } from './rdfIndividual';
-import { RdfTriple } from './rdfTriple';
+import { Quad } from 'n3';
+import { Edge } from './edge';
+import { Node } from './node';
 
 export class RdfPatch {
-	tripleAdditions: RdfTriple[];
-	tripleRemovals: RdfTriple[];
-	individualAdditions: RdfIndividual[];
-	individualRemovals: RdfIndividual[];
+	tripleAdditions: Quad[];
+	edgeRemovals: Edge[];
+	individualAdditions: Node[];
+	individualRemovals: Node[];
 	constructor({
 		tripleAdditions = [],
-		tripleRemovals = [],
+		edgeRemovals = [],
 		individualAdditions = [],
 		individualRemovals = [],
 	}: {
-		tripleAdditions?: RdfTriple[];
-		tripleRemovals?: RdfTriple[];
-		individualAdditions?: RdfIndividual[];
-		individualRemovals?: RdfIndividual[];
+		tripleAdditions?: Quad[];
+		edgeRemovals?: Edge[];
+		individualAdditions?: Node[];
+		individualRemovals?: Node[];
 	}) {
 		this.tripleAdditions = tripleAdditions;
-		this.tripleRemovals = tripleRemovals;
+		this.edgeRemovals = edgeRemovals;
 		this.individualAdditions = individualAdditions;
 		this.individualRemovals = individualRemovals;
 	}

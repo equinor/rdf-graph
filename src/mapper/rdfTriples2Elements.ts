@@ -1,6 +1,15 @@
-import { RdfTriple } from '../models';
+import { Quad } from 'n3';
 import { NodeType } from '../models/nodeType';
 import { mergeElementsByKey } from './mergeElements';
+import {
+	colorPredicate,
+	compoundNodePredicate,
+	hasConnectorPredicate,
+	hasConnectorSuffix,
+	hasSvgPredicate,
+	labelPredicate,
+	rotationPredicate,
+} from './predicates';
 import {
 	createPropertyTransform,
 	defaultTransformation,
@@ -11,23 +20,23 @@ import {
 	postProcessSvgTag,
 } from './transformations';
 
-const compoundNodePredicate = 'http://rdf.equinor.com/ui/parent';
-const labelPredicate = 'http://www.w3.org/2000/01/rdf-schema#label';
-const colorPredicate = 'http://rdf.equinor.com/ui/color';
-const hasConnectorPredicate = 'http://rdf.equinor.com/ui/hasConnector';
-const hasSvgPredicate = 'http://rdf.equinor.com/ui/hasSvg';
-const hasConnectorSuffix = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
-const rotationPredicate = 'http://rdf.equinor.com/ui/rotation';
-
-export const rdfTriples2Elements = (triples: RdfTriple[]) => {
+export const rdfTriples2Elements = (triples: Quad[]) => {
 	const predicate2Transformation: { [key: string]: Transformation[] } = {
-		[compoundNodePredicate]: [parentTransform],
-		[labelPredicate]: [createPropertyTransform('label')],
-		[colorPredicate]: [createPropertyTransform('color')],
-		[hasSvgPredicate]: [createPropertyTransform('symbolId'), tagSubject(postProcessSvgTag), tagSubject('nodeType', NodeType.SymbolContainer)],
-		[rotationPredicate]: [createPropertyTransform('rotation'), tagSubject(postProcessSvgTag), tagSubject('nodeType', NodeType.SymbolContainer)],
-		[hasConnectorPredicate]: [hasChildrenTransform, createPropertyTransform('hasConnector')],
-		[hasConnectorSuffix]: [
+		[compoundNodePredicate.value]: [parentTransform],
+		[labelPredicate.value]: [createPropertyTransform('label')],
+		[colorPredicate.value]: [createPropertyTransform('color')],
+		[hasSvgPredicate.value]: [
+			createPropertyTransform('symbolId'),
+			tagSubject(postProcessSvgTag),
+			tagSubject('nodeType', NodeType.SymbolContainer),
+		],
+		[rotationPredicate.value]: [
+			createPropertyTransform('rotation'),
+			tagSubject(postProcessSvgTag),
+			tagSubject('nodeType', NodeType.SymbolContainer),
+		],
+		[hasConnectorPredicate.value]: [hasChildrenTransform, createPropertyTransform('hasConnector')],
+		[hasConnectorSuffix.value]: [
 			createPropertyTransform('connectorId'),
 			tagSubject('nodeType', NodeType.SymbolConnector),
 			tagSubject('layoutIgnore', true),
@@ -36,7 +45,7 @@ export const rdfTriples2Elements = (triples: RdfTriple[]) => {
 	};
 
 	const elements = triples.flatMap((triple) =>
-		(predicate2Transformation[triple.rdfPredicate] ?? [defaultTransformation]).flatMap((transform) => transform(triple))
+		(predicate2Transformation[triple.predicate.value] ?? [defaultTransformation]).flatMap((transform) => transform(triple))
 	);
 	return mergeElementsByKey(elements);
 };

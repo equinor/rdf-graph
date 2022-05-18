@@ -1,9 +1,13 @@
 import { Button } from '@equinor/eds-core-react';
+import { Quad, DataFactory } from 'n3';
 import { useState } from 'react';
-import { RdfPatch, RdfSelection, RdfTriple } from '../../models';
+import { colorPredicate, hasConnectorPredicate, hasConnectorSuffix, hasSvgPredicate, rotationPredicate } from '../../mapper/predicates';
+import { RdfPatch, GraphSelection, Edge } from '../../models';
 import { getSymbol, SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';
+
+const { namedNode, literal, quad } = DataFactory;
 
 export type SparqlWrapperProps = {
 	turtleString: string;
@@ -14,38 +18,39 @@ const colors = ['blue', 'green', 'red', 'yellow', 'purple', 'pink', 'cyan', 'gre
 const svgs = [SymbolKey.Separator_1, SymbolKey.Valve_3Way_1];
 
 export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) => {
-	const [selection, setSelection] = useState<RdfSelection>(new RdfSelection([], []));
+	const [selection, setSelection] = useState<GraphSelection>(new GraphSelection([], []));
 
 	const [patches, setPatches] = useState<Array<RdfPatch>>([]);
 
 	const [nodeNumber, setNodeNumber] = useState<number>(1);
 
 	const deleteSelection = () => {
-		const newPatch = new RdfPatch({ tripleRemovals: selection.rdfTriple, individualRemovals: selection.individuals });
+		const newPatch = new RdfPatch({ edgeRemovals: selection.edges, individualRemovals: selection.individuals });
 		let newPatches = [...patches, newPatch];
 		setPatches(newPatches);
 	};
 
 	const rotateSelection = () => {
 		if (selection.individuals.length > 0) {
-			const index = selection.individuals[0].iri;
+			const currentIri = namedNode(selection.individuals[0].iri);
 			const data = selection.individuals[0].data;
 			const currentRotation = parseInt(data.rotation ?? '0');
 			const newRotation = ((currentRotation / 90 + 1) % 4) * 90;
 
-			addTriples([new RdfTriple(index, 'http://rdf.equinor.com/ui/rotation', newRotation.toString())]);
+			addTriples([quad(currentIri, rotationPredicate, literal(newRotation.toString()))]);
 		}
 	};
 
 	const switchSvg = () => {
 		if (selection.individuals.length > 0) {
+			const currentIri = namedNode(selection.individuals[0].iri);
 			const symbolId = selection.individuals[0].data.symbolId;
 			if (!symbolId) {
 				convertToSvg();
 			} else {
 				const index = svgs.indexOf(symbolId);
 				const newIndex = (index + 1) % svgs.length;
-				addTriples([new RdfTriple(selection.individuals[0].iri, 'http://rdf.equinor.com/ui/hasSvg', svgs[newIndex].toString())]);
+				addTriples([quad(currentIri, hasSvgPredicate, literal(svgs[newIndex].toString()))]);
 			}
 		}
 	};
@@ -54,36 +59,39 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 		if (selection.individuals.length > 0) {
 			const node = selection.individuals[0];
 			const nodeId = selection.individuals[0].iri;
+			const n3Node = namedNode(nodeId);
+
 			const symbolId = svgs[0];
 			const symbol = getSymbol(symbolId);
 
-			let additions = [];
-			let removals = [];
+			let additions = [quad(n3Node, hasSvgPredicate, literal(symbolId))];
+			let removals: Edge[] = [];
 			let incomingCounter = 0;
 			let outgoingCounter = 0;
 
 			for (let i = 0; i < symbol.connectors.length; i++) {
-				const connectorId = nodeId + 'connector' + i;
+				const n3Connector = namedNode(nodeId + 'connector' + i);
+				const oldEdge = node.incoming[i];
+				const oldQuad = oldEdge?.quad;
+
 				if (incomingCounter < node.incoming.length) {
-					const oldEdge = node.incoming[i];
-					additions.push(new RdfTriple(oldEdge.rdfSubject, oldEdge.rdfPredicate, connectorId));
+					additions.push(quad(oldQuad.subject, oldQuad.predicate, n3Connector));
 					removals.push(oldEdge);
 					incomingCounter++;
 				}
 
 				if (outgoingCounter < node.outgoing.length) {
-					const oldEdge = node.outgoing[i];
-					additions.push(new RdfTriple(connectorId, oldEdge.rdfPredicate, oldEdge.rdfObject));
+					additions.push(quad(n3Connector, oldQuad.predicate, oldQuad.object));
 					removals.push(oldEdge);
 					outgoingCounter++;
 				}
 
-				additions.push(new RdfTriple(nodeId, 'http://rdf.equinor.com/ui/hasConnector', connectorId));
-				additions.push(new RdfTriple(connectorId, 'http://rdf.equinor.com/ui/hasConnectorSuffix', symbol.connectors[i].id));
+				additions.push(quad(n3Node, hasConnectorPredicate, n3Connector));
+				additions.push(quad(n3Connector, hasConnectorSuffix, literal(symbol.connectors[i].id)));
 			}
 			const newPatch = new RdfPatch({
-				tripleAdditions: [...additions, new RdfTriple(selection.individuals[0].iri, 'http://rdf.equinor.com/ui/hasSvg', svgs[0].toString())],
-				tripleRemovals: removals,
+				tripleAdditions: additions,
+				edgeRemovals: removals,
 			});
 			let newPatches = [...patches, newPatch];
 			setPatches(newPatches);
@@ -94,26 +102,33 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 		if (selection.individuals.length > 0) {
 			const color = selection.individuals[0].data.color;
 			const index = colors.indexOf(color ?? 'grey');
-			const newIndex = (index + 1) % colors.length;
-			addTriples([new RdfTriple(selection.individuals[0].iri, 'http://rdf.equinor.com/ui/color', colors[newIndex])]);
+			const newColorIndex = (index + 1) % colors.length;
+			const colorLiteral = literal(colors[newColorIndex]);
+			const node = namedNode(selection.individuals[0].iri);
+			addTriples([quad(node, colorPredicate, colorLiteral)]);
 		}
 	};
 
 	const addNode = () => {
-		addTriples([new RdfTriple('http://example.com/node' + nodeNumber, 'http://rdf.equinor.com/ui/color', colors[0])]);
+		const node = namedNode('http://example.com/node' + nodeNumber);
+		const colorLiteral = literal(colors[0]);
+		addTriples([quad(node, colorPredicate, colorLiteral)]);
+
 		setNodeNumber(nodeNumber + 1);
 	};
 
 	const connect = () => {
 		if (selection.individuals.length === 2) {
-			const n1 = selection.individuals[0].iri;
-			const n2 = selection.individuals[1].iri;
+			const node1 = namedNode(selection.individuals[0].iri);
+			const node2 = namedNode(selection.individuals[1].iri);
 
-			addTriples([new RdfTriple(n1, 'http://example.com/connected', n2)]);
+			const exampleConnectedPredicate = namedNode('http://example.com/connected');
+
+			addTriples([quad(node1, exampleConnectedPredicate, node2)]);
 		}
 	};
 
-	const addTriples = (triples: RdfTriple[]): void => {
+	const addTriples = (triples: Quad[]): void => {
 		const newPatch = new RdfPatch({
 			tripleAdditions: triples,
 		});
@@ -121,7 +136,7 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 		setPatches(newPatches);
 	};
 
-	const onElementsSelected = (selection: RdfSelection): void => {
+	const onElementsSelected = (selection: GraphSelection): void => {
 		setSelection(selection);
 	};
 

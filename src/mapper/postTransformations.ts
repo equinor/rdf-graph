@@ -41,6 +41,7 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 	const update = (newElement: ElementDefinition, cy: cytoscape.Core) => {
 		const id = newElement.data.id!;
 		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)?.[0];
+
 		const oldSymbolNode = oldElement?.children(`[nodeType = "${NodeType.SymbolImage}"]`)?.[0];
 		const oldConnectors = oldElement?.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
 		const oldConnectorElements = oldConnectors.map((c) => {
