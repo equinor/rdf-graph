@@ -3,4 +3,5 @@ export enum NodeType {
 	SymbolImage = 'SymbolImage',
 	SymbolConnector = 'SymbolConnector',
 	SymbolOrigin = 'SymbolOrigin',
+	Default = 'Default',
 }

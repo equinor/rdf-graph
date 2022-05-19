@@ -16,14 +16,14 @@ export const postProcessElements = (elements: ElementDefinition[]) => {
 	return noPostProcess.filter((e) => !e.data.ignore).concat(postProcess.flatMap((e) => svgTransform(e)));
 };
 
-export const postUpdateElements = (elements: ElementDefinition[], cy: cytoscape.Core) => {
+export const postUpdateElements = (newElements: ElementDefinition[], cy: cytoscape.Core) => {
 	const iconNode2Connectors = groupElementsByKey(
-		elements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
+		newElements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
 		'parent'
 	);
 	const svgTransform = createSvgTransformation(iconNode2Connectors).transformUpdate;
 
-	elements.forEach((newElement) => {
+	newElements.forEach((newElement) => {
 		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
 		if (oldElement) {
 			Object.keys(newElement.data).forEach((key) => {
@@ -33,7 +33,7 @@ export const postUpdateElements = (elements: ElementDefinition[], cy: cytoscape.
 		}
 	});
 
-	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], elements);
+	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], newElements);
 	postProcess.forEach((e) => svgTransform(e, cy));
 	noPostProcess.filter((e) => !e.data.ignore).forEach((e) => cy.add(e));
 };

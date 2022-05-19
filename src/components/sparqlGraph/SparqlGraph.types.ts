@@ -1,6 +1,6 @@
 import { LayoutOptions } from 'cytoscape';
 import { RdfPatch } from '../../models';
-import { RdfSelection } from '../../models/rdfSelection';
+import { GraphSelection } from '../../models/rdfSelection';
 
 export type LayoutProps = 'Cola' | 'Cose-Bilkent' | 'Dagre';
 
@@ -9,7 +9,7 @@ export type SparqlGraphProps = {
 	uiConfig?: UiConfigProps;
 	turtleString: string;
 	patches: RdfPatch[];
-	onElementsSelected: (selection: RdfSelection) => void;
+	onElementsSelected: (selection: GraphSelection) => void;
 };
 
 export type LayoutWrapper = {

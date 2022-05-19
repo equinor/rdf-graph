@@ -1,64 +1,64 @@
 import { ElementDefinition } from 'cytoscape';
+import { Quad } from 'n3';
 import { nanoid } from 'nanoid';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
-import { RdfTriple } from '../models';
 import { short } from '../utils';
 
-export type Transformation = (triple: RdfTriple) => ElementDefinition[];
+export type Transformation = (quad: Quad) => ElementDefinition[];
 
 export const postProcessSvgTag = 'postProcessSvg';
 
-export const defaultTransformation = ({ rdfSubject, rdfPredicate, rdfObject }: RdfTriple) => {
+export const defaultTransformation = ({ subject, predicate, object }: Quad) => {
 	let edgeElement: ElementDefinition = {
 		data: {
-			source: rdfSubject,
-			target: rdfObject,
+			source: subject.value,
+			target: object.value,
 			id: nanoid(),
-			label: short(rdfPredicate),
-			[rdfSubjectKey]: rdfSubject,
-			[rdfPredicateKey]: rdfPredicate,
-			[rdfObjectKey]: rdfObject,
+			label: short(predicate.value),
+			[rdfSubjectKey]: subject.value,
+			[rdfPredicateKey]: predicate.value,
+			[rdfObjectKey]: object.value,
 		},
 	};
 
-	return [{ data: { id: rdfSubject } }, { data: { id: rdfObject } }, edgeElement];
+	return [{ data: { id: subject.value } }, { data: { id: object.value } }, edgeElement];
 };
 
 export const createPropertyTransform = (cyKey: string): Transformation => {
-	const transformation = ({ rdfSubject, rdfObject }: RdfTriple): ElementDefinition[] => {
-		let node: ElementDefinition = { data: { id: rdfSubject } };
-		node.data[cyKey] = rdfObject;
+	const transformation = ({ subject, object }: Quad): ElementDefinition[] => {
+		let node: ElementDefinition = { data: { id: subject.value } };
+		node.data[cyKey] = object.value;
 		return [node];
 	};
 	return transformation;
 };
 
 export const tagSubject = (tag: string, value: boolean | string = true): Transformation => {
-	const transformation = ({ rdfSubject }: RdfTriple): ElementDefinition[] => {
-		let node: ElementDefinition = { data: { id: rdfSubject } };
+	const transformation = ({ subject }: Quad): ElementDefinition[] => {
+		let node: ElementDefinition = { data: { id: subject.value } };
 		node.data[tag] = value;
 		return [node];
 	};
 	return transformation;
 };
 
-export const parentTransform = ({ rdfSubject, rdfObject }: RdfTriple): ElementDefinition[] => {
+export const parentTransform = ({ subject, object }: Quad): ElementDefinition[] => {
 	return [
 		{
 			data: {
-				id: rdfObject,
-				parent: rdfSubject,
+				id: object.value,
+				parent: subject.value,
 			},
 		},
 	];
 };
 
-export const hasChildrenTransform = ({ rdfSubject, rdfObject }: RdfTriple): ElementDefinition[] => {
+export const hasChildrenTransform = ({ subject, object }: Quad): ElementDefinition[] => {
 	return [
 		{
 			data: {
-				id: rdfObject,
-				parent: rdfSubject,
+				id: object.value,
+				parent: subject.value,
 			},
 		},
 	];

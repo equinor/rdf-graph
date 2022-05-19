@@ -12,6 +12,9 @@ export type Transformation = {
 
 export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string]: ElementDefinition[] }): Transformation => {
 	const transform = (element: ElementDefinition) => {
+		if (!element.data.symbolId) {
+			return [element];
+		}
 		const rotation = parseInt(element.data.rotation) as SymbolRotation;
 		const symbol = getSymbol(element.data.symbolId, { rotation: rotation });
 
@@ -41,6 +44,7 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 	const update = (newElement: ElementDefinition, cy: cytoscape.Core) => {
 		const id = newElement.data.id!;
 		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)?.[0];
+
 		const oldSymbolNode = oldElement?.children(`[nodeType = "${NodeType.SymbolImage}"]`)?.[0];
 		const oldConnectors = oldElement?.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
 		const oldConnectorElements = oldConnectors.map((c) => {
@@ -48,6 +52,12 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 		});
 		const newConnectors = iconNode2Connectors[id] ?? [];
 		const combinedData = Object.assign({}, oldElement.data(), newElement.data);
+
+		if (!combinedData.symbolId) {
+			oldElement.data('nodeType', NodeType.Default);
+			oldElement.data(postProcessSvgTag, false);
+			return;
+		}
 
 		const elementConnectors = mergeElementsByKey(oldConnectorElements.concat(newConnectors));
 		const elementConnectorIds = elementConnectors.map((c) => c.data.connectorId);
@@ -87,6 +97,7 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 			oldConnectors[i].position('x', p.x);
 			oldConnectors[i].position('y', p.y);
 		}
+		oldElement.data(postProcessSvgTag, false);
 	};
 	return { transformNew: transform, transformUpdate: update };
 };

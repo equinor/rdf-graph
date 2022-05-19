@@ -5,9 +5,12 @@ import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2El
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { RdfIndividual, RdfPatch, RdfSelection, RdfTriple } from '../../models';
+import { Edge, Node, RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
+import { Quad, DataFactory } from 'n3';
+
+const { namedNode } = DataFactory;
 
 const defaultUiConfig: UiConfigProps = {
 	css: { height: '100vh', width: '100%' },
@@ -38,28 +41,29 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const initialize = (cy: cytoscape.Core) => {
 		cy.on('select', () => {
 			onElementsSelected(
-				new RdfSelection(
+				new GraphSelection(
 					cy.$('node:selected').map((n) => {
 						const id = n.data('id');
-						const incoming = cy.$(`edge[target = "${id}"]`).map(createRdfTriple);
-						const outgoing = cy.$(`edge[source = "${id}"]`).map(createRdfTriple);
-						return new RdfIndividual(id, n.data(), incoming, outgoing);
+						const incoming = cy.$(`edge[target = "${id}"]`).map(createEdge);
+						const outgoing = cy.$(`edge[source = "${id}"]`).map(createEdge);
+						return new Node(id, n.data(), incoming, outgoing);
 					}),
-					cy.$('edge:selected').map((n) => new RdfTriple(n.data(rdfSubjectKey), n.data(rdfPredicateKey), n.data(rdfObjectKey)))
+					cy.$('edge:selected').map(createEdge)
 				)
 			);
 		});
 
 		cy.on('unselect', () => {
 			if (cy.$(':selected').length === 0) {
-				onElementsSelected(new RdfSelection([], []));
+				onElementsSelected(new GraphSelection([], []));
 			}
 		});
 	};
 
-	const createRdfTriple = (element: SingularElementArgument) => {
-		return new RdfTriple(element.data(rdfSubjectKey), element.data(rdfPredicateKey), element.data(rdfObjectKey), { data: element.id() });
-	};
+	const createEdge = (element: SingularElementArgument): Edge => new Edge(element.id(), createRdfTriple(element));
+
+	const createRdfTriple = (element: SingularElementArgument): Quad =>
+		new Quad(namedNode(element.data(rdfSubjectKey)), namedNode(element.data(rdfPredicateKey)), namedNode(element.data(rdfObjectKey)));
 
 	useEffect(() => {
 		prepareCytoscapeElements();
@@ -86,8 +90,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		const newElements = rdfTriples2Elements(patch.tripleAdditions);
 		postUpdateElements(newElements, cy);
 
-		//cy.add(mergedElements);
-		patch.tripleRemovals.forEach((r) => cy.remove(`edge[source='${r.rdfSubject}'][target='${r.rdfObject}']`));
+		patch.edgeRemovals.forEach((e) => cy.remove(`edge[id='${e.edgeId}']`));
 		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
 
 		newElements.map((e) => e.data.id!);
@@ -169,8 +172,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 						width: '1px',
 						color: 'black',
 						'line-color': 'black',
-						// 'taxi-direction': 'rightward',
-						// 'taxi-turn': '50px',
+						'target-arrow-color': '#ccc',
+						'target-arrow-fill': 'filled',
+						'target-arrow-shape': 'chevron',
+						'arrow-scale': 1.5,
 					},
 				},
 			]}
