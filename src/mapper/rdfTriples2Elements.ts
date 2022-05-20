@@ -12,12 +12,13 @@ import {
 } from './predicates';
 import {
 	createPropertyTransform,
-	defaultTransformation,
+	edgeTransformation,
 	Transformation,
 	hasChildrenTransform,
 	parentTransform,
 	tagSubject,
 	postProcessSvgTag,
+	literalDataTransform,
 } from './transformations';
 
 export const rdfTriples2Elements = (triples: Quad[]) => {
@@ -45,7 +46,9 @@ export const rdfTriples2Elements = (triples: Quad[]) => {
 	};
 
 	const elements = triples.flatMap((triple) =>
-		(predicate2Transformation[triple.predicate.value] ?? [defaultTransformation]).flatMap((transform) => transform(triple))
+		(predicate2Transformation[triple.predicate.value] ?? [edgeTransformation])
+			.concat(literalDataTransform)
+			.flatMap((transform) => transform(triple))
 	);
 	return mergeElementsByKey(elements);
 };

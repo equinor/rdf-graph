@@ -8,7 +8,10 @@ export type Transformation = (quad: Quad) => ElementDefinition[];
 
 export const postProcessSvgTag = 'postProcessSvg';
 
-export const defaultTransformation = ({ subject, predicate, object }: Quad) => {
+export const edgeTransformation = ({ subject, predicate, object }: Quad) => {
+	if (object.termType === 'Literal') {
+		return [];
+	}
 	let edgeElement: ElementDefinition = {
 		data: {
 			source: subject.value,
@@ -23,6 +26,18 @@ export const defaultTransformation = ({ subject, predicate, object }: Quad) => {
 
 	return [{ data: { id: subject.value } }, { data: { id: object.value } }, edgeElement];
 };
+
+export const literalDataTransform = ({ subject, predicate, object }: Quad): ElementDefinition[] =>
+	object.termType === 'Literal'
+		? [
+				{
+					data: {
+						id: subject.value,
+						[predicate.value]: object.value,
+					},
+				},
+		  ]
+		: [];
 
 export const createPropertyTransform = (cyKey: string): Transformation => {
 	const transformation = ({ subject, object }: Quad): ElementDefinition[] => {
