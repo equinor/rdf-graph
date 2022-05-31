@@ -1,7 +1,8 @@
 import cytoscape, { ElementDefinition, Position } from 'cytoscape';
+import { TurtleGraphError } from '../components/sparqlGraph/SparqlGraph.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, NodeSymbol, SymbolRotation } from '../symbol-api';
-import { arrayEquals } from '../utils/arrayEquals';
+import { setEquals } from '../utils/arrayEquals';
 import { mergeElementsByKey } from './mergeElements';
 import { postProcessSvgTag } from './transformations';
 
@@ -38,6 +39,8 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 					grabbable: false,
 				};
 			});
+
+		console.log('POST ', parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), connectorElements);
 		return [parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), ...connectorElements];
 	};
 
@@ -65,7 +68,7 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 		const symbol = createSymbol(combinedData);
 		const symbolConnectorIds = symbol.connectors.map((c) => c.id);
 
-		if (!arrayEquals(elementConnectorIds, symbolConnectorIds)) {
+		if (!setEquals(elementConnectorIds, symbolConnectorIds)) {
 			throw new TurtleGraphError(
 				`Unable to match connectors from ${id}[${elementConnectorIds.join(', ')}] with connectors from symbol ${
 					symbol.id
@@ -101,13 +104,6 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 	};
 	return { transformNew: transform, transformUpdate: update };
 };
-
-class TurtleGraphError extends Error {
-	constructor(msg: string) {
-		super(msg);
-		Object.setPrototypeOf(this, TurtleGraphError.prototype);
-	}
-}
 
 const getPosition = (symbol: NodeSymbol, parentPosition: Position, connectorId: string) => {
 	const relativePosition = symbol.connectors.find((c) => c.id === connectorId)!.point;

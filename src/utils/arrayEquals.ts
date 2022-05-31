@@ -1,3 +1,3 @@
-export function arrayEquals<T>(a: T[], b: T[]) {
-	return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((val, index) => val === b[index]);
+export function setEquals<T>(xs: T[], ys: T[]) {
+	return Array.isArray(xs) && Array.isArray(ys) && xs.length === ys.length && xs.every((x) => ys.find((y) => x === y));
 }

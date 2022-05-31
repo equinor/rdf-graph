@@ -1,8 +1,15 @@
 import { Button } from '@equinor/eds-core-react';
 import { Quad, DataFactory } from 'n3';
 import { useState } from 'react';
-import { colorPredicate, hasConnectorPredicate, hasConnectorSuffix, hasSvgPredicate, rotationPredicate } from '../../mapper/predicates';
-import { RdfPatch, GraphSelection, Edge } from '../../models';
+import {
+	colorPredicate,
+	getPredicate,
+	hasConnectorPredicate,
+	hasConnectorSuffixPredicate,
+	hasSvgPredicate,
+	rotationPredicate,
+} from '../../mapper/predicates';
+import { RdfPatch, GraphSelection } from '../../models';
 import { getSymbol, SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';
@@ -25,7 +32,24 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	const [nodeNumber, setNodeNumber] = useState<number>(1);
 
 	const deleteSelection = () => {
-		const newPatch = new RdfPatch({ edgeRemovals: selection.edges, individualRemovals: selection.individuals });
+		const edges = selection.edges
+			.concat(selection.individuals.flatMap((i) => i.incoming))
+			.concat(selection.individuals.flatMap((i) => i.outgoing));
+
+		const dataTriples = selection.individuals.flatMap((i) => {
+			let quads: Quad[] = [];
+			const keys = Object.keys(i.data);
+			keys.forEach((k) => {
+				const predicate = getPredicate(k);
+				predicate && quads.push(quad(namedNode(i.iri), predicate, literal(i.data[k])));
+			});
+			return quads;
+		});
+
+		const newPatch = new RdfPatch({ tripleAdditions: [], tripleRemovals: edges.concat(dataTriples) });
+
+		console.log('Patch ', newPatch);
+
 		let newPatches = [...patches, newPatch];
 		setPatches(newPatches);
 	};
@@ -65,7 +89,7 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 			const symbol = getSymbol(symbolId);
 
 			let additions = [quad(n3Node, hasSvgPredicate, literal(symbolId))];
-			let removals: Edge[] = [];
+			let removals: Quad[] = [];
 			let incomingCounter = 0;
 			let outgoingCounter = 0;
 
@@ -74,25 +98,23 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 				const connectorSuffix = literal(symbol.connectors[i].id);
 
 				if (incomingCounter < node.incoming.length) {
-					const oldEdge = node.incoming[incomingCounter];
-					const oldQuad = oldEdge.quad;
+					const oldQuad = node.incoming[incomingCounter];
 					additions.push(quad(oldQuad.subject, oldQuad.predicate, n3Connector));
-					removals.push(oldEdge);
+					removals.push(oldQuad);
 					incomingCounter++;
 				} else if (outgoingCounter < node.outgoing.length) {
-					const oldEdge = node.outgoing[outgoingCounter];
-					const oldQuad = oldEdge.quad;
+					const oldQuad = node.outgoing[outgoingCounter];
 					additions.push(quad(n3Connector, oldQuad.predicate, oldQuad.object));
-					removals.push(oldEdge);
+					removals.push(oldQuad);
 					outgoingCounter++;
 				}
 
 				additions.push(quad(n3Node, hasConnectorPredicate, n3Connector));
-				additions.push(quad(n3Connector, hasConnectorSuffix, connectorSuffix));
+				additions.push(quad(n3Connector, hasConnectorSuffixPredicate, connectorSuffix));
 			}
 			const newPatch = new RdfPatch({
 				tripleAdditions: additions,
-				edgeRemovals: removals,
+				tripleRemovals: removals,
 			});
 			let newPatches = [...patches, newPatch];
 			setPatches(newPatches);
@@ -132,6 +154,7 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	const addTriples = (triples: Quad[]): void => {
 		const newPatch = new RdfPatch({
 			tripleAdditions: triples,
+			tripleRemovals: [],
 		});
 		let newPatches = [...patches, newPatch];
 		setPatches(newPatches);

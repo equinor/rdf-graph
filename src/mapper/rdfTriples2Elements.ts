@@ -5,7 +5,7 @@ import {
 	colorPredicate,
 	compoundNodePredicate,
 	hasConnectorPredicate,
-	hasConnectorSuffix,
+	hasConnectorSuffixPredicate,
 	hasSvgPredicate,
 	labelPredicate,
 	rotationPredicate,
@@ -37,7 +37,7 @@ export const rdfTriples2Elements = (triples: Quad[]) => {
 			tagSubject('nodeType', NodeType.SymbolContainer),
 		],
 		[hasConnectorPredicate.value]: [hasChildrenTransform, createPropertyTransform('hasConnector')],
-		[hasConnectorSuffix.value]: [
+		[hasConnectorSuffixPredicate.value]: [
 			createPropertyTransform('connectorId'),
 			tagSubject('nodeType', NodeType.SymbolConnector),
 			tagSubject('layoutIgnore', true),
@@ -50,5 +50,7 @@ export const rdfTriples2Elements = (triples: Quad[]) => {
 			.concat(literalDataTransform)
 			.flatMap((transform) => transform(triple))
 	);
+
+	console.log('got elements ', elements);
 	return mergeElementsByKey(elements);
 };

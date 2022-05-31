@@ -1,5 +1,5 @@
-import { Edge } from './edge';
+import { Quad } from 'n3';
 
 export class Node {
-	constructor(readonly iri: string, readonly data: any = {}, readonly incoming: Edge[] = [], readonly outgoing: Edge[] = []) {}
+	constructor(readonly iri: string, readonly data: any = {}, readonly incoming: Quad[] = [], readonly outgoing: Quad[] = []) {}
 }

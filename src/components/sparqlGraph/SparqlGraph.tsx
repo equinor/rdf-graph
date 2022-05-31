@@ -1,14 +1,16 @@
-import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
+import { LayoutWrapper, SparqlGraphProps, TurtleGraphError, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
 import Cytoscape, { SingularElementArgument } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { Edge, Node, RdfPatch, GraphSelection } from '../../models';
+import { Node, RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
+import { partition } from '../../utils/partition';
+import { getDataKey } from '../../mapper/predicates';
 
 const { namedNode } = DataFactory;
 
@@ -44,11 +46,11 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 				new GraphSelection(
 					cy.$('node:selected').map((n) => {
 						const id = n.data('id');
-						const incoming = cy.$(`edge[target = "${id}"]`).map(createEdge);
-						const outgoing = cy.$(`edge[source = "${id}"]`).map(createEdge);
+						const incoming = cy.$(`edge[target = "${id}"]`).map(createQuad);
+						const outgoing = cy.$(`edge[source = "${id}"]`).map(createQuad);
 						return new Node(id, n.data(), incoming, outgoing);
 					}),
-					cy.$('edge:selected').map(createEdge)
+					cy.$('edge:selected').map(createQuad)
 				)
 			);
 		});
@@ -60,9 +62,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		});
 	};
 
-	const createEdge = (element: SingularElementArgument): Edge => new Edge(element.id(), createRdfTriple(element));
-
-	const createRdfTriple = (element: SingularElementArgument): Quad =>
+	const createQuad = (element: SingularElementArgument): Quad =>
 		new Quad(namedNode(element.data(rdfSubjectKey)), namedNode(element.data(rdfPredicateKey)), namedNode(element.data(rdfObjectKey)));
 
 	useEffect(() => {
@@ -84,16 +84,35 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		setCy(cy);
 	};
 
+	const createSelector = (key: string, value: string) => {
+		return `[${key}='${value}']`;
+	};
+
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
 		const newElements = rdfTriples2Elements(patch.tripleAdditions);
 		postUpdateElements(newElements, cy);
 
-		patch.edgeRemovals.forEach((e) => cy.remove(`edge[id='${e.edgeId}']`));
-		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
+		const [edgeTriples, dataTriples] = partition<Quad>((q) => q.object.termType === 'NamedNode', patch.tripleRemovals);
 
-		newElements.map((e) => e.data.id!);
+		edgeTriples.forEach((q) =>
+			cy.remove(
+				'edge' +
+					createSelector(rdfSubjectKey, q.subject.value) +
+					createSelector(rdfPredicateKey, q.predicate.value) +
+					createSelector(rdfObjectKey, q.object.value)
+			)
+		);
+
+		dataTriples.forEach((q) => {
+			const nodes = cy.nodes(`node${createSelector('id', q.subject.value)})`);
+			if (nodes.length === 0) {
+				throw new TurtleGraphError(`Unable to find node with id=${q.subject.value}`);
+			}
+			nodes.removeData(q.predicate.value);
+			nodes.removeData(getDataKey(namedNode(q.predicate.value)));
+		});
 	};
 
 	useEffect(() => {

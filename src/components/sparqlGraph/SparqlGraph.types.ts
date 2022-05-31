@@ -1,6 +1,6 @@
 import { LayoutOptions } from 'cytoscape';
 import { RdfPatch } from '../../models';
-import { GraphSelection } from '../../models/rdfSelection';
+import { GraphSelection } from '../../models/graphSelection';
 
 export type LayoutProps = 'Cola' | 'Cose-Bilkent' | 'Dagre';
 
@@ -23,4 +23,11 @@ export interface UiConfigProps {
 	minZoom?: number;
 	zoom?: number;
 	zoomingEnabled?: boolean;
+}
+
+export class TurtleGraphError extends Error {
+	constructor(msg: string) {
+		super(msg);
+		Object.setPrototypeOf(this, TurtleGraphError.prototype);
+	}
 }
