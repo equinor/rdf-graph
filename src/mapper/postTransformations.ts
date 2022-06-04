@@ -1,68 +1,88 @@
 import cytoscape, { ElementDefinition, Position } from 'cytoscape';
 import { TurtleGraphError } from '../components/sparqlGraph/SparqlGraph.types';
+import { getChildren, getData, getParents } from '../models/cytoscapeElement';
+import { RdfNodeDefinition } from '../models/cytoscapeExtensions.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, NodeSymbol, SymbolRotation } from '../symbol-api';
-import { setEquals } from '../utils/arrayEquals';
+import { setEquals } from '../utils/setEquals';
 import { mergeElementsByKey } from './mergeElements';
-import { postProcessSvgTag } from './transformations';
+import { hasConnectorPredicate, hasConnectorSuffixPredicate, hasSvgPredicate, rotationPredicate } from './predicates';
 
-export type Transformation = {
-	transformNew: (element: ElementDefinition) => ElementDefinition[];
-	transformUpdate: (element: ElementDefinition, cy: cytoscape.Core) => void;
+export type PostTransformation = {
+	isApplicable: (e: RdfNodeDefinition) => boolean;
+	transformNew: (element: RdfNodeDefinition, others: RdfNodeDefinition[]) => ElementDefinition[];
+	transformUpdate: (element: RdfNodeDefinition, others: RdfNodeDefinition[], cy: cytoscape.Core) => void;
 };
 
-export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string]: ElementDefinition[] }): Transformation => {
-	const transform = (element: ElementDefinition) => {
-		if (!element.data.symbolId) {
-			return [element];
-		}
-		const rotation = parseInt(element.data.rotation) as SymbolRotation;
-		const symbol = getSymbol(element.data.symbolId, { rotation: rotation });
+const createConnectorTransformation = (): PostTransformation => {
+	const isApplicable = (e: RdfNodeDefinition) => !!getData(e, hasConnectorSuffixPredicate.value);
+
+	const transformNew = (element: RdfNodeDefinition, others: RdfNodeDefinition[]) => {
+		const mainElement = others.find((n) => getChildren(n, hasConnectorPredicate.value).includes(element.data.id!))!;
+
+		const rotation = parseInt(getData(mainElement, rotationPredicate.value) ?? '0') as SymbolRotation;
+		const symbol = getSymbol(getData(mainElement, hasSvgPredicate.value)!, { rotation: rotation });
+
+		console.log('Trying to create connector data for ', element);
+		const connectorNode: RdfNodeDefinition = {
+			data: {
+				...element.data,
+				parent: mainElement.data.id!,
+				layoutIgnore: true,
+				nodeType: NodeType.SymbolConnector,
+			},
+			position: symbol.connectors.find((c) => c.id === getData(element, hasConnectorSuffixPredicate.value))!.point,
+			grabbable: false,
+		};
+
+		console.log('Connector node ' + connectorNode);
+
+		return [connectorNode];
+	};
+
+	const transformUpdate = (newElement: RdfNodeDefinition, others: RdfNodeDefinition[], cy: cytoscape.Core) => {};
+
+	return { isApplicable, transformNew, transformUpdate };
+};
+
+const createSvgTransformation = (): PostTransformation => {
+	const isApplicable = (e: RdfNodeDefinition) => !!getData(e, hasSvgPredicate.value);
+
+	const transformNew = (element: RdfNodeDefinition, _others: RdfNodeDefinition[]) => {
+		const mainElement = element as RdfNodeDefinition;
+		const rotation = parseInt(getData(mainElement, rotationPredicate.value) ?? '0') as SymbolRotation;
+		const symbol = getSymbol(getData(mainElement, hasSvgPredicate.value)!, { rotation: rotation });
 
 		const parentNode: ElementDefinition = {
 			data: {
 				...element.data,
 				imageHeight: `${symbol.height}px`,
 				imageWidth: `${symbol.width}px`,
-				[postProcessSvgTag]: false,
+				nodeType: NodeType.SymbolContainer,
 			},
 		};
 
-		const children = iconNode2Connectors[element.data.id!];
-
-		const connectorElements = children
-			.filter(({ data }) => data.nodeType === NodeType.SymbolConnector)
-			.map(({ data }) => {
-				return {
-					data,
-					position: symbol.connectors.find((c) => c.id === data.connectorId)?.point,
-					grabbable: false,
-				};
-			});
-
-		console.log('POST ', parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), connectorElements);
-		return [parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 }), ...connectorElements];
+		return [parentNode, createSymbolNode(element.data.id!, symbol, { x: 0, y: 0 })];
 	};
 
-	const update = (newElement: ElementDefinition, cy: cytoscape.Core) => {
+	const transformUpdate = (newElement: RdfNodeDefinition, others: RdfNodeDefinition[], cy: cytoscape.Core) => {
 		const id = newElement.data.id!;
-		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)?.[0];
+		const oldElement = cy.getElementById(id);
 
-		const oldSymbolNode = oldElement?.children(`[nodeType = "${NodeType.SymbolImage}"]`)?.[0];
+		const oldSymbolNode = cy.getElementById(createSymbolNodeId(id));
 		const oldConnectors = oldElement?.children(`[nodeType = "${NodeType.SymbolConnector}"]`);
+
 		const oldConnectorElements = oldConnectors.map((c) => {
 			return { data: c.data() };
 		});
-		const newConnectors = iconNode2Connectors[id] ?? [];
+
+		const newConnectorIds = getChildren(newElement, hasConnectorPredicate.value);
+		const newConnectors = others.filter((o) => newConnectorIds.includes(o.data.id!));
+
 		const combinedData = Object.assign({}, oldElement.data(), newElement.data);
 
-		if (!combinedData.symbolId) {
-			oldElement.data('nodeType', NodeType.Default);
-			oldElement.data(postProcessSvgTag, false);
-			return;
-		}
-
 		const elementConnectors = mergeElementsByKey(oldConnectorElements.concat(newConnectors));
+
 		const elementConnectorIds = elementConnectors.map((c) => c.data.connectorId);
 
 		const symbol = createSymbol(combinedData);
@@ -100,11 +120,11 @@ export const createSvgTransformation = (iconNode2Connectors: { [iconNode: string
 			oldConnectors[i].position('x', p.x);
 			oldConnectors[i].position('y', p.y);
 		}
-		oldElement.data(postProcessSvgTag, false);
 	};
-	return { transformNew: transform, transformUpdate: update };
+	return { isApplicable, transformNew, transformUpdate };
 };
 
+export const postTransformations: PostTransformation[] = [createConnectorTransformation(), createSvgTransformation()];
 const getPosition = (symbol: NodeSymbol, parentPosition: Position, connectorId: string) => {
 	const relativePosition = symbol.connectors.find((c) => c.id === connectorId)!.point;
 	return {
@@ -113,11 +133,11 @@ const getPosition = (symbol: NodeSymbol, parentPosition: Position, connectorId: 
 	};
 };
 
-const createSymbolNode = (parentId: string, symbol: NodeSymbol, position: Position): ElementDefinition => {
+const createSymbolNode = (mainNodeId: string, symbol: NodeSymbol, position: Position): ElementDefinition => {
 	return {
 		data: {
-			id: `${parentId}-symbol`,
-			parent: parentId,
+			id: createSymbolNodeId(mainNodeId),
+			parent: mainNodeId,
 			nodeType: NodeType.SymbolImage,
 			layoutIgnore: true,
 			image: symbol.svgDataURI(),
@@ -129,6 +149,8 @@ const createSymbolNode = (parentId: string, symbol: NodeSymbol, position: Positi
 		selectable: false,
 	};
 };
+
+const createSymbolNodeId = (mainNodeId: string) => `${mainNodeId}-symbol`;
 
 const createSymbol = (data: any): NodeSymbol => {
 	const rotation = (parseInt(data.rotation) ?? 0) as SymbolRotation;

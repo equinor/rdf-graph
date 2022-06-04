@@ -1,4 +1,5 @@
 import { ElementDefinition } from 'cytoscape';
+import deepMerge from '../utils/deepMerge';
 
 export const groupElementsByKey = (elements: ElementDefinition[], key: string) => {
 	return elements.reduce((acc, element) => {
@@ -18,6 +19,8 @@ export const mergeElementsByKey = (elements: ElementDefinition[], key = 'id') =>
 	return Object.keys(groupedById).map((key) => groupedById[key].reduce((acc, current) => mergeElements(acc, current)));
 };
 
-export const mergeElements = (first: ElementDefinition, second: ElementDefinition) => {
-	return { ...first, ...second, data: { ...first.data, ...second.data } };
+export const mergeElements = (first: ElementDefinition, second: ElementDefinition): ElementDefinition => {
+	const merged = deepMerge(first, second);
+	console.log(first.data.rdfData, second.data.rdfData, merged.data.rdfData);
+	return merged;
 };

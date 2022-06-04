@@ -1,4 +1,4 @@
-import { DataFactory, NamedNode } from 'n3';
+import { DataFactory, NamedNode, Quad } from 'n3';
 import { isUri } from '../utils/isUri';
 import { TwoWayMap } from '../utils/twoWayDictionary';
 
@@ -40,12 +40,18 @@ export const nodeTypeKey = 'nodeType';
 export const layoutIgnoreKey = 'layoutIgnore';
 export const ignoreKey = 'ignore';
 export const idKey = 'id';
-
 export const cytoscapeKeys = [nodeTypeKey, layoutIgnoreKey, ignoreKey, idKey];
+
+export const parentPredicates = [compoundNodeIri];
+export const childPredicates = [hasConnectorIri];
 
 const iri2dataKey = new TwoWayMap(dict);
 
-export const getDataKey = (predicate: NamedNode) => {
+export const isDataKey = (predicate: { value: string }) => {
+	return iri2dataKey.includes(predicate.value);
+};
+
+export const getDataKey = (predicate: { value: string }) => {
 	return iri2dataKey.get(predicate.value);
 };
 

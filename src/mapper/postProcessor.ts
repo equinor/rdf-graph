@@ -1,39 +1,19 @@
 import { ElementDefinition } from 'cytoscape';
-import { NodeType } from '../models/nodeType';
-import { partition } from '../utils/partition';
-import { groupElementsByKey } from './mergeElements';
-import { createSvgTransformation } from './postTransformations';
-import { postProcessSvgTag } from './transformations';
+import { RdfNodeDefinition } from '../models/cytoscapeExtensions.types';
+import { postTransformations } from './postTransformations';
 
 export const postProcessElements = (elements: ElementDefinition[]) => {
-	const iconNode2Connectors = groupElementsByKey(
-		elements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
-		'parent'
-	);
-	const svgTransform = createSvgTransformation(iconNode2Connectors).transformNew;
-	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], elements);
+	const nodes = elements.filter((e) => !e.data.source).map((n) => n as RdfNodeDefinition);
 
-	return noPostProcess.filter((e) => !e.data.ignore).concat(postProcess.flatMap((e) => svgTransform(e)));
+	return postTransformations.flatMap((postTransformation) =>
+		nodes.filter((n) => postTransformation.isApplicable(n)).flatMap((n) => postTransformation.transformNew(n, nodes))
+	);
 };
 
 export const postUpdateElements = (newElements: ElementDefinition[], cy: cytoscape.Core) => {
-	const iconNode2Connectors = groupElementsByKey(
-		newElements.filter((e) => e.data.nodeType === NodeType.SymbolConnector),
-		'parent'
+	const newNodes = newElements.filter((e) => !e.data.source).map((n) => n as RdfNodeDefinition);
+
+	return postTransformations.flatMap((postTransformation) =>
+		newNodes.filter((n) => postTransformation.isApplicable(n)).flatMap((n) => postTransformation.transformUpdate(n, newNodes, cy))
 	);
-	const svgTransform = createSvgTransformation(iconNode2Connectors).transformUpdate;
-
-	newElements.forEach((newElement) => {
-		const oldElement = cy.elements(`[id = "${newElement.data.id}"]`)[0];
-		if (oldElement) {
-			Object.keys(newElement.data).forEach((key) => {
-				oldElement.data(key, newElement.data[key]);
-			});
-			newElement.data.ignore = true;
-		}
-	});
-
-	const [postProcess, noPostProcess] = partition((e) => e.data[postProcessSvgTag], newElements);
-	postProcess.forEach((e) => svgTransform(e, cy));
-	noPostProcess.filter((e) => !e.data.ignore).forEach((e) => cy.add(e));
 };

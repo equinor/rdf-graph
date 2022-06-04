@@ -9,9 +9,18 @@ export class TwoWayMap {
 		}
 	}
 
+	includes(key: string) {
+		return Object.keys(this.dict).includes(key);
+	}
+
+	revIncludes(key: string) {
+		return Object.values(this.dict).includes(key);
+	}
+
 	get(key: string) {
 		return this.dict[key];
 	}
+
 	revGet(key: string) {
 		return this.reverseMap[key];
 	}
