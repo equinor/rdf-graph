@@ -1,6 +1,6 @@
 import { Quad } from 'n3';
-import { Node } from './node';
+import { RdfNodeDataDefinition } from './cytoscapeExtensions.types';
 
 export class GraphSelection {
-	constructor(readonly individuals: Node[], readonly edges: Quad[]) {}
+	constructor(readonly individuals: RdfNodeDataDefinition[], readonly edges: Quad[]) {}
 }

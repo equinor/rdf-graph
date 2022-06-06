@@ -1,4 +1,5 @@
 import { ElementDefinition } from 'cytoscape';
+import { RdfNodeDataDefinition } from '../models/cytoscapeExtensions.types';
 import deepMerge from '../utils/deepMerge';
 
 export const groupElementsByKey = (elements: ElementDefinition[], key: string) => {
@@ -21,6 +22,10 @@ export const mergeElementsByKey = (elements: ElementDefinition[], key = 'id') =>
 
 export const mergeElements = (first: ElementDefinition, second: ElementDefinition): ElementDefinition => {
 	const merged = deepMerge(first, second);
-	console.log(first.data.rdfData, second.data.rdfData, merged.data.rdfData);
+	return merged;
+};
+
+export const mergeData = (first: RdfNodeDataDefinition, second: RdfNodeDataDefinition): RdfNodeDataDefinition => {
+	const merged = deepMerge(first, second);
 	return merged;
 };

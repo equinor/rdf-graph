@@ -11,6 +11,8 @@ export interface RdfNodeDataDefinition extends NodeDataDefinition {
 	rdfData: Pairs;
 	rdfChildren: Pairs;
 	rdfParents: Pairs;
+	rdfIncoming: Pairs;
+	rdfOutgoing: Pairs;
 }
 
 export interface RdfEdgeDataDefinition extends EdgeDataDefinition {

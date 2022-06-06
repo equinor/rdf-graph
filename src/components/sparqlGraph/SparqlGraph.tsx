@@ -5,12 +5,11 @@ import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2El
 import { useEffect, useState } from 'react';
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { Node, RdfPatch, GraphSelection } from '../../models';
+import { RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
 import { partition } from '../../utils/partition';
-import { getDataKey } from '../../mapper/predicates';
 
 const { namedNode } = DataFactory;
 
@@ -44,12 +43,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		cy.on('select', () => {
 			onElementsSelected(
 				new GraphSelection(
-					cy.$('node:selected').map((n) => {
-						const id = n.data('id');
-						const incoming = cy.$(`edge[target = "${id}"]`).map(createQuad);
-						const outgoing = cy.$(`edge[source = "${id}"]`).map(createQuad);
-						return new Node(id, n.data(), incoming, outgoing);
-					}),
+					cy.$('node:selected').map((n) => n.data()),
 					cy.$('edge:selected').map(createQuad)
 				)
 			);
@@ -91,9 +85,9 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
-		const newElements = rdfTriples2Elements(patch.tripleAdditions);
-		postUpdateElements(newElements, cy);
+		const newAdditions = rdfTriples2Elements(patch.tripleAdditions);
 
+		console.log('newAdditions', newAdditions);
 		const [edgeTriples, dataTriples] = partition<Quad>((q) => q.object.termType === 'NamedNode', patch.tripleRemovals);
 
 		edgeTriples.forEach((q) =>
@@ -106,13 +100,16 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		);
 
 		dataTriples.forEach((q) => {
-			const nodes = cy.nodes(`node${createSelector('id', q.subject.value)})`);
+			const nodes = cy.nodes(`node${createSelector('id', q.subject.value)}`);
 			if (nodes.length === 0) {
 				throw new TurtleGraphError(`Unable to find node with id=${q.subject.value}`);
 			}
-			nodes.removeData(q.predicate.value);
-			nodes.removeData(getDataKey(namedNode(q.predicate.value)));
+			// TODO find out how to remove nested data
+			// const keyToRemove = `rdfData[${q.predicate.value}]`;
+			//nodes.removeData(keyToRemove);
 		});
+
+		postUpdateElements(newAdditions, cy);
 	};
 
 	useEffect(() => {

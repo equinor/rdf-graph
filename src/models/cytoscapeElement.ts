@@ -1,8 +1,8 @@
 import { Quad } from 'n3';
 import { nanoid } from 'nanoid';
-import { Pairs, RdfEdgeDataDefinition, RdfEdgeDefinition, RdfNodeDataDefinition, RdfNodeDefinition } from './cytoscapeExtensions.types';
+import { RdfEdgeDefinition, RdfNodeDataDefinition, RdfNodeDefinition } from './cytoscapeExtensions.types';
 
-class RdfNodeData implements RdfNodeDataDefinition {
+/*class RdfNodeData implements RdfNodeDataDefinition {
 	id: string;
 	rdfData: Pairs;
 	rdfChildren: Pairs;
@@ -14,8 +14,9 @@ class RdfNodeData implements RdfNodeDataDefinition {
 		this.rdfChildren = rdfChildren;
 		this.rdfParents = rdfParents;
 	}
-}
+}*/
 
+/*
 class RdfEdgeData implements RdfEdgeDataDefinition {
 	source: string;
 	target: string;
@@ -32,34 +33,93 @@ class RdfEdgeData implements RdfEdgeDataDefinition {
 		this.rdfPredicate = q.predicate.value;
 		this.rdfObject = q.object.value;
 	}
-}
+}*/
 
 export const createEdge = (q: Quad): RdfEdgeDefinition => {
+	console.log('CREATING edge ', q);
 	return {
-		data: new RdfEdgeData(q),
+		data: {
+			source: q.subject.value,
+			target: q.object.value,
+			id: nanoid(),
+			rdfSubject: q.subject.value,
+			rdfPredicate: q.predicate.value,
+			rdfObject: q.object.value,
+		},
 	};
 };
 
 export const createDataNode = (q: Quad): RdfNodeDefinition => {
 	return {
-		data: new RdfNodeData(q.subject.value, [{ key: q.predicate.value, value: q.object.value }], [], []),
+		data: {
+			id: q.subject.value,
+			rdfData: [{ key: q.predicate.value, value: q.object.value }],
+			rdfChildren: [],
+			rdfParents: [],
+			rdfIncoming: [],
+			rdfOutgoing: [],
+		},
 	};
 };
 
 export const createNodeWithChildren = (q: Quad): RdfNodeDefinition => {
 	return {
-		data: new RdfNodeData(q.subject.value, [], [{ key: q.predicate.value, value: q.object.value }], []),
+		data: {
+			id: q.subject.value,
+			rdfData: [],
+			rdfChildren: [{ key: q.predicate.value, value: q.object.value }],
+			rdfParents: [],
+			rdfIncoming: [],
+			rdfOutgoing: [],
+		},
 	};
 };
 
 export const createNodeWithParents = (q: Quad): RdfNodeDefinition => {
 	return {
-		data: new RdfNodeData(q.subject.value, [], [], [{ key: q.predicate.value, value: q.object.value }]),
+		data: {
+			id: q.subject.value,
+			rdfData: [],
+			rdfChildren: [],
+			rdfParents: [{ key: q.predicate.value, value: q.object.value }],
+			rdfIncoming: [],
+			rdfOutgoing: [],
+		},
 	};
 };
 
-export const getData = (node: RdfNodeDefinition, predicate: string) => {
+export const createNodeWithIncomingEdge = (q: Quad): RdfNodeDefinition => {
+	return {
+		data: {
+			id: q.object.value,
+			rdfData: [],
+			rdfChildren: [],
+			rdfParents: [],
+			rdfIncoming: [{ key: q.predicate.value, value: q.subject.value }],
+			rdfOutgoing: [],
+		},
+	};
+};
+
+export const createNodeWithOutgoingEdge = (q: Quad): RdfNodeDefinition => {
+	return {
+		data: {
+			id: q.subject.value,
+			rdfData: [],
+			rdfChildren: [],
+			rdfParents: [],
+			rdfIncoming: [],
+			rdfOutgoing: [{ key: q.predicate.value, value: q.object.value }],
+		},
+	};
+};
+
+export const getDataFromElement = (node: RdfNodeDefinition, predicate: string) => {
 	return node.data.rdfData.find((d) => d.key === predicate)?.value;
+};
+
+export const getData = (data: RdfNodeDataDefinition, predicate: string) => {
+	return data.rdfData.find((d) => d.key === predicate)?.value;
 };
 
 export const getChildren = (node: RdfNodeDefinition, predicate: string) => {
