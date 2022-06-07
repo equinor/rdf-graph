@@ -1,7 +1,7 @@
 import { ElementDefinition, Position } from 'cytoscape';
 import { hasSvgPredicate, rotationPredicate } from '../mapper/predicates';
-import { getData } from '../models/cytoscapeApi';
-import { RdfNodeDataDefinition } from '../models/cytoscapeApi.types';
+import { getData } from '../cytoscape-api/cytoscapeApi';
+import { RdfNodeDataDefinition } from '../cytoscape-api/cytoscapeApi.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, NodeSymbol, SymbolRotation } from '../symbol-api';
 

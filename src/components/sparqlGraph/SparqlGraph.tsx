@@ -9,8 +9,8 @@ import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKey
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
 import { isHierarchyPredicate } from '../../mapper/predicates';
-import { deleteEmpty, getSyncedNodeData, isValidRdfNodeData, removeData, syncNodeData } from '../../models/cytoscapeApi';
-import { RdfNodeDataDefinition, RdfNodeDefinition } from '../../models/cytoscapeApi.types';
+import { deleteEmpty, getSyncedNodeData, isValidRdfNodeData, removeData, syncNodeData } from '../../cytoscape-api/cytoscapeApi';
+import { RdfNodeDataDefinition, RdfNodeDefinition } from '../../cytoscape-api/cytoscapeApi.types';
 import { partition } from '../../utils/partition';
 
 const { namedNode } = DataFactory;

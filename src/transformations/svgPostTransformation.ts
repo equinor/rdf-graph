@@ -1,7 +1,7 @@
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { TurtleGraphError } from '../components/sparqlGraph/SparqlGraph.types';
-import { getChildren, getData, getDataFromElement } from '../models/cytoscapeApi';
-import { RdfNodeDataDefinition, RdfNodeDefinition } from '../models/cytoscapeApi.types';
+import { getChildren, getData, getDataFromElement } from '../cytoscape-api/cytoscapeApi';
+import { RdfNodeDataDefinition, RdfNodeDefinition } from '../cytoscape-api/cytoscapeApi.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, SymbolRotation } from '../symbol-api';
 import deepMerge from '../utils/deepMerge';

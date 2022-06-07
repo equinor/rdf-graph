@@ -1,5 +1,5 @@
 import { ElementDefinition } from 'cytoscape';
-import { RdfNodeDefinition } from '../models/cytoscapeApi.types';
+import { RdfNodeDefinition } from '../cytoscape-api/cytoscapeApi.types';
 
 export type PostTransformation = {
 	isApplicable: (e: RdfNodeDefinition) => boolean;

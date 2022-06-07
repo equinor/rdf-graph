@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import { Pairs } from '../models/cytoscapeApi.types';
+import { Pairs } from '../cytoscape-api/cytoscapeApi.types';
 import { TwoWayMap } from '../utils/twoWayDictionary';
 
 const { namedNode } = DataFactory;

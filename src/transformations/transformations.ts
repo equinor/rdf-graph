@@ -7,7 +7,7 @@ import {
 	createNodeWithIncomingEdge,
 	createNodeWithOutgoingEdge,
 	createNodeWithParents,
-} from '../models/cytoscapeApi';
+} from '../cytoscape-api/cytoscapeApi';
 import { childPredicates, isDataKey, parentPredicates } from '../mapper/predicates';
 
 export type Transformation = (quad: Quad) => ElementDefinition[];

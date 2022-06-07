@@ -1,6 +1,6 @@
 import { ElementDefinition } from 'cytoscape';
 import { mergeElementsByKey } from '../mapper/mergeElements';
-import { RdfNodeDefinition } from '../models/cytoscapeApi.types';
+import { RdfNodeDefinition } from '../cytoscape-api/cytoscapeApi.types';
 
 const createDummyElements1 = (ids: string[], predicates: { key: string; value: string }[]): RdfNodeDefinition[] => {
 	return ids.flatMap((id) =>

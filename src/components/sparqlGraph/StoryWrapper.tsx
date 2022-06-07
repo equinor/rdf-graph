@@ -3,7 +3,7 @@ import { Quad, DataFactory } from 'n3';
 import { useState } from 'react';
 import { colorPredicate, hasConnectorPredicate, hasConnectorSuffixPredicate, hasSvgPredicate, rotationPredicate } from '../../mapper/predicates';
 import { RdfPatch, GraphSelection } from '../../models';
-import { getAllQuads, getData } from '../../models/cytoscapeApi';
+import { getAllQuads, getData } from '../../cytoscape-api/cytoscapeApi';
 import { getSymbol, SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';

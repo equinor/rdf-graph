@@ -1,6 +1,6 @@
 import { ElementDefinition } from 'cytoscape';
-import { getNodesAndEdges } from '../models/cytoscapeApi';
-import { RdfNodeDefinition } from '../models/cytoscapeApi.types';
+import { getNodesAndEdges } from '../cytoscape-api/cytoscapeApi';
+import { RdfNodeDefinition } from '../cytoscape-api/cytoscapeApi.types';
 import deepMerge from '../utils/deepMerge';
 import { partition } from '../utils/partition';
 import { postTransformations } from './svgPostTransformation';
