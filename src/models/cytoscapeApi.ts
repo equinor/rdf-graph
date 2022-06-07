@@ -1,8 +1,9 @@
-import cytoscape from 'cytoscape';
+import cytoscape, { ElementDefinition } from 'cytoscape';
 import { DataFactory, Quad } from 'n3';
 import { nanoid } from 'nanoid';
 import { getPredicateMapping } from '../mapper/predicates';
 import { Pair, RdfEdgeDefinition, RdfNodeDataDefinition, RdfNodeDefinition } from './cytoscapeApi.types';
+import { partition } from '../utils/partition';
 
 const { namedNode, literal, quad } = DataFactory;
 
@@ -218,11 +219,23 @@ export const deleteEmpty = (nodeIds: string[], cy: cytoscape.Core) => {
 	});
 };
 
-const allRdfData = (data: RdfNodeDataDefinition) =>
-	new Array<Pair>().concat(data.rdfData).concat(data.rdfChildren).concat(data.rdfParents).concat(data.rdfIncoming).concat(data.rdfOutgoing);
+export const getNodesAndEdges = (elements: ElementDefinition[]) => {
+	const [nodes, edges] = partition((e) => isValidRdfNodeData(e.data), elements);
+	const invalid = edges.filter((e) => !isValidRdfEdgeData(e.data));
+	if (invalid.length !== 0) {
+		throw new Error(`${invalid.length} elements are neither valid rdfNodes or rdfEdges, for example element with id ${invalid[0].data.id}`);
+	}
+
+	return { nodes: nodes.map((n) => n as RdfNodeDefinition), edges: edges.map((e) => e as RdfEdgeDefinition) };
+};
 
 export const isValidRdfNodeData = (data: any): boolean =>
 	data.id && data.rdfData && data.rdfChildren && data.rdfParents && data.rdfIncoming && data.rdfOutgoing;
+
+export const isValidRdfEdgeData = (data: any): boolean => data.id && data.rdfSubject && data.rdfPredicate && data.rdfObject;
+
+const allRdfData = (data: RdfNodeDataDefinition) =>
+	new Array<Pair>().concat(data.rdfData).concat(data.rdfChildren).concat(data.rdfParents).concat(data.rdfIncoming).concat(data.rdfOutgoing);
 
 const createSelector = (key: string, value: string) => {
 	return `[${key}='${value}']`;

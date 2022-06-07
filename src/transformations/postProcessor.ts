@@ -1,17 +1,20 @@
 import { ElementDefinition } from 'cytoscape';
+import { getNodesAndEdges } from '../models/cytoscapeApi';
 import { RdfNodeDefinition } from '../models/cytoscapeApi.types';
 import deepMerge from '../utils/deepMerge';
 import { partition } from '../utils/partition';
 import { postTransformations } from './svgPostTransformation';
 
 export const postProcessElements = (elements: ElementDefinition[]) => {
-	const nodes = elements.filter((e) => !e.data.source).map((n) => n as RdfNodeDefinition);
+	const { nodes, edges } = getNodesAndEdges(elements);
 
-	return postTransformations.flatMap((postTransformation) => {
-		const [applicable, notApplicable] = partition(postTransformation.isApplicable, nodes);
+	return postTransformations
+		.flatMap((postTransformation) => {
+			const [applicable, notApplicable] = partition(postTransformation.isApplicable, nodes);
 
-		return applicable.flatMap((n) => postTransformation.transformNew(n, nodes)).concat(notApplicable);
-	});
+			return applicable.flatMap((n) => postTransformation.transformNew(n, nodes)).concat(notApplicable);
+		})
+		.concat(edges);
 };
 
 export const postUpdateElements = (additions: ElementDefinition[], cy: cytoscape.Core) => {
