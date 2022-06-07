@@ -43,6 +43,16 @@ example:Separatox3000GasOutput
 
 example:Separatox3000ThreePhaseInput
         ui:hasConnectorSuffix  "c1" .
+
+example:Hallais
+	ui:color "pink";
+	rdfs:label "Mr pink" .
+
+example:Hei
+	ui:color "white";
+	rdfs:label "Mr. white";
+	example:connectedTo example:Hallais .
+
 `;
 Example.args = {
 	turtleString: storyTurtle,

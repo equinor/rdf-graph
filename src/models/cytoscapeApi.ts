@@ -157,6 +157,20 @@ export const syncNodeData = (id: string, cy: cytoscape.Core) => {
 	});
 };
 
+export const getSyncedNodeData = (data: RdfNodeDataDefinition) => {
+	let syncedData = JSON.parse(JSON.stringify(data));
+	getPredicateMapping().flatMap((predicate) => {
+		const predicateIri = predicate.key;
+		const predicateCytoscapeKey = predicate.value;
+
+		const pair = data.rdfData.find((p) => p.key === predicateIri);
+		if (pair) {
+			syncedData[predicateCytoscapeKey] = pair.value;
+		}
+	});
+	return syncedData;
+};
+
 export const removeData = (quads: Quad[], cy: cytoscape.Core) => {
 	const subject2Pairs = quads.reduce((acc, q) => {
 		const index = q.subject.value;
@@ -207,7 +221,7 @@ export const deleteEmpty = (nodeIds: string[], cy: cytoscape.Core) => {
 const allRdfData = (data: RdfNodeDataDefinition) =>
 	new Array<Pair>().concat(data.rdfData).concat(data.rdfChildren).concat(data.rdfParents).concat(data.rdfIncoming).concat(data.rdfOutgoing);
 
-const isValidRdfNodeData = (data: any): boolean =>
+export const isValidRdfNodeData = (data: any): boolean =>
 	data.id && data.rdfData && data.rdfChildren && data.rdfParents && data.rdfIncoming && data.rdfOutgoing;
 
 const createSelector = (key: string, value: string) => {

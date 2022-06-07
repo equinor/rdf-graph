@@ -9,9 +9,10 @@ import { RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
+import { isHierarchyPredicate } from '../../mapper/predicates';
+import { deleteEmpty, getSyncedNodeData, isValidRdfNodeData, removeData, syncNodeData } from '../../models/cytoscapeApi';
+import { RdfNodeDataDefinition, RdfNodeDefinition } from '../../models/cytoscapeApi.types';
 import { partition } from '../../utils/partition';
-import { childPredicates, isHierarchyPredicate, parentPredicates } from '../../mapper/predicates';
-import { deleteEmpty, removeData, syncNodeData } from '../../models/cytoscapeApi';
 
 const { namedNode } = DataFactory;
 
@@ -37,7 +38,11 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 
 	const prepareCytoscapeElements = async () => {
 		const elements = await turtle2Elements(turtleString);
-		const postProcessed = postProcessElements(elements);
+		const [rdfNodes, other] = partition((e) => isValidRdfNodeData(e.data), elements);
+		const syncedElements: RdfNodeDefinition[] = rdfNodes.map((e) => {
+			return { data: getSyncedNodeData(e.data as RdfNodeDataDefinition) };
+		});
+		const postProcessed = postProcessElements(other.concat(syncedElements));
 		setElements(postProcessed);
 	};
 
@@ -177,6 +182,12 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					selector: '[color]',
 					style: {
 						'background-color': 'data(color)',
+					},
+				},
+				{
+					selector: '[label]',
+					style: {
+						label: 'data(label)',
 					},
 				},
 				{
