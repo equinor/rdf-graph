@@ -1,9 +1,8 @@
 import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre, onlyUnique } from '../../utils';
-import Cytoscape, { SingularElementArgument } from 'cytoscape';
+import Cytoscape, { SingularElementArgument, ElementDefinition } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
-import cytoscape, { ElementDefinition } from 'cytoscape';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
@@ -34,7 +33,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
 
-	const [nullableCy, setCy] = useState<cytoscape.Core>();
+	const [nullableCy, setCy] = useState<Cytoscape.Core>();
 
 	const prepareCytoscapeElements = async () => {
 		const elements = await turtle2Elements(turtleString);
@@ -46,7 +45,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		setElements(postProcessed);
 	};
 
-	const initialize = (cy: cytoscape.Core) => {
+	const initialize = (cy: Cytoscape.Core) => {
 		cy.on('select', () => {
 			onElementsSelected(
 				new GraphSelection(
