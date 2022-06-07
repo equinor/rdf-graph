@@ -1,10 +1,8 @@
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from '../components/sparqlGraph/cytoscapeDataKeys';
-import { postProcessElements, turtle2Elements } from '../mapper';
+import { turtle2Elements } from '../mapper';
 import { colorPredicate, labelPredicate } from '../mapper/predicates';
 import { getData } from '../models/cytoscapeApi';
 import { RdfNodeDataDefinition } from '../models/cytoscapeApi.types';
-import { NodeType } from '../models/nodeType';
-import { SymbolKey } from '../symbol-api/symbol-library';
 
 const a = 'http://example.com/a';
 const b = 'http://example.com/b';

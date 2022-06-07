@@ -160,7 +160,7 @@ export const syncNodeData = (id: string, cy: cytoscape.Core) => {
 
 export const getSyncedNodeData = (data: RdfNodeDataDefinition) => {
 	let syncedData = JSON.parse(JSON.stringify(data));
-	getPredicateMapping().flatMap((predicate) => {
+	getPredicateMapping().forEach((predicate) => {
 		const predicateIri = predicate.key;
 		const predicateCytoscapeKey = predicate.value;
 

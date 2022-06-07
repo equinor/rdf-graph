@@ -1,6 +1,5 @@
 import { DataFactory } from 'n3';
 import { Pairs } from '../models/cytoscapeApi.types';
-import { isUri } from '../utils/isUri';
 import { TwoWayMap } from '../utils/twoWayDictionary';
 
 const { namedNode } = DataFactory;
