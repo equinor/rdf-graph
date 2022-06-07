@@ -1,13 +1,11 @@
 import { ElementDefinition, Position } from 'cytoscape';
 import { hasSvgPredicate, rotationPredicate } from '../mapper/predicates';
-import { getData } from '../models/cytoscapeElement';
-import { RdfNodeDataDefinition } from '../models/cytoscapeExtensions.types';
+import { getData } from '../models/cytoscapeApi';
+import { RdfNodeDataDefinition } from '../models/cytoscapeApi.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, NodeSymbol, SymbolRotation } from '../symbol-api';
 
 export const getPosition = (symbol: NodeSymbol, parentPosition: Position, connectorId: string) => {
-	console.log('GETTING POSITION: ', connectorId);
-
 	const relativePosition = symbol.connectors.find((c) => c.id === connectorId)!.point;
 	return {
 		x: relativePosition!.x + parentPosition.x,

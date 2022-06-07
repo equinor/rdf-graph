@@ -1,7 +1,7 @@
 import cytoscape, { ElementDefinition } from 'cytoscape';
 import { TurtleGraphError } from '../components/sparqlGraph/SparqlGraph.types';
-import { getChildren, getDataFromElement } from '../models/cytoscapeElement';
-import { RdfNodeDataDefinition, RdfNodeDefinition } from '../models/cytoscapeExtensions.types';
+import { getChildren, getData, getDataFromElement } from '../models/cytoscapeApi';
+import { RdfNodeDataDefinition, RdfNodeDefinition } from '../models/cytoscapeApi.types';
 import { NodeType } from '../models/nodeType';
 import { getSymbol, SymbolRotation } from '../symbol-api';
 import deepMerge from '../utils/deepMerge';
@@ -71,12 +71,15 @@ const createSvgTransformation = (): PostTransformation => {
 		const newConnectorIds = getChildren(newElement, hasConnectorPredicate.value);
 		const newConnectors = others.filter((o) => newConnectorIds.includes(o.data.id!));
 
-		const combinedData = deepMerge(oldElement.data(), newElement.data);
+		const combinedData = deepMerge(oldElement.data(), newElement.data) as RdfNodeDataDefinition;
+		if (!getData(combinedData, hasSvgPredicate.value)) {
+			return;
+		}
 
 		const elementConnectors = mergeElementsByKey(oldConnectorElements.concat(newConnectors));
 		const elementConnectorIds = elementConnectors.map((c) => getDataFromElement(c as RdfNodeDefinition, hasConnectorSuffixPredicate.value));
 
-		const symbol = createSymbol(combinedData as RdfNodeDataDefinition);
+		const symbol = createSymbol(combinedData);
 		const symbolConnectorIds = symbol.connectors.map((c) => c.id);
 
 		if (!setEquals(elementConnectorIds, symbolConnectorIds)) {
@@ -98,8 +101,6 @@ const createSvgTransformation = (): PostTransformation => {
 			cy.add(newSymbolNode);
 		}
 
-		console.log('NEW CONNECTORS', newConnectors);
-
 		for (let i = 0; i < newConnectors.length; i++) {
 			cy.add({
 				data: {
@@ -112,8 +113,6 @@ const createSvgTransformation = (): PostTransformation => {
 				grabbable: false,
 			});
 		}
-
-		console.log('OLD CONNECTORS', oldConnectorElements);
 
 		for (let i = 0; i < oldConnectors.length; i++) {
 			const p = getPosition(symbol, position, getDataFromElement(oldConnectorElements[i], hasConnectorSuffixPredicate.value)!);

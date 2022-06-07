@@ -1,5 +1,5 @@
-import { LayoutWrapper, SparqlGraphProps, TurtleGraphError, UiConfigProps } from './SparqlGraph.types';
-import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
+import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
+import { layoutCola, layoutCoseBilKent, layoutDagre, onlyUnique } from '../../utils';
 import Cytoscape, { SingularElementArgument } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,8 @@ import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKey
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
 import { partition } from '../../utils/partition';
+import { childPredicates, isHierarchyPredicate, parentPredicates } from '../../mapper/predicates';
+import { deleteEmpty, removeData, syncNodeData } from '../../models/cytoscapeApi';
 
 const { namedNode } = DataFactory;
 
@@ -82,34 +84,30 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		return `[${key}='${value}']`;
 	};
 
+	const getAllNodes = (quads: Quad[]) =>
+		quads.map((q) => q.subject.value).concat(quads.filter((q) => q.object.termType === 'NamedNode').map((q) => q.object.value));
+
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
 		const newAdditions = rdfTriples2Elements(patch.tripleAdditions);
 
-		console.log('newAdditions', newAdditions);
-		const [edgeTriples, dataTriples] = partition<Quad>((q) => q.object.termType === 'NamedNode', patch.tripleRemovals);
-
-		edgeTriples.forEach((q) =>
-			cy.remove(
-				'edge' +
-					createSelector(rdfSubjectKey, q.subject.value) +
-					createSelector(rdfPredicateKey, q.predicate.value) +
-					createSelector(rdfObjectKey, q.object.value)
-			)
-		);
-
-		dataTriples.forEach((q) => {
-			const nodes = cy.nodes(`node${createSelector('id', q.subject.value)}`);
-			if (nodes.length === 0) {
-				throw new TurtleGraphError(`Unable to find node with id=${q.subject.value}`);
-			}
-			// TODO find out how to remove nested data
-			// const keyToRemove = `rdfData[${q.predicate.value}]`;
-			//nodes.removeData(keyToRemove);
-		});
+		patch.tripleRemovals
+			.filter((q) => q.object.termType === 'NamedNode' && !isHierarchyPredicate(q.predicate.value))
+			.forEach((q) =>
+				cy.remove(
+					'edge' +
+						createSelector(rdfSubjectKey, q.subject.value) +
+						createSelector(rdfPredicateKey, q.predicate.value) +
+						createSelector(rdfObjectKey, q.object.value)
+				)
+			);
 
 		postUpdateElements(newAdditions, cy);
+		removeData(patch.tripleRemovals, cy);
+		const allNodes = getAllNodes(patch.tripleAdditions).concat(getAllNodes(patch.tripleRemovals)).filter(onlyUnique);
+		allNodes.forEach((node) => syncNodeData(node, cy));
+		deleteEmpty(allNodes, cy);
 	};
 
 	useEffect(() => {

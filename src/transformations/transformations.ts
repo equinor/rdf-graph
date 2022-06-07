@@ -7,7 +7,7 @@ import {
 	createNodeWithIncomingEdge,
 	createNodeWithOutgoingEdge,
 	createNodeWithParents,
-} from '../models/cytoscapeElement';
+} from '../models/cytoscapeApi';
 import { childPredicates, isDataKey, parentPredicates } from '../mapper/predicates';
 
 export type Transformation = (quad: Quad) => ElementDefinition[];
@@ -17,7 +17,15 @@ const isDataTriple = ({ predicate, object }: Quad) => {
 };
 
 const isEdgeTriple = (q: Quad) => {
-	return !isDataTriple(q);
+	return !isDataTriple(q) && !isChildTriple(q) && !isParentTriple(q);
+};
+
+const isParentTriple = (q: Quad) => {
+	return parentPredicates.includes(q.predicate.value);
+};
+
+const isChildTriple = (q: Quad) => {
+	return childPredicates.includes(q.predicate.value);
 };
 
 export const edgeTransformation = (q: Quad): ElementDefinition[] =>

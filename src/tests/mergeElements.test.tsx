@@ -1,6 +1,6 @@
 import { ElementDefinition } from 'cytoscape';
 import { mergeElementsByKey } from '../mapper/mergeElements';
-import { RdfNodeDefinition } from '../models/cytoscapeExtensions.types';
+import { RdfNodeDefinition } from '../models/cytoscapeApi.types';
 
 const createDummyElements1 = (ids: string[], predicates: { key: string; value: string }[]): RdfNodeDefinition[] => {
 	return ids.flatMap((id) =>
@@ -47,9 +47,6 @@ describe('Merge element', () => {
 
 		const actual = setData(mergeElementsByKey(elements));
 		const expected = setData(createDummyElements2(['1'], [p1, p2]));
-
-		console.log('A', actual);
-		console.log('E', expected);
 
 		expect(actual).toMatchObject(expected);
 	});

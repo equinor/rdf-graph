@@ -1,17 +1,9 @@
 import { Button } from '@equinor/eds-core-react';
 import { Quad, DataFactory } from 'n3';
 import { useState } from 'react';
-import {
-	colorPredicate,
-	getPredicate,
-	hasConnectorPredicate,
-	hasConnectorSuffixPredicate,
-	hasSvgPredicate,
-	rotationPredicate,
-} from '../../mapper/predicates';
+import { colorPredicate, hasConnectorPredicate, hasConnectorSuffixPredicate, hasSvgPredicate, rotationPredicate } from '../../mapper/predicates';
 import { RdfPatch, GraphSelection } from '../../models';
-import { getData } from '../../models/cytoscapeElement';
-import { RdfNodeDataDefinition } from '../../models/cytoscapeExtensions.types';
+import { getAllQuads, getData } from '../../models/cytoscapeApi';
 import { getSymbol, SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { LayoutProps } from './SparqlGraph.types';
@@ -34,21 +26,9 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	const [nodeNumber, setNodeNumber] = useState<number>(1);
 
 	const deleteSelection = () => {
-		const edges = selection.edges
-			.concat(selection.individuals.flatMap((i) => i.incoming))
-			.concat(selection.individuals.flatMap((i) => i.outgoing));
+		const removals = selection.individuals.flatMap((node) => getAllQuads(node)).concat(selection.edges);
 
-		const dataTriples = selection.individuals.flatMap((i) => {
-			let quads: Quad[] = [];
-			const keys = Object.keys(i.data);
-			keys.forEach((k) => {
-				const predicate = getPredicate(k);
-				predicate && quads.push(quad(namedNode(i.iri), predicate, literal(i.data[k])));
-			});
-			return quads;
-		});
-
-		const newPatch = new RdfPatch({ tripleAdditions: [], tripleRemovals: edges.concat(dataTriples) });
+		const newPatch = new RdfPatch({ tripleAdditions: [], tripleRemovals: removals });
 
 		let newPatches = [...patches, newPatch];
 		setPatches(newPatches);
@@ -63,7 +43,7 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 
 			const newPatch = new RdfPatch({
 				tripleAdditions: [quad(currentIri, rotationPredicate, literal(newRotation.toString()))],
-				tripleRemovals: [quad(currentIri, rotationPredicate, literal(currentRotation.toString()))],
+				tripleRemovals: [],
 			});
 			let newPatches = [...patches, newPatch];
 			setPatches(newPatches);
@@ -88,12 +68,11 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	const convertToSvg = () => {
 		const current = selection.individuals[0];
 		const node = current;
-		const nodeId = current.id!;
+		const nodeId = current.id;
 		const n3Node = namedNode(nodeId);
 
 		const symbolId = svgs[0];
 		const symbol = getSymbol(symbolId);
-		console.log('SYMBOL ', symbol);
 
 		let additions = [quad(n3Node, hasSvgPredicate, literal(symbolId))];
 		let removals: Quad[] = [];
@@ -124,18 +103,18 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 			tripleRemovals: removals,
 		});
 
-		console.log('PATCH', newPatch);
-		let newPatches = [...patches, newPatch];
+		const newPatches = [...patches, newPatch];
 		setPatches(newPatches);
 	};
 
 	const changeColor = () => {
 		if (selection.individuals.length > 0) {
-			const color = selection.individuals[0].data.color;
-			const index = colors.indexOf(color ?? 'grey');
+			const current = selection.individuals[0];
+			const currentColor = getData(current, colorPredicate.value);
+			const index = colors.indexOf(currentColor ?? 'grey');
 			const newColorIndex = (index + 1) % colors.length;
 			const colorLiteral = literal(colors[newColorIndex]);
-			const node = namedNode(selection.individuals[0].iri);
+			const node = namedNode(selection.individuals[0].id);
 			addTriples([quad(node, colorPredicate, colorLiteral)]);
 		}
 	};
@@ -169,7 +148,6 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 	};
 
 	const onElementsSelected = (selection: GraphSelection): void => {
-		console.log('SELECTION ', selection);
 		setSelection(selection);
 	};
 

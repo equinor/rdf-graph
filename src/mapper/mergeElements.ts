@@ -1,5 +1,5 @@
 import { ElementDefinition } from 'cytoscape';
-import { RdfNodeDataDefinition } from '../models/cytoscapeExtensions.types';
+import { RdfNodeDataDefinition } from '../models/cytoscapeApi.types';
 import deepMerge from '../utils/deepMerge';
 
 export const groupElementsByKey = (elements: ElementDefinition[], key: string) => {
