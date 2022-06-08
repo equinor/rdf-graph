@@ -1,23 +1,19 @@
-import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
-import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
+import { LayoutWrapper, SparqlGraphProps } from './SparqlGraph.types';
+import { layoutCola, layoutCoseBilKent, layoutDagre, onlyUnique } from '../../utils';
 import Cytoscape, { SingularElementArgument, ElementDefinition } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
 import { useEffect, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { Edge, Node, RdfPatch, GraphSelection } from '../../models';
+import { RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
+import { isHierarchyPredicate } from '../../mapper/predicates';
+import { deleteEmpty, getSyncedNodeData, isValidRdfNodeData, removeData, syncNodeData } from '../../cytoscape-api/cytoscapeApi';
+import { RdfNodeDataDefinition, RdfNodeDefinition } from '../../cytoscape-api/cytoscapeApi.types';
+import { partition } from '../../utils/partition';
 
 const { namedNode } = DataFactory;
-
-const defaultUiConfig: UiConfigProps = {
-	css: { height: '100vh', width: '100%' },
-	minZoom: 0.4,
-	maxZoom: 2,
-	zoom: undefined,
-	zoomingEnabled: true,
-};
 
 const layouts: LayoutWrapper[] = [
 	{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
@@ -25,15 +21,20 @@ const layouts: LayoutWrapper[] = [
 	{ name: 'Dagre', layout: layoutDagre },
 ];
 
-export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onElementsSelected }: SparqlGraphProps) => {
+export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => {
+	const { turtleString, layoutName, patches, uiConfig } = state;
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
 
 	const prepareCytoscapeElements = async () => {
-		const elements = await turtle2Elements(turtleString);
-		const postProcessed = postProcessElements(elements);
+		const es = await turtle2Elements(turtleString);
+		const [rdfNodes, other] = partition((e) => isValidRdfNodeData(e.data), es);
+		const syncedElements: RdfNodeDefinition[] = rdfNodes.map((e) => {
+			return { data: getSyncedNodeData(e.data as RdfNodeDataDefinition) };
+		});
+		const postProcessed = postProcessElements(other.concat(syncedElements));
 		setElements(postProcessed);
 	};
 
@@ -41,13 +42,8 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		cy.on('select', () => {
 			onElementsSelected(
 				new GraphSelection(
-					cy.$('node:selected').map((n) => {
-						const id = n.data('id');
-						const incoming = cy.$(`edge[target = "${id}"]`).map(createEdge);
-						const outgoing = cy.$(`edge[source = "${id}"]`).map(createEdge);
-						return new Node(id, n.data(), incoming, outgoing);
-					}),
-					cy.$('edge:selected').map(createEdge)
+					cy.$('node:selected').map((n) => n.data()),
+					cy.$('edge:selected').map(createQuad)
 				)
 			);
 		});
@@ -59,14 +55,12 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		});
 	};
 
-	const createEdge = (element: SingularElementArgument): Edge => new Edge(element.id(), createRdfTriple(element));
-
-	const createRdfTriple = (element: SingularElementArgument): Quad =>
+	const createQuad = (element: SingularElementArgument): Quad =>
 		new Quad(namedNode(element.data(rdfSubjectKey)), namedNode(element.data(rdfPredicateKey)), namedNode(element.data(rdfObjectKey)));
 
 	useEffect(() => {
 		prepareCytoscapeElements();
-	}, [turtleString]);
+	}, [turtleString, state.resetCounter]);
 
 	useEffect(() => {
 		if (nullableCy) {
@@ -83,17 +77,42 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 		setCy(cy);
 	};
 
+	const createSelector = (key: string, value: string) => {
+		return `[${key}='${value}']`;
+	};
+
+	const getAllNodes = (quads: Quad[]) =>
+		quads.map((q) => q.subject.value).concat(quads.filter((q) => q.object.termType === 'NamedNode').map((q) => q.object.value));
+
 	const applyPatch = (patch: RdfPatch) => {
 		if (!nullableCy) return;
 		const cy = nullableCy;
-		const newElements = rdfTriples2Elements(patch.tripleAdditions);
-		postUpdateElements(newElements, cy);
+		const newAdditions = rdfTriples2Elements(patch.tripleAdditions);
 
-		patch.edgeRemovals.forEach((e) => cy.remove(`edge[id='${e.edgeId}']`));
-		patch.individualRemovals.forEach((r) => cy.remove(`node[id='${r.iri}']`));
+		patch.tripleRemovals
+			.filter((q) => q.object.termType === 'NamedNode' && !isHierarchyPredicate(q.predicate.value))
+			.forEach((q) =>
+				cy.remove(
+					'edge' +
+						createSelector(rdfSubjectKey, q.subject.value) +
+						createSelector(rdfPredicateKey, q.predicate.value) +
+						createSelector(rdfObjectKey, q.object.value)
+				)
+			);
 
-		newElements.map((e) => e.data.id!);
+		postUpdateElements(newAdditions, cy);
+		removeData(patch.tripleRemovals, cy);
+		const allNodes = getAllNodes(patch.tripleAdditions).concat(getAllNodes(patch.tripleRemovals)).filter(onlyUnique);
+		allNodes.forEach((node) => syncNodeData(node, cy));
+		deleteEmpty(allNodes, cy);
 	};
+
+	useEffect(() => {
+		if (nullableCy) {
+			const cy = nullableCy!;
+			cy.forceRender();
+		}
+	}, [state.forceRedraw]);
 
 	useEffect(() => {
 		const patch = patches.length > 0 && patches.at(-1);
@@ -110,7 +129,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	return (
 		<CytoscapeComponent
 			elements={elements}
-			style={uiConfig?.css ?? defaultUiConfig.css}
+			style={uiConfig.css}
 			stylesheet={[
 				{
 					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
@@ -165,6 +184,12 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					},
 				},
 				{
+					selector: '[label]',
+					style: {
+						label: 'data(label)',
+					},
+				},
+				{
 					selector: 'edge',
 					style: {
 						'curve-style': 'taxi',
@@ -178,10 +203,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					},
 				},
 			]}
-			maxZoom={uiConfig?.maxZoom ?? defaultUiConfig.maxZoom}
-			minZoom={uiConfig?.minZoom ?? defaultUiConfig.minZoom}
-			zoom={uiConfig?.zoom ?? defaultUiConfig.zoom}
-			zoomingEnabled={uiConfig?.zoomingEnabled ?? defaultUiConfig.zoomingEnabled}
+			maxZoom={uiConfig.maxZoom}
+			minZoom={uiConfig.minZoom}
+			zoom={uiConfig.zoom}
+			zoomingEnabled={uiConfig?.zoomingEnabled}
 			cy={(x) => setCytoscapeHandle(x)}
 		/>
 	);

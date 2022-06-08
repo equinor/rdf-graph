@@ -1,54 +1,11 @@
 import { Quad } from 'n3';
-import { NodeType } from '../models/nodeType';
 import { mergeElementsByKey } from './mergeElements';
-import {
-	colorPredicate,
-	compoundNodePredicate,
-	hasConnectorPredicate,
-	hasConnectorSuffix,
-	hasSvgPredicate,
-	labelPredicate,
-	rotationPredicate,
-} from './predicates';
-import {
-	createPropertyTransform,
-	edgeTransformation,
-	Transformation,
-	hasChildrenTransform,
-	parentTransform,
-	tagSubject,
-	postProcessSvgTag,
-	literalDataTransform,
-} from './transformations';
+import { edgeTransformation, dataTransform, hasChildrenTransform, parentTransform } from '../transformations/transformations';
 
-export const rdfTriples2Elements = (triples: Quad[]) => {
-	const predicate2Transformation: { [key: string]: Transformation[] } = {
-		[compoundNodePredicate.value]: [parentTransform],
-		[labelPredicate.value]: [createPropertyTransform('label')],
-		[colorPredicate.value]: [createPropertyTransform('color')],
-		[hasSvgPredicate.value]: [
-			createPropertyTransform('symbolId'),
-			tagSubject(postProcessSvgTag),
-			tagSubject('nodeType', NodeType.SymbolContainer),
-		],
-		[rotationPredicate.value]: [
-			createPropertyTransform('rotation'),
-			tagSubject(postProcessSvgTag),
-			tagSubject('nodeType', NodeType.SymbolContainer),
-		],
-		[hasConnectorPredicate.value]: [hasChildrenTransform, createPropertyTransform('hasConnector')],
-		[hasConnectorSuffix.value]: [
-			createPropertyTransform('connectorId'),
-			tagSubject('nodeType', NodeType.SymbolConnector),
-			tagSubject('layoutIgnore', true),
-			tagSubject('ignore', true), // created only for data, actual connectors created in post process
-		],
-	};
+export const rdfTriples2Elements = (quads: Quad[]) => {
+	const transformations = [edgeTransformation, dataTransform, hasChildrenTransform, parentTransform];
 
-	const elements = triples.flatMap((triple) =>
-		(predicate2Transformation[triple.predicate.value] ?? [edgeTransformation])
-			.concat(literalDataTransform)
-			.flatMap((transform) => transform(triple))
-	);
+	const elements = transformations.flatMap((transform) => quads.flatMap((q) => transform(q)));
+
 	return mergeElementsByKey(elements);
 };
