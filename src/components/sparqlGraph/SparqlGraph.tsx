@@ -1,4 +1,4 @@
-import { LayoutWrapper, SparqlGraphProps, UiConfigProps } from './SparqlGraph.types';
+import { LayoutWrapper, SparqlGraphProps } from './SparqlGraph.types';
 import { layoutCola, layoutCoseBilKent, layoutDagre, onlyUnique } from '../../utils';
 import Cytoscape, { SingularElementArgument, ElementDefinition } from 'cytoscape';
 import { postProcessElements, postUpdateElements, rdfTriples2Elements, turtle2Elements } from '../../mapper';
@@ -15,29 +15,22 @@ import { partition } from '../../utils/partition';
 
 const { namedNode } = DataFactory;
 
-const defaultUiConfig: UiConfigProps = {
-	css: { height: '100vh', width: '100%' },
-	minZoom: 0.4,
-	maxZoom: 2,
-	zoom: undefined,
-	zoomingEnabled: true,
-};
-
 const layouts: LayoutWrapper[] = [
 	{ name: 'Cose-Bilkent', layout: layoutCoseBilKent },
 	{ name: 'Cola', layout: layoutCola },
 	{ name: 'Dagre', layout: layoutDagre },
 ];
 
-export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onElementsSelected }: SparqlGraphProps) => {
+export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => {
+	const { turtleString, layoutName, patches, uiConfig } = state;
 	const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
 	const [elements, setElements] = useState<ElementDefinition[]>([]);
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
 
 	const prepareCytoscapeElements = async () => {
-		const elements = await turtle2Elements(turtleString);
-		const [rdfNodes, other] = partition((e) => isValidRdfNodeData(e.data), elements);
+		const es = await turtle2Elements(turtleString);
+		const [rdfNodes, other] = partition((e) => isValidRdfNodeData(e.data), es);
 		const syncedElements: RdfNodeDefinition[] = rdfNodes.map((e) => {
 			return { data: getSyncedNodeData(e.data as RdfNodeDataDefinition) };
 		});
@@ -67,7 +60,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 
 	useEffect(() => {
 		prepareCytoscapeElements();
-	}, [turtleString]);
+	}, [turtleString, state.resetCounter]);
 
 	useEffect(() => {
 		if (nullableCy) {
@@ -115,6 +108,13 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	};
 
 	useEffect(() => {
+		if (nullableCy) {
+			const cy = nullableCy!;
+			cy.forceRender();
+		}
+	}, [state.forceRedraw]);
+
+	useEffect(() => {
 		const patch = patches.length > 0 && patches.at(-1);
 		patch && applyPatch(patch);
 	}, [patches]);
@@ -129,7 +129,7 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 	return (
 		<CytoscapeComponent
 			elements={elements}
-			style={uiConfig?.css ?? defaultUiConfig.css}
+			style={uiConfig.css}
 			stylesheet={[
 				{
 					selector: `[nodeType = "${NodeType.SymbolContainer}"]`,
@@ -203,10 +203,10 @@ export const SparqlGraph = ({ turtleString, layoutName, patches, uiConfig, onEle
 					},
 				},
 			]}
-			maxZoom={uiConfig?.maxZoom ?? defaultUiConfig.maxZoom}
-			minZoom={uiConfig?.minZoom ?? defaultUiConfig.minZoom}
-			zoom={uiConfig?.zoom ?? defaultUiConfig.zoom}
-			zoomingEnabled={uiConfig?.zoomingEnabled ?? defaultUiConfig.zoomingEnabled}
+			maxZoom={uiConfig.maxZoom}
+			minZoom={uiConfig.minZoom}
+			zoom={uiConfig.zoom}
+			zoomingEnabled={uiConfig?.zoomingEnabled}
 			cy={(x) => setCytoscapeHandle(x)}
 		/>
 	);

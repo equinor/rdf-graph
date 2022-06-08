@@ -8,3 +8,5 @@ export class RdfPatch {
 		this.tripleRemovals = tripleRemovals;
 	}
 }
+
+export const emptyPatch: RdfPatch = { tripleAdditions: [], tripleRemovals: [] };

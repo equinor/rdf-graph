@@ -1,155 +1,84 @@
 import { Button } from '@equinor/eds-core-react';
-import { Quad, DataFactory } from 'n3';
-import { useState } from 'react';
-import { colorPredicate, hasConnectorPredicate, hasConnectorSuffixPredicate, hasSvgPredicate, rotationPredicate } from '../../mapper/predicates';
-import { RdfPatch, GraphSelection } from '../../models';
-import { getAllQuads, getData } from '../../cytoscape-api/cytoscapeApi';
-import { getSymbol, SymbolKey } from '../../symbol-api';
+import { useReducer, useState } from 'react';
+import { colorPredicate, hasSvgPredicate } from '../../mapper/predicates';
+import { GraphSelection } from '../../models';
+import { getData } from '../../cytoscape-api/cytoscapeApi';
+import { SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
-import { LayoutProps } from './SparqlGraph.types';
-
-const { namedNode, literal, quad } = DataFactory;
+import { reducer } from '../state/reducer';
+import { initState } from '../state/state';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
-	layoutName: LayoutProps;
 };
 
 const colors = ['blue', 'green', 'red', 'yellow', 'purple', 'pink', 'cyan', 'grey'];
 const svgs = [SymbolKey.Separator_1, SymbolKey.Valve_3Way_1];
 
-export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) => {
-	const [selection, setSelection] = useState<GraphSelection>(new GraphSelection([], []));
-
-	const [patches, setPatches] = useState<Array<RdfPatch>>([]);
-
+export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	const [nodeNumber, setNodeNumber] = useState<number>(1);
+	const [state, dispatch] = useReducer(reducer, initState);
 
 	const deleteSelection = () => {
-		const removals = selection.individuals.flatMap((node) => getAllQuads(node)).concat(selection.edges);
-
-		const newPatch = new RdfPatch({ tripleAdditions: [], tripleRemovals: removals });
-
-		let newPatches = [...patches, newPatch];
-		setPatches(newPatches);
+		dispatch({ type: 'deleteSelection' });
 	};
 
 	const rotateSelection = () => {
-		if (selection.individuals.length > 0) {
-			const current = selection.individuals[0];
-			const currentIri = namedNode(current.id!);
-			const currentRotation = parseInt(getData(current, rotationPredicate.value) ?? '0');
-			const newRotation = ((currentRotation / 90 + 1) % 4) * 90;
-
-			const newPatch = new RdfPatch({
-				tripleAdditions: [quad(currentIri, rotationPredicate, literal(newRotation.toString()))],
-				tripleRemovals: [],
-			});
-			let newPatches = [...patches, newPatch];
-			setPatches(newPatches);
-		}
+		dispatch({ type: 'rotateSelection' });
 	};
 
 	const switchSvg = () => {
-		if (selection.individuals.length > 0) {
-			const current = selection.individuals[0];
+		if (state.graphSelection.individuals.length > 0) {
+			const current = state.graphSelection.individuals[0];
 			const symbolId = getData(current, hasSvgPredicate.value);
-			const currentIri = namedNode(current.id!);
 			if (!symbolId) {
-				convertToSvg();
+				dispatch({ type: 'switchSvg', payload: { svgKey: svgs[0] } });
 			} else {
 				const index = svgs.indexOf(symbolId as SymbolKey);
 				const newIndex = (index + 1) % svgs.length;
-				addTriples([quad(currentIri, hasSvgPredicate, literal(svgs[newIndex].toString()))]);
+				dispatch({ type: 'switchSvg', payload: { svgKey: svgs[newIndex] } });
 			}
 		}
 	};
-
-	const convertToSvg = () => {
-		const current = selection.individuals[0];
-		const node = current;
-		const nodeId = current.id;
-		const n3Node = namedNode(nodeId);
-
-		const symbolId = svgs[0];
-		const symbol = getSymbol(symbolId);
-
-		let additions = [quad(n3Node, hasSvgPredicate, literal(symbolId))];
-		let removals: Quad[] = [];
-		let incomingCounter = 0;
-		let outgoingCounter = 0;
-
-		for (let i = 0; i < symbol.connectors.length; i++) {
-			const n3Connector = namedNode(nodeId + 'connector' + i);
-			const connectorSuffix = literal(symbol.connectors[i].id);
-
-			if (incomingCounter < node.rdfIncoming.length) {
-				const pair = node.rdfIncoming[incomingCounter];
-				additions.push(quad(namedNode(pair.value), namedNode(pair.key), n3Connector));
-				removals.push(quad(namedNode(pair.value), namedNode(pair.key), namedNode(nodeId)));
-				incomingCounter++;
-			} else if (outgoingCounter < node.rdfOutgoing.length) {
-				const pair = node.rdfOutgoing[outgoingCounter];
-				additions.push(quad(n3Connector, namedNode(pair.key), namedNode(pair.value)));
-				removals.push(quad(namedNode(nodeId), namedNode(pair.key), namedNode(pair.value)));
-				outgoingCounter++;
-			}
-
-			additions.push(quad(n3Node, hasConnectorPredicate, n3Connector));
-			additions.push(quad(n3Connector, hasConnectorSuffixPredicate, connectorSuffix));
-		}
-		const newPatch = new RdfPatch({
-			tripleAdditions: additions,
-			tripleRemovals: removals,
-		});
-
-		const newPatches = [...patches, newPatch];
-		setPatches(newPatches);
-	};
-
 	const changeColor = () => {
-		if (selection.individuals.length > 0) {
-			const current = selection.individuals[0];
+		if (state.graphSelection.individuals.length > 0) {
+			const current = state.graphSelection.individuals[0];
 			const currentColor = getData(current, colorPredicate.value);
 			const index = colors.indexOf(currentColor ?? 'grey');
 			const newColorIndex = (index + 1) % colors.length;
-			const colorLiteral = literal(colors[newColorIndex]);
-			const node = namedNode(selection.individuals[0].id);
-			addTriples([quad(node, colorPredicate, colorLiteral)]);
+			const newColor = colors[newColorIndex];
+			dispatch({ type: 'changeColor', payload: { color: newColor, ids: state.graphSelection.individuals.map((i) => i.id) } });
 		}
 	};
 
 	const addNode = () => {
-		const node = namedNode('http://example.com/node' + nodeNumber);
-		const colorLiteral = literal(colors[0]);
-		addTriples([quad(node, colorPredicate, colorLiteral)]);
+		const iri = 'http://example.com/node' + nodeNumber;
+		const label = 'node' + nodeNumber;
 
-		setNodeNumber(nodeNumber + 1);
+		dispatch({ type: 'addNode', payload: { iri: iri, label: label } });
+		setNodeNumber((n) => n + 1);
 	};
 
 	const connect = () => {
-		if (selection.individuals.length === 2) {
-			const node1 = namedNode(selection.individuals[0].id!);
-			const node2 = namedNode(selection.individuals[1].id!);
+		if (state.graphSelection.individuals.length === 2) {
+			const node1 = state.graphSelection.individuals[0].id;
+			const node2 = state.graphSelection.individuals[1].id;
 
-			const exampleConnectedPredicate = namedNode('http://example.com/connected');
+			const exampleConnectedPredicate = 'http://example.com/connected';
 
-			addTriples([quad(node1, exampleConnectedPredicate, node2)]);
+			dispatch({ type: 'connect', payload: { subject: node1, predicate: exampleConnectedPredicate, object: node2 } });
 		}
 	};
 
-	const addTriples = (triples: Quad[]): void => {
-		const newPatch = new RdfPatch({
-			tripleAdditions: triples,
-			tripleRemovals: [],
-		});
-		let newPatches = [...patches, newPatch];
-		setPatches(newPatches);
+	const onElementsSelected = (selection: GraphSelection): void => {
+		dispatch({ type: 'updateSelection', payload: selection });
 	};
 
-	const onElementsSelected = (selection: GraphSelection): void => {
-		setSelection(selection);
+	const loadTurtle = (): void => {
+		dispatch({ type: 'updateTurtle', payload: { turtle: turtleString } });
 	};
+
+	//	dispatch({type: 'updateTurtle', payload: {turtle: turtleString}});
 
 	return (
 		<div>
@@ -159,8 +88,9 @@ export const StoryWrapper = ({ turtleString, layoutName }: SparqlWrapperProps) =
 			<Button onClick={connect}> Connect </Button>
 			<Button onClick={addNode}> Add </Button>
 			<Button onClick={changeColor}> Color </Button>
+			<Button onClick={loadTurtle}> Load turtle </Button>
 
-			<SparqlGraph turtleString={turtleString} layoutName={layoutName} patches={patches} onElementsSelected={onElementsSelected} />
+			<SparqlGraph state={state} onElementsSelected={onElementsSelected} />
 		</div>
 	);
 };
