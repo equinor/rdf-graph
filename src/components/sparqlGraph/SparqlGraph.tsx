@@ -192,6 +192,11 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 				{
 					selector: `[${simpleSvgKey}]`,
 					style: {
+						'background-clip': 'none',
+						'background-fit': 'contain',
+						'background-opacity': 0,
+						'border-width': 0,
+						'padding-bottom': '0px',
 						'background-image': `data(${simpleSvgKey})`,
 					},
 				},
