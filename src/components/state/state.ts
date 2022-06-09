@@ -14,6 +14,7 @@ export const initState: State = {
 		maxZoom: 2,
 		zoom: undefined,
 		zoomingEnabled: true,
+		edgeStyle: 'taxi',
 	},
 	resetCounter: 0,
 	forceRedraw: 0,
