@@ -10,6 +10,7 @@ import {
 } from '../../mapper/predicates';
 import { emptyPatch, GraphSelection, RdfPatch } from '../../models';
 import { getSymbol, SymbolKey } from '../../symbol-api';
+import { UiConfigProps } from '../sparqlGraph/SparqlGraph.types';
 import { State } from './state';
 
 const { namedNode, literal, quad } = DataFactory;
@@ -66,6 +67,11 @@ type RedrawAction = {
 	type: 'redraw';
 };
 
+type UpdateUiConfigAction = {
+	type: 'updateUiConfig';
+	payload: UiConfigProps;
+};
+
 type Action =
 	| DeleteAction
 	| UpdateSelectionAction
@@ -77,7 +83,8 @@ type Action =
 	| ChangeDataAction
 	| ConnectAction
 	| RotateSelection
-	| RedrawAction;
+	| RedrawAction
+	| UpdateUiConfigAction;
 
 export const reducer = (state: State, action: Action): State => {
 	switch (action.type) {
@@ -107,6 +114,8 @@ export const reducer = (state: State, action: Action): State => {
 			return createNewState(state, rotateSelection(state.graphSelection));
 		case 'redraw':
 			return { ...state, forceRedraw: state.forceRedraw + 1 };
+		case 'updateUiConfig':
+			return { ...state, uiConfig: { ...state.uiConfig, ...action.payload } };
 		default:
 			throw new Error(`Invalid action ${JSON.stringify(action)}`);
 	}
