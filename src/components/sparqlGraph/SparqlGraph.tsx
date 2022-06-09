@@ -8,7 +8,7 @@ import { RdfPatch, GraphSelection } from '../../models';
 import { rdfObjectKey, rdfPredicateKey, rdfSubjectKey } from './cytoscapeDataKeys';
 import { NodeType } from '../../models/nodeType';
 import { Quad, DataFactory } from 'n3';
-import { isHierarchyPredicate } from '../../mapper/predicates';
+import { colorKey, isHierarchyPredicate, labelKey, simpleSvgKey } from '../../mapper/predicates';
 import { deleteEmpty, getSyncedNodeData, isValidRdfNodeData, removeData, syncNodeData } from '../../cytoscape-api/cytoscapeApi';
 import { RdfNodeDataDefinition, RdfNodeDefinition } from '../../cytoscape-api/cytoscapeApi.types';
 import { partition } from '../../utils/partition';
@@ -178,15 +178,21 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 					},
 				},
 				{
-					selector: '[color]',
+					selector: `[${colorKey}]`,
 					style: {
-						'background-color': 'data(color)',
+						'background-color': `data(${colorKey})`,
 					},
 				},
 				{
-					selector: '[label]',
+					selector: `[${labelKey}]`,
 					style: {
-						label: 'data(label)',
+						label: `data(${labelKey})`,
+					},
+				},
+				{
+					selector: `[${simpleSvgKey}]`,
+					style: {
+						'background-image': `data(${simpleSvgKey})`,
 					},
 				},
 				{

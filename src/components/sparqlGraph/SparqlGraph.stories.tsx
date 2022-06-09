@@ -53,6 +53,11 @@ example:Hei
 	rdfs:label "Mr. white";
 	example:connectedTo example:Hallais .
 
+example:Bilde
+	rdfs:label "Mr. picture";
+	ui:hasSimpleSvg 'https://dugtrioexperimental.blob.core.windows.net/graph-icons/esd-draft/logicsymbols/LogicPort-OR.svg';
+	example:connectedTo example:Hallais .
+
 `;
 Example.args = {
 	turtleString: storyTurtle,
