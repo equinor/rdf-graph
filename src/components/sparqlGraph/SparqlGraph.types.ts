@@ -14,12 +14,15 @@ export type LayoutWrapper = {
 	layout: LayoutOptions;
 };
 
+export type EdgeStyle = 'haystack' | 'straight' | 'bezier' | 'unbundled-bezier' | 'segments' | 'taxi';
+
 export interface UiConfigProps {
 	css: React.CSSProperties;
 	maxZoom: number;
 	minZoom: number;
 	zoom?: number;
 	zoomingEnabled: boolean;
+	edgeStyle: EdgeStyle;
 }
 
 export class TurtleGraphError extends Error {

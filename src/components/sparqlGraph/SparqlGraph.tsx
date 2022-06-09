@@ -198,7 +198,7 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 				{
 					selector: 'edge',
 					style: {
-						'curve-style': 'taxi',
+						'curve-style': state.uiConfig.edgeStyle,
 						width: '1px',
 						color: 'black',
 						'line-color': 'black',

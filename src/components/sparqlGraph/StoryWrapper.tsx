@@ -7,12 +7,14 @@ import { SymbolKey } from '../../symbol-api';
 import { SparqlGraph } from './SparqlGraph';
 import { reducer } from '../state/reducer';
 import { initState } from '../state/state';
+import { EdgeStyle } from './SparqlGraph.types';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
 };
 
 const colors = ['blue', 'green', 'red', 'yellow', 'purple', 'pink', 'cyan', 'grey'];
+const edgeStyles: EdgeStyle[] = ['haystack', 'straight', 'bezier', 'unbundled-bezier', 'segments', 'taxi'];
 const svgs = [SymbolKey.Separator_1, SymbolKey.Valve_3Way_1];
 
 export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
@@ -49,6 +51,14 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			const newColor = colors[newColorIndex];
 			dispatch({ type: 'changeColor', payload: { color: newColor, ids: state.graphSelection.individuals.map((i) => i.id) } });
 		}
+	};
+
+	const changeEdgeStyle = () => {
+		const currentEdge = state.uiConfig.edgeStyle;
+		const index = edgeStyles.indexOf(currentEdge ?? 'haystack');
+		const newEdgeIndex = (index + 1) % edgeStyles.length;
+		const newEdgeStyle = edgeStyles[newEdgeIndex];
+		dispatch({ type: 'updateUiConfig', payload: { ...state.uiConfig, edgeStyle: newEdgeStyle } });
 	};
 
 	const addNode = () => {
@@ -89,6 +99,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={addNode}> Add </Button>
 			<Button onClick={changeColor}> Color </Button>
 			<Button onClick={loadTurtle}> Load turtle </Button>
+			<Button onClick={changeEdgeStyle}> Change Edge Style </Button>
 
 			<SparqlGraph state={state} onElementsSelected={onElementsSelected} />
 		</div>
