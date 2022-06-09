@@ -9,6 +9,7 @@ const labelIri = 'http://www.w3.org/2000/01/rdf-schema#label';
 const colorIri = 'http://rdf.equinor.com/ui/color';
 const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
 const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
+const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
 const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 
@@ -16,7 +17,8 @@ const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 export const compoundNodeKey = 'parent';
 export const labelKey = 'label';
 export const colorKey = 'color';
-export const hasSvgKey = 'image';
+export const svgKey = 'image';
+export const simpleSvgKey = 'simpleImage';
 export const rotationKey = 'rotation';
 
 export const compoundNodePredicate = namedNode(compoundNodeIri);
@@ -24,6 +26,7 @@ export const labelPredicate = namedNode(labelIri);
 export const colorPredicate = namedNode(colorIri);
 export const hasConnectorPredicate = namedNode(hasConnectorIri);
 export const hasSvgPredicate = namedNode(hasSvgIri);
+export const hasSimpleSvgPredicate = namedNode(hasSimpleSvgIri);
 export const hasConnectorSuffixPredicate = namedNode(hasConnectorSuffixIri);
 export const rotationPredicate = namedNode(rotationIri);
 
@@ -31,7 +34,8 @@ const dict: { [key: string]: string } = {
 	[compoundNodeIri]: compoundNodeKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
-	[hasSvgIri]: hasSvgKey,
+	[hasSimpleSvgIri]: simpleSvgKey,
+	[hasSvgIri]: svgKey,
 	[rotationIri]: rotationKey,
 };
 
