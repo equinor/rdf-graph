@@ -190,7 +190,7 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 						'text-valign': 'bottom',
 						'text-halign': 'center',
 						'text-wrap': 'wrap',
-						'text-max-width': '220px',
+						'text-max-width': '150px',
 					},
 				},
 				{
