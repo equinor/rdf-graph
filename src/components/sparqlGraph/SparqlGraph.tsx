@@ -187,6 +187,10 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 					selector: `[${labelKey}]`,
 					style: {
 						label: `data(${labelKey})`,
+						'text-valign': 'bottom',
+						'text-halign': 'center',
+						'text-wrap': 'wrap',
+						'text-max-width': '220px',
 					},
 				},
 				{

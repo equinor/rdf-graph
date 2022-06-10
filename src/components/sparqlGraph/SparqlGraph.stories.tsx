@@ -53,6 +53,10 @@ example:Hei
 	rdfs:label "Mr. white";
 	example:connectedTo example:Hallais .
 
+example:Text
+	ui:color "purple";
+	rdfs:label "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae efficitur sem. Nullam vitae felis faucibus, blandit enim nec," .
+
 example:Bilde
 	rdfs:label "Mr. picture";
 	ui:hasSimpleSvg 'https://dugtrioexperimental.blob.core.windows.net/graph-icons/esd-draft/logicsymbols/LogicPort-OR.svg';
