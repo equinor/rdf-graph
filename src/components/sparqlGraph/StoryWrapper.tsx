@@ -88,6 +88,10 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		dispatch({ type: 'updateTurtle', payload: { turtle: turtleString } });
 	};
 
+	const toggleConnectors = (): void => {
+		dispatch({ type: 'updateUiConfig', payload: { ...state.uiConfig, showConnectors: !state.uiConfig.showConnectors } });
+	};
+
 	//	dispatch({type: 'updateTurtle', payload: {turtle: turtleString}});
 
 	return (
@@ -100,6 +104,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={changeColor}> Color </Button>
 			<Button onClick={loadTurtle}> Load turtle </Button>
 			<Button onClick={changeEdgeStyle}> Change Edge Style </Button>
+			<Button onClick={toggleConnectors}> Toggle Connectors </Button>
 
 			<SparqlGraph state={state} onElementsSelected={onElementsSelected} />
 		</div>

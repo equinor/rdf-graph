@@ -22,6 +22,7 @@ export interface UiConfigProps {
 	minZoom: number;
 	zoom?: number;
 	zoomingEnabled: boolean;
+	showConnectors: boolean;
 	edgeStyle: EdgeStyle;
 }
 

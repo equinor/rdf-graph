@@ -162,10 +162,10 @@ export const SparqlGraph = ({ state, onElementsSelected }: SparqlGraphProps) => 
 					selector: `[nodeType = "${NodeType.SymbolConnector}"]`,
 					style: {
 						shape: 'rectangle',
-						height: '8px',
-						width: '8px',
+						height: state.uiConfig.showConnectors ? '8px' : '1px',
+						width: state.uiConfig.showConnectors ? '8px' : '1px',
 						'background-color': 'red',
-						'background-opacity': 0.7,
+						'background-opacity': state.uiConfig.showConnectors ? 0.7 : 0.0,
 						'border-width': 0,
 					},
 				},
