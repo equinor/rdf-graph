@@ -11,7 +11,7 @@ import {
 import { emptyPatch, GraphSelection, RdfPatch } from '../../models';
 import { getSymbol, SymbolKey } from '../../symbol-api';
 import { UiConfigProps } from '../sparqlGraph/SparqlGraph.types';
-import { State } from './state';
+import { SparqlGraphState } from './state';
 
 const { namedNode, literal, quad } = DataFactory;
 
@@ -72,7 +72,7 @@ type UpdateUiConfigAction = {
 	payload: UiConfigProps;
 };
 
-type Action =
+export type SparqlGraphAction =
 	| DeleteAction
 	| UpdateSelectionAction
 	| AddNodeAction
@@ -86,7 +86,7 @@ type Action =
 	| RedrawAction
 	| UpdateUiConfigAction;
 
-export const reducer = (state: State, action: Action): State => {
+export const reducer = (state: SparqlGraphState, action: SparqlGraphAction): SparqlGraphState => {
 	switch (action.type) {
 		case 'addNode':
 			const patch = addTriples([quad(namedNode(action.payload.iri), labelPredicate, literal(action.payload.label))]);
@@ -192,11 +192,11 @@ const rotateSelection = (selection: GraphSelection) => {
 	return emptyPatch;
 };
 
-const createNewPatchState = (state: State, additions: Quad[], removals: Quad[] = []): State => {
+const createNewPatchState = (state: SparqlGraphState, additions: Quad[], removals: Quad[] = []): SparqlGraphState => {
 	return createNewState(state, new RdfPatch({ tripleAdditions: additions, tripleRemovals: removals }));
 };
 
-const createNewState = (state: State, patch: RdfPatch): State => {
+const createNewState = (state: SparqlGraphState, patch: RdfPatch): SparqlGraphState => {
 	return {
 		...state,
 		patches: [...state.patches, patch],

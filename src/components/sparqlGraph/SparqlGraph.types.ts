@@ -1,11 +1,11 @@
 import { LayoutOptions } from 'cytoscape';
 import { GraphSelection } from '../../models/graphSelection';
-import { State } from '../state/state';
+import { SparqlGraphState } from '../state/state';
 
 export type LayoutProps = 'Cola' | 'Cose-Bilkent' | 'Dagre';
 
 export type SparqlGraphProps = {
-	state: State;
+	state: SparqlGraphState;
 	onElementsSelected: (selection: GraphSelection) => void;
 };
 

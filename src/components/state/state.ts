@@ -3,7 +3,7 @@ import { GraphSelection } from '../../models/graphSelection';
 import { LayoutProps } from '../sparqlGraph';
 import { UiConfigProps } from '../sparqlGraph/SparqlGraph.types';
 
-export const initState: State = {
+export const initState: SparqlGraphState = {
 	graphSelection: new GraphSelection([], []),
 	turtleString: '',
 	patches: [],
@@ -21,7 +21,7 @@ export const initState: State = {
 	forceRedraw: 0,
 };
 
-export type State = {
+export type SparqlGraphState = {
 	graphSelection: GraphSelection;
 	turtleString: string;
 	patches: RdfPatch[];
