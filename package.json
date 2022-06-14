@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/sparql-graph",
-	"version": "0.6.0",
+	"version": "0.6.1",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/equinor/sparql-graph"
