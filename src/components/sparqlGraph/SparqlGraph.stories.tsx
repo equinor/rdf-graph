@@ -44,6 +44,21 @@ example:Separatox3000GasOutput
 example:Separatox3000ThreePhaseInput
         ui:hasConnectorSuffix  "c1" .
 
+example:Separatox3001
+        ui:hasConnector   example:Separatox3001ThreePhaseInput ;
+        ui:hasConnector  example:Separatox3001LiquidOutput , example:Separatox3001GasOutput ;
+        ui:hasSvg              "Separator_1" .
+
+example:Separatox3001LiquidOutput
+        ui:hasConnectorSuffix  "c3" .
+
+example:Separatox3001GasOutput
+        ui:hasConnectorSuffix  "c2" .
+
+example:Separatox3001ThreePhaseInput
+        ui:hasConnectorSuffix  "c1" ;
+		example:connectedTo example:Separatox3000GasOutput .
+
 example:Hallais
 	ui:color "pink";
 	rdfs:label "Mr pink" .
