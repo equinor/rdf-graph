@@ -4,7 +4,7 @@ const removeQuotedPrefixes = (turtle: string): string => {
 	return turtle.replace(/@prefix\s*:\s*<"(.*)">/g, '@prefix: <$1>');
 };
 
-export const turtle2RdfTriples = (turtle: string): Promise<Quad[]> => {
+export const turtle2RdfTriplesAsync = (turtle: string): Promise<Quad[]> => {
 	const turtleParser = new Parser({ format: 'Turtle' });
 	const correctTurtle = removeQuotedPrefixes(turtle);
 
@@ -26,3 +26,4 @@ export const turtle2RdfTriples = (turtle: string): Promise<Quad[]> => {
 		});
 	});
 };
+export const turtle2RdfTriples = (turtle: string) => new Parser({ format: 'Turtle' }).parse(turtle);
