@@ -5,6 +5,7 @@ import { GraphStateProps } from './state/GraphStateProps';
 import { RdfContext } from './state/RdfContext';
 import { RdfStateProps } from './state/RdfState.types';
 import { F3DGraph } from './f3dGraph/F3DGraph';
+import { CyGraph } from './cyGraph/CyGraph';
 
 function createRdfGraphHoc<P extends GraphStateProps, R = Omit<P, keyof GraphStateProps>>(Component: FC<P>): FC<R & RdfStateProps> {
 	return ({ rdfStore, rdfPatch, ...props }: RdfStateProps) => {
@@ -30,3 +31,4 @@ function createRdfViewHoc<P extends RdfStateProps, R = Omit<P, keyof RdfStatePro
 
 export const Rdf3dGraph = createRdfGraphHoc(F3DGraph);
 export const Rdf3dGraphView = createRdfViewHoc(Rdf3dGraph);
+export const RdfCyGraph = createRdfGraphHoc(CyGraph);

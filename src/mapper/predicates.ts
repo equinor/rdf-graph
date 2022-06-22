@@ -4,14 +4,14 @@ import { TwoWayMap } from '../utils/twoWayDictionary';
 
 const { namedNode } = DataFactory;
 
-const compoundNodeIri = 'http://rdf.equinor.com/ui/parent';
-const labelIri = 'http://www.w3.org/2000/01/rdf-schema#label';
-const colorIri = 'http://rdf.equinor.com/ui/color';
-const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
-const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
-const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
-const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
-const rotationIri = 'http://rdf.equinor.com/ui/rotation';
+export const compoundNodeIri = 'http://rdf.equinor.com/ui/parent';
+export const labelIri = 'http://www.w3.org/2000/01/rdf-schema#label';
+export const colorIri = 'http://rdf.equinor.com/ui/color';
+export const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
+export const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
+export const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
+export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
+export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 
 // keys linked to predicates
 export const compoundNodeKey = 'parent';
@@ -20,6 +20,7 @@ export const colorKey = 'color';
 export const svgKey = 'image';
 export const simpleSvgKey = 'simpleImage';
 export const rotationKey = 'rotation';
+export const connectorKey = 'connector';
 
 export const compoundNodePredicate = namedNode(compoundNodeIri);
 export const labelPredicate = namedNode(labelIri);
@@ -37,6 +38,7 @@ const dict: { [key: string]: string } = {
 	[hasSimpleSvgIri]: simpleSvgKey,
 	[hasSvgIri]: svgKey,
 	[rotationIri]: rotationKey,
+	[hasConnectorSuffixIri]: connectorKey,
 };
 
 //keys for cytoscape management
@@ -48,14 +50,14 @@ export const cytoscapeKeys = [nodeTypeKey, layoutIgnoreKey, idKey];
 export const parentPredicates = [compoundNodeIri];
 export const childPredicates = [hasConnectorIri];
 
-const iri2dataKey = new TwoWayMap(dict);
+export const predicateMap = new TwoWayMap(dict);
 
 export const isDataKey = (predicate: { value: string }) => {
-	return iri2dataKey.includes(predicate.value);
+	return predicateMap.includes(predicate.value);
 };
 
 export const getDataKey = (predicate: { value: string }) => {
-	return iri2dataKey.get(predicate.value);
+	return predicateMap.get(predicate.value);
 };
 
 export const getPredicateMapping = (): Pairs => {

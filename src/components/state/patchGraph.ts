@@ -17,6 +17,7 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(model: M, 
 
 		switch (p.action) {
 			case 'add':
+				// Subject
 				if (!model.nodeIndex.has(sTerm)) {
 					sNode = { type: 'node', id: sTerm, refCount: 1 /*, x:0, y:0, z:0 */ };
 					model.nodeIndex.set(sTerm, sNode);
@@ -26,6 +27,7 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(model: M, 
 					sNode.refCount++;
 				}
 
+				// Predicate
 				if (!model.nodeIndex.has(pTerm)) {
 					pNode = { id: pTerm, type: 'linkNode', refCount: 1 };
 					model.nodeIndex.set(pTerm, pNode);
@@ -34,16 +36,19 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(model: M, 
 					pNode = model.nodeIndex.get(pTerm)!; // || (() => { throw ("strange error"); })();
 					if (pNode.type === 'node') {
 						pNode.type = 'linkNode';
-						graphPatch.push({ action: 'replace', assertion: pNode });
+						graphPatch.push({ action: 'remove', assertion: { type: 'property', id: pNode.id, key: 'type', value: 'link' } });
+						graphPatch.push({ action: 'add', assertion: { type: 'property', id: pNode.id, key: 'type', value: 'linkNode' } });
 					}
 					pNode.refCount++;
 				}
-
+				// Object literal
 				if (!oTerm) {
 					sNode[pTerm] = q.object.value;
-					graphPatch.push({ action: 'add', assertion: { type: 'properties', id: sTerm, [pTerm]: q.object.value } });
+					graphPatch.push({ action: 'add', assertion: { type: 'property', id: sTerm, key: pTerm, value: q.object.value } });
 					continue;
 				}
+
+				// Object IRI
 				if (!model.nodeIndex.has(oTerm)) {
 					oNode = { id: oTerm, type: 'node', refCount: 1 };
 					model.nodeIndex.set(oTerm, oNode);
@@ -80,7 +85,7 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(model: M, 
 					graphPatch.push({ action: 'remove', assertion: { type: 'node', id: pTerm } });
 				}
 				if (!oTerm) {
-					graphPatch.push({ action: 'remove', assertion: { type: 'properties', id: pTerm, [pTerm]: sNode[pTerm] } });
+					graphPatch.push({ action: 'remove', assertion: { type: 'property', id: pTerm, key: pTerm, value: sNode[pTerm] } });
 					delete sNode[pTerm];
 					continue;
 				}

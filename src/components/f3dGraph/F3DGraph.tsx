@@ -77,6 +77,7 @@ type f3DState = {
 const filterable = function* <T>(source: Iterable<T>, filter: (e: T) => boolean) {
 	for (const e of source) if (filter(e)) yield e;
 };
+
 export const F3DGraph: FC<GraphStateProps & object> = ({ graphState, graphPatch, ...rest }) => {
 	const [model, update] = useState<f3DState>({
 		nodes: [],

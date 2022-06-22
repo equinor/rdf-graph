@@ -8,22 +8,26 @@ type RdfPredicate = RdfNamedNode | RdfVariable;
 // type RdfTriple = `<${RdfSubject}>${w}<${RdfPredicate}>${w}<${RdfObject}>${w}.`;
 
 type GraphId = string;
-type GraphNodeProperties = {
-	[index: string]: string | number;
-};
 type GraphNodeBase = {
 	id: GraphId;
 };
-export type GraphNode = GraphNodeBase & {
+type GraphNodeType = {
 	type: 'node' | 'linkNode';
+};
+type GraphNodeProperties = {
+	[index: string]: string | number;
+};
+export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
+
+export type GraphNode = GraphNodeIdentifier & {
 	refCount: number;
 } & GraphNodeProperties;
 
-type GraphEdgeBase = {
+export type GraphEdgeIdentifier = {
 	id: GraphId;
 	type: 'link';
 };
-export type GraphEdge = GraphEdgeBase & {
+export type GraphEdge = GraphEdgeIdentifier & {
 	source: GraphId;
 	target: GraphId;
 	sourceRef?: GraphNode;
@@ -31,14 +35,20 @@ export type GraphEdge = GraphEdgeBase & {
 	linkRef?: GraphNode;
 };
 
+export type GraphPropertyIdentifier = GraphNodeBase & {
+	type: 'property';
+	key: string;
+	value: GraphNodeProperties['index'];
+};
+
 export type GraphAssertion =
 	| {
-			action: 'add' | 'replace';
-			assertion: GraphEdge | GraphNode | (GraphNodeBase & GraphNodeProperties & { type: 'properties' });
+			action: 'add';
+			assertion: GraphEdge | GraphNode | GraphPropertyIdentifier;
 	  }
 	| {
 			action: 'remove';
-			assertion: GraphEdgeBase | (GraphNodeBase & { type: 'node' }) | (GraphNodeBase & GraphNodeProperties & { type: 'properties' });
+			assertion: GraphEdgeIdentifier | GraphNodeIdentifier | GraphPropertyIdentifier;
 	  };
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
