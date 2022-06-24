@@ -10,13 +10,13 @@ export class TwoWayMap {
 	}
 
 	includes(key: string) {
-		return Object.keys(this.dict).includes(key);
+		return this.dict.hasOwnProperty(key);
 	}
 
 	revIncludes(key: string) {
+		return this.reverseMap.hasOwnProperty(key);
 		return Object.values(this.dict).includes(key);
 	}
-
 	get(key: string) {
 		return this.dict[key];
 	}

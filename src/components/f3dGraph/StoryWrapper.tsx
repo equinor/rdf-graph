@@ -1,16 +1,8 @@
 import { Button } from '@equinor/eds-core-react';
-import { useEffect, useReducer, useState } from 'react';
-import { colorPredicate, hasSvgPredicate } from '../../mapper/predicates';
-import { GraphSelection } from '../../models';
-import { getData } from '../../cytoscape-api/cytoscapeApi';
-import { SymbolKey } from '../../symbol-api';
-import { TurtleComponent } from '../control/TurtleComponent';
+import { useEffect, useState } from 'react';
 import { Rdf3dGraph } from '../components';
 import { useRdfActionReducer } from '../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';
-// import { reducer } from '../state/reducer';
-// import { initState } from '../state/state';
-// import { EdgeStyle } from './SparqlGraph.types';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
