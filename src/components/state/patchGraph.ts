@@ -25,7 +25,7 @@ import {
 	hasConnectorSuffixIri,
 	labelIri,
 } from '../../mapper/predicates';
-import { getSymbol, SymbolRotation } from '../../symbol-api';
+import { getSymbol, Point, SymbolRotation } from '../../symbol-api';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -59,10 +59,10 @@ type PostProcessDefinitions = { [prop in PropIri]: ProcessDefinition<PropertyAss
 
 const defaultPostProcess: PostProcessDefinitions = {
 	[hasSvgIri]: { dependencies: [], process: processHasSvg },
-	[rotationIri]: { dependencies: [hasSvgIri], process: (g) => [] },
-	[hasConnectorSuffixIri]: { dependencies: [rotationIri, hasSvgIri, hasConnectorIri], process: (g) => [] },
+	[rotationIri]: { dependencies: [], process: (g) => [] },
+	[hasConnectorSuffixIri]: { dependencies: [], process: (g) => [] },
 	[labelIri]: { dependencies: [], process: (g) => [] },
-	[hasConnectorIri]: { dependencies: [rotationIri, hasSvgIri], process: (g) => [] },
+	[hasConnectorIri]: { dependencies: [], process: (g) => [] },
 };
 function* processHasSvg(g: PropertyAssertion): Iterable<GraphAssertion> {
 	if (g.action == 'add') {
@@ -73,8 +73,14 @@ function* processHasSvg(g: PropertyAssertion): Iterable<GraphAssertion> {
 		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'imageHeight', value: symbol.height.toString() } };
 
 		for (const conn of g.assertion.node.outgoing.get(hasConnectorIri) || []) {
-			if (conn.properties.has(hasConnectorSuffixIri)) {
+			let relativePosition: Point = { x: 0, y: 0 };
+			const connectorFromData = conn.properties.get(hasConnectorSuffixIri);
+			const connectorFromApi = symbol.connectors.find((apiConnector) => apiConnector.id === connectorFromData?.[0]);
+			if (connectorFromApi) {
+				relativePosition = connectorFromApi.point;
 			}
+			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionX', value: relativePosition.x.toString() } };
+			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionY', value: relativePosition.y.toString() } };
 		}
 	}
 	if (g.action == 'remove') {
