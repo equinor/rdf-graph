@@ -14,14 +14,18 @@ type GraphNodeBase = {
 type GraphNodeType = {
 	type: 'node' | 'linkNode';
 };
-type GraphNodeProperties = {
-	[index: string]: string | number;
-};
+// type GraphNodeProperties = {
+// 	[index: string]: string | number;
+// };
 export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
 
 export type GraphNode = GraphNodeIdentifier & {
-	refCount: number;
-} & GraphNodeProperties;
+	incoming: Map<string, GraphNode[]>;
+	outgoing: Map<string, GraphNode[]>;
+	links: GraphEdge[];
+	properties: Map<string, string[]>;
+	[index: string]: any;
+};
 
 export type GraphEdgeIdentifier = {
 	id: GraphId;
@@ -35,21 +39,18 @@ export type GraphEdge = GraphEdgeIdentifier & {
 	linkRef?: GraphNode;
 };
 
-export type GraphPropertyIdentifier = GraphNodeBase & {
+export type GraphPropertyIdentifier = {
 	type: 'property';
+	node: GraphNode;
 	key: string;
-	value: GraphNodeProperties['index'];
+	value: string;
 };
+type GraphAssertionBase = { action: 'add' | 'remove' };
+export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
+export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
+export type PropertyAssertion = GraphAssertionBase & { assertion: GraphPropertyIdentifier };
 
-export type GraphAssertion =
-	| {
-			action: 'add';
-			assertion: GraphEdge | GraphNode | GraphPropertyIdentifier;
-	  }
-	| {
-			action: 'remove';
-			assertion: GraphEdgeIdentifier | GraphNodeIdentifier | GraphPropertyIdentifier;
-	  };
+export type GraphAssertion = GraphAssertionBase & { assertion: GraphEdge | GraphNode | GraphPropertyIdentifier };
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
 	nodeIndex: Map<string, GraphNode>;
