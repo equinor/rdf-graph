@@ -19,6 +19,7 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
+		const assertions = [...res.graphPatch];
 
 		for (const q of quads) {
 			let node;
