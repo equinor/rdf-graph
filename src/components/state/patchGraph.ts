@@ -136,6 +136,8 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: GraphNode) =>
 
 export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P): GraphStateProps {
 	const graphPatch: GraphAssertion[] = [];
+	const addMap = new Map<PropIri | EdgeIri, (PropertyAssertion | EdgeAssertion)[]>();
+	const removeMap = new Map<PropIri | EdgeIri, (PropertyAssertion | EdgeAssertion)[]>();
 	for (const p of patch) {
 		const q = p.assertion;
 		let sNode: GraphNode, pNode: GraphNode, oNode: GraphNode;
