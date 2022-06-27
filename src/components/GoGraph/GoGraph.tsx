@@ -56,9 +56,9 @@ const nodeClicked = (e: any, obj: any) => {
 	});
 };
 
-const makeImagePath = (icon: string) => {
-	return `images/${icon}`;
-};
+// const makeImagePath = (icon: string) => {
+// 	return `images/${icon}`;
+// };
 
 const initDiagram = () => {
 	const portSize = new Size(8, 8);
@@ -86,6 +86,7 @@ const initDiagram = () => {
 			selectionObjectName: 'BODY',
 			// contextMenu: nodeMenu
 		},
+		new Binding('angle', 'angle'),
 		new Binding('location', 'loc', Point.parse).makeTwoWay(Point.stringify),
 
 		// the body
@@ -103,7 +104,7 @@ const initDiagram = () => {
 
 			// $(
 			// 	Shape,
-			// 	'Rectangle',
+			// 	// 'Rectangle',
 			// 	// HERE: BG
 
 			// 	{
@@ -112,8 +113,10 @@ const initDiagram = () => {
 			// 		strokeWidth: 0,
 			// 		// fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
 			// 		// toSpot: go.Spot.Top,
-			// 		// minSize: new Size(80, 80),
+			// 		minSize: new Size(20, 20),
+			// 		angle: 90
 			// 	},
+			// 	// new Binding('angle', 'angle')
 			// 	// new Binding('minSize', 'minSize', Spot.parse).makeTwoWay(Spot.stringify),
 			// ),
 
@@ -131,6 +134,7 @@ const initDiagram = () => {
 				new Binding('element', 'icon', makeImage),
 				new Binding('width', 'width'),
 				new Binding('height', 'height')
+				// new Binding('angle', 'angle')
 				// <Icon appearance="main" name="arrow-right" height={50} width={50} getPosition={(el) => el} />
 				// new Binding("sourceRect", "icon", makeImagePath)
 			),
@@ -314,11 +318,10 @@ export const GoGraph = () => {
 					{
 						key: 1,
 						// icon: 'ArrowRight.svg',
-						// todos
-						// alg: '1, 1, 0, 5.51',
 						icon: 'arrow-down',
 						width: 100,
 						height: 100,
+						angle: 45,
 						leftArray: [
 							{
 								portColor: '#fae3d7',
