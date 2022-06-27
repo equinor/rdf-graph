@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 48 48" fill="black" width="48" height="48">
+		<g id="valve-3-way-1 1">
+		<rect width="48" height="48" fill="#06FD3D" fill-opacity="0"/>
+		<g id="Group">
+		<path id="Vector" fill-rule="evenodd" clip-rule="evenodd" d="M3.99992 39L24.0547 29.0472L3.99992 19.0944V39Z" stroke="black" stroke-miterlimit="3" stroke-linecap="round" stroke-linejoin="round"/>
+		<path id="Vector_2" fill-rule="evenodd" clip-rule="evenodd" d="M14.0241 9.00002L24.0515 28.9056L34.0789 9.00002H14.0241Z" stroke="black" stroke-miterlimit="3" stroke-linecap="round" stroke-linejoin="round"/>
+		<path id="Vector_3" fill-rule="evenodd" clip-rule="evenodd" d="M44.0001 19.0601L23.9453 29.0129L44.0001 38.9657V19.0601Z" fill="black" stroke="black" stroke-miterlimit="3" stroke-linecap="round" stroke-linejoin="round"/>
+		<path id="Vector_4" d="M24 9V0" stroke="black"/>
+		<path id="Vector_5" d="M0 28.5H4" stroke="black"/>
+		<path id="Vector_6" d="M44 29.5H48" stroke="black"/>
+		</g>
+		</g>
+	</svg>
