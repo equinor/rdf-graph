@@ -7,6 +7,7 @@ type GraphNodeBase = {
 type GraphNodeType = {
 	type: 'node' | 'linkNode';
 };
+
 export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
 
 export type GraphVisualProps = {
@@ -44,6 +45,7 @@ export type GraphPropertyIdentifier = {
 	key: string;
 	value: any;
 };
+
 type GraphAssertionBase = { action: 'add' | 'remove' };
 export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
 export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
