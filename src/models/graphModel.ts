@@ -56,3 +56,5 @@ export type GraphState = {
 	nodeIndex: Map<string, GraphNode>;
 	linkIndex: Map<string, GraphEdge>;
 };
+
+export type GraphSelection = Array<GraphNode | GraphEdge>;
