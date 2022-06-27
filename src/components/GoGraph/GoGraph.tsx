@@ -162,18 +162,18 @@ const initDiagram = () => {
 					// contextMenu: portMenu
 				},
 				new Binding('portId', 'portId'),
-				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify),
-				$(
-					Shape,
-					'Rectangle',
-					{
-						stroke: null,
-						strokeWidth: 0,
-						desiredSize: portSize,
-						margin: new Margin(1, 0),
-					},
-					new Binding('fill', 'portColor')
-				)
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify)
+				// $(
+				// 	Shape,
+				// 	'Rectangle',
+				// 	{
+				// 		stroke: null,
+				// 		strokeWidth: 0,
+				// 		desiredSize: portSize,
+				// 		margin: new Margin(1, 0),
+				// 	},
+				// 	new Binding('fill', 'portColor')
+				// )
 			), // end itemTemplate
 		}), // end Vertical Panel
 
@@ -267,18 +267,18 @@ const initDiagram = () => {
 					// contextMenu: portMenu
 				},
 				new Binding('portId', 'portId'),
-				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify),
-				$(
-					Shape,
-					'Rectangle',
-					{
-						stroke: null,
-						strokeWidth: 0,
-						desiredSize: portSize,
-						margin: new Margin(0, 1),
-					},
-					new Binding('fill', 'portColor')
-				)
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify)
+				// $(
+				// 	Shape,
+				// 	'Rectangle',
+				// 	{
+				// 		stroke: null,
+				// 		strokeWidth: 0,
+				// 		desiredSize: portSize,
+				// 		margin: new Margin(0, 1),
+				// 	},
+				// 	new Binding('fill', 'portColor')
+				// )
 			), // end itemTemplate
 		}) // end Horizontal Panel
 	); // end Node
@@ -307,6 +307,26 @@ const initDiagram = () => {
 	return diagram;
 };
 
+const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
+const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
+
+const ArrowRight = (key: number, width: number, height: number, angle: number) => {
+	const orgH = 40;
+	const orgW = 40;
+
+	return {
+		key,
+		icon: 'arrow-right',
+		width,
+		height,
+		angle,
+		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 1)}, 0` }],
+		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 1)}` }],
+		bottomArray: [],
+		leftArray: [{ portId: 'left0' }],
+	};
+};
+
 export const GoGraph = () => {
 	return (
 		<>
@@ -315,29 +335,7 @@ export const GoGraph = () => {
 				initDiagram={initDiagram}
 				divClassName="graph-links-model"
 				nodeDataArray={[
-					{
-						key: 1,
-						// icon: 'ArrowRight.svg',
-						icon: 'arrow-down',
-						width: 100,
-						height: 100,
-						angle: 45,
-						leftArray: [
-							{
-								portColor: '#fae3d7',
-								portId: 'left0',
-							},
-						],
-						topArray: [{ portColor: '#d6effc', portId: 'top0' }],
-						rightArray: [
-							{
-								portColor: '#000000',
-								portId: 'right1',
-								// todos
-								alignment: '1, 1, 0, 5.51',
-							},
-						],
-					},
+					ArrowRight(1, 100, 100, 0),
 					{
 						key: 2,
 						icon: 'arrow-right',
@@ -346,35 +344,28 @@ export const GoGraph = () => {
 						height: 48,
 						leftArray: [
 							{
-								portColor: '#6cafdb',
 								portId: 'left0',
 							},
 							{
-								portColor: '#66d6d1',
 								portId: 'left1',
 							},
 							{
-								portColor: '#fae3d7',
 								portId: 'left2',
 							},
 						],
 						topArray: [
 							{
-								portColor: '#d6effc',
 								portId: 'top0',
 							},
 						],
 						bottomArray: [
 							{
-								portColor: '#eaeef8',
 								portId: 'bottom0',
 							},
 							{
-								portColor: '#eaeef8',
 								portId: 'bottom1',
 							},
 							{
-								portColor: '#6cafdb',
 								portId: 'bottom2',
 							},
 						],
