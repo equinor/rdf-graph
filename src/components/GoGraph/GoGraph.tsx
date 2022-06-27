@@ -7,14 +7,24 @@ import svg from './images/ArrowRight.svg';
 
 import { CustomLink } from './CustomLink';
 
-const ll = <Icon appearance="dark" name="arrow-right" height={40} width={40} getPosition={(el) => console.log(123, el)} />;
-const imsvg = ReactDOMServer.renderToString(ll);
+const makeImage = (icon: string) => {
+	const icn = <Icon appearance="dark" name={icon} getPosition={(el) => console.log(123, el)} />;
+	const imsvg = ReactDOMServer.renderToString(icn);
+	const myImg = new Image();
 
-const myImg = new Image();
-// myImg.src = svg;
-myImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
+	myImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
 
-console.log(17, imsvg);
+	return myImg;
+};
+
+// const ll = <Icon appearance="dark" name="arrow-right" height={40} width={40} getPosition={(el) => console.log(123, el)} />;
+// const imsvg = ReactDOMServer.renderToString(ll);
+
+// const myImg = new Image();
+// // myImg.src = svg;
+// myImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
+
+// console.log(17, imsvg);
 
 // const drawHandCanvas = () => {
 // 	const canvas = document.createElement('canvas');
@@ -34,9 +44,8 @@ console.log(17, imsvg);
 // 	return canvas
 // }
 
-// console.log(111, drawHandCanvas())
-
-console.log(81, 'myImg:', myImg, 'svg:', svg);
+// console.log(81, 'myImg:', myImg);
+// console.log(81, 'makeImage:', makeImage('arrow-down'));
 
 const nodeClicked = (e: any, obj: any) => {
 	// executed by click and doubleclick handlers
@@ -92,20 +101,21 @@ const initDiagram = () => {
 				doubleClick: nodeClicked,
 			},
 
-			$(
-				Shape,
-				'Rectangle',
-				// HERE: BG
+			// $(
+			// 	Shape,
+			// 	'Rectangle',
+			// 	// HERE: BG
 
-				{
-					fill: '#fff',
-					stroke: '#dbf6cb',
-					strokeWidth: 0,
-					// fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
-					// toSpot: go.Spot.Top,
-					minSize: new Size(48, 48),
-				}
-			),
+			// 	{
+			// 		fill: '#fff',
+			// 		stroke: '#dbf6cb',
+			// 		strokeWidth: 0,
+			// 		// fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
+			// 		// toSpot: go.Spot.Top,
+			// 		// minSize: new Size(80, 80),
+			// 	},
+			// 	// new Binding('minSize', 'minSize', Spot.parse).makeTwoWay(Spot.stringify),
+			// ),
 
 			$(
 				Picture,
@@ -113,12 +123,14 @@ const initDiagram = () => {
 				// new go.Binding("source", "img")),
 				{
 					// source: 'images/sample.png',
-					width: 48,
-					height: 48,
-					element: myImg,
+					// width: 48,
+					// height: 48,
+					// element: makeImage(),
 					// element: drawHandCanvas(),
-				}
-				// new Binding("source", "icon", makeImagePath)
+				},
+				new Binding('element', 'icon', makeImage),
+				new Binding('width', 'width'),
+				new Binding('height', 'height')
 				// <Icon appearance="main" name="arrow-right" height={50} width={50} getPosition={(el) => el} />
 				// new Binding("sourceRect", "icon", makeImagePath)
 			),
@@ -146,6 +158,7 @@ const initDiagram = () => {
 					// contextMenu: portMenu
 				},
 				new Binding('portId', 'portId'),
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify),
 				$(
 					Shape,
 					'Rectangle',
@@ -169,7 +182,7 @@ const initDiagram = () => {
 				Panel,
 				{
 					_side: 'top',
-					alignment: new Spot(1, 1, 0, 0),
+					// alignment: new Spot(1, 1, 0, 0),
 					fromSpot: Spot.Top,
 					toSpot: Spot.Top,
 					fromLinkable: true,
@@ -177,7 +190,8 @@ const initDiagram = () => {
 					cursor: 'pointer',
 					// contextMenu: portMenu
 				},
-				new Binding('portId', 'portId')
+				new Binding('portId', 'portId'),
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify)
 				// $(go.Shape, "Rectangle",
 				//   {
 				//     stroke: null, strokeWidth: 0,
@@ -205,7 +219,7 @@ const initDiagram = () => {
 					// 4 - Y
 					// 0 <- center | width/2 <- left/right
 					// alignment: new go.Spot(1, 1, 0, 24),
-					alignment: new Spot(1, 1, 0, 5.51),
+					// alignment: new Spot(1, 1, 0, 5.51),
 					fromSpot: Spot.Right,
 					toSpot: Spot.Right,
 					fromLinkable: true,
@@ -214,8 +228,8 @@ const initDiagram = () => {
 					// stroke: "black",
 					// contextMenu: portMenu
 				},
-				new Binding('portId', 'portId')
-				// new go.Binding("alignment", alg, makAlg),
+				new Binding('portId', 'portId'),
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify)
 
 				// HERE: Shape
 				// $(go.Shape, "Diamond",
@@ -249,6 +263,7 @@ const initDiagram = () => {
 					// contextMenu: portMenu
 				},
 				new Binding('portId', 'portId'),
+				new Binding('alignment', 'alignment', Spot.parse).makeTwoWay(Spot.stringify),
 				$(
 					Shape,
 					'Rectangle',
@@ -298,8 +313,12 @@ export const GoGraph = () => {
 				nodeDataArray={[
 					{
 						key: 1,
-						icon: 'ArrowRight.svg',
-						alg: '1, 1, 0, 5.51',
+						// icon: 'ArrowRight.svg',
+						// todos
+						// alg: '1, 1, 0, 5.51',
+						icon: 'arrow-down',
+						width: 100,
+						height: 100,
 						leftArray: [
 							{
 								portColor: '#fae3d7',
@@ -311,12 +330,17 @@ export const GoGraph = () => {
 							{
 								portColor: '#000000',
 								portId: 'right1',
+								// todos
+								alignment: '1, 1, 0, 5.51',
 							},
 						],
 					},
 					{
 						key: 2,
-						icon: '55x55.png',
+						icon: 'arrow-right',
+						minSize: '48 48',
+						width: 48,
+						height: 48,
 						leftArray: [
 							{
 								portColor: '#6cafdb',
@@ -355,7 +379,9 @@ export const GoGraph = () => {
 					},
 					{
 						key: 3,
-						icon: '60x90.png',
+						icon: 'arrow-right',
+						width: 48,
+						height: 48,
 						leftArray: [
 							{
 								portColor: '#66d6d1',
@@ -387,7 +413,9 @@ export const GoGraph = () => {
 					},
 					{
 						key: 4,
-						icon: '80x50.png',
+						width: 48,
+						height: 48,
+						icon: 'arrow-right',
 						leftArray: [
 							{
 								portColor: '#fae3d7',
