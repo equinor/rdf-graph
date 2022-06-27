@@ -26,7 +26,6 @@ import {
 	labelIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point, SymbolRotation } from '../../symbol-api';
-import { NodeType } from '../../models/nodeType';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -72,7 +71,6 @@ function* processHasSvg(g: PropertyAssertion): Iterable<GraphAssertion> {
 		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: svgKey, value: symbol.svg } };
 		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'imageWidth', value: symbol.width.toString() } };
 		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'imageHeight', value: symbol.height.toString() } };
-		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'nodeType', value: NodeType.SymbolContainer.toString() } };
 
 		for (const conn of g.assertion.node.outgoing.get(hasConnectorIri) || []) {
 			let relativePosition: Point = { x: 0, y: 0 };
@@ -83,10 +81,6 @@ function* processHasSvg(g: PropertyAssertion): Iterable<GraphAssertion> {
 			}
 			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionX', value: relativePosition.x.toString() } };
 			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionY', value: relativePosition.y.toString() } };
-			yield {
-				action: 'add',
-				assertion: { type: 'property', node: g.assertion.node, key: 'nodeType', value: NodeType.SymbolConnector.toString() },
-			};
 		}
 	}
 	if (g.action == 'remove') {
