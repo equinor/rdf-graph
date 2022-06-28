@@ -24,8 +24,10 @@ import {
 	hasConnectorIri,
 	hasConnectorSuffixIri,
 	labelIri,
+	colorIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point, SymbolRotation } from '../../symbol-api';
+import { setEquals } from '../../utils/setEquals';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -57,83 +59,98 @@ type EdgeIri = typeof EdgeIris[number];
 type ProcessDefinition<T> = { dependencies: (PropIri | EdgeIri)[]; process: (g: T) => Iterable<GraphAssertion> };
 type PostProcessDefinitions = { [prop in PropIri]: ProcessDefinition<PropertyAssertion> } & { [prop in EdgeIri]: ProcessDefinition<EdgeAssertion> };
 
-const defaultPostProcess: PostProcessDefinitions = {
-	[hasSvgIri]: { dependencies: [], process: processHasSvg },
-	[rotationIri]: { dependencies: [], process: (g) => [] },
-	[hasConnectorSuffixIri]: { dependencies: [], process: (g) => [] },
-	[labelIri]: { dependencies: [], process: (g) => [] },
-	[hasConnectorIri]: { dependencies: [], process: (g) => [] },
+const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', labelKey, colorKey, rotationKey] as const;
+const nodeProps = [compoundNodeKey, connectorKey] as const;
+type ValueProp = typeof dataProps[number];
+type NodeProp = typeof nodeProps[number];
+type Dep = [...NodeProp[], NodeProp | ValueProp];
+
+const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
+	symbolName: [['symbol']],
+	[rotationKey]: [['symbol']],
+	symbol: [[connectorKey, 'relativePosition']],
+	connectorName: [[`relativePosition`]],
+	relativePosition: [],
+	[connectorKey]: [[connectorKey, compoundNodeKey]],
+	[compoundNodeKey]: [['relativePosition']],
+	[labelKey]: [],
+	[colorKey]: [],
 };
-function* processHasSvg(g: PropertyAssertion): Iterable<GraphAssertion> {
-	if (g.action == 'add') {
-		const rotation = g.assertion.node.properties.has(rotationIri) && parseInt(g.assertion.node.properties.get(rotationIri)![0]);
-		const symbol = getSymbol(g.assertion.value, { rotation: rotation ? (rotation as SymbolRotation) : undefined });
-		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: svgKey, value: symbol.svg } };
-		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'imageWidth', value: symbol.width.toString() } };
-		yield { action: 'add', assertion: { type: 'property', node: g.assertion.node, key: 'imageHeight', value: symbol.height.toString() } };
-
-		for (const conn of g.assertion.node.outgoing.get(hasConnectorIri) || []) {
-			let relativePosition: Point = { x: 0, y: 0 };
-			const connectorFromData = conn.properties.get(hasConnectorSuffixIri);
-			const connectorFromApi = symbol.connectors.find((apiConnector) => apiConnector.id === connectorFromData?.[0]);
-			if (connectorFromApi) {
-				relativePosition = connectorFromApi.point;
+const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
+	[hasSvgIri]: 'symbolName',
+	[rotationIri]: rotationKey,
+	[hasConnectorSuffixIri]: 'connectorName',
+	[hasConnectorIri]: connectorKey,
+	[labelIri]: labelKey,
+	[colorIri]: colorKey,
+};
+function* propagator(a: GraphNode, prop: NodeProp | ValueProp) {
+	for (const dep of propertyDependents[prop]) {
+		let queue = [...dep];
+		let currNode: GraphNode | GraphNode[] = a;
+		let currDep = queue.shift()!;
+		while (queue.length > 0) {
+			if (Array.isArray(currNode)) {
+				currNode = currNode.map((n) => n[currDep]).filter((n) => n);
+			} else {
+				currNode = currNode[currDep] as GraphNode;
 			}
-			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionX', value: relativePosition.x.toString() } };
-			yield { action: 'add', assertion: { type: 'property', node: conn, key: 'relativePositionY', value: relativePosition.y.toString() } };
+			currDep = queue.shift()!;
 		}
-	}
-	if (g.action == 'remove') {
-		//todo: cleanup
-	}
-
-	return;
-}
-
-function reverseDependencies(map: PostProcessDefinitions) {
-	const o = {} as PostProcessDefinitions;
-	for (const [k, v] of Object.entries(map)) {
-		if (k in PropIris) {
-			o[k as PropIri] = { dependencies: [], process: v.process } as ProcessDefinition<PropertyAssertion>;
-		} else {
-			o[k as EdgeIri] = { dependencies: [], process: v.process } as ProcessDefinition<EdgeAssertion>;
-		}
-	}
-	for (const [k, v] of Object.entries(map)) {
-		for (const dep of v.dependencies) {
-			o[dep].dependencies.push(k as PropIri | EdgeIri);
-		}
-	}
-	return o;
-}
-function* handlePostProcessing(
-	map: Map<string, (PropertyAssertion | EdgeAssertion)[]>,
-	keys: (EdgeIri | PropIri)[],
-	definition: PostProcessDefinitions
-): Iterable<GraphAssertion> {
-	for (const key of keys) {
-		if (!map.has(key)) continue;
-		yield* handlePostProcessing(map, definition[key as PropIri | EdgeIri].dependencies, definition);
-		const def = definition[key as PropIri | EdgeIri];
-		const asses = map.get(key)!;
-		for (const ass of asses) {
-			if (ass.assertion.type === 'property') {
-				yield* (def as ProcessDefinition<PropertyAssertion>).process(ass as PropertyAssertion);
-			} else if (ass.assertion.type === 'link') {
-				yield* (def as ProcessDefinition<EdgeAssertion>).process(ass as EdgeAssertion);
+		if (!currNode) continue;
+		if (Array.isArray(currNode)) {
+			for (const n of currNode) {
+				yield* propInvalidations[currDep](n);
 			}
-		}
-		map.delete(key);
+		} else yield* propInvalidations[currDep](currNode);
 	}
 }
-export function patchGraph<M extends GraphState, P extends RdfPatch2>(
-	state: M,
-	patch: P,
-	postProcess: PostProcessDefinitions = defaultPostProcess
-): GraphStateProps {
+function invalidator(prop: NodeProp | ValueProp, accessor: string | ((g: GraphNode) => any)) {
+	return function* (a: GraphNode): Iterable<PropertyAssertion> {
+		const declared = typeof accessor === 'string' ? (a.properties.get(accessor) || [undefined])[0] : accessor(a);
+		const prev = a[prop];
+		if (declared === prev) return;
+		if (prev) yield { action: 'remove', assertion: { type: 'property', node: a, key: prop, value: prev } };
+		a[prop] = declared;
+		if (declared) yield { action: 'add', assertion: { type: 'property', node: a, key: prop, value: declared } };
+		yield* propagator(a, prop);
+	};
+}
+const propInvalidations: { [index in NodeProp | ValueProp]: (node: GraphNode) => Iterable<PropertyAssertion> } = {
+	[labelKey]: invalidator(labelKey, labelIri),
+	[colorKey]: invalidator(colorKey, colorIri),
+	symbolName: invalidator('symbolName', hasSvgIri),
+	[rotationKey]: invalidator(rotationKey, (g) => (g.properties.has(rotationIri) ? parseInt(g.properties.get(rotationIri)![0]) : undefined)),
+	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
+	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
+	relativePosition: invalidator('relativePosition', (g) => {
+		if (!g.parent) return undefined;
+		if (!g.connectorName || !g.parent.symbol) return new Point(0, 0);
+		const c = g.parent.symbol.connectors.find((x) => x.id === g.connectorName);
+		return c?.point || new Point(0, 0);
+	}),
+	[connectorKey]: function* (g: GraphNode) {
+		const declared = g.outgoing.get(hasConnectorIri);
+		const prev = g[connectorKey];
+		if (setEquals(declared || [], prev || [])) return;
+		if (prev) yield { action: 'remove', assertion: { type: 'property', node: g, key: connectorKey, value: prev } };
+		g.connector = declared ? [...declared] : undefined;
+		if (declared) yield { action: 'add', assertion: { type: 'property', node: g, key: connectorKey, value: g.connector } };
+		yield* propagator(g, connectorKey);
+	},
+	[compoundNodeKey]: function* (g: GraphNode) {
+		const declared = (g.incoming.get(hasConnectorIri) || [undefined])[0];
+		const prev = g.parent;
+		if (declared === prev) return;
+		if (prev) yield { action: 'remove', assertion: { type: 'property', node: g, key: compoundNodeKey, value: prev } };
+		g.parent = declared;
+		if (declared) yield { action: 'add', assertion: { type: 'property', node: g, key: compoundNodeKey, value: g.parent } };
+		yield* propagator(g, compoundNodeKey);
+	},
+};
+
+export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P): GraphStateProps {
 	const graphPatch: GraphAssertion[] = [];
-	const addMap = new Map<PropIri | EdgeIri, (PropertyAssertion | EdgeAssertion)[]>();
-	const removeMap = new Map<PropIri | EdgeIri, (PropertyAssertion | EdgeAssertion)[]>();
 	for (const p of patch) {
 		const q = p.assertion;
 		let sNode: GraphNode, pNode: GraphNode, oNode: GraphNode;
@@ -154,12 +171,10 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(
 				// Object literal
 				if (!oTerm) {
 					add(sNode.properties, pTerm, q.object.value);
-					// TODO: Check postProcess
-					const post = postProcess[pTerm as PropIri];
-					if (post) {
-						add(addMap, pTerm, { action: 'add', assertion: { type: 'property', node: sNode, key: pTerm, value: q.object.value } });
+
+					if (predicate2prop.hasOwnProperty(pTerm)) {
+						for (const ass of propInvalidations[predicate2prop[pTerm] as ValueProp](sNode)) graphPatch.push(ass);
 					}
-					//graphPatch.push({ action: 'add', assertion: { type: 'property', node: sNode, key: pTerm, value: q.object.value } });
 					continue;
 				}
 				// Predicate
@@ -197,15 +212,13 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(
 				add(sNode.outgoing, pTerm, oNode);
 				add(oNode.incoming, pTerm, sNode);
 				pNode.links.push(addLink);
-
 				state.linkIndex.set(linkId, addLink);
-				// TODO: check postProcess
-				const post = postProcess[pTerm as EdgeIri];
 				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: addLink };
-				if (post) {
-					add(addMap, pTerm, edgeAssertion);
-				}
 				graphPatch.push(edgeAssertion);
+
+				if (predicate2prop.hasOwnProperty(pTerm)) {
+					for (const ass of propInvalidations[predicate2prop[pTerm] as NodeProp](sNode)) graphPatch.push(ass);
+				}
 				break;
 			case 'remove':
 				sNode = state.nodeIndex.get(sTerm)!; // || (() => { throw ("strange error"); })();
@@ -214,12 +227,8 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(
 					// TODO: check post-process
 					//graphPatch.push({ action: 'remove', assertion: { type: 'property', node: pNode, key: pTerm, value: p.assertion.object.value } });
 					remove(sNode.properties, pTerm, p.assertion.object.value);
-					const post = postProcess[pTerm as PropIri];
-					if (post) {
-						add(removeMap, pTerm, {
-							action: 'remove',
-							assertion: { type: 'property', node: pNode, key: pTerm, value: p.assertion.object.value },
-						});
+					if (predicate2prop.hasOwnProperty(pTerm)) {
+						for (const ass of propInvalidations[predicate2prop[pTerm] as ValueProp](sNode)) graphPatch.push(ass);
 					}
 				} else {
 					oNode = state.nodeIndex.get(oTerm)!; // || (() => { throw ("strange error"); })();
@@ -232,9 +241,9 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(
 					const edgeAssertion: EdgeAssertion = { action: 'remove', assertion: delLink };
 					// TODO: Check post-process
 					graphPatch.push(edgeAssertion);
-					const post = postProcess[pTerm as PropIri];
-					if (post) {
-						add(removeMap, pTerm, edgeAssertion);
+
+					if (predicate2prop.hasOwnProperty(pTerm)) {
+						for (const ass of propInvalidations[predicate2prop[pTerm] as NodeProp](sNode)) graphPatch.push(ass);
 					}
 					if (refCount(oNode) < 1) {
 						state.nodeIndex.delete(oTerm);
@@ -253,50 +262,5 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(
 				break;
 		}
 	}
-	const delProcess = handlePostProcessing(removeMap, [...removeMap.keys()], reverseDependencies(postProcess));
-	const addProcess = handlePostProcessing(addMap, [...addMap.keys()], postProcess);
-	return { graphState: state, graphPatch: [...graphPatch, ...delProcess, ...addProcess] };
-}
-
-type PostProcess = {
-	priority: number;
-	add: (patch: GraphAssertion) => Iterable<GraphAssertion>;
-	remove: (patch: GraphAssertion) => Iterable<GraphAssertion>;
-};
-function* concat<T>(...iterables: (Iterable<T> | undefined)[]) {
-	for (const i of iterables) {
-		if (!i) continue;
-		yield* i!;
-	}
-}
-export function postProcessGraph<M extends GraphState, P extends GraphPatch>(state: M, patch: P, rules: Map<string, PostProcess>) {
-	const queue: { priority: number; process: () => Iterable<GraphAssertion> }[] = [];
-	for (const a of patch) {
-		let postProcess: PostProcess | undefined;
-		switch (a.assertion.type) {
-			case 'node':
-				continue;
-			case 'link':
-				postProcess = rules.get(a.assertion.linkRef!.id);
-				break;
-			case 'linkNode':
-				postProcess = rules.get(a.assertion.id);
-				break;
-			case 'property':
-				postProcess = rules.get(a.assertion.key);
-				break;
-		}
-		if (!postProcess) continue;
-		const priority = a.action == 'add' ? postProcess.priority : -postProcess.priority;
-		const post = a.action == 'add' ? postProcess.add : postProcess.remove;
-
-		queue.push({ priority, process: () => post(a) });
-	}
-	queue.sort((a, b) => a.priority - b.priority);
-	const newPatch: Iterable<GraphAssertion> = (function* () {
-		for (const p of queue) {
-			p.process();
-		}
-	})();
-	return { state, patch: concat(patch, newPatch) };
+	return { graphState: state, graphPatch: graphPatch, onElementsSelected: (g) => {} };
 }

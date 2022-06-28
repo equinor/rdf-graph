@@ -1,3 +1,5 @@
+import { NodeSymbol, Point, SymbolRotation } from '../symbol-api';
+
 type RdfNamedNode = `http${'s' | ''}://${string}`;
 type RdfBlankNode = `_:${string}`;
 type RdfVariable = `?${string}`;
@@ -19,13 +21,22 @@ type GraphNodeType = {
 // };
 export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
 
+export type GraphVisualProps = {
+	symbol?: NodeSymbol;
+	relativePosition?: Point;
+	connectorName?: string;
+	parent?: GraphNode;
+	symbolName?: string;
+	rotation?: SymbolRotation;
+	connector?: GraphNode[];
+};
 export type GraphNode = GraphNodeIdentifier & {
 	incoming: Map<string, GraphNode[]>;
 	outgoing: Map<string, GraphNode[]>;
 	links: GraphEdge[];
 	properties: Map<string, string[]>;
 	[index: string]: any;
-};
+} & GraphVisualProps;
 
 export type GraphEdgeIdentifier = {
 	id: GraphId;
@@ -43,7 +54,7 @@ export type GraphPropertyIdentifier = {
 	type: 'property';
 	node: GraphNode;
 	key: string;
-	value: string;
+	value: any;
 };
 type GraphAssertionBase = { action: 'add' | 'remove' };
 export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
