@@ -1,24 +1,10 @@
-import { layoutCola, layoutCoseBilKent, layoutDagre } from '../../utils';
+import { layoutDagre } from '../../utils';
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { NodeType } from '../../models/nodeType';
-import { DataFactory } from 'n3';
-import { predicateMap } from '../../mapper/predicates';
-import {
-	colorKey,
-	labelKey,
-	simpleSvgKey,
-	compoundNodeKey,
-	connectorKey,
-	svgKey,
-	rotationKey,
-	hasSvgIri,
-	rotationIri,
-	hasConnectorIri,
-	hasConnectorSuffixIri,
-	labelIri,
-} from '../../mapper/predicates';
+import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey, predicateMap, relativePositionXKey, svgKey } from '../../mapper/predicates';
+import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
 import { GraphStateProps } from '../state/GraphStateProps';
 import {
 	GraphAssertion,
@@ -29,56 +15,9 @@ import {
 	GraphPatch,
 	GraphPropertyIdentifier,
 } from '../../models/graphModel';
-import { postProcessElements } from '../../mapper';
-import { getSymbol, SymbolRotation } from '../../symbol-api';
+import { NodeSymbol } from '../../symbol-api';
 
-type PatchCallback = (g: ElementDefinition, cy: Cytoscape.Core) => void;
-const babySit: { [index: string]: { pre: PatchCallback; post: PatchCallback; remove: PatchCallback } } = {
-	// [hasSvgIri]: (''),
-	// [rotationIri]: '',
-	[hasConnectorIri]: {
-		pre: (g, cy) => {
-			cy.getElementById(g.data.target as string).data(compoundNodeKey, g.data.id);
-		},
-		post: () => {},
-		remove: (g, cy) => {
-			cy.getElementById(g.data.target as string).removeData(compoundNodeKey);
-		},
-	},
-	[hasSvgIri]: {
-		pre: (g, cy) => {
-			const element = cy.getElementById(g.data.id as string);
-			const rotation = element.data('rotation');
-			const symbol = rotation ? getSymbol(g.data.value, { rotation: rotation as SymbolRotation }) : getSymbol(g.data.value as string);
-			element.data('symbolName', g.data.value);
-			element.data('symbol', symbol);
-		},
-		post: (g, cy) => {},
-		remove: () => {},
-	},
-	[rotationIri]: {
-		pre: (g, cy) => {
-			const element = cy.getElementById(g.data.id as string);
-			element.data('rotation', g.data.value);
-			const symbolName = element.data('symbolName');
-			if (!symbolName) return;
-			const symbol = getSymbol(symbolName, { rotation: g.data.value as SymbolRotation });
-			element.data('symbol', symbol);
-		},
-		post: () => {},
-		remove: () => {},
-	},
-	[hasConnectorSuffixIri]: {
-		pre: (g, cy) => {
-			cy.getElementById(g.data.id as string).data(connectorKey, g.data.value);
-		},
-		post: (g, cy) => {
-			//TODO: Get and parse coordinates from that goddamned SVG
-		},
-		remove: () => {},
-	},
-};
-function addNode(n: GraphNodeIdentifier, cy: Cytoscape.Core) {
+const addNode = (n: GraphNodeIdentifier, cy: Cytoscape.Core) => {
 	const { id, type } = n;
 	const elem: ElementDefinition = { data: { id: id } };
 	if (type === 'linkNode') {
@@ -86,54 +25,119 @@ function addNode(n: GraphNodeIdentifier, cy: Cytoscape.Core) {
 		elem.style.display = 'none';
 	}
 	cy.add(elem);
-}
-function addProperty(e: GraphPropertyIdentifier, cy: Cytoscape.Core) {
-	if (!predicateMap.includes(e.key)) return;
-	if (babySit.hasOwnProperty(e.key)) {
-		const { pre, post } = babySit[e.key];
-		pre(n, cy);
-		return [() => post(n, cy)];
-	}
-	const { id, key, value } = e;
-	const elem = cy.getElementById(id).data(predicateMap.get(key), value);
-}
+};
 
-function addEdge(n: GraphEdge, cy: Cytoscape.Core) {
+const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
+	const node = cy.getElementById(prop.node.id);
+	const position = node.position();
+
+	switch (prop.key) {
+		case 'symbol':
+			node.data(nodeTypeKey, NodeType.SymbolContainer);
+			node.data(prop.key, prop.value);
+			break;
+		case 'relativePosition':
+			//cy.remove(prop.node.id)
+			const newPosition = { x: position.x + prop.node.relativePosition!.x, y: position.y + prop.node.relativePosition!.y };
+
+			//cy.add(createConnectorNode(node.id, newPosition, node.data('parent')));
+			node.data(nodeTypeKey, NodeType.SymbolConnector);
+			node.data(layoutIgnoreKey, true);
+
+			console.log('Position', prop.node.relativePosition!);
+			node.position(prop.node.relativePosition!);
+			cy.layout({ name: 'preset' }).run();
+			break;
+		case 'parent':
+			node.move({ parent: prop.node.parent!.id });
+			break;
+		default:
+			node.data(prop.key, prop.value);
+	}
+};
+
+const addEdge = (n: GraphEdge, cy: Cytoscape.Core) => {
 	const { id, source, target } = n;
-	const linkTypeName = n.linkRef?.id || '';
-	if (babySit.hasOwnProperty(linkTypeName)) {
-		const { pre, post } = babySit[linkTypeName];
-
-		pre({ data: n }, cy);
-		return [() => post(elem, cy)];
-	}
 	const { [labelIri]: label } = n.linkRef! || {};
 	const elem: ElementDefinition = { data: { id: id, source: source, target: target, [labelKey]: label } };
 	cy.add(elem);
 	return [];
-}
-function remove(n: GraphEdgeIdentifier | GraphNodeIdentifier, cy: Cytoscape.Core) {
-	cy.remove(cy.getElementById(n.id));
-}
-function removeProperty(e: GraphPropertyIdentifier, cy: Cytoscape.Core) {
-	if (!predicateMap.includes(e.key)) return;
-	cy.getElementById(e.id).removeData(predicateMap.get(e.key));
-}
-function applyPatch(graphPatch: GraphPatch, nullableCy: Cytoscape.Core) {
+};
+const removeElement = (element: GraphEdgeIdentifier | GraphNodeIdentifier, cy: Cytoscape.Core) => {
+	cy.remove(cy.getElementById(element.id));
+};
+const removeProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
+	if (!predicateMap.includes(prop.key)) return;
+	const element = cy.getElementById(prop.node.id);
+	element.removeData(prop.key);
+	if (prop.key in ['symbol', 'relativePosition']) {
+		element.removeData(nodeTypeKey);
+	}
+};
+
+const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId}_svg`;
+
+const createConnectorNode = (nodeId: string, position: { x: string; y: string }, parent: string) => {
+	return {
+		data: {
+			parent: parent,
+			layoutIgnore: true,
+			nodeType: NodeType.SymbolConnector,
+		},
+		position: position,
+		grabbable: false,
+	};
+};
+
+const createImageNode = (nodeId: string, symbol: NodeSymbol, cy: Cytoscape.Core) => {
+	const position = cy.getElementById(nodeId).position();
+
+	const imageElement: ElementDefinition = {
+		data: {
+			id: getImageNodeId(nodeId),
+			[nodeTypeKey]: NodeType.SymbolImage,
+			[imageKey]: symbol.svgDataURI(),
+			[imageWidthKey]: symbol.width,
+			[imageHeightKey]: symbol.height,
+			[layoutIgnoreKey]: true,
+			parent: nodeId,
+		},
+		position: { x: 0, y: 0 },
+	};
+	cy.add(imageElement);
+};
+
+const removeImageNode = (compoundNodeId: string, cy: Cytoscape.Core) => {
+	const compound = cy.getElementById(compoundNodeId);
+	cy.remove(getImageNodeId(compoundNodeId));
+};
+
+const nodeTypeKey = 'nodeType';
+const layoutIgnoreKey = 'layoutIgnore';
+
+const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 	const postprocess: (() => void)[] = [];
+
 	for (const a of graphPatch) {
 		switch (a.action) {
 			case 'add':
 				switch (a.assertion.type) {
 					case 'node':
 					case 'linkNode':
-						addNode(a.assertion, nullableCy);
+						addNode(a.assertion, cy);
 						break;
 					case 'property':
-						addProperty(a.assertion, nullableCy);
+						console.log('KEY: ', a.assertion.key);
+						addProperty(a.assertion, cy);
+						if (a.assertion.key === 'symbol') {
+							createImageNode(a.assertion.node.id, a.assertion.node.symbol!, cy);
+						}
+
 						break;
 					case 'link':
-						postprocess.push(...addEdge(a.assertion, nullableCy));
+						if (a.assertion.linkRef?.id !== hasConnectorIri) {
+							postprocess.push(...addEdge(a.assertion, cy));
+						}
 						break;
 				}
 				break;
@@ -142,16 +146,20 @@ function applyPatch(graphPatch: GraphPatch, nullableCy: Cytoscape.Core) {
 					case 'link':
 					case 'linkNode':
 					case 'node':
-						remove(a.assertion, nullableCy);
+						removeElement(a.assertion, cy);
 						break;
 					case 'property':
-						removeProperty(a.assertion, nullableCy);
+						removeProperty(a.assertion, cy);
+						if (a.assertion.key === 'symbol') {
+							removeImageNode(a.assertion.node.id, cy);
+						}
+						break;
 				}
 				break;
 		}
 	}
-	for (const p of postprocess) p();
-}
+};
+
 export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfig */ }: GraphStateProps) => {
 	// const { turtleString, layoutName, patches, uiConfig } = state;
 	// const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
@@ -202,9 +210,9 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 		nullableCy.batch(() => {
 			applyPatch(graphPatch, nullableCy);
 		});
-		nullableCy.ready(() => {
+		/*nullableCy.ready(() => {
 			nullableCy.elements('[!layoutIgnore]').layout(selectedLayout).run();
-		});
+		});*/
 	}, [graphPatch]);
 
 	useEffect(() => {
@@ -214,9 +222,9 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 				applyPatch(patches.current, nullableCy);
 				patches.current = [];
 			});
-			cy.ready(() => {
+			/*cy.ready(() => {
 				cy.elements('[!layoutIgnore]').layout(selectedLayout).run();
-			});
+			});*/
 		}
 	}, [nullableCy /*, elements*/]);
 
@@ -295,11 +303,10 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 						shape: 'rectangle',
 						'background-clip': 'none',
 						'background-fit': 'contain',
-						'background-image': 'data(image)',
-						'background-height': 'data(imageHeight)',
-						'background-width': 'data(imageWidth)',
-						width: 'data(imageHeight)',
-						height: 'data(imageHeight)',
+						'background-image': `data(${imageKey})`,
+
+						width: `data(${imageWidthKey})`,
+						height: `data(${imageWidthKey})`,
 						'background-color': 'blue',
 						'background-opacity': 0,
 						'border-width': 0,

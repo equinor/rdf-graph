@@ -17,7 +17,7 @@ export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 export const compoundNodeKey = 'parent';
 export const labelKey = 'label';
 export const colorKey = 'color';
-export const svgKey = 'image';
+export const svgKey = 'svgId';
 export const simpleSvgKey = 'simpleImage';
 export const rotationKey = 'rotation';
 export const connectorKey = 'connector';
@@ -41,11 +41,12 @@ const dict: { [key: string]: string } = {
 	[hasConnectorSuffixIri]: connectorKey,
 };
 
-//keys for cytoscape management
-export const nodeTypeKey = 'nodeType';
-export const layoutIgnoreKey = 'layoutIgnore';
-export const idKey = 'id';
-export const cytoscapeKeys = [nodeTypeKey, layoutIgnoreKey, idKey];
+//other keys
+export const imageKey = 'image';
+export const imageWidthKey = 'imageWidth';
+export const imageHeightKey = 'imageHeight';
+export const relativePositionXKey = 'relativePositionX';
+export const relativePositionYKey = 'relativePositionY';
 
 export const parentPredicates = [compoundNodeIri];
 export const childPredicates = [hasConnectorIri];
