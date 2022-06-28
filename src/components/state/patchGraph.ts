@@ -1,23 +1,12 @@
 import { Quad, termToId, Writer } from 'n3';
 import { RdfPatch2 } from '../../models';
-import {
-	GraphEdge,
-	GraphState,
-	GraphNode,
-	GraphPatch,
-	GraphAssertion,
-	GraphPropertyIdentifier,
-	EdgeAssertion,
-	PropertyAssertion,
-} from '../../models/graphModel';
+import { GraphEdge, GraphState, GraphNode, GraphAssertion, EdgeAssertion, PropertyAssertion } from '../../models/graphModel';
 import { GraphStateProps } from './GraphStateProps';
 import {
 	colorKey,
 	labelKey,
-	simpleSvgKey,
 	compoundNodeKey,
 	connectorKey,
-	svgKey,
 	rotationKey,
 	hasSvgIri,
 	rotationIri,
@@ -26,7 +15,7 @@ import {
 	labelIri,
 	colorIri,
 } from '../../mapper/predicates';
-import { getSymbol, Point, SymbolRotation } from '../../symbol-api';
+import { getSymbol, Point } from '../../symbol-api';
 import { setEquals } from '../../utils/setEquals';
 
 const writer = new Writer();
@@ -56,8 +45,6 @@ const PropIris = [hasSvgIri, rotationIri, hasConnectorSuffixIri, labelIri] as co
 const EdgeIris = [hasConnectorIri] as const;
 type PropIri = typeof PropIris[number];
 type EdgeIri = typeof EdgeIris[number];
-type ProcessDefinition<T> = { dependencies: (PropIri | EdgeIri)[]; process: (g: T) => Iterable<GraphAssertion> };
-type PostProcessDefinitions = { [prop in PropIri]: ProcessDefinition<PropertyAssertion> } & { [prop in EdgeIri]: ProcessDefinition<EdgeAssertion> };
 
 const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', labelKey, colorKey, rotationKey] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
