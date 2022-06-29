@@ -1,4 +1,4 @@
-import { layoutDagre } from '../../utils';
+import { layoutCola, layoutDagre } from '../../utils';
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
