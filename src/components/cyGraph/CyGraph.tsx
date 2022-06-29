@@ -1,4 +1,4 @@
-import { layoutDagre } from '../../utils';
+import { layoutCola, layoutDagre } from '../../utils';
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
@@ -16,6 +16,7 @@ import {
 	GraphPropertyIdentifier,
 } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api';
+import cytoscape from 'cytoscape';
 
 const addNode = (n: GraphNodeIdentifier, cy: Cytoscape.Core) => {
 	const { id, type } = n;
@@ -29,7 +30,6 @@ const addNode = (n: GraphNodeIdentifier, cy: Cytoscape.Core) => {
 
 const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 	const node = cy.getElementById(prop.node.id);
-	const position = node.position();
 
 	switch (prop.key) {
 		case 'symbol':
@@ -38,15 +38,25 @@ const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 			break;
 		case 'relativePosition':
 			//cy.remove(prop.node.id)
-			const newPosition = { x: position.x + prop.node.relativePosition!.x, y: position.y + prop.node.relativePosition!.y };
 
 			//cy.add(createConnectorNode(node.id, newPosition, node.data('parent')));
 			node.data(nodeTypeKey, NodeType.SymbolConnector);
-			node.data(layoutIgnoreKey, true);
+			node.data(prop.key, prop.value);
+			//node.data(layoutIgnoreKey, true);
 
-			console.log('Position', prop.node.relativePosition!);
-			node.position(prop.node.relativePosition!);
-			cy.layout({ name: 'preset' }).run();
+			// const handler = (_event: cytoscape.EventObject) => {
+			// 	const parent = cy.getElementById(prop.node.parent!.id);
+			// 	const position = parent.position();
+			// 	const newPosition = { x: position.x + prop.node.relativePosition!.x, y: position.y + prop.node.relativePosition!.y };
+			// 	//node.position({x: -50, y: -50});
+			// 	console.log("IN handler, newposition = ", newPosition)
+			// 	const presetLayout = {name: 'preset', animate: false, transform: (t: cytoscape.NodeSingular) => {return newPosition}};
+			// 	// cy.on('layoutready', cy.collection([node]), handler);
+			// 	node.layout(presetLayout);
+			// 	node.on('layoutready', handler);
+			// };
+			// cy.on('layoutready', handler), cy.collection([node]);
+
 			break;
 		case 'parent':
 			node.move({ parent: prop.node.parent!.id });
@@ -127,7 +137,6 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 						addNode(a.assertion, cy);
 						break;
 					case 'property':
-						console.log('KEY: ', a.assertion.key);
 						addProperty(a.assertion, cy);
 						if (a.assertion.key === 'symbol') {
 							createImageNode(a.assertion.node.id, a.assertion.node.symbol!, cy);
@@ -160,47 +169,37 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 	}
 };
 
+const layouthandler = (_event: cytoscape.EventObject) => {
+	console.log('EVENT OBJECT ', _event);
+	const connectorSelector = `[nodeType = "${NodeType.SymbolConnector}"]`;
+	const imageSelector = `[nodeType = "${NodeType.SymbolImage}"]`;
+
+	_event.cy
+		.$(`${connectorSelector}, ${imageSelector}`)
+		.layout({
+			name: 'preset',
+			animate: false,
+			transform: (node, pos) => {
+				const parentPosition = node.parent().first().position();
+				const relativePosition = node.data('relativePosition') || { x: 0, y: 0 };
+				const position = { x: parentPosition.x + relativePosition.x, y: parentPosition.y + relativePosition.y };
+				return position;
+			},
+		})
+		.run();
+};
+
 export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfig */ }: GraphStateProps) => {
-	// const { turtleString, layoutName, patches, uiConfig } = state;
-	// const selectedLayout = layouts.find((lt) => lt.name === layoutName)!.layout;
 	const selectedLayout = layoutDagre;
-	// const [elements, setElements] = useState<ElementDefinition[]>([]);
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
 	const patches = useRef<GraphAssertion[]>([]);
 
-	// const prepareCytoscapeElements = async () => {
-	// 	const es = await turtle2Elements(turtleString);
-	// 	const [rdfNodes, other] = partition((e) => isValidRdfNodeData(e.data), es);
-	// 	const syncedElements: RdfNodeDefinition[] = rdfNodes.map((e) => {
-	// 		return { data: getSyncedNodeData(e.data as RdfNodeDataDefinition) };
-	// 	});
-	// 	const postProcessed = postProcessElements(other.concat(syncedElements));
-	// 	setElements(postProcessed);
-	// };
-
-	const initialize = (cy: Cytoscape.Core) => {
-		// cy.on('select', () => {
-		// 	onElementsSelected(
-		// 		new GraphSelection(
-		// 			cy.$('node:selected').map((n) => n.data()),
-		// 			cy.$('edge:selected').map(createQuad)
-		// 		)
-		// 	);
-		// });
-		// cy.on('unselect', () => {
-		// 	if (cy.$(':selected').length === 0) {
-		// 		onElementsSelected(new GraphSelection([], []));
-		// 	}
-		// });
+	const runLayout = (cy: cytoscape.Core) => {
+		const layout = cy.layout(selectedLayout);
+		layout.on('layoutstop', layouthandler);
+		layout.run();
 	};
-
-	// const createQuad = (element: SingularElementArgument): Quad =>
-	// 	new Quad(namedNode(element.data(rdfSubjectKey)), namedNode(element.data(rdfPredicateKey)), namedNode(element.data(rdfObjectKey)));
-
-	// useEffect(() => {
-	// 	prepareCytoscapeElements();
-	// }, [turtleString, state.resetCounter]);
 
 	useEffect(() => {
 		if (!nullableCy) {
@@ -210,9 +209,8 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 		nullableCy.batch(() => {
 			applyPatch(graphPatch, nullableCy);
 		});
-		/*nullableCy.ready(() => {
-			nullableCy.elements('[!layoutIgnore]').layout(selectedLayout).run();
-		});*/
+
+		runLayout(nullableCy);
 	}, [graphPatch]);
 
 	useEffect(() => {
@@ -222,15 +220,12 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 				applyPatch(patches.current, nullableCy);
 				patches.current = [];
 			});
-			/*cy.ready(() => {
-				cy.elements('[!layoutIgnore]').layout(selectedLayout).run();
-			});*/
+			runLayout(nullableCy);
 		}
-	}, [nullableCy /*, elements*/]);
+	}, [nullableCy]);
 
 	const setCytoscapeHandle = (cy: Cytoscape.Core) => {
 		if (nullableCy) return; // Already initialized
-		initialize(cy);
 		setCy(cy);
 	};
 
