@@ -1,4 +1,4 @@
-import { layoutDagre } from '../../utils';
+import { layoutCola, layoutDagre } from '../../utils';
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
@@ -37,8 +37,31 @@ const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 			node.data(prop.key, prop.value);
 			break;
 		case 'relativePosition':
+<<<<<<< HEAD
 			node.data(nodeTypeKey, NodeType.SymbolConnector);
 			node.data(prop.key, prop.value);
+=======
+			//cy.remove(prop.node.id)
+
+			//cy.add(createConnectorNode(node.id, newPosition, node.data('parent')));
+			node.data(nodeTypeKey, NodeType.SymbolConnector);
+			node.data(prop.key, prop.value);
+			//node.data(layoutIgnoreKey, true);
+
+			// const handler = (_event: cytoscape.EventObject) => {
+			// 	const parent = cy.getElementById(prop.node.parent!.id);
+			// 	const position = parent.position();
+			// 	const newPosition = { x: position.x + prop.node.relativePosition!.x, y: position.y + prop.node.relativePosition!.y };
+			// 	//node.position({x: -50, y: -50});
+			// 	console.log("IN handler, newposition = ", newPosition)
+			// 	const presetLayout = {name: 'preset', animate: false, transform: (t: cytoscape.NodeSingular) => {return newPosition}};
+			// 	// cy.on('layoutready', cy.collection([node]), handler);
+			// 	node.layout(presetLayout);
+			// 	node.on('layoutready', handler);
+			// };
+			// cy.on('layoutready', handler), cy.collection([node]);
+
+>>>>>>> badbeb3 (SVG node position works)
 			break;
 		case 'parent':
 			node.move({ parent: prop.node.parent!.id });
@@ -136,6 +159,10 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 };
 
 const layouthandler = (_event: cytoscape.EventObject) => {
+<<<<<<< HEAD
+=======
+	console.log('EVENT OBJECT ', _event);
+>>>>>>> badbeb3 (SVG node position works)
 	const connectorSelector = `[nodeType = "${NodeType.SymbolConnector}"]`;
 	const imageSelector = `[nodeType = "${NodeType.SymbolImage}"]`;
 
@@ -154,7 +181,11 @@ const layouthandler = (_event: cytoscape.EventObject) => {
 		.run();
 };
 
+<<<<<<< HEAD
 export const CyGraph = ({ graphState, graphPatch, onElementsSelected }: GraphProps) => {
+=======
+export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfig */ }: GraphStateProps) => {
+>>>>>>> badbeb3 (SVG node position works)
 	const selectedLayout = layoutDagre;
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
