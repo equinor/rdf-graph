@@ -56,9 +56,9 @@ const nodeClicked = (e: any, obj: any) => {
 	});
 };
 
-// const makeImagePath = (icon: string) => {
-// 	return `images/${icon}`;
-// };
+const makeImagePath = (icon: string) => {
+	return `images/${icon}`;
+};
 
 const initDiagram = () => {
 	const portSize = new Size(8, 8);
@@ -129,9 +129,12 @@ const initDiagram = () => {
 					// width: 48,
 					// height: 48,
 					// element: makeImage(),
+					// stroke: 'red',
+					// fill: 'blue',
+					source: svg,
 					// element: drawHandCanvas(),
 				},
-				new Binding('element', 'icon', makeImage),
+				// new Binding('element', 'icon', svg),
 				new Binding('width', 'width'),
 				new Binding('height', 'height')
 				// new Binding('angle', 'angle')
@@ -306,22 +309,23 @@ const initDiagram = () => {
 
 	return diagram;
 };
-
+// posX & posY - original position (width/height) of connectors in original svg
 const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
 const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
 
 const ArrowRight = (key: number, width: number, height: number, angle: number) => {
+	// Original width & height of svg
 	const orgH = 40;
 	const orgW = 40;
 
 	return {
 		key,
-		icon: 'arrow-right',
+		// icon: 'arrow-right',
 		width,
 		height,
 		angle,
-		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 1)}, 0` }],
-		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 1)}` }],
+		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 20)}, 0` }],
+		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 24.5)}` }],
 		bottomArray: [],
 		leftArray: [{ portId: 'left0' }],
 	};
@@ -335,22 +339,24 @@ export const GoGraph = () => {
 				initDiagram={initDiagram}
 				divClassName="graph-links-model"
 				nodeDataArray={[
-					ArrowRight(1, 100, 100, 0),
+					ArrowRight(1, 100, 100, 120),
 					{
 						key: 2,
 						icon: 'arrow-right',
-						minSize: '48 48',
 						width: 48,
 						height: 48,
 						leftArray: [
 							{
 								portId: 'left0',
+								alignment: '1 1 0 4.55',
 							},
 							{
 								portId: 'left1',
+								alignment: '1 1 0 4.55',
 							},
 							{
 								portId: 'left2',
+								alignment: '1 1 0 4.55',
 							},
 						],
 						topArray: [
@@ -361,12 +367,15 @@ export const GoGraph = () => {
 						bottomArray: [
 							{
 								portId: 'bottom0',
+								alignment: '1 1 0 -18',
 							},
 							{
 								portId: 'bottom1',
+								alignment: '1 1 0 -18',
 							},
 							{
 								portId: 'bottom2',
+								alignment: '1 1 0 -18',
 							},
 						],
 						rightArray: [],
@@ -380,14 +389,17 @@ export const GoGraph = () => {
 							{
 								portColor: '#66d6d1',
 								portId: 'left0',
+								alignment: '1 1 0 4.55',
 							},
 							{
 								portColor: '#fadfe5',
 								portId: 'left1',
+								alignment: '1 1 0 4.55',
 							},
 							{
 								portColor: '#6cafdb',
 								portId: 'left2',
+								alignment: '1 1 0 4.55',
 							},
 						],
 						topArray: [
@@ -412,30 +424,27 @@ export const GoGraph = () => {
 						icon: 'arrow-right',
 						leftArray: [
 							{
-								portColor: '#fae3d7',
 								portId: 'left0',
+								alignment: '1 1 0 4.55',
 							},
 						],
 						topArray: [
 							{
-								portColor: '#6cafdb',
 								portId: 'top0',
 							},
 						],
 						bottomArray: [
 							{
-								portColor: '#6cafdb',
 								portId: 'bottom0',
 							},
 						],
 						rightArray: [
 							{
-								portColor: '#6cafdb',
 								portId: 'right0',
 							},
 							{
-								portColor: '#66d6d1',
 								portId: 'right1',
+								alignment: '1 1 0 5.55',
 							},
 						],
 					},
