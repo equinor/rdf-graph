@@ -1,7 +1,7 @@
 import { Quad, termToId, Writer } from 'n3';
 import { RdfPatch2 } from '../../models';
 import { GraphEdge, GraphState, GraphNode, GraphAssertion, EdgeAssertion, PropertyAssertion } from '../../models/graphModel';
-import { GraphStateProps } from './GraphStateProps';
+import { GraphProps, GraphStateProps } from './GraphStateProps';
 import {
 	colorKey,
 	labelKey,
@@ -249,5 +249,5 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, 
 				break;
 		}
 	}
-	return { graphState: state, graphPatch: graphPatch, onElementsSelected: (g) => {} };
+	return { graphState: state, graphPatch: graphPatch };
 }

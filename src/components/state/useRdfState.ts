@@ -1,7 +1,7 @@
 import { useReducer } from 'react';
 import { RdfAssertion } from '../../models';
 import { Store, Quad } from 'n3';
-import { RdfStateProps, RdfAction } from './RdfState.types';
+import { RdfAction, RdfState } from './RdfState.types';
 
 const coercePatch = function* (store: Store<Quad, Quad, Quad, Quad>, patches: Iterable<RdfAssertion>) {
 	for (const p of patches) {
@@ -12,13 +12,15 @@ const coercePatch = function* (store: Store<Quad, Quad, Quad, Quad>, patches: It
 				yield p;
 				break;
 			case 'remove':
-				if (!store.has(p.assertion)) continue;
+				if (!store.has(p.assertion)) {
+					continue;
+				}
 				store.removeQuad(p.assertion);
 				yield p;
 		}
 	}
 };
-const reducer: (state: RdfStateProps, action: RdfAction) => RdfStateProps = (state, action) => {
+const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action) => {
 	switch (action.type) {
 		case 'add':
 		case 'remove':

@@ -5,12 +5,12 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { NodeType } from '../../models/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey, predicateMap, relativePositionXKey, svgKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
-import { GraphStateProps } from '../state/GraphStateProps';
+import { GraphProps } from '../state/GraphStateProps';
 import {
+	AbstractNode,
 	GraphAssertion,
 	GraphEdge,
 	GraphEdgeIdentifier,
-	GraphNode,
 	GraphNodeIdentifier,
 	GraphPatch,
 	GraphPropertyIdentifier,
@@ -37,26 +37,8 @@ const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 			node.data(prop.key, prop.value);
 			break;
 		case 'relativePosition':
-			//cy.remove(prop.node.id)
-
-			//cy.add(createConnectorNode(node.id, newPosition, node.data('parent')));
 			node.data(nodeTypeKey, NodeType.SymbolConnector);
 			node.data(prop.key, prop.value);
-			//node.data(layoutIgnoreKey, true);
-
-			// const handler = (_event: cytoscape.EventObject) => {
-			// 	const parent = cy.getElementById(prop.node.parent!.id);
-			// 	const position = parent.position();
-			// 	const newPosition = { x: position.x + prop.node.relativePosition!.x, y: position.y + prop.node.relativePosition!.y };
-			// 	//node.position({x: -50, y: -50});
-			// 	console.log("IN handler, newposition = ", newPosition)
-			// 	const presetLayout = {name: 'preset', animate: false, transform: (t: cytoscape.NodeSingular) => {return newPosition}};
-			// 	// cy.on('layoutready', cy.collection([node]), handler);
-			// 	node.layout(presetLayout);
-			// 	node.on('layoutready', handler);
-			// };
-			// cy.on('layoutready', handler), cy.collection([node]);
-
 			break;
 		case 'parent':
 			node.move({ parent: prop.node.parent!.id });
@@ -77,7 +59,6 @@ const removeElement = (element: GraphEdgeIdentifier | GraphNodeIdentifier, cy: C
 	cy.remove(cy.getElementById(element.id));
 };
 const removeProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
-	if (!predicateMap.includes(prop.key)) return;
 	const element = cy.getElementById(prop.node.id);
 	element.removeData(prop.key);
 	if (prop.key in ['symbol', 'relativePosition']) {
@@ -85,23 +66,9 @@ const removeProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 	}
 };
 
-const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId}_svg`;
-
-const createConnectorNode = (nodeId: string, position: { x: string; y: string }, parent: string) => {
-	return {
-		data: {
-			parent: parent,
-			layoutIgnore: true,
-			nodeType: NodeType.SymbolConnector,
-		},
-		position: position,
-		grabbable: false,
-	};
-};
+const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId.replace('#', 'HASH')}_svg`;
 
 const createImageNode = (nodeId: string, symbol: NodeSymbol, cy: Cytoscape.Core) => {
-	const position = cy.getElementById(nodeId).position();
-
 	const imageElement: ElementDefinition = {
 		data: {
 			id: getImageNodeId(nodeId),
@@ -118,8 +85,7 @@ const createImageNode = (nodeId: string, symbol: NodeSymbol, cy: Cytoscape.Core)
 };
 
 const removeImageNode = (compoundNodeId: string, cy: Cytoscape.Core) => {
-	const compound = cy.getElementById(compoundNodeId);
-	cy.remove(getImageNodeId(compoundNodeId));
+	cy.remove(`[id = "${getImageNodeId(compoundNodeId)}"]`);
 };
 
 const nodeTypeKey = 'nodeType';
@@ -170,7 +136,6 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 };
 
 const layouthandler = (_event: cytoscape.EventObject) => {
-	console.log('EVENT OBJECT ', _event);
 	const connectorSelector = `[nodeType = "${NodeType.SymbolConnector}"]`;
 	const imageSelector = `[nodeType = "${NodeType.SymbolImage}"]`;
 
@@ -189,7 +154,7 @@ const layouthandler = (_event: cytoscape.EventObject) => {
 		.run();
 };
 
-export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfig */ }: GraphStateProps) => {
+export const CyGraph = ({ graphState, graphPatch, onElementsSelected }: GraphProps) => {
 	const selectedLayout = layoutDagre;
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
@@ -216,6 +181,10 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 	useEffect(() => {
 		if (nullableCy) {
 			const cy = nullableCy!;
+			cy.on('select', () => {
+				const selection = cy.$('node:selected').map((n) => graphState.nodeIndex.get(n.data().id) as AbstractNode);
+				onElementsSelected(selection);
+			});
 			cy.batch(() => {
 				applyPatch(patches.current, nullableCy);
 				patches.current = [];
@@ -228,55 +197,6 @@ export const CyGraph = ({ graphState, graphPatch /*, onElementsSelected, uiConfi
 		if (nullableCy) return; // Already initialized
 		setCy(cy);
 	};
-
-	// const createSelector = (key: string, value: string) => {
-	// 	return `[${key}='${value}']`;
-	// };
-
-	// const getAllNodes = (quads: Quad[]) =>
-	// 	quads.map((q) => q.subject.value).concat(quads.filter((q) => q.object.termType === 'NamedNode').map((q) => q.object.value));
-
-	// const applyPatch = (patch: RdfPatch) => {
-	// 	if (!nullableCy) return;
-	// 	const cy = nullableCy;
-	// 	const newAdditions = rdfTriples2Elements(patch.tripleAdditions);
-
-	// 	patch.tripleRemovals
-	// 		.filter((q) => q.object.termType === 'NamedNode' && !isHierarchyPredicate(q.predicate.value))
-	// 		.forEach((q) =>
-	// 			cy.remove(
-	// 				'edge' +
-	// 					createSelector(rdfSubjectKey, q.subject.value) +
-	// 					createSelector(rdfPredicateKey, q.predicate.value) +
-	// 					createSelector(rdfObjectKey, q.object.value)
-	// 			)
-	// 		);
-
-	// 	postUpdateElements(newAdditions, cy);
-	// 	removeData(patch.tripleRemovals, cy);
-	// 	const allNodes = getAllNodes(patch.tripleAdditions).concat(getAllNodes(patch.tripleRemovals)).filter(onlyUnique);
-	// 	allNodes.forEach((node) => syncNodeData(node, cy));
-	// 	deleteEmpty(allNodes, cy);
-	// };
-
-	// useEffect(() => {
-	// 	if (nullableCy) {
-	// 		const cy = nullableCy!;
-	// 		cy.forceRender();
-	// 	}
-	// }, [state.forceRedraw]);
-
-	// useEffect(() => {
-	// 	const patch = patches.length > 0 && patches.at(-1);
-	// 	patch && applyPatch(patch);
-	// }, [patches]);
-
-	// useEffect(() => {
-	// 	if (nullableCy) {
-	// 		const els = nullableCy.elements('[!layoutIgnore]');
-	// 		els.layout(selectedLayout).run();
-	// 	}
-	// }, [selectedLayout]);
 
 	return (
 		<CytoscapeComponent

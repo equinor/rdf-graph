@@ -56,6 +56,7 @@ export type GraphPropertyIdentifier = {
 	key: string;
 	value: any;
 };
+
 type GraphAssertionBase = { action: 'add' | 'remove' };
 export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
 export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
@@ -68,4 +69,18 @@ export type GraphState = {
 	linkIndex: Map<string, GraphEdge>;
 };
 
-export type GraphSelection = Array<GraphNode | GraphEdge>;
+export type AbstractNode = GraphNodeIdentifier & {
+	incoming: Map<string, GraphNode[]>;
+	outgoing: Map<string, GraphNode[]>;
+	properties: Map<string, string[]>;
+};
+
+export type AbstractEdge = {
+	source: GraphId;
+	target: GraphId;
+	linkRef: AbstractNode;
+};
+
+export type GraphSelection = Array<AbstractNode>;
+
+export type SelectionCallback = (selection: GraphSelection) => void;

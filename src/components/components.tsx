@@ -1,14 +1,18 @@
 import { FC, useEffect, useState } from 'react';
-import { GraphNode, GraphEdge } from '../models/graphModel';
+import { GraphNode, GraphEdge, GraphSelection } from '../models/graphModel';
 import { patchGraph } from './state/patchGraph';
-import { GraphStateProps } from './state/GraphStateProps';
+import { GraphProps, GraphStateProps } from './state/GraphStateProps';
 import { RdfContext } from './state/RdfContext';
 import { RdfStateProps } from './state/RdfState.types';
 import { F3DGraph } from './f3dGraph/F3DGraph';
 import { CyGraph } from './cyGraph/CyGraph';
 
-function createRdfGraphHoc<P extends GraphStateProps, R = Omit<P, keyof GraphStateProps>>(Component: FC<P>): FC<R & RdfStateProps> {
-	return ({ rdfStore, rdfPatch, ...props }: RdfStateProps) => {
+function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(Component: FC<P>): FC<R & RdfStateProps> {
+	return ({ rdfStore, rdfPatch, onElementSelected, ...props }: RdfStateProps) => {
+		const forwardSelection = (selection: GraphSelection) => {
+			onElementSelected(selection);
+		};
+
 		const [state, update] = useState<GraphStateProps>({
 			graphState: {
 				nodeIndex: new Map<string, GraphNode>(),
@@ -18,11 +22,10 @@ function createRdfGraphHoc<P extends GraphStateProps, R = Omit<P, keyof GraphSta
 		});
 		useEffect(() => {
 			const newGraphState = patchGraph(state.graphState, rdfPatch);
-			console.log(newGraphState.graphPatch);
 			update(newGraphState);
 		}, [rdfPatch]);
 
-		return <Component {...({ ...state, ...props } as P)} />;
+		return <Component {...({ ...state, ...props, onElementsSelected: forwardSelection } as P)} />;
 	};
 }
 function createRdfViewHoc<P extends RdfStateProps, R = Omit<P, keyof RdfStateProps>>(Component: FC<P>) {

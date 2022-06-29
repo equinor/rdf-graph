@@ -3,7 +3,7 @@ import { CSS3DRenderer, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRe
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphNode, GraphEdge, GraphState } from '../../models/graphModel';
-import { GraphStateProps } from '../state/GraphStateProps';
+import { GraphProps } from '../state/GraphStateProps';
 // import {} from '@rdfjs/types';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
@@ -78,7 +78,7 @@ const filterable = function* <T>(source: Iterable<T>, filter: (e: T) => boolean)
 	for (const e of source) if (filter(e)) yield e;
 };
 
-export const F3DGraph: FC<GraphStateProps & object> = ({ graphState, graphPatch, ...rest }) => {
+export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...rest }) => {
 	const [model, update] = useState<f3DState>({
 		nodes: [],
 		links: [],
