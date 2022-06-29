@@ -1,8 +1,9 @@
 import { patchGraph } from '../components/state/patchGraph';
-import { DataFactory } from 'n3';
+import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';
 import { RdfPatch2 } from '../models/rdfPatch';
+import { getSymbol, SymbolKey } from '../symbol-api';
 const { quad: q, literal: l, blankNode: b, namedNode: n } = DataFactory;
 describe('patchGraph', () => {
 	test('normal svg', () => {
@@ -19,27 +20,31 @@ describe('patchGraph', () => {
 		const res = patchGraph(graphState, patch);
 		const assertions = [...res.graphPatch];
 
-		expect(
-			assertions.find(
-				(a) =>
-					a.action === 'add' &&
-					a.assertion.type === 'property' &&
-					a.assertion.key === 'imageWidth' &&
-					a.assertion.value === '117' &&
-					a.assertion.node.id === 'S'
-			)
-		).toBeTruthy();
-
-		expect(
-			assertions.find(
-				(a) =>
-					a.action === 'add' &&
-					a.assertion.type === 'property' &&
-					a.assertion.key === 'relativePositionX' &&
-					a.assertion.value === '-8' &&
-					a.assertion.node.id === 'C'
-			)
-		).toBeTruthy();
+		for (const q of quads) {
+			let node;
+			switch (termToId(q.predicate)) {
+				case P.hasSvgIri:
+					node = res.graphState.nodeIndex.get(termToId(q.subject));
+					expect(node!.symbolName).toBe(q.object.value);
+					if (node!.symbolName! in SymbolKey) {
+						expect(node!.symbol).toBeTruthy();
+					}
+					break;
+				case P.hasConnectorIri:
+					const parent = res.graphState.nodeIndex.get(termToId(q.subject));
+					const child = res.graphState.nodeIndex.get(termToId(q.object));
+					expect(child!.parent!).toBe(parent);
+					expect(parent!.connector!).toContain(child);
+					break;
+				case P.hasConnectorSuffixIri:
+					node = res.graphState.nodeIndex.get(termToId(q.subject));
+					expect(node!.connectorName!).toBe(q.object.value);
+					for (const c of node!.parent!.symbol!.connectors) {
+						if (c.id == q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
+					}
+					break;
+			}
+		}
 	});
 
 	test('Without existing connector', () => {
@@ -54,28 +59,6 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
-		const assertions = [...res.graphPatch];
-
-		expect(
-			assertions.find(
-				(a) =>
-					a.action === 'add' &&
-					a.assertion.type === 'property' &&
-					a.assertion.key === 'imageWidth' &&
-					a.assertion.value === '117' &&
-					a.assertion.node.id === 'S'
-			)
-		).toBeTruthy();
-
-		expect(
-			assertions.find(
-				(a) =>
-					a.action === 'add' &&
-					a.assertion.type === 'property' &&
-					a.assertion.key === 'relativePositionX' &&
-					a.assertion.value === '0' &&
-					a.assertion.node.id === 'C'
-			)
-		).toBeTruthy();
+		expect(res.graphState.nodeIndex.get('C')!.relativePosition!).toMatchObject({ x: 0, y: 0 });
 	});
 });
