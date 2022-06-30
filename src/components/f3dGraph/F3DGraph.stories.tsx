@@ -4,12 +4,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { StoryWrapper } from './StoryWrapper';
 
 export default {
-	title: 'Graph',
+	title: '3DGraph',
 	component: StoryWrapper,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
-		layoutName: { control: { type: 'inline-radio' } },
+		// layoutName: { control: { type: 'inline-radio' } },
 	},
 } as ComponentMeta<typeof StoryWrapper>;
 
@@ -80,7 +80,7 @@ example:Bilde
 `;
 Example.args = {
 	turtleString: storyTurtle,
-	layoutName: 'Cose-Bilkent',
+	// layoutName: 'Cose-Bilkent',
 };
 
-Example.storyName = 'Graph';
+Example.storyName = '3DGraph';

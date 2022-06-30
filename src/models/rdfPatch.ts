@@ -9,4 +9,10 @@ export class RdfPatch {
 	}
 }
 
+export type RdfAssertion = {
+	action: 'add' | 'remove';
+	assertion: Quad;
+};
+export type RdfPatch2 = RdfAssertion[] | Iterable<RdfAssertion>;
+
 export const emptyPatch: RdfPatch = { tripleAdditions: [], tripleRemovals: [] };
