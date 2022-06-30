@@ -1,18 +1,8 @@
-import { DataFactory, Quad } from 'n3';
-import { getAllQuads, getData } from '../../cytoscape-api/cytoscapeApi';
-import {
-	colorPredicate,
-	hasConnectorPredicate,
-	hasConnectorSuffixPredicate,
-	hasSvgPredicate,
-	labelPredicate,
-	rotationIri,
-	rotationPredicate,
-} from '../../mapper/predicates';
-import { emptyPatch, RdfAssertion, RdfPatch, RdfPatch2 } from '../../models';
-import { GraphPatch, GraphSelection } from '../../models/graphModel';
-import { getSymbol, SymbolKey } from '../../symbol-api';
-import { UiConfigProps } from '../sparqlGraph/SparqlGraph.types';
+import { DataFactory } from 'n3';
+import { labelPredicate, rotationIri, rotationPredicate } from '../../mapper/predicates';
+import { RdfPatch2 } from '../../models';
+import { GraphSelection } from '../../models/graphModel';
+import { SymbolKey } from '../../symbol-api';
 
 const { namedNode, literal, quad } = DataFactory;
 
@@ -71,11 +61,6 @@ type RedrawAction = {
 	type: 'redraw';
 };
 
-type UpdateUiConfigAction = {
-	type: 'updateUiConfig';
-	payload: UiConfigProps;
-};
-
 export type ClientAction =
 	| DeleteAction
 	| UpdateSelectionAction
@@ -87,8 +72,7 @@ export type ClientAction =
 	| ChangeDataAction
 	| ConnectAction
 	| RotateSelection
-	| RedrawAction
-	| UpdateUiConfigAction;
+	| RedrawAction;
 
 export function* createPatch(action: ClientAction): RdfPatch2 {
 	switch (action.type) {

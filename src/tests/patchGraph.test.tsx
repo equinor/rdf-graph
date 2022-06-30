@@ -3,7 +3,7 @@ import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';
 import { RdfPatch2 } from '../models/rdfPatch';
-import { getSymbol, SymbolKey } from '../symbol-api';
+import { SymbolKey } from '../symbol-api';
 const { quad: q, literal: l, blankNode: b, namedNode: n } = DataFactory;
 describe('patchGraph', () => {
 	test('normal svg', () => {

@@ -1,12 +1,9 @@
 import { Button } from '@equinor/eds-core-react';
-import { useEffect, useReducer, useState } from 'react';
-import { colorPredicate, hasSvgPredicate } from '../../mapper/predicates';
-import { getData } from '../../cytoscape-api/cytoscapeApi';
+import { useEffect, useState } from 'react';
 import { SymbolKey } from '../../symbol-api';
 import { RdfCyGraph } from '../components';
 import { useRdfActionReducer } from '../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';
-import { EdgeStyle } from '../sparqlGraph/SparqlGraph.types';
 import { createPatch } from './createPatch';
 import { GraphSelection } from '../../models/graphModel';
 // import { reducer } from '../state/reducer';
@@ -18,7 +15,6 @@ export type SparqlWrapperProps = {
 };
 
 const colors = ['blue', 'green', 'red', 'yellow', 'purple', 'pink', 'cyan', 'grey'];
-const edgeStyles: EdgeStyle[] = ['haystack', 'straight', 'bezier', 'unbundled-bezier', 'segments', 'taxi'];
 const svgs = [SymbolKey.Separator_1, SymbolKey.Valve_3Way_1];
 
 export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
