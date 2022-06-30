@@ -3,7 +3,7 @@ import { CSS3DRenderer, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRe
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphNode, GraphEdge } from '../../models/graphModel';
-import { GraphStateProps } from '../state/GraphStateProps';
+import { GraphProps } from '../state/GraphStateProps';
 // import {} from '@rdfjs/types';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
@@ -78,7 +78,7 @@ const filterable = function* <T>(source: Iterable<T>, filter: (e: T) => boolean)
 	for (const e of source) if (filter(e)) yield e;
 };
 
-export const F3DGraph: FC<GraphStateProps & object> = ({ graphState, graphPatch, ...rest }) => {
+export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...rest }) => {
 	const [model, update] = useState<f3DState>({
 		nodes: [],
 		links: [],
@@ -94,15 +94,11 @@ export const F3DGraph: FC<GraphStateProps & object> = ({ graphState, graphPatch,
 			height={800}
 			graphData={model}
 			enableNodeDrag={true}
-			extraRenderers={extraRenderers}
 			// nodeRelSize={10}
 			// linkResolution={100}
 
 			nodeAutoColorBy="group"
 			nodeThreeObjectExtend={false}
-			nodeLabel={(node) => {
-				return node['http://www.w3.org/2000/01/rdf-schema#description'];
-			}}
 			nodeThreeObject={(node: any) => {
 				if (node['http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType'] == 'VG') {
 					const group = loader.parse(obj);
