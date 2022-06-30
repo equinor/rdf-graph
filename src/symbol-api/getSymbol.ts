@@ -5,8 +5,8 @@ import { NodeSymbolConnector } from './types/NodeSymbolConnector';
 import { SymbolOptions } from './types/SymbolOptions';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 
-export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
-	if (!(id in SymbolKey)) throw new TypeError(`Symbol with id '${id}' does not exist.`);
+export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol | undefined {
+	if (!(id in SymbolKey)) return undefined;
 
 	const symbol = SymbolLibrary[id as keyof typeof SymbolKey];
 

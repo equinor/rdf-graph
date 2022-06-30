@@ -1,11 +1,15 @@
 import ReactDOMServer from 'react-dom/server';
-import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Margin, Shape, Point, Panel, Spot, Node, Size, Link } from 'gojs';
+import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Margin, Shape, Point, Panel, Spot, Node, Size, Link, Rect } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { Icon } from '@equinor/engineering-symbols';
 
 import svg from './images/ArrowRight.svg';
 
 import { CustomLink } from './CustomLink';
+import { GraphStateProps } from '../state/GraphStateProps';
+import { useEffect, useRef, useState } from 'react';
+import { GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
+import { NodeSymbol } from '../../symbol-api/types/NodeSymbol';
 
 const makeImage = (icon: string) => {
 	const icn = <Icon appearance="dark" name={icon} getPosition={(el) => console.log(123, el)} />;
@@ -70,9 +74,12 @@ const initDiagram = () => {
 		// 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
 		'clickCreatingTool.archetypeNodeData': { text: 'new node', color: 'lightblue' },
 		model: new GraphLinksModel({
-			linkKeyProperty: 'key', // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+			linkKeyProperty: 'id', // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
+			linkFromKeyProperty: 'source',
+			linkToKeyProperty: 'target',
+			nodeKeyProperty: 'id',
 		}),
 	});
 
@@ -101,42 +108,52 @@ const initDiagram = () => {
 				click: nodeClicked,
 				doubleClick: nodeClicked,
 			},
+			$(
+				Shape,
+				// HERE: BG
 
-			// $(
-			// 	Shape,
-			// 	// 'Rectangle',
-			// 	// HERE: BG
-
-			// 	{
-			// 		fill: '#fff',
-			// 		stroke: '#dbf6cb',
-			// 		strokeWidth: 0,
-			// 		// fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
-			// 		// toSpot: go.Spot.Top,
-			// 		minSize: new Size(20, 20),
-			// 		angle: 90
-			// 	},
-			// 	// new Binding('angle', 'angle')
-			// 	// new Binding('minSize', 'minSize', Spot.parse).makeTwoWay(Spot.stringify),
-			// ),
+				{
+					fill: '#fff',
+					stroke: '#dbf6cb',
+					strokeWidth: 0,
+					// measuredBounds: new Rect(20,20, 0, 0),
+					// fromSpot: new go.Spot(0.5, 0.25), toSpot: new go.Spot(0.5, 0.75),
+					// toSpot: go.Spot.Top,
+					stretch: GraphObject.Fill,
+					alignment: Spot.Center,
+					minSize: new Size(20, 20),
+					angle: 90,
+				},
+				new Binding('strokeWidth', 'shape', (s) => (s ? '1' : 0)),
+				new Binding('fill', 'shape', (s) => {
+					console.log('SSSHHHAAAAPPPPEEE', s);
+					return s ? '#fff' : '#000';
+				}),
+				new Binding('stroke', 'shape', (s) => (s ? '#000' : '#fff')),
+				new Binding('figure', 'shape')
+				// new Binding('angle', 'angle')
+				// new Binding('minSize', 'minSize', Spot.parse).makeTwoWay(Spot.stringify),
+			),
 
 			$(
 				Picture,
 				// { maxSize: new go.Size(50, 50) },
 				// new go.Binding("source", "img")),
-				{
-					// source: 'images/sample.png',
-					// width: 48,
-					// height: 48,
-					// element: makeImage(),
-					// stroke: 'red',
-					// fill: 'blue',
-					source: svg,
-					// element: drawHandCanvas(),
-				},
+				// {
+				// 	// source: 'images/sample.png',
+				// 	// width: 48,
+				// 	// height: 48,
+				// 	// element: makeImage(),
+				// 	// stroke: 'red',
+				// 	// fill: 'blue',
+				// 	// source: svg,
+				// 	// element: drawHandCanvas(),
+				// },
 				// new Binding('element', 'icon', svg),
-				new Binding('width', 'width'),
-				new Binding('height', 'height')
+				new Binding('width', 'symbol', (w: NodeSymbol) => w.width),
+				new Binding('height', 'symbol', (w: NodeSymbol) => w.height),
+				new Binding('source', 'symbol', (w: NodeSymbol) => w.svgDataURI())
+				// new Binding('element', 'symbolName')
 				// new Binding('angle', 'angle')
 				// <Icon appearance="main" name="arrow-right" height={50} width={50} getPosition={(el) => el} />
 				// new Binding("sourceRect", "icon", makeImagePath)
@@ -330,134 +347,188 @@ const ArrowRight = (key: number, width: number, height: number, angle: number) =
 		leftArray: [{ portId: 'left0' }],
 	};
 };
+function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdentifier) {
+	switch (a.type) {
+		case 'node':
+			d.model.addNodeData(a);
+			break;
+		case 'link':
+			(d.model as GraphLinksModel).addLinkData(a);
+			break;
+		case 'linkNode':
+			break;
+		case 'property':
+			d.model.setDataProperty(a.node, a.key, a.value);
+			break;
+	}
+}
+export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
+	const [diagram, setDiagram] = useState<Diagram>();
+	const patchBuffer = useRef<GraphAssertion[]>([]);
 
-export const GoGraph = () => {
+	function init() {
+		const diagram = initDiagram();
+		setDiagram(diagram);
+		return diagram;
+	}
+	useEffect(() => {
+		if (!diagram) return;
+		applyPatch(diagram, patchBuffer.current);
+		patchBuffer.current = [];
+	}, [diagram]);
+
+	useEffect(() => {
+		if (!diagram) {
+			patchBuffer.current.push(...graphPatch);
+			return;
+		}
+		applyPatch(diagram, graphPatch);
+	}, [graphPatch]);
+
 	return (
 		<>
 			<ReactDiagram
 				style={{ height: '1000px', width: '1000px' }}
-				initDiagram={initDiagram}
+				initDiagram={init}
 				divClassName="graph-links-model"
-				nodeDataArray={[
-					ArrowRight(1, 100, 100, 120),
-					{
-						key: 2,
-						icon: 'arrow-right',
-						width: 48,
-						height: 48,
-						leftArray: [
-							{
-								portId: 'left0',
-								alignment: '1 1 0 4.55',
-							},
-							{
-								portId: 'left1',
-								alignment: '1 1 0 4.55',
-							},
-							{
-								portId: 'left2',
-								alignment: '1 1 0 4.55',
-							},
-						],
-						topArray: [
-							{
-								portId: 'top0',
-							},
-						],
-						bottomArray: [
-							{
-								portId: 'bottom0',
-								alignment: '1 1 0 -18',
-							},
-							{
-								portId: 'bottom1',
-								alignment: '1 1 0 -18',
-							},
-							{
-								portId: 'bottom2',
-								alignment: '1 1 0 -18',
-							},
-						],
-						rightArray: [],
-					},
-					{
-						key: 3,
-						icon: 'arrow-right',
-						width: 48,
-						height: 48,
-						leftArray: [
-							{
-								portColor: '#66d6d1',
-								portId: 'left0',
-								alignment: '1 1 0 4.55',
-							},
-							{
-								portColor: '#fadfe5',
-								portId: 'left1',
-								alignment: '1 1 0 4.55',
-							},
-							{
-								portColor: '#6cafdb',
-								portId: 'left2',
-								alignment: '1 1 0 4.55',
-							},
-						],
-						topArray: [
-							{
-								portColor: '#66d6d1',
-								portId: 'top0',
-							},
-						],
-						bottomArray: [
-							{
-								portColor: '#6cafdb',
-								portId: 'bottom0',
-							},
-						],
-						rightArray: [],
-						group: 'Group1',
-					},
-					{
-						key: 4,
-						width: 48,
-						height: 48,
-						icon: 'arrow-right',
-						leftArray: [
-							{
-								portId: 'left0',
-								alignment: '1 1 0 4.55',
-							},
-						],
-						topArray: [
-							{
-								portId: 'top0',
-							},
-						],
-						bottomArray: [
-							{
-								portId: 'bottom0',
-							},
-						],
-						rightArray: [
-							{
-								portId: 'right0',
-							},
-							{
-								portId: 'right1',
-								alignment: '1 1 0 5.55',
-							},
-						],
-					},
-				]}
-				linkDataArray={[
-					{ from: 1, to: 2, fromPort: 'top0', toPort: 'left0' },
-					{ from: 1, to: 2, fromPort: 'right1', toPort: 'left1' },
-					{ from: 3, to: 2, fromPort: 'top0', toPort: 'bottom1' },
-					{ from: 4, to: 3, fromPort: 'right1', toPort: 'left2' },
-					{ from: 4, to: 2, fromPort: 'top0', toPort: 'bottom0' },
-				]}
+				nodeDataArray={
+					[
+						// ArrowRight(1, 100, 100, 120),
+						// {
+						// 	key: 2,
+						// 	icon: 'arrow-right',
+						// 	width: 48,
+						// 	height: 48,
+						// 	leftArray: [
+						// 		{
+						// 			portId: 'left0',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 		{
+						// 			portId: 'left1',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 		{
+						// 			portId: 'left2',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 	],
+						// 	topArray: [
+						// 		{
+						// 			portId: 'top0',
+						// 		},
+						// 	],
+						// 	bottomArray: [
+						// 		{
+						// 			portId: 'bottom0',
+						// 			alignment: '1 1 0 -18',
+						// 		},
+						// 		{
+						// 			portId: 'bottom1',
+						// 			alignment: '1 1 0 -18',
+						// 		},
+						// 		{
+						// 			portId: 'bottom2',
+						// 			alignment: '1 1 0 -18',
+						// 		},
+						// 	],
+						// 	rightArray: [],
+						// },
+						// {
+						// 	key: 3,
+						// 	icon: 'arrow-right',
+						// 	width: 48,
+						// 	height: 48,
+						// 	leftArray: [
+						// 		{
+						// 			portColor: '#66d6d1',
+						// 			portId: 'left0',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 		{
+						// 			portColor: '#fadfe5',
+						// 			portId: 'left1',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 		{
+						// 			portColor: '#6cafdb',
+						// 			portId: 'left2',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 	],
+						// 	topArray: [
+						// 		{
+						// 			portColor: '#66d6d1',
+						// 			portId: 'top0',
+						// 		},
+						// 	],
+						// 	bottomArray: [
+						// 		{
+						// 			portColor: '#6cafdb',
+						// 			portId: 'bottom0',
+						// 		},
+						// 	],
+						// 	rightArray: [],
+						// 	group: 'Group1',
+						// },
+						// {
+						// 	key: 4,
+						// 	width: 48,
+						// 	height: 48,
+						// 	icon: 'arrow-right',
+						// 	leftArray: [
+						// 		{
+						// 			portId: 'left0',
+						// 			alignment: '1 1 0 4.55',
+						// 		},
+						// 	],
+						// 	topArray: [
+						// 		{
+						// 			portId: 'top0',
+						// 		},
+						// 	],
+						// 	bottomArray: [
+						// 		{
+						// 			portId: 'bottom0',
+						// 		},
+						// 	],
+						// 	rightArray: [
+						// 		{
+						// 			portId: 'right0',
+						// 		},
+						// 		{
+						// 			portId: 'right1',
+						// 			alignment: '1 1 0 5.55',
+						// 		},
+						// 	],
+						// },
+					]
+				}
+				linkDataArray={
+					[
+						// { from: 1, to: 2, fromPort: 'top0', toPort: 'left0' },
+						// { from: 1, to: 2, fromPort: 'right1', toPort: 'left1' },
+						// { from: 3, to: 2, fromPort: 'top0', toPort: 'bottom1' },
+						// { from: 4, to: 3, fromPort: 'right1', toPort: 'left2' },
+						// { from: 4, to: 2, fromPort: 'top0', toPort: 'bottom0' },
+					]
+				}
 				// onModelChange={handleModelChange}
 			/>
 		</>
 	);
 };
+function applyPatch(diagram: Diagram, graphPatch: GraphPatch) {
+	console.log('PATCH¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤', graphPatch);
+	diagram.commit((d) => {
+		for (const a of graphPatch) {
+			switch (a.action) {
+				case 'add':
+					addAssertion(d, a.assertion);
+					break;
+				case 'remove':
+					break;
+			}
+		}
+	});
+}
