@@ -1,5 +1,6 @@
 import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
+import { StoryWrapper } from './StoryWrapper';
 
 import { GoGraph } from './GoGraph';
 
@@ -13,9 +14,9 @@ export default {
 	},
 } as ComponentMeta<typeof GoGraph>;
 
-const Template: ComponentStory<typeof GoGraph> = ({ ...args }) => (
+const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
 	<>
-		<GoGraph {...args} />
+		<StoryWrapper {...args} />
 	</>
 );
 
@@ -78,9 +79,9 @@ example:Bilde
 	example:connectedTo example:Hallais .
 
 `;
-// Example.args = {
-// 	turtleString: storyTurtle,
-// 	// layoutName: 'Cose-Bilkent',
-// };
+Example.args = {
+	turtleString: storyTurtle,
+	// layoutName: 'Cose-Bilkent',
+};
 
 Example.storyName = 'GoGraph';

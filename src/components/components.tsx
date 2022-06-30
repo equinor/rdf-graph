@@ -6,6 +6,7 @@ import { RdfContext } from './state/RdfContext';
 import { RdfStateProps } from './state/RdfState.types';
 import { F3DGraph } from './f3dGraph/F3DGraph';
 import { CyGraph } from './cyGraph/CyGraph';
+import { GoGraph } from './GoGraph';
 
 function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(Component: FC<P>): FC<R & RdfStateProps> {
 	return ({ rdfStore, rdfPatch, onElementSelected, ...props }: RdfStateProps) => {
@@ -19,6 +20,7 @@ function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(
 				linkIndex: new Map<string, GraphEdge>(),
 			},
 			graphPatch: [],
+			onElementsSelected: () => {},
 		});
 		useEffect(() => {
 			const newGraphState = patchGraph(state.graphState, rdfPatch);
@@ -35,3 +37,4 @@ function createRdfViewHoc<P extends RdfStateProps, R = Omit<P, keyof RdfStatePro
 export const Rdf3dGraph = createRdfGraphHoc(F3DGraph);
 export const Rdf3dGraphView = createRdfViewHoc(Rdf3dGraph);
 export const RdfCyGraph = createRdfGraphHoc(CyGraph);
+export const RdfGoGraph = createRdfGraphHoc(GoGraph);
