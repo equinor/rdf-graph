@@ -1,9 +1,9 @@
-import { layoutCola, layoutDagre } from '../../utils';
+import { layoutDagre } from '../../utils';
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import { NodeType } from '../../models/nodeType';
-import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey, predicateMap, relativePositionXKey, svgKey } from '../../mapper/predicates';
+import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
 import { GraphProps } from '../state/GraphStateProps';
 import {

@@ -1,7 +1,7 @@
 import { Quad, termToId, Writer } from 'n3';
 import { RdfPatch2 } from '../../models';
 import { GraphEdge, GraphState, GraphNode, GraphAssertion, EdgeAssertion, PropertyAssertion } from '../../models/graphModel';
-import { GraphProps, GraphStateProps } from './GraphStateProps';
+import { GraphStateProps } from './GraphStateProps';
 import {
 	colorKey,
 	labelKey,
@@ -41,10 +41,6 @@ function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	removeElement(arr, value);
 	if (arr.length === 0) index.delete(key);
 }
-const PropIris = [hasSvgIri, rotationIri, hasConnectorSuffixIri, labelIri] as const;
-const EdgeIris = [hasConnectorIri] as const;
-type PropIri = typeof PropIris[number];
-type EdgeIri = typeof EdgeIris[number];
 
 const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', labelKey, colorKey, rotationKey] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
@@ -78,6 +74,8 @@ function* propagator(a: GraphNode, prop: NodeProp | ValueProp) {
 		let currDep = queue.shift()!;
 		while (queue.length > 0) {
 			if (Array.isArray(currNode)) {
+				// TODO ask Eirik about this
+				// eslint-disable-next-line no-loop-func
 				currNode = currNode.map((n) => n[currDep]).filter((n) => n);
 			} else {
 				currNode = currNode[currDep] as GraphNode;

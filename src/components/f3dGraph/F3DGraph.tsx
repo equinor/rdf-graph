@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react';
-import { CSS3DRenderer, CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphNode, GraphEdge } from '../../models/graphModel';
 import { GraphProps } from '../state/GraphStateProps';
-// import {} from '@rdfjs/types';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
 # www.blender.org
@@ -66,7 +65,6 @@ f 8/18/9 7/19/9 11/9/9 9/8/9
 f 1/15/10 5/20/10 11/2/10 10/1/10
 `;
 
-const extraRenderers = [new CSS3DRenderer()];
 const loader = new OBJLoader();
 
 type f3DState = {
@@ -100,7 +98,7 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 			nodeAutoColorBy="group"
 			nodeThreeObjectExtend={false}
 			nodeThreeObject={(node: any) => {
-				if (node['http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType'] == 'VG') {
+				if (node['http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType'] === 'VG') {
 					const group = loader.parse(obj);
 					return group;
 				}
