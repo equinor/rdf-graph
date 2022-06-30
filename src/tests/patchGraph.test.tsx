@@ -4,13 +4,8 @@ import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';
 import { RdfPatch2 } from '../models/rdfPatch';
-<<<<<<< HEAD
 import { SymbolKey } from '../symbol-api';
 const { quad: q, literal: l, namedNode: n } = DataFactory;
-=======
-import { getSymbol, SymbolKey } from '../symbol-api';
-const { quad: q, literal: l, blankNode: b, namedNode: n } = DataFactory;
->>>>>>> d77804e (refactored patchGraph.test.tsx)
 describe('patchGraph', () => {
 	test('normal svg', () => {
 		const quads = [
@@ -24,7 +19,6 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
-		const assertions = [...res.graphPatch];
 
 		for (const q of quads) {
 			let node;

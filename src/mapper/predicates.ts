@@ -11,7 +11,6 @@ export const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
 export const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
 export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
-export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
 
 // keys linked to predicates
 export const compoundNodeKey = 'parent';

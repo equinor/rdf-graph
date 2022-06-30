@@ -7,7 +7,6 @@ type GraphNodeBase = {
 type GraphNodeType = {
 	type: 'node' | 'linkNode';
 };
-
 export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
 
 export type GraphVisualProps = {

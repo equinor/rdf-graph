@@ -1,4 +1,4 @@
-import { Quad, Term, Writer } from 'n3';
+import { Quad, termToId, Writer } from 'n3';
 import { RdfPatch2 } from '../../models';
 import { GraphEdge, GraphState, GraphNode, GraphAssertion, EdgeAssertion, PropertyAssertion } from '../../models/graphModel';
 import { GraphStateProps } from './GraphStateProps';
@@ -14,12 +14,9 @@ import {
 	hasConnectorSuffixIri,
 	labelIri,
 	colorIri,
-	hasSimpleSymbolIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point } from '../../symbol-api';
 import { setEquals } from '../../utils/setEquals';
-
-const termToId = (t: Term) => t.id;
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -45,7 +42,7 @@ function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	if (arr.length === 0) index.delete(key);
 }
 
-const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', 'shape', labelKey, colorKey, rotationKey] as const;
+const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', labelKey, colorKey, rotationKey] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
 type NodeProp = typeof nodeProps[number];
@@ -61,7 +58,6 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	[compoundNodeKey]: [['relativePosition']],
 	[labelKey]: [],
 	[colorKey]: [],
-	shape: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSvgIri]: 'symbolName',
@@ -70,7 +66,6 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasConnectorIri]: connectorKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
-	[hasSimpleSymbolIri]: 'shape',
 };
 function* propagator(a: GraphNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
@@ -110,7 +105,6 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: GraphNode) =>
 	[labelKey]: invalidator(labelKey, labelIri),
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
-	shape: invalidator('shape', hasSimpleSymbolIri),
 	[rotationKey]: invalidator(rotationKey, (g) => (g.properties.has(rotationIri) ? parseInt(g.properties.get(rotationIri)![0]) : undefined)),
 	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
@@ -147,7 +141,6 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, 
 		let sNode: GraphNode, pNode: GraphNode, oNode: GraphNode;
 		const sTerm = termToId(q.subject);
 		const pTerm = termToId(q.predicate);
-		console.log(q.predicate.value);
 		const oTerm = q.object.termType !== 'Literal' ? termToId(q.object) : false;
 
 		switch (p.action) {
