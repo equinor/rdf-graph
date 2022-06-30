@@ -30,12 +30,12 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 					[...action.data].map((q) => ({ action: action.type, assertion: q }))
 				),
 			];
-			if (assertions.length == 0) return state;
+			if (assertions.length === 0) return state;
 			return { rdfStore: state.rdfStore, rdfPatch: assertions };
 
 		case 'patch':
 			const patches = [...coercePatch(state.rdfStore, action.data)];
-			if (patches.length == 0) return state;
+			if (patches.length === 0) return state;
 			return { rdfStore: state.rdfStore, rdfPatch: patches };
 
 		case 'replace':
@@ -53,7 +53,7 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 				state.rdfStore.addQuad(q);
 				replacements.push({ action: 'add', assertion: q });
 			}
-			if (replacements.length == 0) return state;
+			if (replacements.length === 0) return state;
 			return { rdfStore: state.rdfStore, rdfPatch: replacements };
 
 		case 'clear':
@@ -62,7 +62,7 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 					for (const q of s) yield { action: 'remove', assertion: q };
 				})(state.rdfStore),
 			];
-			if (clearing.length == 0) return state;
+			if (clearing.length === 0) return state;
 			return { rdfStore: new Store<Quad, Quad, Quad, Quad>(), rdfPatch: clearing };
 	}
 };

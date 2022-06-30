@@ -15,7 +15,6 @@ export class TwoWayMap {
 
 	revIncludes(key: string) {
 		return this.reverseMap.hasOwnProperty(key);
-		return Object.values(this.dict).includes(key);
 	}
 	get(key: string) {
 		return this.dict[key];

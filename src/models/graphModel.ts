@@ -1,14 +1,5 @@
 import { NodeSymbol, Point, SymbolRotation } from '../symbol-api';
 
-type RdfNamedNode = `http${'s' | ''}://${string}`;
-type RdfBlankNode = `_:${string}`;
-type RdfVariable = `?${string}`;
-type RdfSubject = RdfNamedNode | RdfVariable | RdfBlankNode;
-type RdfPredicate = RdfNamedNode | RdfVariable;
-// type RdfObject = RdfSubject | `"${string}"`;
-// type w = " " | "";
-// type RdfTriple = `<${RdfSubject}>${w}<${RdfPredicate}>${w}<${RdfObject}>${w}.`;
-
 type GraphId = string;
 type GraphNodeBase = {
 	id: GraphId;
@@ -16,9 +7,7 @@ type GraphNodeBase = {
 type GraphNodeType = {
 	type: 'node' | 'linkNode';
 };
-// type GraphNodeProperties = {
-// 	[index: string]: string | number;
-// };
+
 export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
 
 export type GraphVisualProps = {

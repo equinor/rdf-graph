@@ -40,7 +40,7 @@ describe('patchGraph', () => {
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.connectorName!).toBe(q.object.value);
 					for (const c of node!.parent!.symbol!.connectors) {
-						if (c.id == q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
+						if (c.id === q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
 					}
 					break;
 			}
