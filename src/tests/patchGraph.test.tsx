@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-conditional-expect */
 import { patchGraph } from '../components/state/patchGraph';
 import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
