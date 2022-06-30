@@ -5,7 +5,7 @@ import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';
 import { RdfPatch2 } from '../models/rdfPatch';
 import { SymbolKey } from '../symbol-api';
-const { quad: q, literal: l, blankNode: b, namedNode: n } = DataFactory;
+const { quad: q, literal: l, namedNode: n } = DataFactory;
 describe('patchGraph', () => {
 	test('normal svg', () => {
 		const quads = [
@@ -19,7 +19,6 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
-		const assertions = [...res.graphPatch];
 
 		for (const q of quads) {
 			let node;

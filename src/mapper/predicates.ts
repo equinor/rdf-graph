@@ -1,5 +1,4 @@
 import { DataFactory } from 'n3';
-import { Pairs } from '../cytoscape-api/cytoscapeApi.types';
 import { TwoWayMap } from '../utils/twoWayDictionary';
 
 const { namedNode } = DataFactory;
@@ -59,12 +58,6 @@ export const isDataKey = (predicate: { value: string }) => {
 
 export const getDataKey = (predicate: { value: string }) => {
 	return predicateMap.get(predicate.value);
-};
-
-export const getPredicateMapping = (): Pairs => {
-	return Object.keys(dict).map((key) => {
-		return { key, value: dict[key] };
-	});
 };
 
 export const isHierarchyPredicate = (predicate: string) => parentPredicates.concat(childPredicates).includes(predicate);
