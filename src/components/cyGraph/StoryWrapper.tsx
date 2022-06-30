@@ -33,6 +33,11 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		dispatch({ type: 'patch', data: patch });
 	};
 
+	const rotateSelection = () => {
+		const patch = [...createPatch({ type: 'rotateSelection', selection })];
+		dispatch({ type: 'patch', data: patch });
+	};
+
 	const addNode = () => {
 		const patch = createPatch({ type: 'addNode', iri: 'http://example.com/node' + nodeNumber, label: 'node' + nodeNumber });
 		dispatch({ type: 'patch', data: patch });
@@ -60,7 +65,8 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		<div>
 			<Button onClick={addNode}> Add </Button>
 			<Button onClick={deleteSelection}> Delete </Button>
-			{/*<Button onClick={rotateSelection}> Rotate </Button>
+			<Button onClick={rotateSelection}> Rotate </Button>
+			{/*
 			<Button onClick={switchSvg}> Switch svg </Button>
 			<Button onClick={connect}> Connect </Button>
 			

@@ -6,6 +6,7 @@ import {
 	hasConnectorSuffixPredicate,
 	hasSvgPredicate,
 	labelPredicate,
+	rotationIri,
 	rotationPredicate,
 } from '../../mapper/predicates';
 import { emptyPatch, RdfAssertion, RdfPatch, RdfPatch2 } from '../../models';
@@ -43,6 +44,7 @@ type SwitchSvgAction = {
 
 type RotateSelection = {
 	type: 'rotateSelection';
+	selection: GraphSelection;
 };
 
 type ChangeDataAction = {
@@ -114,6 +116,19 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 				}
 			}
 			break;
+		case 'rotateSelection':
+			for (const node of action.selection) {
+				let currentRotation = node.properties.get(rotationIri);
+				if (currentRotation) {
+					yield { action: 'remove', assertion: quad(namedNode(node.id), rotationPredicate, literal(currentRotation[0])) };
+				} else {
+					currentRotation = ['0'];
+				}
+				const newRotation = (parseInt(currentRotation[0]) + 90) % 360;
+				yield { action: 'add', assertion: quad(namedNode(node.id), rotationPredicate, literal(newRotation.toString())) };
+			}
+			break;
+
 		/* case 'updateSelection':
 			return { ...state, graphSelection: action.payload };
 		case 'updateTurtle':
@@ -130,8 +145,6 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			return createNewPatchState(state, [
 				quad(namedNode(action.payload.subject), namedNode(action.payload.predicate), namedNode(action.payload.object)),
 			]);
-		case 'rotateSelection':
-			return createNewState(state, rotateSelection(state.graphSelection));
 		case 'redraw':
 			return { ...state, forceRedraw: state.forceRedraw + 1 };
 		case 'updateUiConfig':
