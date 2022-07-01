@@ -13,6 +13,7 @@ export type BaseItemData = {
 export type SymbolNodePort = Omit<BaseItemData, 'type'> & {
 	type: NodeItemType.SvgSymbolPort;
 	position: go.Point;
-	portId: string;
+	portId?: string;
+	name: string;
 	portDirection: PortDirection;
 };

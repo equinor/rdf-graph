@@ -9,7 +9,8 @@ export function createSymbolNode(id: string, symbolId: string, label?: string): 
 		return {
 			type: NodeItemType.SvgSymbolPort,
 			position: new go.Point(c.point.x, c.point.y),
-			portId: c.id,
+			portId: '',
+			name: c.id,
 			portDirection: c.portDirection,
 		};
 	});

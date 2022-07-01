@@ -43,7 +43,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
 					.bind(
 						new go.Binding('alignment', 'angle', (a: number) => {
-							console.log('a:', a);
+							//console.log('a:', a);
 							return getTopLabelAlignment(a);
 						}).ofObject()
 					)

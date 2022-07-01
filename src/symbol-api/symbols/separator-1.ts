@@ -59,7 +59,7 @@ export const Separator_1: NodeSymbolTemplate = {
 	height: 117,
 	width: 117,
 	connectors: [
-		new NodeSymbolConnector('c1', { x: 50.5, y: 3.50226 }, PortDirection.E),
+		new NodeSymbolConnector('c1', { x: 50.5, y: 3.50226 }, PortDirection.N),
 		new NodeSymbolConnector('c2', { x: 40.5, y: 24.5023 }, PortDirection.W),
 		new NodeSymbolConnector('c3', { x: 59.5, y: 114.502 }, PortDirection.S),
 	],
