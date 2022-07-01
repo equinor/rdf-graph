@@ -1,55 +1,11 @@
-import ReactDOMServer from 'react-dom/server';
 import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Margin, Shape, Point, Panel, Spot, Node, Size, Link, Rect } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { Icon } from '@equinor/engineering-symbols';
-
-import svg from './images/ArrowRight.svg';
 
 import { CustomLink } from './CustomLink';
 import { GraphStateProps } from '../state/GraphStateProps';
 import { useEffect, useRef, useState } from 'react';
 import { GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api/types/NodeSymbol';
-
-const makeImage = (icon: string) => {
-	const icn = <Icon appearance="dark" name={icon} getPosition={(el) => console.log(123, el)} />;
-	const imsvg = ReactDOMServer.renderToString(icn);
-	const myImg = new Image();
-
-	myImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
-
-	return myImg;
-};
-
-// const ll = <Icon appearance="dark" name="arrow-right" height={40} width={40} getPosition={(el) => console.log(123, el)} />;
-// const imsvg = ReactDOMServer.renderToString(ll);
-
-// const myImg = new Image();
-// // myImg.src = svg;
-// myImg.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
-
-// console.log(17, imsvg);
-
-// const drawHandCanvas = () => {
-// 	const canvas = document.createElement('canvas');
-// 	const ctx = canvas.getContext('2d');
-// 	// const img =  document.createElement('img');
-
-// 	// console.log(191, ctx)
-
-// 	// return ctx.drawImage(imsvg, 0, 0, 40, 40);
-// 	// @ts-ignore
-// 	// ctx.drawImage(imsvg, 0, 0, 40, 40);
-
-// 	const img1 = new Image();
-//   img1.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(imsvg);
-//   ctx.drawImage(img1, 40, 40);
-
-// 	return canvas
-// }
-
-// console.log(81, 'myImg:', myImg);
-// console.log(81, 'makeImage:', makeImage('arrow-down'));
 
 const nodeClicked = (e: any, obj: any) => {
 	// executed by click and doubleclick handlers
@@ -58,10 +14,6 @@ const nodeClicked = (e: any, obj: any) => {
 	obj.part.findNodesConnected().each(function (n: any) {
 		console.log(13, n.part.data);
 	});
-};
-
-const makeImagePath = (icon: string) => {
-	return `images/${icon}`;
 };
 
 const initDiagram = () => {
@@ -330,23 +282,6 @@ const initDiagram = () => {
 const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
 const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
 
-const ArrowRight = (key: number, width: number, height: number, angle: number) => {
-	// Original width & height of svg
-	const orgH = 40;
-	const orgW = 40;
-
-	return {
-		key,
-		// icon: 'arrow-right',
-		width,
-		height,
-		angle,
-		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 20)}, 0` }],
-		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 24.5)}` }],
-		bottomArray: [],
-		leftArray: [{ portId: 'left0' }],
-	};
-};
 function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdentifier) {
 	switch (a.type) {
 		case 'node':
@@ -362,162 +297,7 @@ function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdenti
 			break;
 	}
 }
-export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
-	const [diagram, setDiagram] = useState<Diagram>();
-	const patchBuffer = useRef<GraphAssertion[]>([]);
 
-	function init() {
-		const diagram = initDiagram();
-		setDiagram(diagram);
-		return diagram;
-	}
-	useEffect(() => {
-		if (!diagram) return;
-		applyPatch(diagram, patchBuffer.current);
-		patchBuffer.current = [];
-	}, [diagram]);
-
-	useEffect(() => {
-		if (!diagram) {
-			patchBuffer.current.push(...graphPatch);
-			return;
-		}
-		applyPatch(diagram, graphPatch);
-	}, [graphPatch]);
-
-	return (
-		<>
-			<ReactDiagram
-				style={{ height: '1000px', width: '1000px' }}
-				initDiagram={init}
-				divClassName="graph-links-model"
-				nodeDataArray={
-					[
-						// ArrowRight(1, 100, 100, 120),
-						// {
-						// 	key: 2,
-						// 	icon: 'arrow-right',
-						// 	width: 48,
-						// 	height: 48,
-						// 	leftArray: [
-						// 		{
-						// 			portId: 'left0',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 		{
-						// 			portId: 'left1',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 		{
-						// 			portId: 'left2',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 	],
-						// 	topArray: [
-						// 		{
-						// 			portId: 'top0',
-						// 		},
-						// 	],
-						// 	bottomArray: [
-						// 		{
-						// 			portId: 'bottom0',
-						// 			alignment: '1 1 0 -18',
-						// 		},
-						// 		{
-						// 			portId: 'bottom1',
-						// 			alignment: '1 1 0 -18',
-						// 		},
-						// 		{
-						// 			portId: 'bottom2',
-						// 			alignment: '1 1 0 -18',
-						// 		},
-						// 	],
-						// 	rightArray: [],
-						// },
-						// {
-						// 	key: 3,
-						// 	icon: 'arrow-right',
-						// 	width: 48,
-						// 	height: 48,
-						// 	leftArray: [
-						// 		{
-						// 			portColor: '#66d6d1',
-						// 			portId: 'left0',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 		{
-						// 			portColor: '#fadfe5',
-						// 			portId: 'left1',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 		{
-						// 			portColor: '#6cafdb',
-						// 			portId: 'left2',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 	],
-						// 	topArray: [
-						// 		{
-						// 			portColor: '#66d6d1',
-						// 			portId: 'top0',
-						// 		},
-						// 	],
-						// 	bottomArray: [
-						// 		{
-						// 			portColor: '#6cafdb',
-						// 			portId: 'bottom0',
-						// 		},
-						// 	],
-						// 	rightArray: [],
-						// 	group: 'Group1',
-						// },
-						// {
-						// 	key: 4,
-						// 	width: 48,
-						// 	height: 48,
-						// 	icon: 'arrow-right',
-						// 	leftArray: [
-						// 		{
-						// 			portId: 'left0',
-						// 			alignment: '1 1 0 4.55',
-						// 		},
-						// 	],
-						// 	topArray: [
-						// 		{
-						// 			portId: 'top0',
-						// 		},
-						// 	],
-						// 	bottomArray: [
-						// 		{
-						// 			portId: 'bottom0',
-						// 		},
-						// 	],
-						// 	rightArray: [
-						// 		{
-						// 			portId: 'right0',
-						// 		},
-						// 		{
-						// 			portId: 'right1',
-						// 			alignment: '1 1 0 5.55',
-						// 		},
-						// 	],
-						// },
-					]
-				}
-				linkDataArray={
-					[
-						// { from: 1, to: 2, fromPort: 'top0', toPort: 'left0' },
-						// { from: 1, to: 2, fromPort: 'right1', toPort: 'left1' },
-						// { from: 3, to: 2, fromPort: 'top0', toPort: 'bottom1' },
-						// { from: 4, to: 3, fromPort: 'right1', toPort: 'left2' },
-						// { from: 4, to: 2, fromPort: 'top0', toPort: 'bottom0' },
-					]
-				}
-				// onModelChange={handleModelChange}
-			/>
-		</>
-	);
-};
 function applyPatch(diagram: Diagram, graphPatch: GraphPatch) {
 	console.log('PATCH¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤', graphPatch);
 	diagram.commit((d) => {
@@ -532,3 +312,24 @@ function applyPatch(diagram: Diagram, graphPatch: GraphPatch) {
 		}
 	});
 }
+
+export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
+	const diagramRef = useRef<Diagram>(initDiagram());
+
+	useEffect(() => {
+		applyPatch(diagramRef.current, graphPatch);
+	}, [graphPatch]);
+
+	return (
+		<>
+			<ReactDiagram
+				style={{ height: '1000px', width: '1000px' }}
+				initDiagram={() => diagramRef.current}
+				divClassName="graph-links-model"
+				nodeDataArray={[]}
+				linkDataArray={[]}
+				// onModelChange={handleModelChange}
+			/>
+		</>
+	);
+};
