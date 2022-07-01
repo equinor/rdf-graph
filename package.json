@@ -138,6 +138,8 @@
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^12.1.5",
 		"babel-loader": "^8.2.5",
+		"gojs": "^2.2.12",
+		"gojs-react": "^1.1.1",
 		"husky": "^8.0.1",
 		"prettier": "^2.6.2",
 		"react": "^17.0.2",

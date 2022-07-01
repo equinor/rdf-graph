@@ -1,7 +1,7 @@
 import { stringToSvgElement } from './svg-manipulation';
 import { SymbolLibrary, SymbolKey } from './symbol-library';
-import { NodeSymbol } from './types/NodeSymbol';
-import { NodeSymbolConnector } from './types/NodeSymbolConnector';
+import { NodeSymbol, NodeSymbolTemplate } from './types/NodeSymbol';
+import { NodeSymbolConnector, PortDirection } from './types/NodeSymbolConnector';
 import { SymbolOptions } from './types/SymbolOptions';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 
@@ -22,8 +22,8 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 		if (rotation > 0) {
 			p = rotatePoint(p, rotation);
 		}
-
-		connectors.push(new NodeSymbolConnector(c.id, p));
+		// TODO: Not implemented PortBearing !!
+		connectors.push(new NodeSymbolConnector(c.id, p, PortDirection.N));
 	});
 
 	if (rotation > 0) {
@@ -31,4 +31,8 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 	}
 
 	return new NodeSymbol(id, svgEl.outerHTML, width, height, connectors);
+}
+
+export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
+	return SymbolLibrary[id as keyof typeof SymbolKey];
 }
