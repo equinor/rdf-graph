@@ -62,7 +62,6 @@ export type GraphState = {
 	linkIndex: Map<string, GraphEdge>;
 };
 
-<<<<<<< HEAD
 export type AbstractNode = GraphNodeIdentifier & {
 	incoming: Map<string, GraphNode[]>;
 	outgoing: Map<string, GraphNode[]>;
@@ -78,6 +77,3 @@ export type AbstractEdge = {
 export type GraphSelection = Array<AbstractNode>;
 
 export type SelectionCallback = (selection: GraphSelection) => void;
-=======
-export type GraphSelection = Array<GraphNode | GraphEdge>;
->>>>>>> 16761a0 (Add suggestion to selection callback)
