@@ -11,7 +11,7 @@ import { GoGraph } from './GoGraph';
 function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(Component: FC<P>): FC<R & RdfStateProps> {
 	return ({ rdfStore, rdfPatch, onElementSelected, ...props }: RdfStateProps) => {
 		const forwardSelection = (selection: GraphSelection) => {
-			onElementSelected(selection);
+			onElementSelected && onElementSelected(selection);
 		};
 
 		const [state, update] = useState<GraphStateProps>({
@@ -20,7 +20,6 @@ function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(
 				linkIndex: new Map<string, GraphEdge>(),
 			},
 			graphPatch: [],
-			onElementsSelected: () => {},
 		});
 		useEffect(() => {
 			const newGraphState = patchGraph(state.graphState, rdfPatch);

@@ -3,7 +3,6 @@ import { GraphPatch, GraphSelection, GraphState, SelectionCallback } from '../..
 export type GraphStateProps = {
 	graphState: GraphState;
 	graphPatch: GraphPatch;
-	onElementsSelected: (selection: GraphSelection) => void;
 };
 
 export type GraphProps = {

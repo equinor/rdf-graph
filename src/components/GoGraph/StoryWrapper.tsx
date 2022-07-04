@@ -1,9 +1,9 @@
 import { Button } from '@equinor/eds-core-react';
-import { useEffect, useReducer, useState } from 'react';
-import { colorPredicate, hasSvgPredicate } from '../../mapper/predicates';
-import { GraphSelection } from '../../models';
-import { getData } from '../../cytoscape-api/cytoscapeApi';
-import { SymbolKey } from '../../symbol-api';
+import { useEffect, useState } from 'react';
+// import { colorPredicate, hasSvgPredicate } from '../../mapper/predicates';
+// import { GraphSelection } from '../../models';
+// import { getData } from '../../cytoscape-api/cytoscapeApi';
+// import { SymbolKey } from '../../symbol-api';
 import { RdfGoGraph } from '../components';
 import { useRdfActionReducer } from '../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';

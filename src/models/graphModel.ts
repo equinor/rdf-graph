@@ -69,6 +69,6 @@ export type AbstractEdge = {
 	linkRef: AbstractNode;
 };
 
-export type GraphSelection = Array<GraphNode | GraphEdge>;
+export type GraphSelection = Array<AbstractNode>;
 
 export type SelectionCallback = (selection: GraphSelection) => void;

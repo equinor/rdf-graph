@@ -247,5 +247,5 @@ export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, 
 				break;
 		}
 	}
-	return { graphState: state, graphPatch: graphPatch };
+	return { graphState: state, graphPatch };
 }

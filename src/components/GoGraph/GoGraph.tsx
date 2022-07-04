@@ -3,7 +3,7 @@ import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Mar
 import { ReactDiagram } from 'gojs-react';
 import { Icon } from '@equinor/engineering-symbols';
 
-import svg from './images/ArrowRight.svg';
+// import svg from './images/ArrowRight.svg';
 
 import { CustomLink } from './CustomLink';
 import { GraphStateProps } from '../state/GraphStateProps';
@@ -40,7 +40,7 @@ console.log(17, imsvg);
 
 // console.log(111, drawHandCanvas())
 
-console.log(81, 'myImg:', myImg, 'svg:', svg);
+// console.log(81, 'myImg:', myImg, 'svg:', svg);
 
 const nodeClicked = (e: any, obj: any) => {
 	// executed by click and doubleclick handlers

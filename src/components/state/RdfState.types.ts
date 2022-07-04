@@ -15,5 +15,5 @@ export type RdfState = {
 };
 
 export type RdfStateProps = RdfState & {
-	onElementSelected: (selection: GraphSelection) => void;
+	onElementSelected?: (selection: GraphSelection) => void;
 };
