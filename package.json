@@ -105,6 +105,8 @@
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
+		"gojs": "^2.2.12",
+		"gojs-react": "^1.1.1",
 		"lint-staged": "^13.0.3",
 		"gojs": "^2.2.11",
 		"gojs-react": "^1.1.1",

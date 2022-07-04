@@ -50,11 +50,6 @@ export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
 export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
 export type PropertyAssertion = GraphAssertionBase & { assertion: GraphPropertyIdentifier };
 
-type GraphAssertionBase = { action: 'add' | 'remove' };
-export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
-export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
-export type PropertyAssertion = GraphAssertionBase & { assertion: GraphPropertyIdentifier };
-
 export type GraphAssertion = GraphAssertionBase & { assertion: GraphEdge | GraphNode | GraphPropertyIdentifier };
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
@@ -74,6 +69,6 @@ export type AbstractEdge = {
 	linkRef: AbstractNode;
 };
 
-export type GraphSelection = Array<AbstractNode>;
+export type GraphSelection = Array<GraphNode | GraphEdge>;
 
 export type SelectionCallback = (selection: GraphSelection) => void;
