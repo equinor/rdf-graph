@@ -1,7 +1,7 @@
 import * as go from 'gojs';
 
 class CustomLink extends go.Link {
-	findSidePortIndexAndCount(node, port) {
+	findSidePortIndexAndCount(node: any, port: any) {
 		const nodedata = node.data;
 		let len;
 		if (nodedata !== null) {
@@ -16,7 +16,7 @@ class CustomLink extends go.Link {
 		return [-1, len];
 	}
 
-	computeEndSegmentLength(node, port, spot, from) {
+	computeEndSegmentLength(node: any, port: any, spot: any, from: any) {
 		const esl = super.computeEndSegmentLength(node, port, spot, from);
 		const other = this.getOtherPort(port);
 		if (port !== null && other !== null) {
@@ -53,11 +53,11 @@ class CustomLink extends go.Link {
 	computeCurviness() {
 		if (isNaN(this.curviness)) {
 			const fromnode = this.fromNode;
-			const fromport = this.fromPort;
+			const fromport: any = this.fromPort;
 			const fromspot = this.computeSpot(true);
 			const frompt = fromport.getDocumentPoint(fromspot);
 			const tonode = this.toNode;
-			const toport = this.toPort;
+			const toport: any = this.toPort;
 			const tospot = this.computeSpot(false);
 			const topt = toport.getDocumentPoint(tospot);
 			if (Math.abs(frompt.x - topt.x) > 20 || Math.abs(frompt.y - topt.y) > 20) {
