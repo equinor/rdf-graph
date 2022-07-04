@@ -26,7 +26,7 @@ class CustomLink extends go.Link {
 				const info = this.findSidePortIndexAndCount(node, port);
 				const idx = info[0];
 				const count = info[1];
-				if (port._side == 'top' || port._side == 'bottom') {
+				if (port._side === 'top' || port._side === 'bottom') {
 					if (otherpt.x < thispt.x) {
 						return esl + 4 + idx * 8;
 					} else {
