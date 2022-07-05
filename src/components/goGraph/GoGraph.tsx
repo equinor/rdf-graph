@@ -1,12 +1,12 @@
 import go, { Diagram } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { GraphStateProps } from '../state/GraphStateProps';
 import { useEffect, useRef } from 'react';
 import { linkTemplateMap } from './link-templates/link-template-map';
 import { createDefaultNodeTemplate } from './node-templates/default-node-template';
 import { createSymbolNodeTemplate } from './node-templates/symbol-node-template';
 import { applyPatch } from './applyPatch';
 import { NodeUiType } from './types';
+import { GoGraphProps } from './GoGraph.types';
 //import { UiNegotiator } from './ui-negotiator/uiNegotiator';
 //import { GoJsPatchHandler } from './ui-negotiator/goPatchHandler';
 
@@ -63,7 +63,7 @@ const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
 	console.log(thisObj.name);
 };
 
-export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
+export const GoGraph = ({ graphState, graphPatch, options }: GoGraphProps) => {
 	const diagramRef = useRef<Diagram>(initDiagram());
 
 	//const uiNegotiator = useRef<UiNegotiator>(new UiNegotiator(new GoJsPatchHandler(diagramRef.current)));
@@ -76,7 +76,7 @@ export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
 	return (
 		<>
 			<ReactDiagram
-				style={{ height: '1000px', width: '1000px' }}
+				style={{ height: 'calc(100vh - 70px)', width: '100%', border: '1px solid lightgrey', overflow: 'hidden' }}
 				initDiagram={() => diagramRef.current}
 				divClassName="graph-links-model"
 				nodeDataArray={[]}

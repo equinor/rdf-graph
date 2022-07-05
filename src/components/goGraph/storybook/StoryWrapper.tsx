@@ -1,9 +1,10 @@
 import { Button } from '@equinor/eds-core-react';
 import { useEffect, useState } from 'react';
-import { GraphSelection } from '../../models';
-import { RdfGoGraph } from '../components';
-import { useRdfActionReducer } from '../state/useRdfState';
-import { turtle2RdfTriples } from '../../mapper';
+import { turtle2RdfTriples } from '../../../mapper';
+import { GraphSelection } from '../../../models';
+import { RdfGoGraph } from '../../components';
+
+import { useRdfActionReducer } from '../../state/useRdfState';
 
 export type SparqlWrapperProps = {
 	turtleString: string;

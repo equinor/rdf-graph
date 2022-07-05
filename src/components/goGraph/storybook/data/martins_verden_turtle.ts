@@ -1,30 +1,4 @@
-import React from 'react';
-import { ComponentMeta, ComponentStory } from '@storybook/react';
-import { StoryWrapper } from './StoryWrapper';
-
-import { GoGraph } from './GoGraph';
-
-import { esd_turtle } from './data-no-vc/esd-turtle';
-
-export default {
-	title: 'GoGraph',
-	component: GoGraph,
-	decorators: [(Story) => <div>{Story()}</div>],
-	argTypes: {
-		turtleString: { control: { type: 'text' } },
-		layoutName: { control: { type: 'inline-radio' } },
-	},
-} as ComponentMeta<typeof GoGraph>;
-
-const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
-	<>
-		<StoryWrapper {...args} />
-	</>
-);
-
-export const Example = Template.bind({});
-
-const storyTurtle = `
+export const martinsTurtle = `
 @prefix example: <http://example.com#> .
 @prefix imf:     <http://example.com/imf#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
@@ -81,10 +55,3 @@ example:Bilde
 	example:connectedTo example:Hallais .
 
 `;
-
-Example.args = {
-	turtleString: esd_turtle, //,storyTurtle
-	// layoutName: 'Cose-Bilkent',
-};
-
-Example.storyName = 'GoGraph';
