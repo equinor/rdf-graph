@@ -4,7 +4,7 @@ import { StoryWrapper } from './StoryWrapper';
 
 import { GoGraph } from './GoGraph';
 
-import { esd_turtle } from './data-no-vs/esd-turtle';
+import { esd_turtle } from './data-no-vc/esd-turtle';
 
 export default {
 	title: 'GoGraph',

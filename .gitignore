@@ -24,4 +24,4 @@ yarn-error.log*
 /storybook-static/
 .idea
 
-data-no-vs
+data-no-vc
