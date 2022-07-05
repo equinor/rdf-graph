@@ -29,12 +29,12 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 							//debugger;
 							addNode(model, a.assertion);
 							break;
-						case 'link':
+						case 'edge':
 							addLink(model, a.assertion);
 							break;
-						//case 'linkNode':
-						//addLink(model, patch.assertion);
-						//	break;
+						case 'connector':
+							//addLink(model, patch.assertion);
+							break;
 						case 'property':
 							addProperty(model, a.assertion);
 							//d.model.setDataProperty(a.node, a.key, a.value);
@@ -69,7 +69,7 @@ function addLink(model: go.GraphLinksModel, ge: GraphEdge): void {
 		//fromPort: srcParent?.id ? link.source : '',
 		to: ge.target,
 		//toPort: trgParent?.id ? link.target : '',
-		label: ge.linkRef?.label ?? '',
+		//label: ge.?.label ?? '',
 	});
 }
 
@@ -88,28 +88,28 @@ function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 			addSymbolProp(model, prop);
 			break;
 		case 'connectorName':
-			// Dont work because link patch arrives before this stuff... :/
-			const symbolNodeId = prop.node.parent?.id;
-			let symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
+			// // Dont work because link patch arrives before this stuff... :/
+			// const symbolNodeId = prop.node.parent?.id;
+			// let symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
 
-			//addNodeIfNotExists(model, symDataObj.id);
-			if (!symDataObj) {
-				//debugger;
-				// Create symbol node
-				addNode(model, prop.node);
-				//debugger;
-				symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
-			}
+			// //addNodeIfNotExists(model, symDataObj.id);
+			// if (!symDataObj) {
+			// 	//debugger;
+			// 	// Create symbol node
+			// 	addNode(model, prop.node);
+			// 	//debugger;
+			// 	symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
+			// }
 
-			for (const p of symDataObj.symbolPorts) {
-				if (p.name === prop.value) {
-					p.portId = prop.node.id;
-					//debugger;
-					break;
-				}
-			}
-			//debugger;
-			model.setDataProperty(symDataObj, 'symbolPorts', symDataObj.symbolPorts);
+			// for (const p of symDataObj.symbolPorts) {
+			// 	if (p.name === prop.value) {
+			// 		p.portId = prop.node.id;
+			// 		//debugger;
+			// 		break;
+			// 	}
+			// }
+			// //debugger;
+			// model.setDataProperty(symDataObj, 'symbolPorts', symDataObj.symbolPorts);
 			//debugger;
 			break;
 		case 'shape':
