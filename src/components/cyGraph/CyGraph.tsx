@@ -6,24 +6,20 @@ import { NodeType } from '../../models/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
 import { GraphProps } from '../state/GraphStateProps';
-import {
-	AbstractNode,
-	GraphAssertion,
-	GraphEdge,
-	GraphEdgeIdentifier,
-	GraphNodeIdentifier,
-	GraphPatch,
-	GraphPropertyIdentifier,
-} from '../../models/graphModel';
+import { AbstractNode, GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api';
 import cytoscape from 'cytoscape';
 
-const addNode = (n: GraphNodeIdentifier, cy: Cytoscape.Core) => {
+const addNode = (n: AbstractNode, cy: Cytoscape.Core) => {
 	const { id, type } = n;
 	const elem: ElementDefinition = { data: { id: id } };
-	if (type === 'linkNode') {
+	if (type === 'metadata') {
 		if (!elem.style) elem.style = {};
 		elem.style.display = 'none';
+		return;
+	}
+	if (type === 'connector') {
+		elem.data.parent = n.node.id;
 	}
 	cy.add(elem);
 };
@@ -49,13 +45,13 @@ const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
 };
 
 const addEdge = (n: GraphEdge, cy: Cytoscape.Core) => {
-	const { id, source, target } = n;
-	const { [labelIri]: label } = n.linkRef! || {};
-	const elem: ElementDefinition = { data: { id: id, source: source, target: target, [labelKey]: label } };
+	const { id, source, sourceConnector, target, targetConnector } = n;
+	const { [labelIri]: label } = n.metadata! || {};
+	const elem: ElementDefinition = { data: { id: id, source: sourceConnector || source, target: targetConnector || target, [labelKey]: label } };
 	cy.add(elem);
 	return [];
 };
-const removeElement = (element: GraphEdgeIdentifier | GraphNodeIdentifier, cy: Cytoscape.Core) => {
+const removeElement = (element: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
 	cy.remove(cy.getElementById(element.id));
 };
 const removeProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
@@ -99,7 +95,7 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 			case 'add':
 				switch (a.assertion.type) {
 					case 'node':
-					case 'linkNode':
+					case 'connector':
 						addNode(a.assertion, cy);
 						break;
 					case 'property':
@@ -109,8 +105,8 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 						}
 
 						break;
-					case 'link':
-						if (a.assertion.linkRef?.id !== hasConnectorIri) {
+					case 'edge':
+						if (a.assertion.metadata.id !== hasConnectorIri) {
 							postprocess.push(...addEdge(a.assertion, cy));
 						}
 						break;
@@ -118,8 +114,8 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 				break;
 			case 'remove':
 				switch (a.assertion.type) {
-					case 'link':
-					case 'linkNode':
+					case 'edge':
+					case 'connector':
 					case 'node':
 						removeElement(a.assertion, cy);
 						break;
