@@ -12,7 +12,7 @@ import { NodeUiType, SymbolNodeData } from './types';
 //     \  /\  / | | || |\ \| |\  |_| |_| |\  | |_\ \  |_|_|
 //      \/  \/\_| |_/\_| \_\_| \_/\___/\_| \_/\____/  (_|_)
 //
-// 			WIP...
+// 			WIP... Connectors don't work before Eirik has added new "connector" and "edge" assertions!
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	console.log('PATCH:', { graphPatch });
