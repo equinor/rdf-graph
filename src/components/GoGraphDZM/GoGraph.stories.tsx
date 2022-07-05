@@ -2,17 +2,17 @@ import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { StoryWrapper } from './StoryWrapper';
 
-import { GoGraph } from './GoGraph';
+import { GoGraphDZM } from './GoGraphDZM';
 
 export default {
-	title: 'GoGraph',
-	component: GoGraph,
+	title: 'GoGraphDZM',
+	component: GoGraphDZM,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
 		layoutName: { control: { type: 'inline-radio' } },
 	},
-} as ComponentMeta<typeof GoGraph>;
+} as ComponentMeta<typeof GoGraphDZM>;
 
 const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
 	<>
@@ -84,4 +84,4 @@ Example.args = {
 	// layoutName: 'Cose-Bilkent',
 };
 
-Example.storyName = 'GoGraph';
+Example.storyName = 'GoGraphDZM';

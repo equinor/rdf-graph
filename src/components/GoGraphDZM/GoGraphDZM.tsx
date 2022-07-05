@@ -349,7 +349,7 @@ function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdenti
 			break;
 	}
 }
-export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
+export const GoGraphDZM = ({ graphState, graphPatch }: GraphStateProps) => {
 	const [diagram, setDiagram] = useState<Diagram>();
 	const patchBuffer = useRef<GraphAssertion[]>([]);
 
