@@ -1,8 +1,8 @@
-import { FC, useEffect, useState } from 'react';
-import { CSS3DSprite } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { FC, useEffect, useRef, useState } from 'react';
+import { CSS3DSprite, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
-import { GraphNode, GraphEdge } from '../../models/graphModel';
+import { GraphNode, GraphEdge, AbstractNode } from '../../models/graphModel';
 import { GraphProps } from '../state/GraphStateProps';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
@@ -66,9 +66,8 @@ f 1/15/10 5/20/10 11/2/10 10/1/10
 `;
 
 const loader = new OBJLoader();
-
 type f3DState = {
-	nodes: GraphNode[];
+	nodes: AbstractNode[];
 	links: GraphEdge[];
 };
 
@@ -77,13 +76,14 @@ const filterable = function* <T>(source: Iterable<T>, filter: (e: T) => boolean)
 };
 
 export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...rest }) => {
+	const renderer = useRef(new CSS3DRenderer());
 	const [model, update] = useState<f3DState>({
 		nodes: [],
 		links: [],
 	});
 	useEffect(() => {
 		update({ nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')], links: [...graphState.linkIndex.values()] });
-		console.log(model);
+		console.log('whats up with', model);
 	}, [graphPatch]);
 
 	return (
@@ -94,11 +94,12 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 			enableNodeDrag={true}
 			// nodeRelSize={10}
 			// linkResolution={100}
-
+			nodeLabel={(node: any) => node.label}
 			nodeAutoColorBy="group"
-			nodeThreeObjectExtend={false}
+			nodeThreeObjectExtend={true}
+			extraRenderers={[renderer.current]}
 			nodeThreeObject={(node: any) => {
-				if (node['http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType'] === 'VG') {
+				if (node.properties.get('http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType') === 'VG') {
 					const group = loader.parse(obj);
 					return group;
 				}
@@ -111,13 +112,14 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 				nodeEl.style.padding = '0.5em';
 				nodeEl.style.background = 'white';
 				const labelEl = document.createElement('div');
-				labelEl.textContent = node['http://www.w3.org/2000/01/rdf-schema#label'];
+				labelEl.textContent = node.label;
 				labelEl.style.color = 'black';
 				labelEl.style.fontSize = '1em';
 				labelEl.style.pointerEvents = 'none';
 				labelEl.style.textAlign = 'center';
 				nodeEl.appendChild(labelEl);
-				let imgSrc = node['http://rdf.equinor.com/ui/hasSimpleSvg'];
+				let imgSrc = node.symbol?.svgDataURI();
+				console.log(imgSrc);
 				if (imgSrc) {
 					nodeEl.style.backgroundImage = `url(${imgSrc})`;
 					nodeEl.style.backgroundSize = 'contain';
