@@ -1,6 +1,6 @@
 import { DefaultNodeData, NodeUiType } from '../types';
 
-export function createDefaultNode(id: string, label?: string): DefaultNodeData {
+export function createDefaultNodeData(id: string, label?: string): DefaultNodeData {
 	return {
 		id: id,
 		category: NodeUiType.Default,

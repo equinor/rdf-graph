@@ -1,4 +1,4 @@
-import { SymbolNodePort } from './goNodeItem.types';
+import { SymbolNodePortData } from './goNodeItem.types';
 
 /** Categories that determine the type of node (template) to render */
 export enum NodeUiType {
@@ -16,11 +16,11 @@ export type RequireNodeCategory<TNodeUiType extends NodeUiType> = Omit<BaseNodeD
 	category: TNodeUiType;
 };
 
-export type DefaultNodeData = RequireNodeCategory<NodeUiType.Default> & {};
+export type DefaultNodeData = RequireNodeCategory<NodeUiType.Default>;
 
 export type SymbolNodeData = RequireNodeCategory<NodeUiType.SvgSymbol> & {
 	symbolId: string;
-	symbolPorts: SymbolNodePort[];
+	symbolPorts: SymbolNodePortData[];
 	svgDataURI: string;
 	height: number;
 	width: number;

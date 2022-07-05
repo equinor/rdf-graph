@@ -1,12 +1,14 @@
-import go, { GraphLinksModel, GraphObject, Diagram } from 'gojs';
+import go, { Diagram } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { GraphStateProps } from '../state/GraphStateProps';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { linkTemplateMap } from './link-templates/link-template-map';
 import { createDefaultNodeTemplate } from './node-templates/default-node-template';
 import { createSymbolNodeTemplate } from './node-templates/symbol-node-template';
-import { applyPatch } from './diagram-transactions/applyPatch';
+import { applyPatch } from './applyPatch';
 import { NodeUiType } from './types';
+//import { UiNegotiator } from './ui-negotiator/uiNegotiator';
+//import { GoJsPatchHandler } from './ui-negotiator/goPatchHandler';
 
 function initDiagram() {
 	const $ = go.GraphObject.make;
@@ -23,8 +25,6 @@ function initDiagram() {
 			linkKeyProperty: 'id',
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
-			//linkFromKeyProperty: 'source',
-			//linkToKeyProperty: 'target',
 		}),
 	});
 
@@ -39,13 +39,11 @@ function initDiagram() {
 	d.linkTemplateMap = linkTemplateMap;
 
 	d.addDiagramListener('BackgroundSingleClicked', function (e) {
-		console.log('Background clicked');
-		console.log({ e });
+		console.log('Background clicked:', { e });
 	});
 
 	d.addDiagramListener('ChangedSelection', function (part) {
-		console.log('Changed selection');
-		console.log({ part });
+		console.log('Changed selection:', { part });
 	});
 
 	d.layout = new go.ForceDirectedLayout();
@@ -68,7 +66,10 @@ const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
 export const GoGraph = ({ graphState, graphPatch }: GraphStateProps) => {
 	const diagramRef = useRef<Diagram>(initDiagram());
 
+	//const uiNegotiator = useRef<UiNegotiator>(new UiNegotiator(new GoJsPatchHandler(diagramRef.current)));
+
 	useEffect(() => {
+		//uiNegotiator.current.applyPatch(graphPatch);
 		applyPatch(diagramRef.current, graphPatch);
 	}, [graphPatch]);
 

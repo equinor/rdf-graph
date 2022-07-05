@@ -4,6 +4,8 @@ import { StoryWrapper } from './StoryWrapper';
 
 import { GoGraph } from './GoGraph';
 
+import { esd_turtle } from './data-no-vs/esd-turtle';
+
 export default {
 	title: 'GoGraph',
 	component: GoGraph,
@@ -79,8 +81,9 @@ example:Bilde
 	example:connectedTo example:Hallais .
 
 `;
+
 Example.args = {
-	turtleString: storyTurtle,
+	turtleString: esd_turtle, //,storyTurtle
 	// layoutName: 'Cose-Bilkent',
 };
 

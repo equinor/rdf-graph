@@ -7,7 +7,8 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 		go.Node,
 		'Auto',
 		new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify),
-		$(go.Shape, 'RoundedRectangle', { name: 'SHAPE', fill: 'lightgreen', strokeWidth: 0 }, new go.Binding('fill', 'color')),
+		$(go.Shape, { name: 'SHAPE', fill: 'lightgreen', strokeWidth: 0 }, new go.Binding('fill', 'color')),
+		new go.Binding('figure'),
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
 		{
 			click: clickHandler,
