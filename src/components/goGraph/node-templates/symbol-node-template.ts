@@ -1,6 +1,5 @@
 import go from 'gojs';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
-import { NodeItemType } from '../types';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;

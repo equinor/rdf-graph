@@ -1,5 +1,5 @@
 import { NodeSymbolTemplate } from '../types/NodeSymbol';
-import { NodeSymbolConnector } from '../types/NodeSymbolConnector';
+import { NodeSymbolConnector, PortDirection } from '../types/NodeSymbolConnector';
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 <svg width="74" height="112" viewBox="0 0 74 112" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,8 +38,8 @@ export const PSV_C: NodeSymbolTemplate = {
 	height: 112,
 	width: 74,
 	connectors: [
-		new NodeSymbolConnector('c1', { x: 25, y: 62.5 }),
-		new NodeSymbolConnector('c2', { x: 73, y: 63 }),
-		new NodeSymbolConnector('c3', { x: 25, y: 111 }),
+		new NodeSymbolConnector('c1', { x: 25, y: 62.5 }, PortDirection.E),
+		new NodeSymbolConnector('c2', { x: 73, y: 63 }, PortDirection.S),
+		new NodeSymbolConnector('c3', { x: 25, y: 111 }, PortDirection.W),
 	],
 };
