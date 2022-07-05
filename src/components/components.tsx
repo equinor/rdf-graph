@@ -6,7 +6,7 @@ import { RdfContext } from './state/RdfContext';
 import { RdfStateProps } from './state/RdfState.types';
 import { F3DGraph } from './f3dGraph/F3DGraph';
 import { CyGraph } from './cyGraph/CyGraph';
-import { GoGraph } from './GoGraph';
+import { GoGraph } from './goGraph/GoGraph';
 
 function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(Component: FC<P>): FC<R & RdfStateProps> {
 	return ({ rdfStore, rdfPatch, onElementSelected, ...props }: RdfStateProps) => {

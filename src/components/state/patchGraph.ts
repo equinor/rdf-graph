@@ -14,6 +14,8 @@ import {
 	hasConnectorSuffixIri,
 	labelIri,
 	colorIri,
+	simpleShapeKey,
+	hasSimpleSymbolIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point } from '../../symbol-api';
 import { setEquals } from '../../utils/setEquals';
@@ -42,7 +44,7 @@ function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	if (arr.length === 0) index.delete(key);
 }
 
-const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', labelKey, colorKey, rotationKey] as const;
+const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', simpleShapeKey, labelKey, colorKey, rotationKey] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
 type NodeProp = typeof nodeProps[number];
@@ -58,6 +60,7 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	[compoundNodeKey]: [['relativePosition']],
 	[labelKey]: [],
 	[colorKey]: [],
+	[simpleShapeKey]: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSvgIri]: 'symbolName',
@@ -66,6 +69,7 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasConnectorIri]: connectorKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
+	[hasSimpleSymbolIri]: simpleShapeKey,
 };
 function* propagator(a: GraphNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
@@ -105,6 +109,7 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: GraphNode) =>
 	[labelKey]: invalidator(labelKey, labelIri),
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
+	[simpleShapeKey]: invalidator(simpleShapeKey, hasSimpleSymbolIri),
 	[rotationKey]: invalidator(rotationKey, (g) => (g.properties.has(rotationIri) ? parseInt(g.properties.get(rotationIri)![0]) : undefined)),
 	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),

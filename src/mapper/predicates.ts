@@ -9,6 +9,7 @@ export const colorIri = 'http://rdf.equinor.com/ui/color';
 export const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
 export const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
 export const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
+export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
 export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 
@@ -18,6 +19,7 @@ export const labelKey = 'label';
 export const colorKey = 'color';
 export const svgKey = 'svgId';
 export const simpleSvgKey = 'simpleImage';
+export const simpleShapeKey = 'simpleShape';
 export const rotationKey = 'rotation';
 export const connectorKey = 'connector';
 

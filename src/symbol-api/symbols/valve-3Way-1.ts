@@ -1,5 +1,5 @@
 import { NodeSymbolTemplate } from '../types/NodeSymbol';
-import { NodeSymbolConnector } from '../types/NodeSymbolConnector';
+import { NodeSymbolConnector, PortDirection } from '../types/NodeSymbolConnector';
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,8 +22,8 @@ export const Valve_3Way_1: NodeSymbolTemplate = {
 	height: 48,
 	width: 48,
 	connectors: [
-		new NodeSymbolConnector('c1', { x: 0.5, y: 28.5 }),
-		new NodeSymbolConnector('c2', { x: 24, y: 0.5 }),
-		new NodeSymbolConnector('c3', { x: 47.5, y: 29.5 }),
+		new NodeSymbolConnector('c1', { x: 0.5, y: 28.5 }, PortDirection.E),
+		new NodeSymbolConnector('c2', { x: 24, y: 0.5 }, PortDirection.S),
+		new NodeSymbolConnector('c3', { x: 47.5, y: 29.5 }, PortDirection.W),
 	],
 };

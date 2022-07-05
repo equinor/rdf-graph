@@ -1,5 +1,5 @@
 import { NodeSymbolTemplate } from '../types/NodeSymbol';
-import { NodeSymbolConnector } from '../types/NodeSymbolConnector';
+import { NodeSymbolConnector, PortDirection } from '../types/NodeSymbolConnector';
 
 const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 <svg width="98" height="50" viewBox="0 0 98 50" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -21,5 +21,5 @@ export const VG_O: NodeSymbolTemplate = {
 	svg: svg,
 	height: 50,
 	width: 98,
-	connectors: [new NodeSymbolConnector('c1', { x: 1, y: 25 }), new NodeSymbolConnector('c2', { x: 97, y: 25 })],
+	connectors: [new NodeSymbolConnector('c1', { x: 1, y: 25 }, PortDirection.E), new NodeSymbolConnector('c2', { x: 97, y: 25 }, PortDirection.W)],
 };

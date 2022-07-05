@@ -17,6 +17,8 @@ export type GraphVisualProps = {
 	symbolName?: string;
 	rotation?: SymbolRotation;
 	connector?: GraphNode[];
+	shape?: string;
+	label?: string;
 };
 export type GraphNode = GraphNodeIdentifier & {
 	incoming: Map<string, GraphNode[]>;

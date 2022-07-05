@@ -1,5 +1,5 @@
 import { NodeSymbolTemplate } from '../types/NodeSymbol';
-import { NodeSymbolConnector } from '../types/NodeSymbolConnector';
+import { NodeSymbolConnector, PortDirection } from '../types/NodeSymbolConnector';
 
 const svg = `<svg width="96" height="282" viewBox="0 0 96 282" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="vessel-4">
@@ -41,9 +41,9 @@ export const Vessel_4: NodeSymbolTemplate = {
 	height: 282,
 	width: 96,
 	connectors: [
-		new NodeSymbolConnector('c1', { x: 3.34003, y: 57.5 }),
-		new NodeSymbolConnector('c2', { x: 3.34003, y: 175.5 }),
-		new NodeSymbolConnector('c3', { x: 48.5, y: 275.7 }),
-		new NodeSymbolConnector('c4', { x: 48.5, y: 6.29999 }),
+		new NodeSymbolConnector('c1', { x: 3.34003, y: 57.5 }, PortDirection.E),
+		new NodeSymbolConnector('c2', { x: 3.34003, y: 175.5 }, PortDirection.W),
+		new NodeSymbolConnector('c3', { x: 48.5, y: 275.7 }, PortDirection.S),
+		new NodeSymbolConnector('c4', { x: 48.5, y: 6.29999 }, PortDirection.N),
 	],
 };
