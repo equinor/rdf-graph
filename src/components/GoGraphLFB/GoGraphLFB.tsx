@@ -10,21 +10,56 @@ import { createSymbolNodeTemplate } from './node-templates/symbol-node-template'
 export const GoGraphLFB = () => {
 	const [diagram, setDiagram] = useState<go.Diagram>();
 
+	const connecters = [
+		{
+			id: 'rct_top_1',
+			direction: 'top',
+		},
+		{
+			id: 'rct_top_2',
+			direction: 'top',
+		},
+		{
+			id: 'rct_bt_1',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_2',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_3',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_4',
+			direction: 'bottom',
+		},
+	];
+
 	const [nodeDataArray, setNodeDataArray] = useState([
 		// createSymbolNode(1, 'Pump2'),
 		// createSymbolNode(2, 'Valve_gate_o'),
 		createSymbolNode(3, 'Valve_gate_o'),
-		createRectangleNode(4, 10, 'Hello World'),
+		createRectangleNode(4, 'Hello World', connecters),
 	]);
 
 	const [linkDataArray, setLinkDataArray] = useState([
 		{ key: -1, from: 1, to: 2, fromPort: 'cp1', toPort: 'cp1' },
 		{ key: -2, from: 3, to: 1, fromPort: 'cp2', toPort: 'cp2' },
-		{ key: -3, from: 4, to: 3, fromPort: 'rct5', toPort: 'cp2' },
+		{ key: -3, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_1' },
+		{ key: -4, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_2' },
+		{ key: -5, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_bt_2' },
+		{ key: -6, from: 4, to: 3, fromPort: 'rct_bt_1', toPort: 'cp2' },
 	]);
 
-	const clickHandler = () => {
+	const clickHandler = (e, obj) => {
 		console.log('Node clicked');
+		console.log(18, obj.part.findLinksOutOf().count);
+		console.log(18, obj.part.findLinksInto().count);
+		// obj.part.findLinksOutOf().each(function (n: any) {
+		// 	console.log(13, n.part.data);
+		// });
 	};
 
 	const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {

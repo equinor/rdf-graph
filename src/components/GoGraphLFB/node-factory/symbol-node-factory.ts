@@ -27,10 +27,6 @@ export function createSymbolNode(key: number, symbolId: string) {
 	img.height = symbol.height;
 	img.width = symbol.width;
 
-	//console.log(img.outerHTML);
-
-	console.log(10, ports, symbol.height);
-
 	return {
 		key: key,
 		symbolId: symbolId,
@@ -44,21 +40,47 @@ export function createSymbolNode(key: number, symbolId: string) {
 	};
 }
 
-export function createRectangleNode(key: number, portsAmount: number, text: string, background = '#FF5733') {
-	// const symbol = getSymbol(symbolId);
+export function createRectangleNode(key: number, text: string, connecters: any[], background = '#FF5733') {
+	const ports = [];
 
-	let ports = [];
-	const step = 25;
+	const step = 100;
 	const height = 200;
-	const width = '';
 
-	for (let i = 1; i <= portsAmount; i++) {
-		// some code
+	const topConnectors = connecters.filter(({ direction }) => direction === 'top');
+	const bootomConnectors = connecters.filter(({ direction }) => direction === 'bottom');
+
+	const topAmount = topConnectors.length;
+	const bottomAmount = bootomConnectors.length;
+
+	// Finding max width between connectors
+	const fmwbc = topAmount > bottomAmount ? topAmount : bottomAmount;
+
+	// TOP
+	for (let i = 0; i < topAmount; i++) {
+		const { id } = topConnectors[i];
+		const y = (height / 2) * -1;
+		const x = step + step * i;
+
 		ports.push({
 			type: 'symbolPort',
-			symbolId: i,
-			position: new go.Point(step * i, height / 2),
-			portId: `rct${i}`,
+			symbolId: `top-${i}`,
+			position: new go.Point(x, y),
+			portId: id,
+			portBearing: PortBearing.N,
+		});
+	}
+
+	// BOTTOM
+	for (let i = 0; i < bottomAmount; i++) {
+		const { id } = bootomConnectors[i];
+		const y = height / 2;
+		const x = step + step * i;
+
+		ports.push({
+			type: 'symbolPort',
+			symbolId: `bottom-${i}`,
+			position: new go.Point(x, y),
+			portId: id,
 			portBearing: PortBearing.S,
 		});
 	}
@@ -66,7 +88,7 @@ export function createRectangleNode(key: number, portsAmount: number, text: stri
 	return {
 		key,
 		height,
-		width: step * portsAmount + step,
+		width: step * fmwbc + step,
 		category: 'rctNode',
 		ports,
 		text,

@@ -53,7 +53,7 @@ export function createSymbolPortItemTemplate(): go.Panel {
 			}),
 			new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
 				const pos = shape.position;
-				console.log(91, pos);
+				// console.log(91, pos);
 				//debugger;
 				return new go.Point(pos.x - size / 2, pos.y - size / 2);
 			}).ofModel(),

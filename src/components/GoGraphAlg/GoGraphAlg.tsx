@@ -469,151 +469,159 @@ const tt = [
 
 // let diagram = {};
 
-const initDiagram = (isDarkMode: boolean) => {
-	const $ = GraphObject.make;
-	// set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
-	// console.log(18, 'isDarkMode =>', isDarkMode, Object.keys(diagram).length)
-	// if (Object.keys(diagram).length) {
-	// 	diagram.startTransaction('refresh')
-	// 	diagram.commitTransaction('refresh')
-	// 	console.log(19, 'reset', diagram)
-	// }
-	// diagram.div = null;
-	// diagram = null;
-	const diagram = $(Diagram, {
-		// "toolManager.hoverDelay": 100,
-		// allowCopy: false,
-		// layout:  $(TreeLayout, {
-		// 	angle: 90,
-		// 	nodeSpacing: 10,
-		// 	layerSpacing: 40,
-		// 	layerStyle: TreeLayout.LayerUniform,
-		// }),
-		model: new GraphLinksModel({
-			linkKeyProperty: 'key', // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
-			// linkFromPortIdProperty: 'fromPort',
-			// linkToPortIdProperty: 'toPort',
-			// linkDataArray: tt
-		}),
-		layout: $(LayeredDigraphLayout, {
-			layerSpacing: 40,
-			direction: 90,
-			layeringOption: LayeredDigraphLayout.LayerLongestPathSink,
-		}),
-	});
-
-	const bluegrad = '#90CAF9';
-	const pinkgrad = '#F48FB1';
-
-	// get tooltip text from the object's data
-	const tooltipTextConverter = (person: any) => {
-		let str = '';
-		str += 'Born: ' + person.birthYear;
-		if (person.deathYear !== undefined) str += '\nDied: ' + person.deathYear;
-		if (person.reign !== undefined) str += '\nReign: ' + person.reign;
-		return str;
-	};
-
-	// define Converters to be used for Bindings
-	const genderBrushConverter = (gender: any) => {
-		if (isDarkMode) return '#fff';
-		if (gender === 'M') return bluegrad;
-		if (gender === 'F') return pinkgrad;
-		return 'orange';
-	};
-
-	const setWhiteColor = () => '#fff';
-
-	// define Converters to be used for Bindings
-	const getWidth = (type: any) => {
-		if (type === 'wide') return 400;
-		return 100;
-	};
-
-	// define tooltips for nodes
-	const tooltiptemplate = $(
-		'ToolTip',
-		{ 'Border.fill': 'whitesmoke', 'Border.stroke': 'black' },
-		$(
-			TextBlock,
-			{
-				font: 'bold 8pt Helvetica, bold Arial, sans-serif',
-				wrap: TextBlock.WrapFit,
-				margin: 5,
-			},
-			new Binding('text', '', tooltipTextConverter)
-		)
-	);
-
-	// define a simple Node template
-	diagram.nodeTemplate = $(
-		Node,
-		'Auto',
-		{ deletable: false, toolTip: tooltiptemplate },
-		new Binding('text', 'name'),
-		$(
-			Shape,
-			{
-				fill: 'lightgray',
-				stroke: null,
-				strokeWidth: 0,
-				stretch: GraphObject.Fill,
-				alignment: Spot.Center,
-			},
-			new Binding('figure', 'shape'),
-			new Binding('fill', 'gender', genderBrushConverter)
-		),
-		$(
-			TextBlock,
-			{
-				font: '700 12px Droid Serif, sans-serif',
-				textAlign: 'center',
-				margin: 10,
-				// height: 400,
-				maxSize: new Size(190, NaN),
-			},
-			new Binding('width', 'type', getWidth),
-			new Binding('text', 'name')
-		)
-	);
-
-	diagram.linkTemplate = $(
-		Link, // defined below
-		{
-			routing: Link.Orthogonal,
-			corner: 5,
-			selectable: false,
-		},
-
-		$(Shape, {
-			strokeWidth: 3,
-			stroke: isDarkMode ? '#fff' : '#424242',
-		})
-	);
-
-	// HERE: WHEN PARENT
-	// diagram.model = new TreeModel(rr)
-
-	// diagram.startTransaction('refresh')
-	// diagram.commitTransaction('refresh')
-	// console.log(1234, diagram)
-	// diagram.updateAllRelationshipsFromData();
-	// diagram.updateAllTargetBindings();
-	// diagram.requestUpdate()
-
-	return diagram;
-};
-
 export const GoGraphAlg = () => {
 	const [isDarkMode, setDarkMode] = useState(false);
+	const [dg, setDg] = useState<go.Diagram>();
+
+	const initDiagram = (isDarkMode: boolean) => {
+		const $ = GraphObject.make;
+		// set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
+		// console.log(18, 'isDarkMode =>', isDarkMode, Object.keys(diagram).length)
+		// if (Object.keys(diagram).length) {
+		// 	diagram.startTransaction('refresh')
+		// 	diagram.commitTransaction('refresh')
+		// 	console.log(19, 'reset', diagram)
+		// }
+		// diagram.div = null;
+		// diagram = null;
+		const diagram = $(Diagram, {
+			// "toolManager.hoverDelay": 100,
+			// allowCopy: false,
+			// layout:  $(TreeLayout, {
+			// 	angle: 90,
+			// 	nodeSpacing: 10,
+			// 	layerSpacing: 40,
+			// 	layerStyle: TreeLayout.LayerUniform,
+			// }),
+			model: new GraphLinksModel({
+				linkKeyProperty: 'key', // IMPORTANT! must be defined for merges and data sync when using GraphLinksModel
+				// linkFromPortIdProperty: 'fromPort',
+				// linkToPortIdProperty: 'toPort',
+				// linkDataArray: tt
+			}),
+			layout: $(LayeredDigraphLayout, {
+				layerSpacing: 40,
+				direction: 90,
+				layeringOption: LayeredDigraphLayout.LayerLongestPathSink,
+			}),
+		});
+
+		const bluegrad = '#90CAF9';
+		const pinkgrad = '#F48FB1';
+
+		// get tooltip text from the object's data
+		const tooltipTextConverter = (person: any) => {
+			let str = '';
+			str += 'Born: ' + person.birthYear;
+			if (person.deathYear !== undefined) str += '\nDied: ' + person.deathYear;
+			if (person.reign !== undefined) str += '\nReign: ' + person.reign;
+			return str;
+		};
+
+		// define Converters to be used for Bindings
+		const genderBrushConverter = (gender: any) => {
+			if (isDarkMode) return '#fff';
+			if (gender === 'M') return bluegrad;
+			if (gender === 'F') return pinkgrad;
+			return 'orange';
+		};
+
+		const setWhiteColor = () => '#fff';
+
+		// define Converters to be used for Bindings
+		const getWidth = (type: any) => {
+			if (type === 'wide') return 400;
+			return 100;
+		};
+
+		// define tooltips for nodes
+		const tooltiptemplate = $(
+			'ToolTip',
+			{ 'Border.fill': 'whitesmoke', 'Border.stroke': 'black' },
+			$(
+				TextBlock,
+				{
+					font: 'bold 8pt Helvetica, bold Arial, sans-serif',
+					wrap: TextBlock.WrapFit,
+					margin: 5,
+				},
+				new Binding('text', '', tooltipTextConverter)
+			)
+		);
+
+		// define a simple Node template
+		diagram.nodeTemplate = $(
+			Node,
+			'Auto',
+			{ deletable: false, toolTip: tooltiptemplate },
+			new Binding('text', 'name'),
+			$(
+				Shape,
+				{
+					fill: 'lightgray',
+					stroke: null,
+					strokeWidth: 0,
+					stretch: GraphObject.Fill,
+					alignment: Spot.Center,
+				},
+				new Binding('figure', 'shape'),
+				new Binding('fill', 'gender', genderBrushConverter)
+			),
+			$(
+				TextBlock,
+				{
+					font: '700 12px Droid Serif, sans-serif',
+					textAlign: 'center',
+					margin: 10,
+					// height: 400,
+					maxSize: new Size(190, NaN),
+				},
+				new Binding('width', 'type', getWidth),
+				new Binding('text', 'name')
+			)
+		);
+
+		diagram.linkTemplate = $(
+			Link, // defined below
+			{
+				routing: Link.Orthogonal,
+				corner: 5,
+				selectable: false,
+			},
+
+			$(Shape, {
+				strokeWidth: 3,
+				stroke: isDarkMode ? '#fff' : '#424242',
+			})
+		);
+
+		// HERE: WHEN PARENT
+		// diagram.model = new TreeModel(rr)
+
+		// diagram.startTransaction('refresh')
+		// diagram.commitTransaction('refresh')
+		// console.log(1234, diagram)
+		// diagram.updateAllRelationshipsFromData();
+		// diagram.updateAllTargetBindings();
+		// diagram.requestUpdate()
+
+		return diagram;
+	};
+
+	useState(() => setDg(initDiagram(isDarkMode)));
 
 	const handleModelChange = () => {
 		setDarkMode(!isDarkMode);
-		initDiagram(isDarkMode);
+		setDg(initDiagram(isDarkMode));
+		console.log(772);
 		// initDiagram(isDarkMode).reset()
 		// initDiagram(isDarkMode).updateAllRelationshipsFromData();
 		// initDiagram(isDarkMode).updateAllTargetBindings();
 		// initDiagram(isDarkMode).requestUpdate()
+	};
+
+	const HMC = () => {
+		console.log(771);
 	};
 
 	return (
@@ -625,14 +633,14 @@ export const GoGraphAlg = () => {
 			<br />
 			<ReactDiagram
 				style={{ height: '1000px', width: '1000px', background: isDarkMode ? '#424242' : '#fff' }}
-				initDiagram={() => initDiagram(isDarkMode)}
+				initDiagram={() => dg}
 				// divClassName="tree-model"
 				divClassName="graph-links-model"
 				nodeDataArray={rr}
 				linkDataArray={tt}
 				// skipsDiagramUpdate={true}
 				// onDiagramChange={() => handleModelChange()}
-				// onModelChange={() => handleModelChange()}
+				onModelChange={() => HMC()}
 			/>
 		</>
 	);
