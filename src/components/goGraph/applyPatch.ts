@@ -115,34 +115,28 @@ function addPort(model: go.GraphLinksModel, gc: GraphConnector): void {
 
 function removePort(model: go.GraphLinksModel, gc: GraphConnector): void {
 	const nodeData = model.findNodeDataForKey(gc.node.id) as SymbolNodeData;
-	debugger;
+	//debugger;
 }
 
 function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
-	const ignoredProps = ['relativePosition', 'parent'];
+	const ignoredProps = ['relativePosition', 'connectorName'];
 	if (ignoredProps.includes(prop.key)) {
 		console.log('Ignored prop:', prop.key);
 		console.log('Ignored prop obj:', { prop });
 		return;
 	}
 
-	//console.log(prop.key);
-
 	switch (prop.key) {
 		case 'symbol':
 			addSymbolProp(model, prop);
-			break;
-		case 'connectorName':
-			//debugger;
 			break;
 		case 'shape':
 			setMappedProp(model, prop, (p: string) => shapeMap[p]);
 			break;
 		case 'parent':
-			// ode.move({ parent: prop.node.parent!.id });
+			// TODO: Implement...
 			break;
 		default:
-			//console.log('prop key:', prop.key);
 			setMappedProp(model, prop);
 	}
 }
@@ -155,9 +149,8 @@ function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier,
 		//debugger;
 		return;
 	}
-	//console.log('prop: ', prop.key);
+
 	model.setDataProperty(dataObj, propMap[prop.key] ?? 'error_unknown_prop', value);
-	//debugger;
 }
 
 function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
@@ -165,13 +158,11 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 	if (!data) return;
 
 	const sym = createSymbolNodeData('', prop.value.id);
-	//const symData = createSymbolNode('', prop.value.id);
 
 	const symPorts = data.ports;
 
 	if (!symPorts) {
 		console.error('Ports not defined for node');
-		//debugger;
 		return;
 	}
 
@@ -208,14 +199,20 @@ function removeProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier
 		return;
 	}
 
+	//console.log(prop.key);
+
 	switch (prop.key) {
+		case 'symbol':
+			//addSymbolProp(model, prop);
+			break;
 		case 'shape':
-			setMappedProp(model, prop, (p: string) => shapeMap[p]);
+			//setMappedProp(model, prop, (p: string) => shapeMap[p]);
 			break;
 		case 'parent':
-			// TODO: Implement... Ignore for now
+			// ode.move({ parent: prop.node.parent!.id });
 			break;
 		default:
-			setMappedProp(model, prop);
+		//console.log('prop key:', prop.key);
+		//setMappedProp(model, prop);
 	}
 }
