@@ -1,17 +1,19 @@
 import go from 'gojs';
 import { getNodeSymbolTemplate } from '../../../symbol-api';
-import { SymbolNodePortData, SymbolNodeData, NodeUiType, NodeItemType } from '../types';
+import { SymbolNodePortData, SymbolNodeData, NodeUiType, NodeItemType, PortData, PortType } from '../types';
 
 export function createSymbolNodeData(id: string, symbolId: string, label?: string): SymbolNodeData {
 	const symbol = getNodeSymbolTemplate(symbolId);
 
-	const ports = symbol.connectors.map<SymbolNodePortData>((c) => {
+	const ports = symbol.connectors.map<PortData>((c) => {
 		return {
-			type: NodeItemType.SvgSymbolPort,
-			position: new go.Point(c.point.x, c.point.y),
+			type: PortType.SvgSymbolPort,
+			relativePosition: new go.Point(c.point.x, c.point.y),
 			portId: '',
 			name: c.id,
-			portDirection: c.portDirection,
+			direction: c.portDirection,
+			height: 2,
+			width: 2,
 		};
 	});
 
@@ -22,7 +24,7 @@ export function createSymbolNodeData(id: string, symbolId: string, label?: strin
 		category: NodeUiType.SvgSymbol,
 		label: label,
 		symbolId: symbolId,
-		symbolPorts: ports,
+		ports: ports,
 		svgDataURI: svgDataUri,
 		height: symbol.height,
 		width: symbol.width,

@@ -42,7 +42,7 @@ export function createSymbolPortItemTemplate(): go.Panel {
 			//  new go.Binding("position", "position", (pos: go.Point) => {
 			//    return new go.Point(pos.x - 0.5, pos.y - 0.5);
 			//  }),
-			new go.Binding('position', 'position', (pos: go.Point) => {
+			new go.Binding('position', 'relativePosition', (pos: go.Point) => {
 				return new go.Point(pos.x, pos.y);
 			}),
 			new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
@@ -50,8 +50,8 @@ export function createSymbolPortItemTemplate(): go.Panel {
 				//debugger;
 				return new go.Point(pos.x - size / 2, pos.y - size / 2);
 			}).ofModel(),
-			new go.Binding('fromSpot', 'portDirection', (b) => portDirectionToSpot(b)),
-			new go.Binding('toSpot', 'portDirection', (b) => portDirectionToSpot(b)),
+			new go.Binding('fromSpot', 'direction', (b) => portDirectionToSpot(b)),
+			new go.Binding('toSpot', 'direction', (b) => portDirectionToSpot(b)),
 			new go.Binding('height', 'portSize').ofModel(),
 			// new go.Binding("width", "width", (obj: go.GraphObject) => {
 			//   const sdsd = obj.position;

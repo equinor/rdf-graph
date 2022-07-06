@@ -14,8 +14,11 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 
+	const [selection, setSelection] = useState<GraphSelection>();
+
 	const handleSelection = (selection: GraphSelection) => {
 		console.log('Selection: ', { selection });
+		setSelection(selection);
 	};
 
 	const loadTurtle = (): void => {

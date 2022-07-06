@@ -63,7 +63,7 @@ const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
 	console.log(thisObj.name);
 };
 
-export const GoGraph = ({ graphState, graphPatch, options }: GoGraphProps) => {
+export const GoGraph = ({ graphState, graphPatch, onElementsSelected, options }: GoGraphProps) => {
 	const diagramRef = useRef<Diagram>(initDiagram());
 
 	//const uiNegotiator = useRef<UiNegotiator>(new UiNegotiator(new GoJsPatchHandler(diagramRef.current)));

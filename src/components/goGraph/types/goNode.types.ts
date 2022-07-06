@@ -1,3 +1,4 @@
+import { PortDirection } from '../../../symbol-api';
 import { SymbolNodePortData } from './goNodeItem.types';
 
 /** Categories that determine the type of node (template) to render */
@@ -10,6 +11,22 @@ export type BaseNodeData = {
 	id: string;
 	category?: NodeUiType;
 	label?: string;
+	ports?: PortData[];
+};
+
+export enum PortType {
+	Default = '',
+	SvgSymbolPort = 'SvgSymbolPort',
+}
+
+export type PortData = {
+	portId: string;
+	name: string;
+	type: PortType;
+	width?: number;
+	height?: number;
+	relativePosition?: go.Point;
+	direction?: PortDirection;
 };
 
 export type RequireNodeCategory<TNodeUiType extends NodeUiType> = Omit<BaseNodeData, 'category'> & {
@@ -20,7 +37,6 @@ export type DefaultNodeData = RequireNodeCategory<NodeUiType.Default>;
 
 export type SymbolNodeData = RequireNodeCategory<NodeUiType.SvgSymbol> & {
 	symbolId: string;
-	symbolPorts: SymbolNodePortData[];
 	svgDataURI: string;
 	height: number;
 	width: number;

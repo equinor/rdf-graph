@@ -1,18 +1,9 @@
 import go, { GraphLinksModel } from 'gojs';
-import { GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
+import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { createDefaultNodeData } from './node-data-factory/default-node-factory';
 import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
-import { NodeUiType, SymbolNodeData } from './types';
-
-//     _    _  ___  ______ _   _ _____ _   _ _____    _ _
-//     | |  | |/ _ \ | ___ \ \ | |_   _| \ | |  __ \  | | |
-//     | |  | / /_\ \| |_/ /  \| | | | |  \| | |  \/  | | |
-//     | |/\| |  _  ||    /| . ` | | | | . ` | | __   | | |
-//     \  /\  / | | || |\ \| |\  |_| |_| |\  | |_\ \  |_|_|
-//      \/  \/\_| |_/\_| \_\_| \_/\___/\_| \_/\____/  (_|_)
-//
-// 			WIP... Connectors don't work before Eirik has added new "connector" and "edge" assertions!
+import { BaseNodeData, NodeUiType, PortType, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	console.log('PATCH:', { graphPatch });
@@ -26,18 +17,16 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 				case 'add':
 					switch (a.assertion.type) {
 						case 'node':
-							//debugger;
 							addNode(model, a.assertion);
 							break;
 						case 'edge':
 							addLink(model, a.assertion);
 							break;
 						case 'connector':
-							//addLink(model, patch.assertion);
+							addPort(model, a.assertion);
 							break;
 						case 'property':
 							addProperty(model, a.assertion);
-							//d.model.setDataProperty(a.node, a.key, a.value);
 							break;
 						default:
 							break;
@@ -45,9 +34,20 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 					break;
 				case 'remove':
 					switch (a.assertion.type) {
-						case 'property':
+						case 'node':
+							removeNode(model, a.assertion);
 							break;
-
+						case 'edge':
+							removeLink(model, a.assertion);
+							break;
+						case 'connector':
+							removePort(model, a.assertion);
+							break;
+						case 'property':
+							removeProperty(model, a.assertion);
+							break;
+						case 'metadata':
+							break;
 						default:
 							break;
 					}
@@ -62,15 +62,60 @@ function addNode(model: go.GraphLinksModel, a: GraphNode): void {
 	model.addNodeData(createDefaultNodeData(a.id));
 }
 
+function removeNode(model: go.GraphLinksModel, a: GraphNode): void {
+	const node = model.findNodeDataForKey(a.id);
+	if (!node) return;
+	model.removeNodeData(node);
+}
+
 function addLink(model: go.GraphLinksModel, ge: GraphEdge): void {
 	model.addLinkData({
 		id: ge.id,
 		from: ge.source,
-		//fromPort: srcParent?.id ? link.source : '',
+		fromPort: ge.sourceConnector ?? '',
 		to: ge.target,
-		//toPort: trgParent?.id ? link.target : '',
-		//label: ge.?.label ?? '',
+		toPort: ge.targetConnector ?? '',
 	});
+}
+
+function removeLink(model: go.GraphLinksModel, ge: GraphEdge): void {
+	const link = model.findLinkDataForKey(ge.id);
+	if (!link) return;
+	model.removeLinkData(link);
+}
+
+function addPort(model: go.GraphLinksModel, gc: GraphConnector): void {
+	const nodeData = model.findNodeDataForKey(gc.node.id) as SymbolNodeData;
+
+	if (nodeData === null) {
+		console.warn('Parent node of connector not found, node id:', gc.node.id);
+		return;
+	}
+
+	let ports = nodeData.ports ?? [];
+
+	const portIndex = ports.findIndex((p) => p.name === gc.connectorName);
+
+	// TODO: handle type mapping in a more generic way
+	const portType = gc.node.symbolName ? PortType.SvgSymbolPort : PortType.Default;
+
+	if (portIndex === -1) {
+		ports.push({
+			portId: gc.id,
+			name: gc.connectorName ?? 'Unknown',
+			type: portType,
+		});
+	} else {
+		ports[portIndex].portId = gc.id;
+		ports[portIndex].type = portType;
+	}
+
+	model.setDataProperty(nodeData, 'ports', ports);
+}
+
+function removePort(model: go.GraphLinksModel, gc: GraphConnector): void {
+	const nodeData = model.findNodeDataForKey(gc.node.id) as SymbolNodeData;
+	debugger;
 }
 
 function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
@@ -81,88 +126,96 @@ function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 		return;
 	}
 
-	console.log(prop.key);
+	//console.log(prop.key);
 
 	switch (prop.key) {
 		case 'symbol':
 			addSymbolProp(model, prop);
 			break;
 		case 'connectorName':
-			// // Dont work because link patch arrives before this stuff... :/
-			// const symbolNodeId = prop.node.parent?.id;
-			// let symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
-
-			// //addNodeIfNotExists(model, symDataObj.id);
-			// if (!symDataObj) {
-			// 	//debugger;
-			// 	// Create symbol node
-			// 	addNode(model, prop.node);
-			// 	//debugger;
-			// 	symDataObj = model.findNodeDataForKey(symbolNodeId) as SymbolNodeData;
-			// }
-
-			// for (const p of symDataObj.symbolPorts) {
-			// 	if (p.name === prop.value) {
-			// 		p.portId = prop.node.id;
-			// 		//debugger;
-			// 		break;
-			// 	}
-			// }
-			// //debugger;
-			// model.setDataProperty(symDataObj, 'symbolPorts', symDataObj.symbolPorts);
 			//debugger;
 			break;
 		case 'shape':
 			setMappedProp(model, prop, (p: string) => shapeMap[p]);
-			//setNodeShape(model, prop);
 			break;
 		case 'parent':
 			// ode.move({ parent: prop.node.parent!.id });
 			break;
 		default:
-			console.log('prop key:', prop.key);
+			//console.log('prop key:', prop.key);
 			setMappedProp(model, prop);
-		//model.setDataProperty(data, prop.key, prop.value);
+	}
+}
+
+function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier, valueTransformer?: (v: any) => any) {
+	const dataObj = model.findNodeDataForKey(prop.node.id);
+	if (!dataObj) return;
+	const value = valueTransformer ? valueTransformer(prop.value) : prop.value;
+	if (!(prop.key in propMap)) {
+		//debugger;
+		return;
+	}
+	//console.log('prop: ', prop.key);
+	model.setDataProperty(dataObj, propMap[prop.key] ?? 'error_unknown_prop', value);
+	//debugger;
+}
+
+function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
+	const data = model.findNodeDataForKey(prop.node.id) as BaseNodeData;
+	if (!data) return;
+
+	const sym = createSymbolNodeData('', prop.value.id);
+	//const symData = createSymbolNode('', prop.value.id);
+
+	const symPorts = data.ports;
+
+	if (!symPorts) {
+		console.error('Ports not defined for node');
+		//debugger;
+		return;
 	}
 
-	function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier, valueTransformer?: (v: any) => any) {
-		const dataObj = model.findNodeDataForKey(prop.node.id);
-		if (!dataObj) return;
-		const value = valueTransformer ? valueTransformer(prop.value) : prop.value;
-		if (!(prop.key in propMap)) {
-			debugger;
-			return;
+	// Set symbol info on ports
+	symPorts.forEach((p) => {
+		// Port from generated symbol
+		const symPort = sym.ports?.find((po) => po.name === p.name);
+		if (!symPort) {
+		} else {
+			p.type = symPort.type;
+			p.height = symPort.width;
+			p.width = symPort.height;
+			p.relativePosition = symPort.relativePosition;
+			p.direction = symPort.direction;
 		}
-		console.log('prop: ', prop.key);
-		model.setDataProperty(dataObj, propMap[prop.key] ?? 'error_unknown_prop', value);
-		debugger;
+	});
+
+	// Set symbol data
+	model.setCategoryForNodeData(data, NodeUiType.SvgSymbol);
+	model.setDataProperty(data, 'symbolId', sym.id);
+	model.setDataProperty(data, 'width', sym.width);
+	model.setDataProperty(data, 'height', sym.height);
+	model.setDataProperty(data, 'svgDataURI', sym.svgDataURI);
+
+	// Update port data
+	model.setDataProperty(data, 'ports', data.ports);
+}
+
+function removeProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
+	const ignoredProps = ['relativePosition', 'connectorName'];
+	if (ignoredProps.includes(prop.key)) {
+		console.log('Ignored prop:', prop.key);
+		console.log('Ignored prop obj:', { prop });
+		return;
 	}
 
-	function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
-		const data = model.findNodeDataForKey(prop.node.id);
-		if (!data) return;
-
-		const symData = createSymbolNodeData('', prop.value.id);
-		//const symData = createSymbolNode('', prop.value.id);
-
-		// Map symbol port name to port id
-		const rdfPorts = prop.node.connector;
-		if (rdfPorts) {
-			for (const p of symData.symbolPorts) {
-				const portObj = rdfPorts.find((po) => p.name === po.connectorName);
-				if (portObj) {
-					p.portId = portObj.id;
-				}
-			}
-		}
-
-		//debugger;
-		model.setCategoryForNodeData(data, NodeUiType.SvgSymbol);
-		model.setDataProperty(data, 'symbolId', symData.id);
-		model.setDataProperty(data, 'width', symData.width);
-		model.setDataProperty(data, 'height', symData.height);
-		model.setDataProperty(data, 'svgDataURI', symData.svgDataURI);
-		model.setDataProperty(data, 'symbolPorts', symData.symbolPorts);
-		//debugger;
+	switch (prop.key) {
+		case 'shape':
+			setMappedProp(model, prop, (p: string) => shapeMap[p]);
+			break;
+		case 'parent':
+			// TODO: Implement... Ignore for now
+			break;
+		default:
+			setMappedProp(model, prop);
 	}
 }

@@ -79,7 +79,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							itemTemplateMap: itemTemplateMap,
 							//position: new go.Point(),
 						})
-							.bind('itemArray', 'symbolPorts')
+							.bind('itemArray', 'ports')
 							.bind('width')
 							.bind('height')
 					)

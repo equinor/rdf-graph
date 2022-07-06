@@ -35,3 +35,9 @@ esdStory.args = {
 	turtleString: esd_turtle, // NOTE! File not in version control...
 };
 esdStory.storyName = 'ESD';
+
+export const dmzStory = Template.bind({});
+dmzStory.args = {
+	turtleString: esd_turtle, // NOTE! File not in version control...
+};
+dmzStory.storyName = 'DMZ Magic';
