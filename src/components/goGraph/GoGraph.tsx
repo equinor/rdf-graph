@@ -44,10 +44,10 @@ function initDiagram() {
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 6;
 
-	d.nodeTemplateMap = new go.Map<string, go.Part>().add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler));
-	// .add(NodeUiType.Default, createRectangleNodeTemplate(clickHandler))
-	// .add(NodeUiType.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-	// .add(NodeUiType.RctNode, createRectangleNodeTemplate(clickHandler));
+	d.nodeTemplateMap = new go.Map<string, go.Part>()
+		.add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler))
+		.add(NodeUiType.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
+		.add(NodeUiType.RctNode, createRectangleNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -99,6 +99,10 @@ export const GoGraph = (props: GoGraphProps) => {
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
+
+	// SYSTEM COLOR
+	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	console.log('prefersDark:', prefersDark);
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
