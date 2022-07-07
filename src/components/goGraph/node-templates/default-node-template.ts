@@ -1,6 +1,6 @@
 import go from 'gojs';
 
-export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, thisObj: go.GraphObject) => void, isDarkMode: boolean): go.Node {
+export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, thisObj: go.GraphObject) => void): go.Node {
 	const $ = go.GraphObject.make;
 
 	return $(

@@ -22,7 +22,7 @@ const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
 	// console.log(thisObj.name);
 };
 
-function initDiagram(isDarkMode = false) {
+function initDiagram() {
 	const $ = go.GraphObject.make;
 	// set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
 	const d = $(go.Diagram, {
@@ -44,7 +44,7 @@ function initDiagram(isDarkMode = false) {
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 6;
 
-	d.nodeTemplateMap = new go.Map<string, go.Part>().add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler, isDarkMode));
+	d.nodeTemplateMap = new go.Map<string, go.Part>().add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler));
 	// .add(NodeUiType.Default, createRectangleNodeTemplate(clickHandler))
 	// .add(NodeUiType.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
 	// .add(NodeUiType.RctNode, createRectangleNodeTemplate(clickHandler));
@@ -96,7 +96,7 @@ function getLayout(layout: GoGraphLayout) {
 
 export const GoGraph = (props: GoGraphProps) => {
 	const [isDarkMode, setDarkMode] = useState(false);
-	const diagramRef = useRef<Diagram>(initDiagram(isDarkMode));
+	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
