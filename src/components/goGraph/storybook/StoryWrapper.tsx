@@ -5,21 +5,25 @@ import { GraphSelection } from '../../../models';
 import { RdfGoGraph } from '../../components';
 
 import { useRdfActionReducer } from '../../state/useRdfState';
+import { GoGraphLayoutType, GoGraphOptions } from '../GoGraph.types';
+import { getDefaultLayout } from '../layout/default-layouts';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
+	layout: GoGraphLayoutType;
 };
 
-export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
+export const StoryWrapper = ({ turtleString, layout }: SparqlWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 
-	const [selection, setSelection] = useState<GraphSelection>();
+	const [options, setOptions] = useState<GoGraphOptions>();
 
-	const handleSelection = (selection: GraphSelection) => {
-		console.log('Selection: ', { selection });
-		setSelection(selection);
-	};
+	const [selection, setSelection] = useState<GraphSelection>([]);
+
+	function handleSelection(sel: GraphSelection) {
+		setSelection(sel);
+	}
 
 	const loadTurtle = (): void => {
 		updateTurtle(turtleString);
@@ -29,6 +33,15 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		const quads = turtle2RdfTriples(turtleString);
 		dispatch({ type: 'replace', data: quads });
 	}, [turtle]);
+
+	useEffect(() => {
+		console.log('Got selection from GoGraph:', selection);
+	}, [selection]);
+
+	useEffect(() => {
+		const lay = getDefaultLayout(layout);
+		setOptions({ ...options, layout: lay });
+	}, [layout]);
 
 	return (
 		<div>
@@ -42,7 +55,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			{/* <Button onClick={changeEdgeStyle}> Change Edge Style </Button>
 			<Button onClick={toggleConnectors}> Toggle Connectors </Button> */}
 
-			<RdfGoGraph onElementSelected={handleSelection} {...state} />
+			<RdfGoGraph options={options} onElementSelected={handleSelection} {...state} />
 		</div>
 	);
 };

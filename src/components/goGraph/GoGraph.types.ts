@@ -21,14 +21,14 @@ interface BaseLayout<T extends GoGraphLayoutType, TData> {
 	readonly data: Required<TData>;
 }
 
-type LayeredDigraphLayout = BaseLayout<
+export type LayeredDigraphLayout = BaseLayout<
 	GoGraphLayoutType.LayeredDigraphLayout,
 	{
 		a: number;
 	}
 >;
 
-type ForceDirectedLayout = BaseLayout<
+export type ForceDirectedLayout = BaseLayout<
 	GoGraphLayoutType.ForceDirectedLayout,
 	{
 		b: string;
@@ -39,11 +39,4 @@ export type GoGraphLayout = LayeredDigraphLayout | ForceDirectedLayout;
 
 export type GoGraphOptions = {
 	layout: GoGraphLayout;
-};
-
-const myLayout: LayeredDigraphLayout = {
-	type: GoGraphLayoutType.LayeredDigraphLayout,
-	data: {
-		a: 1,
-	},
 };

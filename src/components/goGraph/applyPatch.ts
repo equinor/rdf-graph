@@ -6,7 +6,7 @@ import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
 import { BaseNodeData, NodeUiType, PortType, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
-	console.log('PATCH:', { graphPatch });
+	//console.log('PATCH:', { graphPatch });
 
 	diagram.commit((d) => {
 		const model = d.model as GraphLinksModel;
@@ -121,8 +121,8 @@ function removePort(model: go.GraphLinksModel, gc: GraphConnector): void {
 function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 	const ignoredProps = ['relativePosition', 'connectorName'];
 	if (ignoredProps.includes(prop.key)) {
-		console.log('Ignored prop:', prop.key);
-		console.log('Ignored prop obj:', { prop });
+		// console.log('Ignored prop:', prop.key);
+		// console.log('Ignored prop obj:', { prop });
 		return;
 	}
 
@@ -194,8 +194,8 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 function removeProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 	const ignoredProps = ['relativePosition', 'connectorName'];
 	if (ignoredProps.includes(prop.key)) {
-		console.log('Ignored prop:', prop.key);
-		console.log('Ignored prop obj:', { prop });
+		// console.log('Ignored prop:', prop.key);
+		// console.log('Ignored prop obj:', { prop });
 		return;
 	}
 
