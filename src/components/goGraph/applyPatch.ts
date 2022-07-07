@@ -6,8 +6,6 @@ import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
 import { BaseNodeData, NodeUiType, PortType, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
-	//console.log('PATCH:', { graphPatch });
-
 	diagram.commit((d) => {
 		const model = d.model as GraphLinksModel;
 		let i = 1;
@@ -51,7 +49,6 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 						default:
 							break;
 					}
-					//debugger;
 					break;
 			}
 		}
@@ -115,7 +112,6 @@ function addPort(model: go.GraphLinksModel, gc: GraphConnector): void {
 
 function removePort(model: go.GraphLinksModel, gc: GraphConnector): void {
 	const nodeData = model.findNodeDataForKey(gc.node.id) as SymbolNodeData;
-	//debugger;
 }
 
 function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
@@ -146,7 +142,6 @@ function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier,
 	if (!dataObj) return;
 	const value = valueTransformer ? valueTransformer(prop.value) : prop.value;
 	if (!(prop.key in propMap)) {
-		//debugger;
 		return;
 	}
 

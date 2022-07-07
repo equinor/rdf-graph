@@ -47,7 +47,6 @@ export function createSymbolPortItemTemplate(): go.Panel {
 			}),
 			new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
 				const pos = shape.position;
-				//debugger;
 				return new go.Point(pos.x - size / 2, pos.y - size / 2);
 			}).ofModel(),
 			new go.Binding('fromSpot', 'direction', (b) => portDirectionToSpot(b)),
@@ -55,7 +54,7 @@ export function createSymbolPortItemTemplate(): go.Panel {
 			new go.Binding('height', 'portSize').ofModel(),
 			// new go.Binding("width", "width", (obj: go.GraphObject) => {
 			//   const sdsd = obj.position;
-			//   debugger;
+
 			//   return 2;
 			// }).ofObject("CONN"),
 			new go.Binding('width', 'portSize').ofModel()
