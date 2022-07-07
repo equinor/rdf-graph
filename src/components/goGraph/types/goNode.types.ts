@@ -5,6 +5,7 @@ import { SymbolNodePortData } from './goNodeItem.types';
 export enum NodeUiType {
 	Default = '',
 	SvgSymbol = 'SvgSymbol',
+	RctNode = 'RctNode',
 }
 
 export type BaseNodeData = {
@@ -17,6 +18,7 @@ export type BaseNodeData = {
 export enum PortType {
 	Default = '',
 	SvgSymbolPort = 'SvgSymbolPort',
+	RctNode = 'RctNode',
 }
 
 export type PortData = {

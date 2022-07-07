@@ -1,5 +1,6 @@
 import go from 'gojs';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
+import { PortBearing } from '../types/NodeSymbolConnector';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -90,6 +91,62 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.bind(new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify))
 			)
 	);
+}
+
+export function createRectangleNode(key: number, text: string, connecters: any[], background = '#FF5733') {
+	const ports = [];
+
+	const step = 100;
+	const height = 200;
+
+	const topConnectors = connecters.filter(({ direction }) => direction === 'top');
+	const bootomConnectors = connecters.filter(({ direction }) => direction === 'bottom');
+
+	const topAmount = topConnectors.length;
+	const bottomAmount = bootomConnectors.length;
+
+	// Finding max width between connectors
+	const fmwbc = topAmount > bottomAmount ? topAmount : bottomAmount;
+
+	// TOP
+	for (let i = 0; i < topAmount; i++) {
+		const { id } = topConnectors[i];
+		const y = (height / 2) * -1;
+		const x = step + step * i;
+
+		ports.push({
+			type: 'symbolPort',
+			symbolId: `top-${i}`,
+			position: new go.Point(x, y),
+			portId: id,
+			portBearing: PortBearing.N,
+		});
+	}
+
+	// BOTTOM
+	for (let i = 0; i < bottomAmount; i++) {
+		const { id } = bootomConnectors[i];
+		const y = height / 2;
+		const x = step + step * i;
+
+		ports.push({
+			type: 'symbolPort',
+			symbolId: `bottom-${i}`,
+			position: new go.Point(x, y),
+			portId: id,
+			portBearing: PortBearing.S,
+		});
+	}
+
+	return {
+		key,
+		height,
+		width: step * fmwbc + step,
+		category: 'rctNode',
+		ports,
+		text,
+		background,
+	};
 }
 
 function getTopLabelAlignment(angle: number): go.Spot {

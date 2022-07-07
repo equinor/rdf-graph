@@ -16,7 +16,7 @@ import {
 	TreeLayout,
 } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 // const rr = [
 // 	{ key: 2, parent: 0, name: "George VI", gender: "M", birthYear: "1895", deathYear: "1952", reign: "1936-1952", shape: 'Rectangle' },
@@ -471,7 +471,7 @@ const tt = [
 
 export const GoGraphAlg = () => {
 	const [isDarkMode, setDarkMode] = useState(false);
-	const [dg, setDg] = useState<go.Diagram>();
+	// const [dg, setDg] = useState<go.Diagram>();
 
 	const initDiagram = (isDarkMode: boolean) => {
 		const $ = GraphObject.make;
@@ -608,11 +608,15 @@ export const GoGraphAlg = () => {
 		return diagram;
 	};
 
-	useState(() => setDg(initDiagram(isDarkMode)));
+	const diagramRef = useRef<Diagram>(initDiagram(isDarkMode));
+	// useState(() => setDg(initDiagram(isDarkMode)));
 
 	const handleModelChange = () => {
 		setDarkMode(!isDarkMode);
-		setDg(initDiagram(isDarkMode));
+
+		// initDiagram(!isDarkMode);
+		// diagramRef.current.reset()
+		// diagramRef.current.redraw()
 		console.log(772);
 		// initDiagram(isDarkMode).reset()
 		// initDiagram(isDarkMode).updateAllRelationshipsFromData();
@@ -633,7 +637,7 @@ export const GoGraphAlg = () => {
 			<br />
 			<ReactDiagram
 				style={{ height: '1000px', width: '1000px', background: isDarkMode ? '#424242' : '#fff' }}
-				initDiagram={() => dg}
+				initDiagram={() => diagramRef.current}
 				// divClassName="tree-model"
 				divClassName="graph-links-model"
 				nodeDataArray={rr}
