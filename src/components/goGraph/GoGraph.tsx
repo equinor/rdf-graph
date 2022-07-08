@@ -45,7 +45,7 @@ function initDiagram() {
 	d.model.modelData.portSize = 6;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
-		.add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler))
+		.add(NodeUiType.Default, createRectangleNodeTemplate(clickHandler))
 		.add(NodeUiType.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
 		.add(NodeUiType.RctNode, createRectangleNodeTemplate(clickHandler));
 
@@ -125,12 +125,36 @@ export const GoGraph = (props: GoGraphProps) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		const selection = getGraphSelectionDiagramEvent(e, props.graphState);
 		props.onElementsSelected && props.onElementsSelected(selection);
+
+		const { nodes, links } = diagramRef.current;
+		nodes.each((node) => (node.highlight = 0));
+		links.each((link) => (link.highlight = 0));
+
+		const sel = diagramRef.current.selection.first();
+
+		if (sel === null) return;
+
+		console.log(1101, 'sel =>', sel);
+
+		// nodesConnect(sel, 1)
+		if (sel instanceof go.Link) {
+			sel.toNode.highlight = 1;
+			sel.fromNode.highlight = 1;
+		} else {
+			sel.findNodesConnected().each((node) => (node.highlight = 1));
+		}
 	};
 
 	useEffect(() => {
 		if (!props.options?.layout) return;
 		diagramRef.current.layout = getLayout(props.options.layout);
 	}, [props.options?.layout]);
+
+	// diagramRef.current.addDiagramListener("ChangedSelection", () => updateHighlights);
+
+	// const updateHighlights = () => {
+
+	// }
 
 	const handleModelChange = (e: go.IncrementalData) => {
 		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;

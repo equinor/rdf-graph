@@ -20,6 +20,10 @@ export const GoGraphLFB = () => {
 			direction: 'top',
 		},
 		{
+			id: 'rct_top_3',
+			direction: 'top',
+		},
+		{
 			id: 'rct_bt_1',
 			direction: 'bottom',
 		},
@@ -40,17 +44,28 @@ export const GoGraphLFB = () => {
 	const [nodeDataArray, setNodeDataArray] = useState([
 		// createSymbolNode(1, 'Pump2'),
 		// createSymbolNode(2, 'Valve_gate_o'),
-		createSymbolNode(3, 'Valve_gate_o'),
-		createRectangleNode(4, 'Hello World', connecters),
+		// createSymbolNode(3, 'Valve_gate_o'),
+		createRectangleNode(1, 'ESD2 P/B in OCC', []),
+		createRectangleNode(2, 'ESD2 P/B in the field', []),
+		createRectangleNode(3, 'ESD2', connecters),
+		createRectangleNode(4, 'PSD to PdQ', []),
+		createRectangleNode(5, 'PdQ related', []),
+		createRectangleNode(6, 'Nozz area input', []),
 	]);
 
 	const [linkDataArray, setLinkDataArray] = useState([
-		{ key: -1, from: 1, to: 2, fromPort: 'cp1', toPort: 'cp1' },
-		{ key: -2, from: 3, to: 1, fromPort: 'cp2', toPort: 'cp2' },
-		{ key: -3, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_1' },
-		{ key: -4, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_2' },
-		{ key: -5, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_bt_2' },
-		{ key: -6, from: 4, to: 3, fromPort: 'rct_bt_1', toPort: 'cp2' },
+		{ key: -1, from: 1, to: 3, fromPort: 'cp1', toPort: 'rct_top_1' },
+		{ key: -2, from: 2, to: 3, fromPort: 'cp1', toPort: 'rct_top_3' },
+		{ key: -3, from: 2, to: 3, fromPort: 'cp1', toPort: 'rct_top_2' },
+		{ key: -4, from: 3, to: 4, fromPort: 'rct_bt_1', toPort: 'cp1' },
+		{ key: -5, from: 3, to: 5, fromPort: 'rct_bt_2', toPort: 'cp1' },
+		{ key: -6, from: 3, to: 6, fromPort: 'rct_bt_4', toPort: 'cp1' },
+
+		// { key: -2, from: 3, to: 1, fromPort: 'cp2', toPort: 'cp2' },
+		// { key: -3, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_1' },
+		// { key: -4, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_2' },
+		// { key: -5, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_bt_2' },
+		// { key: -6, from: 4, to: 3, fromPort: 'rct_bt_1', toPort: 'cp2' },
 	]);
 
 	const clickHandler = (e, obj) => {
@@ -81,6 +96,11 @@ export const GoGraphLFB = () => {
 				linkKeyProperty: 'key',
 				linkFromPortIdProperty: 'fromPort',
 				linkToPortIdProperty: 'toPort',
+			}),
+			layout: $(go.LayeredDigraphLayout, {
+				layerSpacing: 40,
+				direction: 90,
+				layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
 			}),
 		});
 

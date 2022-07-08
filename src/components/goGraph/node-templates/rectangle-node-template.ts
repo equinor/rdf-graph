@@ -28,7 +28,7 @@ export function createRectangleNodeTemplate(clickHandler?: ((e: go.InputEvent, t
 				fill: 'transparent',
 				strokeWidth: 0,
 				alignment: go.Spot.Bottom,
-			})
+			}).bind(new go.Binding('fill', 'nodeColor').ofModel()) // meaning a property of Model.modelData
 			// .bind(new go.Binding('fill', 'fill').makeTwoWay())
 		)
 		.add(

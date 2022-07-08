@@ -99,8 +99,8 @@ export function createRectangleNode(key: number, text: string, connecters: any[]
 	const step = 100;
 	const height = 200;
 
-	const topConnectors = connecters.filter(({ direction }) => direction === 'top');
-	const bootomConnectors = connecters.filter(({ direction }) => direction === 'bottom');
+	const topConnectors = connecters.filter(({ direction }) => direction === 'in');
+	const bootomConnectors = connecters.filter(({ direction }) => direction === 'out');
 
 	const topAmount = topConnectors.length;
 	const bottomAmount = bootomConnectors.length;
@@ -116,7 +116,7 @@ export function createRectangleNode(key: number, text: string, connecters: any[]
 
 		ports.push({
 			type: 'symbolPort',
-			symbolId: `top-${i}`,
+			symbolId: id,
 			position: new go.Point(x, y),
 			portId: id,
 			portBearing: PortBearing.N,
@@ -131,7 +131,7 @@ export function createRectangleNode(key: number, text: string, connecters: any[]
 
 		ports.push({
 			type: 'symbolPort',
-			symbolId: `bottom-${i}`,
+			symbolId: id,
 			position: new go.Point(x, y),
 			portId: id,
 			portBearing: PortBearing.S,
