@@ -26,20 +26,50 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 				font: 'bold 14px Segoe UI,sans-serif',
 				stroke: '#484848',
 				// alignmentFocus: go.Spot.Bottom,
-			}).bind(new go.Binding('text', 'text').makeTwoWay())
+			}).bind(new go.Binding('text', 'label').makeTwoWay())
 		)
+		// .add(
+		// 	new go.Panel(go.Panel.Position)
+		// 		.add(
+		// 			// Connector panel
+		// 			new go.Panel(go.Panel.Position, {
+		// 				itemCategoryProperty: 'category',
+		// 				itemTemplateMap,
+		// 			})
+		// 				.bind('itemArray', 'ports')
+		// 				.bind('width')
+		// 		)
+		// 		.bind(new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify))
+		// );
 		.add(
-			new go.Panel(go.Panel.Position)
-				.add(
-					// Connector panel
-					new go.Panel(go.Panel.Position, {
-						itemCategoryProperty: 'category',
-						itemTemplateMap,
-					})
-						.bind('itemArray', 'ports')
-						.bind('width')
-				)
-				.bind(new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify))
+			$(go.Panel, 'Horizontal', new go.Binding('itemArray', 'northArray'), {
+				row: 0,
+				column: 1,
+				itemTemplate: $(
+					go.Panel,
+					{
+						_side: 'top',
+						fromSpot: go.Spot.Top,
+						toSpot: go.Spot.Top,
+						fromLinkable: true,
+						toLinkable: true,
+						cursor: 'pointer',
+						// contextMenu: portMenu
+					},
+					new go.Binding('portId', 'portId'),
+					$(
+						go.Shape,
+						'Rectangle',
+						{
+							stroke: null,
+							strokeWidth: 0,
+							desiredSize: new go.Size(8, 8),
+							margin: new go.Margin(0, 1),
+						},
+						new go.Binding('fill', 'portColor')
+					)
+				), // end itemTemplate
+			}) // end Horizontal Panel
 		);
 
 	return node;

@@ -13,7 +13,7 @@ export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
 export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 export const hasNodeTemplateIri = 'http://rdf.equinor.com/ui/hasNodeTemplate';
-export const hasDirectionIri = 'https://rdf.equinor.com/ui/hasDirection';
+export const hasDirectionIri = 'http://rdf.equinor.com/ui/hasDirection';
 export const typeIri = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
 // keys linked to predicates

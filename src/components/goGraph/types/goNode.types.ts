@@ -21,6 +21,7 @@ export type BaseNodeData = {
 };
 
 export type PortData = {
+	id: string;
 	portId: string;
 	name: string;
 	category: NodeUiItemCategory;
