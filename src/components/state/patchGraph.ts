@@ -29,6 +29,9 @@ import {
 	hasSimpleSymbolIri,
 	symbolTemplateKey,
 	hasSymbolTemplateIri,
+	connectorDirectionKey,
+	connectorDirectionIri,
+	typeIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point } from '../../symbol-api';
 import { setEquals } from '../../utils/setEquals';
@@ -69,6 +72,7 @@ const dataProps = [
 	rotationKey,
 	simpleSymbolKey,
 	symbolTemplateKey,
+	connectorDirectionKey,
 ] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
@@ -88,6 +92,7 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	[colorKey]: [],
 	[simpleSymbolKey]: [],
 	[symbolTemplateKey]: [],
+	[connectorDirectionKey]: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSvgIri]: 'symbolName',
@@ -98,6 +103,7 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[colorIri]: colorKey,
 	[hasSimpleSymbolIri]: simpleSymbolKey,
 	[hasSymbolTemplateIri]: symbolTemplateKey,
+	[connectorDirectionIri]: connectorDirectionKey,
 };
 function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
@@ -147,6 +153,7 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 		const c = g.node.symbol.connectors.find((x) => x.id === g.connectorName);
 		return c?.point || new Point(0, 0);
 	}),
+	[connectorDirectionKey]: invalidator(connectorDirectionKey, connectorDirectionIri),
 	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
 	[symbolTemplateKey]: invalidator(symbolTemplateKey, hasSymbolTemplateIri),
 	node: (g: AbstractNode) => propagator(g, 'node'),
@@ -175,8 +182,17 @@ function* flatMap<T, R>(i: Iterable<T>, c: (a: T) => Iterable<R>) {
 }
 function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['type']) {
 	// re-entrancy check, dont change type on other nodes or it could become turtles all the way down
+	console.log('CHANGING ', n.id, n.type, type);
+	if (n.type === type) return;
 	if ((s as any).__changingNodeType__) return;
 	(s as any).__changingNodeType__ = true;
+
+	// fetch sub-graph directly connected to this node
+	const quads = [...dependentQuads(n)];
+	// seed node-cache with changed node
+	const nodeCache = new Map<string, AbstractNode>();
+	// disconnect the node completely (remove properties, incoming/outgoing edges and lastly the node itself)
+	yield* flatMap(quads, (q) => graphAssertion(s, { action: 'remove', assertion: q } as RdfAssertion, nodeCache));
 
 	// the ol' switcharoo
 	n.type = type;
@@ -193,40 +209,13 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 			delete n.node;
 			break;
 	}
-	// fetch sub-graph directly connected to this node
-	const quads = [...dependentQuads(n)];
-	// seed node-cache with changed node
-	const nodeCache = new Map<string, AbstractNode>([[n.id, n]]);
-	// disconnect the node completely (remove properties, incoming/outgoing edges and lastly the node itself)
-	for (const p of flatMap(quads, (q) => graphAssertion(s, { action: 'remove', assertion: q } as RdfAssertion))) {
-		if (p.action !== 'remove' || p.assertion.type === 'edge' || p.assertion.type === 'property') {
-			yield p;
-			continue;
-		}
-		if (p.assertion.id === n.id) break;
-		// back up dependent node in case it has had is type changed previously
-		nodeCache.set(p.assertion.id, p.assertion);
-		yield p;
-	}
+
 	// re-insert node and all dependent edges/properties
-	for (const p of flatMap(quads, (q) => graphAssertion(s, { action: 'add', assertion: q } as RdfAssertion))) {
-		if (p.action !== 'add' || p.assertion.type === 'edge' || p.assertion.type === 'property') {
-			yield p;
-			continue;
-		}
-		const cachedNode = nodeCache.get(p.assertion.id);
-		if (!cachedNode) {
-			yield p;
-			continue;
-		}
-		// west cansas shuffle
-		p.assertion = cachedNode;
-		yield p;
-	}
+	yield* flatMap(quads, (q) => graphAssertion(s, { action: 'add', assertion: q } as RdfAssertion, nodeCache));
 
 	delete (s as any).__changingNodeType__;
 }
-function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Iterable<GraphAssertion> {
+function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCache?: Map<string, AbstractNode>): Iterable<GraphAssertion> {
 	const q = p.assertion;
 	let sNode: AbstractNode, pNode: GraphMetadata, oNode: AbstractNode;
 	const sTerm = termToId(q.subject);
@@ -238,8 +227,9 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 		case 'add':
 			// Subject
 			if (!state.nodeIndex.has(sTerm)) {
-				sNode = { type: 'node', id: sTerm, ...initAN() };
+				sNode = nodeCache?.get(sTerm) || { type: 'node', id: sTerm, ...initAN() };
 				state.nodeIndex.set(sTerm, sNode);
+				console.log('Yielding subject node', sNode.id);
 				yield { action: 'add', assertion: sNode };
 			} else {
 				sNode = state.nodeIndex.get(sTerm)!;
@@ -255,7 +245,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 			}
 			// Predicate
 			if (!state.nodeIndex.has(pTerm)) {
-				pNode = { id: pTerm, type: 'metadata', ...initM() };
+				pNode = (nodeCache?.get(pTerm) as GraphMetadata) || { id: pTerm, type: 'metadata', ...initM() };
 				state.nodeIndex.set(pTerm, pNode);
 				yield { action: 'add', assertion: pNode };
 			} else {
@@ -263,23 +253,38 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 				if (p.type === 'metadata') {
 					pNode = p;
 				} else {
-					yield* changeNodeType(state, p, 'metadata');
 					pNode = p as any as GraphMetadata;
+					yield* changeNodeType(state, p, 'metadata');
 				}
 			}
 
 			// Object IRI
 			if (!state.nodeIndex.has(oTerm)) {
-				oNode = isConnectorPredicate
-					? ({ id: oTerm, type: 'connector', node: sNode, ...initAN() } as GraphConnector)
-					: ({ id: oTerm, type: 'node', ...initAN() } as GraphNode);
+				switch (pTerm) {
+					case hasConnectorIri:
+						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'connector', node: sNode, ...initAN() } as GraphConnector);
+						break;
+					case typeIri:
+						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'metadata', ...initM() } as GraphMetadata);
+						break;
+					default:
+						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'node', ...initAN() } as GraphNode);
+						break;
+				}
 				state.nodeIndex.set(oTerm, oNode);
+				console.log('Yielding object node', oNode.id);
+
 				yield { action: 'add', assertion: oNode };
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
-				if (isConnectorPredicate && oNode.type !== 'connector') {
-					oNode.node = sNode;
-					yield* changeNodeType(state, oNode, 'connector');
+				switch (pTerm) {
+					case hasConnectorIri:
+						oNode.node = sNode;
+						yield* changeNodeType(state, oNode, 'connector');
+						break;
+					case typeIri:
+						yield* changeNodeType(state, oNode, 'metadata');
+						break;
 				}
 			}
 			add(sNode.outgoing, pTerm, oNode);
@@ -288,7 +293,9 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 			if (isConnectorPredicate) {
 				sNode[connectorKey] = sNode[connectorKey] || [];
 				sNode[connectorKey]!.push(oNode as GraphConnector);
+			} else if (pTerm === typeIri) {
 			} else {
+				console.log('TYPE', sNode.type, oNode.type);
 				const sc =
 					sNode.type === 'connector'
 						? { source: sNode.node.id, sourceRef: sNode.node, sourceConnector: sNode.id, sourceConnectorRef: sNode }
@@ -340,6 +347,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 						oNode.node = oNode.incoming.get(hasConnectorIri)![0];
 						yield* changeNodeType(state, oNode, 'connector');
 					}
+				} else if (pTerm === typeIri) {
 				} else {
 					const delLinkId = quadToString(q);
 					const delLink = state.linkIndex.get(delLinkId)!;
@@ -355,9 +363,11 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 				}
 				if (refCount(oNode) < 1) {
 					state.nodeIndex.delete(oTerm);
+					nodeCache?.set(oNode.id, oNode);
 					yield { action: 'remove', assertion: oNode };
 					if (refCount(pNode) < 1) {
 						state.nodeIndex.delete(pTerm);
+						nodeCache?.set(pNode.id, pNode);
 						yield { action: 'remove', assertion: pNode };
 					} else if (pNode.edges.length < 1) {
 						yield* changeNodeType(state, pNode, 'node');
@@ -365,6 +375,9 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 				}
 				if (refCount(sNode) < 1) {
 					state.nodeIndex.delete(sTerm);
+					nodeCache?.set(sNode.id, sNode);
+					console.log('refCount: ', refCount(sNode), sNode.id);
+
 					yield { action: 'remove', assertion: sNode };
 				}
 
@@ -374,9 +387,9 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion): Itera
 }
 
 export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P): GraphStateProps {
-	const graphPatch: GraphAssertion[] = [];
-	for (const p of patch) {
-		graphPatch.push(...graphAssertion(state, p));
-	}
-	return { graphState: state, graphPatch };
+	// const graphPatch: GraphAssertion[] = [];
+	// for (const p of patch) {
+	// 	graphPatch.push(...graphAssertion(state, p));
+	// }
+	return { graphState: state, graphPatch: flatMap(patch, (p) => graphAssertion(state, p)) };
 }

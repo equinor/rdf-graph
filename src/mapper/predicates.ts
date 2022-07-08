@@ -13,6 +13,8 @@ export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
 export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 export const hasSymbolTemplateIri = 'http://rdf.equinor.com/ui/hasSymbolTemplate';
+export const connectorDirectionIri = 'https://rdf.equinor.com/drafts/aml/Direction';
+export const typeIri = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
 // keys linked to predicates
 export const compoundNodeKey = 'parent';
@@ -24,6 +26,7 @@ export const simpleSymbolKey = 'simpleSymbol';
 export const rotationKey = 'rotation';
 export const connectorKey = 'connector';
 export const symbolTemplateKey = 'symbolTemplate';
+export const connectorDirectionKey = 'direction';
 
 export const compoundNodePredicate = namedNode(compoundNodeIri);
 export const labelPredicate = namedNode(labelIri);

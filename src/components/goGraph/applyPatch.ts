@@ -3,18 +3,15 @@ import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifi
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { createDefaultNodeData } from './node-data-factory/default-node-factory';
 import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
-import { BaseNodeData, NodeUiCategory, NodeUiItemCategory, SymbolNodeData } from './types';
+import { BaseNodeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	diagram.commit((d) => {
 		const model = d.model as GraphLinksModel;
 		let i = 1;
 		for (const a of graphPatch) {
-			console.log(
-				`applying patch ${i++} action = ${a.action}  , type = ${a.assertion.type}`,
-				(a.assertion as any).key!,
-				(a.assertion as any).value
-			);
+			// console.log(
+			// 	`applying patch ${i++} action = ${a.action} ${a.assertion.type}`, a.assertion);
 			switch (a.action) {
 				case 'add':
 					switch (a.assertion.type) {
@@ -73,9 +70,9 @@ function addLink(model: go.GraphLinksModel, ge: GraphEdge): void {
 	model.addLinkData({
 		id: ge.id,
 		from: ge.source,
-		fromPort: ge.sourceConnector ?? '',
+		fromPort: ge.sourceConnector,
 		to: ge.target,
-		toPort: ge.targetConnector ?? '',
+		toPort: ge.targetConnector,
 	});
 }
 
@@ -125,6 +122,11 @@ function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 		// console.log('Ignored prop obj:', { prop });
 		return;
 	}
+	switch (prop.node.type) {
+		case 'connector':
+			setConnectorProp(model, prop);
+			return;
+	}
 
 	switch (prop.key) {
 		case 'symbol':
@@ -139,6 +141,36 @@ function addProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 		default:
 			setMappedProp(model, prop);
 	}
+}
+function setConnectorProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
+	if (prop.node.type !== 'connector') throw "shit don't work yo!";
+	const dataObj = model.findNodeDataForKey(prop.node.node.id);
+	if (!dataObj) return;
+	const ports: PortData[] = dataObj.ports;
+	if (!ports) return;
+	const portIndex = ports.findIndex((p) => p.portId === prop.node.id);
+	if (portIndex < 0) return;
+	let portProp: keyof PortData, portValue: string;
+	switch (prop.key) {
+		case 'direction':
+			portProp = 'direction';
+			switch (prop.value) {
+				case 'in':
+					portValue = 'top';
+					break;
+				default:
+				case 'out':
+					portValue = 'bottom';
+					break;
+			}
+			break;
+		default:
+			portProp = prop.key as keyof PortData;
+			portValue = prop.value;
+			break;
+	}
+	(ports[portIndex] as any)[portProp] = portValue;
+	model.setDataProperty(dataObj, 'ports', ports);
 }
 
 function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier, valueTransformer?: (v: any) => any) {
