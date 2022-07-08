@@ -101,6 +101,10 @@ export const GoGraph = (props: GoGraphProps) => {
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
+	// SYSTEM COLOR
+	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+	console.log('prefersDark:', prefersDark);
+
 	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.setDataProperty(model.modelData, 'strokeColor', isDarkMode ? '#fff' : '#000');
@@ -123,12 +127,36 @@ export const GoGraph = (props: GoGraphProps) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		const selection = getGraphSelection(e, props.graphState);
 		props.onElementsSelected && props.onElementsSelected(selection);
+
+		const { nodes, links } = diagramRef.current;
+		nodes.each((node) => (node.highlight = 0));
+		links.each((link) => (link.highlight = 0));
+
+		const sel = diagramRef.current.selection.first();
+
+		if (sel === null) return;
+
+		console.log(1101, 'sel =>', sel);
+
+		// nodesConnect(sel, 1)
+		if (sel instanceof go.Link) {
+			sel.toNode.highlight = 1;
+			sel.fromNode.highlight = 1;
+		} else {
+			sel.findNodesConnected().each((node) => (node.highlight = 1));
+		}
 	};
 
 	useEffect(() => {
 		if (!props.options?.layout) return;
 		diagramRef.current.layout = getLayout(props.options.layout);
 	}, [props.options?.layout]);
+
+	// diagramRef.current.addDiagramListener("ChangedSelection", () => updateHighlights);
+
+	// const updateHighlights = () => {
+
+	// }
 
 	const handleModelChange = (e: go.IncrementalData) => {
 		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;

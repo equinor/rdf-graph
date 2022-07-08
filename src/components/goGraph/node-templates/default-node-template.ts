@@ -17,7 +17,7 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 			new go.Binding('fill', 'nodeColor').ofModel() // meaning a property of Model.modelData
 			// new go.Binding('fill', 'color')
 		),
-		new go.Binding('figure', 'HasSimpleSymbol'),
+		new go.Binding('figure', 'hasSimpleSymbol'),
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
 		{
 			click: clickHandler,

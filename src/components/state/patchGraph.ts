@@ -25,6 +25,10 @@ import {
 	labelIri,
 	colorIri,
 	compoundNodeIri,
+	simpleSymbolKey,
+	hasSimpleSymbolIri,
+	symbolTemplateKey,
+	hasSymbolTemplateIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point } from '../../symbol-api';
 import { setEquals } from '../../utils/setEquals';
@@ -54,7 +58,18 @@ function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	if (arr.length === 0) index.delete(key);
 }
 
-const dataProps = ['symbolName', 'symbol', 'relativePosition', 'connectorName', 'node', labelKey, colorKey, rotationKey] as const;
+const dataProps = [
+	'symbolName',
+	'symbol',
+	'relativePosition',
+	'connectorName',
+	'node',
+	labelKey,
+	colorKey,
+	rotationKey,
+	simpleSymbolKey,
+	symbolTemplateKey,
+] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
 type NodeProp = typeof nodeProps[number];
@@ -71,7 +86,8 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	node: [['relativePosition']],
 	[labelKey]: [],
 	[colorKey]: [],
-	//[simpleShapeKey]: [],
+	[simpleSymbolKey]: [],
+	[symbolTemplateKey]: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSvgIri]: 'symbolName',
@@ -80,7 +96,8 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasConnectorIri]: connectorKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
-	//[hasSimpleSymbolIri]: simpleShapeKey,
+	[hasSimpleSymbolIri]: simpleSymbolKey,
+	[hasSymbolTemplateIri]: symbolTemplateKey,
 };
 function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
@@ -130,6 +147,8 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 		const c = g.node.symbol.connectors.find((x) => x.id === g.connectorName);
 		return c?.point || new Point(0, 0);
 	}),
+	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
+	[symbolTemplateKey]: invalidator(symbolTemplateKey, hasSymbolTemplateIri),
 	node: (g: AbstractNode) => propagator(g, 'node'),
 	[connectorKey]: (g: AbstractNode) => propagator(g, connectorKey),
 	[compoundNodeKey]: function* (g: AbstractNode) {
