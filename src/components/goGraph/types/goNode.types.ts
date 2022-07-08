@@ -1,45 +1,53 @@
 import { PortDirection } from '../../../symbol-api';
-import { SymbolNodePortData } from './goNodeItem.types';
 
-/** Categories that determine the type of node (template) to render */
-export enum NodeUiType {
+/** Categories that determine the type of node template to use */
+export enum NodeUiCategory {
 	Default = '',
 	SvgSymbol = 'SvgSymbol',
-	RctNode = 'RctNode',
+	EdgeConnectorNode = 'EdgeConnectorNode',
+}
+
+/** Categories that determine the type of item template to use  */
+export enum NodeUiItemCategory {
+	Default = '',
+	PositionPort = 'PositionPort',
 }
 
 export type BaseNodeData = {
 	id: string;
-	category?: NodeUiType;
+	category?: NodeUiCategory;
 	label?: string;
 	ports?: PortData[];
 };
 
-export enum PortType {
-	Default = '',
-	SvgSymbolPort = 'SvgSymbolPort',
-	RctNode = 'RctNode',
-}
-
 export type PortData = {
 	portId: string;
 	name: string;
-	type: PortType;
+	category: NodeUiItemCategory;
 	width?: number;
 	height?: number;
 	relativePosition?: go.Point;
 	direction?: PortDirection;
 };
 
-export type RequireNodeCategory<TNodeUiType extends NodeUiType> = Omit<BaseNodeData, 'category'> & {
+export type RequireNodeCategory<TNodeUiType extends NodeUiCategory> = Omit<BaseNodeData, 'category'> & {
 	category: TNodeUiType;
 };
 
-export type DefaultNodeData = RequireNodeCategory<NodeUiType.Default>;
+export type DefaultNodeData = RequireNodeCategory<NodeUiCategory.Default>;
 
-export type SymbolNodeData = RequireNodeCategory<NodeUiType.SvgSymbol> & {
+export type SymbolNodeData = RequireNodeCategory<NodeUiCategory.SvgSymbol> & {
 	symbolId: string;
 	svgDataURI: string;
+	height: number;
+	width: number;
+	angle?: number;
+};
+
+/** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */
+export type EdgeConnectorNodeData = RequireNodeCategory<NodeUiCategory.EdgeConnectorNode> & {
+	text: string;
+	fill: string;
 	height: number;
 	width: number;
 	angle?: number;

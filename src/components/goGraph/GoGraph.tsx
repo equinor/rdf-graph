@@ -3,12 +3,13 @@ import { ReactDiagram } from 'gojs-react';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from './link-templates/link-template-map';
-import { createDefaultNodeTemplate, createSymbolNodeTemplate, createRectangleNodeTemplate } from './node-templates';
+import { createDefaultNodeTemplate, createSymbolNodeTemplate, createEdgeConnectorNodeTemplate } from './node-templates';
 import { applyPatch } from './applyPatch';
 
-import { NodeUiType } from './types';
+import { NodeUiCategory } from './types';
 import { GoGraphLayout, GoGraphLayoutType, GoGraphProps } from './GoGraph.types';
 import { GraphSelection, GraphState } from '../../models';
+import { getUiTheme } from './style/colors';
 
 const clickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
 	// console.log('Node clicked!');
@@ -44,10 +45,10 @@ function initDiagram() {
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 6;
 
-	d.nodeTemplateMap = new go.Map<string, go.Part>().add(NodeUiType.Default, createDefaultNodeTemplate(clickHandler));
-	// .add(NodeUiType.Default, createRectangleNodeTemplate(clickHandler))
-	// .add(NodeUiType.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-	// .add(NodeUiType.RctNode, createRectangleNodeTemplate(clickHandler));
+	d.nodeTemplateMap = new go.Map<string, go.Part>()
+		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
+		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
+		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -56,11 +57,11 @@ function initDiagram() {
 	// });
 
 	d.layout = new go.ForceDirectedLayout();
-	console.log(2);
+
 	return d;
 }
 
-function getGraphSelectionDiagramEvent(e: go.DiagramEvent, graphState: GraphState): GraphSelection {
+function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSelection {
 	const selectedNodes = (e.subject as go.Set<go.Part>).filter((f) => {
 		return f instanceof go.Node;
 	}) as go.Set<go.Node>;
@@ -104,6 +105,7 @@ export const GoGraph = (props: GoGraphProps) => {
 		const { model } = diagramRef.current;
 		model.setDataProperty(model.modelData, 'strokeColor', isDarkMode ? '#fff' : '#000');
 		model.setDataProperty(model.modelData, 'nodeColor', isDarkMode ? '#fff' : 'lightgreen');
+		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
 	}, [isDarkMode]);
 
 	useEffect(() => {
@@ -119,7 +121,7 @@ export const GoGraph = (props: GoGraphProps) => {
 	}, []);
 
 	const handleChangedSelection = (e: go.DiagramEvent) => {
-		const selection = getGraphSelectionDiagramEvent(e, props.graphState);
+		const selection = getGraphSelection(e, props.graphState);
 		props.onElementsSelected && props.onElementsSelected(selection);
 	};
 
@@ -145,7 +147,7 @@ export const GoGraph = (props: GoGraphProps) => {
 					width: '100%',
 					border: '1px solid lightgrey',
 					overflow: 'hidden',
-					background: isDarkMode ? '#424242' : '#fff',
+					background: isDarkMode ? '#262626' : '#fafaf9',
 				}}
 				initDiagram={() => diagramRef.current}
 				divClassName="graph-links-model"

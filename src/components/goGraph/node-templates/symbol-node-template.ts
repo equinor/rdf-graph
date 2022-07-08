@@ -1,6 +1,8 @@
-import go from 'gojs';
+import go, { GraphObject } from 'gojs';
+import { getSymbolDataURI } from '../../../symbol-api';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
-import { PortBearing } from '../types/NodeSymbolConnector';
+import { UiTheme } from '../style/colors';
+import { SymbolNodeData } from '../types';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -27,6 +29,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 				// more ContextMenuButtons would go here
 			), // end Adornment
 		})
+			.bind(new go.Binding('uiTheme').ofModel())
 			.add(
 				new go.Shape('Rectangle', {
 					isPanelMain: true,
@@ -34,6 +37,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					strokeWidth: 0,
 				})
 			)
+			// TOP TEXT
 			.add(
 				new go.TextBlock('', {
 					alignment: go.Spot.TopCenter,
@@ -43,110 +47,53 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
 					.bind(
 						new go.Binding('alignment', 'angle', (a: number) => {
-							//console.log('a:', a);
 							return getTopLabelAlignment(a);
 						}).ofObject()
 					)
 					.bind(
 						new go.Binding('alignmentFocus', 'angle', (a: number) => {
-							//console.log("a:", a);
 							return getTopLabelAlignment(a);
 						}).ofObject()
 					)
 					.bind(new go.Binding('text', 'label'))
 			)
-			// .add(
-			//   new go.TextBlock("Bottom Text", {
-			//     alignment: go.Spot.BottomCenter,
-			//     alignmentFocus: go.Spot.BottomCenter,
-			//   })
-			// )
 			.add(
 				new go.Panel(go.Panel.Position, { margin: 10 })
 					.add(
 						new go.Picture({
-							//position: new go.Point(),
 							background: 'transparent',
-							//imageStretch: go.GraphObject.None,
 						})
-							.bind('source', 'svgDataURI')
+							.bind('source', 'symbolId', (id, d) => {
+								const data = d.part.data as SymbolNodeData;
+
+								return getSymbolDataURI(id);
+							})
 							.bind('width')
 							.bind('height')
+							.bind(
+								new go.Binding('source', 'uiTheme', (theme: UiTheme, d) => {
+									const data = d.part.data as SymbolNodeData;
+									const fill = theme.node.fill == null ? 'transparent' : theme.node.fill;
+									const dataU = getSymbolDataURI(data.symbolId, { fill: fill, stroke: theme.node.stroke });
+									return dataU;
+								}).ofObject()
+							)
 					)
 					.add(
-						// Connector panel
+						// CONNECTOR PANEL
 						new go.Panel(go.Panel.Position, {
-							itemCategoryProperty: 'type',
+							itemCategoryProperty: 'category',
 							itemTemplateMap: itemTemplateMap,
-							//position: new go.Point(),
 						})
 							.bind('itemArray', 'ports')
 							.bind('width')
 							.bind('height')
 					)
 					.bind(new go.Binding('angle').makeTwoWay())
-					// .bind("width")
-					// .bind("height")
 					.bind(new go.Binding('scale').makeTwoWay())
 					.bind(new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify))
 			)
 	);
-}
-
-export function createRectangleNode(key: number, text: string, connecters: any[], background = '#FF5733') {
-	const ports = [];
-
-	const step = 100;
-	const height = 200;
-
-	const topConnectors = connecters.filter(({ direction }) => direction === 'top');
-	const bootomConnectors = connecters.filter(({ direction }) => direction === 'bottom');
-
-	const topAmount = topConnectors.length;
-	const bottomAmount = bootomConnectors.length;
-
-	// Finding max width between connectors
-	const fmwbc = topAmount > bottomAmount ? topAmount : bottomAmount;
-
-	// TOP
-	for (let i = 0; i < topAmount; i++) {
-		const { id } = topConnectors[i];
-		const y = (height / 2) * -1;
-		const x = step + step * i;
-
-		ports.push({
-			type: 'symbolPort',
-			symbolId: `top-${i}`,
-			position: new go.Point(x, y),
-			portId: id,
-			portBearing: PortBearing.N,
-		});
-	}
-
-	// BOTTOM
-	for (let i = 0; i < bottomAmount; i++) {
-		const { id } = bootomConnectors[i];
-		const y = height / 2;
-		const x = step + step * i;
-
-		ports.push({
-			type: 'symbolPort',
-			symbolId: `bottom-${i}`,
-			position: new go.Point(x, y),
-			portId: id,
-			portBearing: PortBearing.S,
-		});
-	}
-
-	return {
-		key,
-		height,
-		width: step * fmwbc + step,
-		category: 'rctNode',
-		ports,
-		text,
-		background,
-	};
 }
 
 function getTopLabelAlignment(angle: number): go.Spot {
@@ -171,34 +118,3 @@ function getTopLabelAlignment(angle: number): go.Spot {
 			return go.Spot.TopCenter;
 	}
 }
-
-// var symbolNodeTemplate3 = $(
-//   go.Node,
-//   go.Panel.Spot,
-//   {
-//     locationObjectName: "SHAPE",
-//     locationSpot: go.Spot.Center,
-//     selectionObjectName: "SHAPE",
-//     resizable: false,
-//     resizeObjectName: "SHAPE", // name of the graph object to be resized
-//     rotatable: true,
-//     rotateObjectName: "SHAPE", // name of the graph object to be rotate
-//     rotationSpot: go.Spot.Center,
-//   },
-//   new go.Binding("location", "loc", go.Point.parse).makeTwoWay(
-//     go.Point.stringify
-//   ),
-//   new go.Binding("rotationSpot", "rotSpot", go.Spot.parse).makeTwoWay(
-//     go.Spot.stringify
-//   ),
-//   $(
-//     go.Shape,
-//     "RoundedRectangle",
-//     { name: "SHAPE", fill: "orange", strokeWidth: 2 },
-//     new go.Binding("desiredSize", "size", go.Size.parse).makeTwoWay(
-//       go.Size.stringify
-//     ),
-//     new go.Binding("angle").makeTwoWay()
-//   ),
-//   $(go.TextBlock, new go.Binding("text"))
-// );

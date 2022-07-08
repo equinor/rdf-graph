@@ -33,6 +33,27 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol | und
 	return new NodeSymbol(id, svgEl.outerHTML, width, height, connectors);
 }
 
+export function getSymbolDataURI(id: string, options?: SymbolOptions): string | undefined {
+	if (!(id in SymbolKey)) return undefined;
+
+	const symbol = SymbolLibrary[id as keyof typeof SymbolKey];
+
+	const fill = options?.fill ?? 'none';
+	const stroke = options?.stroke ?? 'black';
+
+	const svgEl = stringToSvgElement(symbol.svg);
+
+	if (options?.fill) {
+		svgEl.setAttribute('fill', fill);
+	}
+
+	if (options?.stroke) {
+		svgEl.setAttribute('stroke', stroke);
+	}
+
+	return 'data:image/svg+xml;utf8,' + encodeURIComponent(svgEl.outerHTML);
+}
+
 export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
 	return SymbolLibrary[id as keyof typeof SymbolKey];
 }

@@ -3,7 +3,7 @@ import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifi
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { createDefaultNodeData } from './node-data-factory/default-node-factory';
 import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
-import { BaseNodeData, NodeUiType, PortType, SymbolNodeData } from './types';
+import { BaseNodeData, NodeUiCategory, NodeUiItemCategory, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	diagram.commit((d) => {
@@ -94,17 +94,17 @@ function addPort(model: go.GraphLinksModel, gc: GraphConnector): void {
 	const portIndex = ports.findIndex((p) => p.name === gc.connectorName);
 
 	// TODO: handle type mapping in a more generic way
-	const portType = gc.node.symbolName ? PortType.SvgSymbolPort : PortType.Default;
+	const portType = gc.node.symbolName ? NodeUiItemCategory.PositionPort : NodeUiItemCategory.Default;
 
 	if (portIndex === -1) {
 		ports.push({
 			portId: gc.id,
 			name: gc.connectorName ?? 'Unknown',
-			type: portType,
+			category: portType,
 		});
 	} else {
 		ports[portIndex].portId = gc.id;
-		ports[portIndex].type = portType;
+		ports[portIndex].category = portType;
 	}
 
 	model.setDataProperty(nodeData, 'ports', ports);
@@ -152,7 +152,7 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 	const data = model.findNodeDataForKey(prop.node.id) as BaseNodeData;
 	if (!data) return;
 
-	const sym = createSymbolNodeData('', prop.value.id);
+	const sym = createSymbolNodeData(prop.node.id, prop.value.id);
 
 	const symPorts = data.ports;
 
@@ -167,7 +167,7 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 		const symPort = sym.ports?.find((po) => po.name === p.name);
 		if (!symPort) {
 		} else {
-			p.type = symPort.type;
+			p.category = symPort.category;
 			p.height = symPort.width;
 			p.width = symPort.height;
 			p.relativePosition = symPort.relativePosition;
@@ -176,8 +176,8 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 	});
 
 	// Set symbol data
-	model.setCategoryForNodeData(data, NodeUiType.SvgSymbol);
-	model.setDataProperty(data, 'symbolId', sym.id);
+	model.setCategoryForNodeData(data, NodeUiCategory.SvgSymbol);
+	model.setDataProperty(data, 'symbolId', sym.symbolId);
 	model.setDataProperty(data, 'width', sym.width);
 	model.setDataProperty(data, 'height', sym.height);
 	model.setDataProperty(data, 'svgDataURI', sym.svgDataURI);
