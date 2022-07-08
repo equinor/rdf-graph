@@ -27,10 +27,10 @@ import {
 	compoundNodeIri,
 	simpleSymbolKey,
 	hasSimpleSymbolIri,
-	symbolTemplateKey,
-	hasSymbolTemplateIri,
-	connectorDirectionKey,
-	connectorDirectionIri,
+	nodeTemplateKey,
+	hasNodeTemplateIri,
+	directionKey,
+	hasDirectionIri,
 	typeIri,
 } from '../../mapper/predicates';
 import { getSymbol, Point } from '../../symbol-api';
@@ -71,8 +71,8 @@ const dataProps = [
 	colorKey,
 	rotationKey,
 	simpleSymbolKey,
-	symbolTemplateKey,
-	connectorDirectionKey,
+	nodeTemplateKey,
+	directionKey,
 ] as const;
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
@@ -91,8 +91,8 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	[labelKey]: [],
 	[colorKey]: [],
 	[simpleSymbolKey]: [],
-	[symbolTemplateKey]: [],
-	[connectorDirectionKey]: [],
+	[nodeTemplateKey]: [],
+	[directionKey]: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSvgIri]: 'symbolName',
@@ -102,8 +102,8 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
 	[hasSimpleSymbolIri]: simpleSymbolKey,
-	[hasSymbolTemplateIri]: symbolTemplateKey,
-	[connectorDirectionIri]: connectorDirectionKey,
+	[hasNodeTemplateIri]: nodeTemplateKey,
+	[hasDirectionIri]: directionKey,
 };
 function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
@@ -153,9 +153,9 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 		const c = g.node.symbol.connectors.find((x) => x.id === g.connectorName);
 		return c?.point || new Point(0, 0);
 	}),
-	[connectorDirectionKey]: invalidator(connectorDirectionKey, connectorDirectionIri),
+	[directionKey]: invalidator(directionKey, hasDirectionIri),
 	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
-	[symbolTemplateKey]: invalidator(symbolTemplateKey, hasSymbolTemplateIri),
+	[nodeTemplateKey]: invalidator(nodeTemplateKey, hasNodeTemplateIri),
 	node: (g: AbstractNode) => propagator(g, 'node'),
 	[connectorKey]: (g: AbstractNode) => propagator(g, connectorKey),
 	[compoundNodeKey]: function* (g: AbstractNode) {
