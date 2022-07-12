@@ -12,7 +12,7 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 		const model = d.model as GraphLinksModel;
 		let i = 1;
 		for (const a of graphPatch) {
-			console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
+			// console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
 			switch (a.action) {
 				case 'add':
 					switch (a.assertion.type) {
@@ -166,19 +166,21 @@ function setConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 			portProp = 'direction';
 			switch (prop.value) {
 				case 'south':
+					// southArray
 					const sArray = prop.value + 'Array';
 					if (!nodeObj[sArray]) {
 						model.setDataProperty(nodeObj, sArray, []);
 					}
-					model.insertArrayItem(nodeObj[sArray], -1, portProp);
+					model.insertArrayItem(nodeObj[sArray], -1, portObj);
 					portValue = PortDirection.S;
 					break;
+				// northArray
 				case 'north':
 					const nArray = prop.value + 'Array';
 					if (!nodeObj[nArray]) {
 						model.setDataProperty(nodeObj, nArray, []);
 					}
-					model.insertArrayItem(nodeObj[nArray], -1, portProp);
+					model.insertArrayItem(nodeObj[nArray], -1, portObj);
 					portValue = PortDirection.N;
 					break;
 				case 'east':

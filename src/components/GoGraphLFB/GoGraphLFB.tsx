@@ -41,6 +41,57 @@ export const GoGraphLFB = () => {
 		},
 	];
 
+	const connecters2 = [
+		{
+			id: 'rct_top_1',
+			direction: 'top',
+		},
+		{
+			id: 'rct_top_2',
+			direction: 'top',
+		},
+		{
+			id: 'rct_top_3',
+			direction: 'top',
+		},
+		{
+			id: 'rct_bt_1',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_2',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_3',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_4',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_5',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_6',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_7',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_8',
+			direction: 'bottom',
+		},
+		{
+			id: 'rct_bt_9',
+			direction: 'bottom',
+		},
+	];
+
 	const [nodeDataArray, setNodeDataArray] = useState([
 		// createSymbolNode(1, 'Pump2'),
 		// createSymbolNode(2, 'Valve_gate_o'),
@@ -51,6 +102,9 @@ export const GoGraphLFB = () => {
 		createRectangleNode(4, 'PSD to PdQ', []),
 		createRectangleNode(5, 'PdQ related', []),
 		createRectangleNode(6, 'Nozz area input', []),
+
+		createRectangleNode(7, 'ESD3', connecters2),
+		createRectangleNode(8, 'ESVs', []),
 	]);
 
 	const [linkDataArray, setLinkDataArray] = useState([
@@ -60,6 +114,9 @@ export const GoGraphLFB = () => {
 		{ key: -4, from: 3, to: 4, fromPort: 'rct_bt_1', toPort: 'cp1' },
 		{ key: -5, from: 3, to: 5, fromPort: 'rct_bt_2', toPort: 'cp1' },
 		{ key: -6, from: 3, to: 6, fromPort: 'rct_bt_4', toPort: 'cp1' },
+
+		{ key: -7, from: 7, to: 8, fromPort: 'rct_bt_4', toPort: 'cp1' },
+		// { key: -8, from: 3, to: 6, fromPort: 'rct_bt_4', toPort: 'cp1' },
 
 		// { key: -2, from: 3, to: 1, fromPort: 'cp2', toPort: 'cp2' },
 		// { key: -3, from: 3, to: 4, fromPort: 'cp2', toPort: 'rct_top_1' },
@@ -151,7 +208,7 @@ export const GoGraphLFB = () => {
 	return (
 		<div>
 			<ReactDiagram
-				style={{ height: '1000px', width: '1000px' }}
+				style={{ height: 'calc(100vh - 70px)', width: '100%' }}
 				initDiagram={initDiagram}
 				divClassName="diagram-component"
 				nodeDataArray={nodeDataArray}

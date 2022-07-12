@@ -128,35 +128,76 @@ export const GoGraph = (props: GoGraphProps) => {
 		const selection = getGraphSelection(e, props.graphState);
 		props.onElementsSelected && props.onElementsSelected(selection);
 
-		const { nodes, links } = diagramRef.current;
+		// Highlights
+		const { nodes, model } = diagramRef.current;
+
+		// Set highlight to 0 for everything before updating
 		nodes.each((node) => (node.highlight = 0));
-		links.each((link) => (link.highlight = 0));
 
 		const sel = diagramRef.current.selection.first();
 
 		if (sel === null) return;
 
-		console.log(1101, 'sel =>', sel);
+		// const nodesConnect = () => {
+		// 	if (sel instanceof go.Link) {
+		// 		x.toNode.highlight = i;
+		// 		x.fromNode.highlight = i;
+		// 	} else {
+		// 		x.findNodesConnected().each(node => node.highlight = i);
+		// 	}
+		// };
 
-		// nodesConnect(sel, 1)
-		if (sel instanceof go.Link) {
-			sel.toNode.highlight = 1;
-			sel.fromNode.highlight = 1;
-		} else {
-			sel.findNodesConnected().each((node) => (node.highlight = 1));
-		}
+		const nodesReach = (x: go.Part | null, i: number) => {
+			if (x instanceof go.Link) {
+				x.toNode.highlight = i;
+				nodesReach(x.toNode, i + 1);
+			} else {
+				x.findNodesOutOf().each((node: go.Part) => {
+					if (node.highlight === 0 || node.highlight > i) {
+						node.highlight = i;
+						nodesReach(node, i + 1);
+					}
+				});
+			}
+		};
+
+		// perform the actual highlighting
+		const highlight = ({ highlight, data }: go.Node) => {
+			let color: string;
+
+			switch (highlight) {
+				case 1:
+					color = 'blue';
+					break;
+				case 2:
+					color = 'green';
+					break;
+				case 3:
+					color = 'orange';
+					break;
+				case 4:
+					color = 'red';
+					break;
+				case 0:
+				default:
+					color = 'lightgreen';
+					break;
+			}
+
+			model.commit((m) => m.set(data, 'highlightStrokeColor', color), 'changed node color');
+		};
+
+		// => Indicating a closer relationship to the original node.
+		nodesReach(sel, 1);
+		// => Highlight all nodes linked to this one
+		// nodesConnect(sel, 1);
+		nodes.each((node) => highlight(node));
 	};
 
 	useEffect(() => {
 		if (!props.options?.layout) return;
 		diagramRef.current.layout = getLayout(props.options.layout);
 	}, [props.options?.layout]);
-
-	// diagramRef.current.addDiagramListener("ChangedSelection", () => updateHighlights);
-
-	// const updateHighlights = () => {
-
-	// }
 
 	const handleModelChange = (e: go.IncrementalData) => {
 		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;

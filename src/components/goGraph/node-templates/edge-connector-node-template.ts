@@ -42,6 +42,7 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 		// 		.bind(new go.Binding('location', 'loc', go.Point.parse).makeTwoWay(go.Point.stringify))
 		// );
 		.add(
+			// $(go.Panel, 'Horizontal', new go.Binding('itemArray', 'northArray', e => console.log(10000, '====>>>', e)), {
 			$(go.Panel, 'Horizontal', new go.Binding('itemArray', 'northArray'), {
 				row: 0,
 				column: 1,
@@ -49,6 +50,7 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 					go.Panel,
 					{
 						_side: 'top',
+						minSize: new go.Size(60, 60),
 						fromSpot: go.Spot.Top,
 						toSpot: go.Spot.Top,
 						fromLinkable: true,
@@ -56,7 +58,7 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 						cursor: 'pointer',
 						// contextMenu: portMenu
 					},
-					new go.Binding('portId', 'portId'),
+					// new go.Binding('portId', 'portId'),
 					$(
 						go.Shape,
 						'Rectangle',
@@ -65,12 +67,46 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 							strokeWidth: 0,
 							desiredSize: new go.Size(8, 8),
 							margin: new go.Margin(0, 1),
-						},
-						new go.Binding('fill', 'portColor')
+						}
+						// new go.Binding('fill', 'portColor')
 					)
 				), // end itemTemplate
-			}) // end Horizontal Panel
+				// }) // end Horizontal Panel
+			}).bind(new go.Binding('portId', 'portId').makeTwoWay())
+			// }).bind('portId', 'portId')
+			// })
 		);
+	// .add(
+	// 	$(go.Panel, 'Horizontal', new go.Binding('itemArray', 'southArray'), {
+	// 		row: 0,
+	// 		column: 1,
+	// 		itemTemplate: $(
+	// 			go.Panel,
+	// 			{
+	// 				_side: 'bottom',
+	// 				minSize: new go.Size(60, 60),
+	// 				fromSpot: go.Spot.Bottom,
+	// 				toSpot: go.Spot.Bottom,
+	// 				fromLinkable: true,
+	// 				toLinkable: true,
+	// 				cursor: 'pointer',
+	// 				// contextMenu: portMenu
+	// 			},
+	// 			// new go.Binding('portId', 'portId'),
+	// 			$(
+	// 				go.Shape,
+	// 				'Rectangle',
+	// 				{
+	// 					stroke: null,
+	// 					strokeWidth: 0,
+	// 					desiredSize: new go.Size(8, 8),
+	// 					margin: new go.Margin(0, 1),
+	// 				},
+	// 				new go.Binding('fill', 'portColor')
+	// 			)
+	// 		), // end itemTemplate
+	// 	}).bind(new go.Binding('portId', 'portId').makeTwoWay())
+	// );
 
 	return node;
 }
