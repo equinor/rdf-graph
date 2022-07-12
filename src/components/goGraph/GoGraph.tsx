@@ -52,9 +52,72 @@ function initDiagram() {
 
 	d.linkTemplateMap = linkTemplateMap;
 
-	// d.addDiagramListener('BackgroundSingleClicked', function (e: go.DiagramEvent) {
-	// 	console.log('Background clicked:', e);
-	// });
+	d.addDiagramListener('ChangedSelection', function (e: go.DiagramEvent) {
+		// Highlights
+		const { nodes, model } = d;
+
+		// Set highlight to 0 for everything before updating
+		nodes.each((node) => (node.highlight = 0));
+
+		const sel = d.selection.first();
+
+		// if (sel === null) return;
+
+		// const nodesConnect = () => {
+		// 	if (sel instanceof go.Link) {
+		// 		x.toNode.highlight = i;
+		// 		x.fromNode.highlight = i;
+		// 	} else {
+		// 		x.findNodesConnected().each(node => node.highlight = i);
+		// 	}
+		// };
+
+		const nodesReach = (x: go.Part | null, i: number) => {
+			if (x instanceof go.Link) {
+				x.toNode.highlight = i;
+				nodesReach(x.toNode, i + 1);
+			} else {
+				x.findNodesOutOf().each((node: go.Part) => {
+					if (node.highlight === 0 || node.highlight > i) {
+						node.highlight = i;
+						nodesReach(node, i + 1);
+					}
+				});
+			}
+		};
+
+		// perform the actual highlighting
+		const highlight = ({ highlight, data }: go.Node) => {
+			let color: string;
+
+			switch (highlight) {
+				case 1:
+					color = 'blue';
+					break;
+				case 2:
+					color = 'green';
+					break;
+				case 3:
+					color = 'orange';
+					break;
+				case 4:
+					color = 'red';
+					break;
+				case 0:
+				default:
+					color = 'lightgreen';
+					break;
+			}
+
+			model.commit((m) => m.set(data, 'highlightStrokeColor', color), 'changed node color');
+		};
+
+		// => Indicating a closer relationship to the original node.
+		if (sel !== null) nodesReach(sel, 1);
+		// => Highlight all nodes linked to this one
+		// nodesConnect(sel, 1);
+		nodes.each((node) => highlight(node));
+	});
 
 	d.layout = new go.ForceDirectedLayout();
 
@@ -127,71 +190,6 @@ export const GoGraph = (props: GoGraphProps) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		const selection = getGraphSelection(e, props.graphState);
 		props.onElementsSelected && props.onElementsSelected(selection);
-
-		// Highlights
-		const { nodes, model } = diagramRef.current;
-
-		// Set highlight to 0 for everything before updating
-		nodes.each((node) => (node.highlight = 0));
-
-		const sel = diagramRef.current.selection.first();
-
-		if (sel === null) return;
-
-		// const nodesConnect = () => {
-		// 	if (sel instanceof go.Link) {
-		// 		x.toNode.highlight = i;
-		// 		x.fromNode.highlight = i;
-		// 	} else {
-		// 		x.findNodesConnected().each(node => node.highlight = i);
-		// 	}
-		// };
-
-		const nodesReach = (x: go.Part | null, i: number) => {
-			if (x instanceof go.Link) {
-				x.toNode.highlight = i;
-				nodesReach(x.toNode, i + 1);
-			} else {
-				x.findNodesOutOf().each((node: go.Part) => {
-					if (node.highlight === 0 || node.highlight > i) {
-						node.highlight = i;
-						nodesReach(node, i + 1);
-					}
-				});
-			}
-		};
-
-		// perform the actual highlighting
-		const highlight = ({ highlight, data }: go.Node) => {
-			let color: string;
-
-			switch (highlight) {
-				case 1:
-					color = 'blue';
-					break;
-				case 2:
-					color = 'green';
-					break;
-				case 3:
-					color = 'orange';
-					break;
-				case 4:
-					color = 'red';
-					break;
-				case 0:
-				default:
-					color = 'lightgreen';
-					break;
-			}
-
-			model.commit((m) => m.set(data, 'highlightStrokeColor', color), 'changed node color');
-		};
-
-		// => Indicating a closer relationship to the original node.
-		nodesReach(sel, 1);
-		// => Highlight all nodes linked to this one
-		// nodesConnect(sel, 1);
-		nodes.each((node) => highlight(node));
 	};
 
 	useEffect(() => {
@@ -200,6 +198,7 @@ export const GoGraph = (props: GoGraphProps) => {
 	}, [props.options?.layout]);
 
 	const handleModelChange = (e: go.IncrementalData) => {
+		console.log(1);
 		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;
 	};
 
