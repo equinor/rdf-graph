@@ -2,7 +2,7 @@ import go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { useState } from 'react';
 import { linkTemplateMap } from './link-templates/link-template-map';
-import { createSymbolNode, createRectangleNode } from './node-factory/symbol-node-factory';
+import { createRectangleNode } from './node-factory/symbol-node-factory';
 import { createDefaultNodeTemplate } from './node-templates/default-node-template';
 import { createRCTNodeTemplate } from './node-templates/rct-templates-template';
 import { createSymbolNodeTemplate } from './node-templates/symbol-node-template';
@@ -125,10 +125,10 @@ export const GoGraphLFB = () => {
 		// { key: -6, from: 4, to: 3, fromPort: 'rct_bt_1', toPort: 'cp2' },
 	]);
 
-	const clickHandler = (e, obj) => {
+	const clickHandler = () => {
 		console.log('Node clicked');
-		console.log(18, obj.part.findLinksOutOf().count);
-		console.log(18, obj.part.findLinksInto().count);
+		// console.log(18, obj.part.findLinksOutOf().count);
+		// console.log(18, obj.part.findLinksInto().count);
 		// obj.part.findLinksOutOf().each(function (n: any) {
 		// 	console.log(13, n.part.data);
 		// });

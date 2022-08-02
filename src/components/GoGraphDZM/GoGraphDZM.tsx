@@ -1,5 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
-import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Margin, Shape, Point, Panel, Spot, Node, Size, Link, Rect } from 'gojs';
+import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, Picture, Margin, Shape, Point, Panel, Spot, Node, Size, Link } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { Icon } from '@equinor/engineering-symbols';
 
@@ -51,9 +51,9 @@ const nodeClicked = (e: any, obj: any) => {
 	});
 };
 
-const makeImagePath = (icon: string) => {
-	return `images/${icon}`;
-};
+// const makeImagePath = (icon: string) => {
+// 	return `images/${icon}`;
+// };
 
 const initDiagram = () => {
 	const portSize = new Size(8, 8);
@@ -317,23 +317,23 @@ const initDiagram = () => {
 const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
 const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
 
-const ArrowRight = (key: number, width: number, height: number, angle: number) => {
-	// Original width & height of svg
-	const orgH = 40;
-	const orgW = 40;
+// const ArrowRight = (key: number, width: number, height: number, angle: number) => {
+// 	// Original width & height of svg
+// 	const orgH = 40;
+// 	const orgW = 40;
 
-	return {
-		key,
-		// icon: 'arrow-right',
-		width,
-		height,
-		angle,
-		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 20)}, 0` }],
-		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 24.5)}` }],
-		bottomArray: [],
-		leftArray: [{ portId: 'left0' }],
-	};
-};
+// 	return {
+// 		key,
+// 		// icon: 'arrow-right',
+// 		width,
+// 		height,
+// 		angle,
+// 		topArray: [{ portId: 'top0', alignment: `1, 1, ${getX(width, orgW, 20)}, 0` }],
+// 		rightArray: [{ portId: 'right1', alignment: `1, 1, 0, ${getY(height, orgH, 24.5)}` }],
+// 		bottomArray: [],
+// 		leftArray: [{ portId: 'left0' }],
+// 	};
+// };
 function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdentifier) {
 	switch (a.type) {
 		case 'node':

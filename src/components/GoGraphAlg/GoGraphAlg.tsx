@@ -1,20 +1,4 @@
-import {
-	GraphLinksModel,
-	GraphObject,
-	TextBlock,
-	Binding,
-	Diagram,
-	LayeredDigraphLayout,
-	TreeModel,
-	Shape,
-	Point,
-	Panel,
-	Spot,
-	Node,
-	Size,
-	Link,
-	TreeLayout,
-} from 'gojs';
+import { GraphLinksModel, GraphObject, TextBlock, Binding, Diagram, LayeredDigraphLayout, Shape, Spot, Node, Size, Link } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { useRef, useState } from 'react';
 
@@ -525,8 +509,6 @@ export const GoGraphAlg = () => {
 			if (gender === 'F') return pinkgrad;
 			return 'orange';
 		};
-
-		const setWhiteColor = () => '#fff';
 
 		// define Converters to be used for Bindings
 		const getWidth = (type: any) => {
