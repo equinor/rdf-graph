@@ -2,6 +2,8 @@ import { GraphProps } from '../state/GraphStateProps';
 
 export type GoGraphProps = GraphProps & { options?: GoGraphOptions };
 
+export type GoGraphNodeHighlightProps = go.Node & { highlight?: number };
+
 export type LayoutWrapper = {
 	name: string;
 	layout: string;

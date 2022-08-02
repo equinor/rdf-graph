@@ -7,7 +7,7 @@ import { createDefaultNodeTemplate, createSymbolNodeTemplate, createEdgeConnecto
 import { applyPatch } from './applyPatch';
 
 import { NodeUiCategory } from './types';
-import { GoGraphLayout, GoGraphLayoutType, GoGraphProps } from './GoGraph.types';
+import { GoGraphLayout, GoGraphLayoutType, GoGraphNodeHighlightProps, GoGraphProps } from './GoGraph.types';
 import { GraphSelection, GraphState } from '../../models';
 import { getUiTheme } from './style/colors';
 
@@ -52,14 +52,14 @@ function initDiagram() {
 
 	d.linkTemplateMap = linkTemplateMap;
 
-	d.addDiagramListener('ChangedSelection', function (e: go.DiagramEvent) {
+	d.addDiagramListener('ChangedSelection', () => {
 		// Highlights
-		const { nodes, model } = d;
+		const { nodes, model, selection } = d;
 
 		// Set highlight to 0 for everything before updating
-		nodes.each((node) => (node.highlight = 0));
+		nodes.each((node: GoGraphNodeHighlightProps) => (node.highlight = 0));
 
-		const sel = d.selection.first();
+		const sel = selection.first();
 
 		// if (sel === null) return;
 
@@ -72,13 +72,20 @@ function initDiagram() {
 		// 	}
 		// };
 
-		const nodesReach = (x: go.Part | null, i: number) => {
+		const nodesReach = (x: go.Part, i: number) => {
 			if (x instanceof go.Link) {
-				x.toNode.highlight = i;
-				nodesReach(x.toNode, i + 1);
+				const toNode: GoGraphNodeHighlightProps | null = x.toNode;
+				if (!toNode) return;
+
+				toNode.highlight = i;
+				nodesReach(toNode, i + 1);
 			} else {
-				x.findNodesOutOf().each((node: go.Part) => {
-					if (node.highlight === 0 || node.highlight > i) {
+				// TODO: fix types
+				// Problem: go.Part type hasnt findNodesOutOf
+				// https://github.com/dert261/cucm_axl/blob/master/src/main/resources/static/assets/gojs/1.5.2/goJS.d.ts
+				// @ts-ignore:next-line
+				x.findNodesOutOf().each((node: GoGraphNodeHighlightProps) => {
+					if (node.highlight === 0 || (node.highlight && node.highlight > i)) {
 						node.highlight = i;
 						nodesReach(node, i + 1);
 					}
@@ -87,7 +94,7 @@ function initDiagram() {
 		};
 
 		// perform the actual highlighting
-		const highlight = ({ highlight, data }: go.Node) => {
+		const highlight = ({ highlight, data }: GoGraphNodeHighlightProps) => {
 			let color: string;
 
 			switch (highlight) {
