@@ -21,6 +21,8 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
 		{
 			click: clickHandler,
+			fromSpot: go.Spot.BottomSide,
+			toSpot: go.Spot.TopSide,
 		}
 	);
 }

@@ -4,7 +4,7 @@ import { StoryWrapper } from './StoryWrapper';
 
 import { GoGraph } from '../GoGraph';
 
-import { esd_turtle } from './data-no-vc/esd-turtle';
+import { esd_turtle } from './data/esd-turtle';
 import { martinsTurtle } from './data/martins_verden_turtle';
 import { GoGraphLayoutType } from '../GoGraph.types';
 

@@ -5,7 +5,7 @@ export function createDefaultLinkTemplate(): go.Link {
 
 	return $(
 		go.Link,
-		{ routing: go.Link.AvoidsNodes, curve: go.Link.JumpGap }, // link route should avoid nodes
+		{ routing: go.Link.Orthogonal, curve: go.Link.JumpGap, corner: 5 }, // link route should avoid nodes
 		// $(go.Shape),
 		$(
 			go.Shape,

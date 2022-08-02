@@ -49,10 +49,13 @@ export function createPositionPortItemTemplate(): go.Panel {
 			// 	const pos = shape.position;
 			// 	return new go.Point(pos.x - size / 2, pos.y - size / 2);
 			// }).ofModel(),
-			new go.Binding('position', '', (obj) => {
-				return null;
-			}).ofObject(),
-			new go.Binding('fromSpot', 'direction', (b) => portDirectionToSpot(b)),
+			// new go.Binding('position', '', (obj) => {
+			// 	return null;
+			// }).ofObject(),
+			new go.Binding('fromSpot', 'direction', (b) => {
+				console.log(b);
+				return portDirectionToSpot(b);
+			}),
 			new go.Binding('toSpot', 'direction', (b) => portDirectionToSpot(b)),
 			new go.Binding('height', 'portSize').ofModel(),
 			// new go.Binding("width", "width", (obj: go.GraphObject) => {

@@ -44,7 +44,7 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 							removePort(model, a.assertion);
 							break;
 						case 'property':
-							removeProperty(model, a.assertion);
+							removeProperty(diagram, a.assertion);
 							break;
 						case 'metadata':
 							break;
@@ -164,23 +164,17 @@ function setConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 	switch (prop.key) {
 		case 'direction':
 			portProp = 'direction';
+			const sArray = prop.value + 'Array';
+			if (!nodeObj[sArray]) {
+				model.setDataProperty(nodeObj, sArray, []);
+			}
+			model.insertArrayItem(nodeObj[sArray], -1, portObj);
+
 			switch (prop.value) {
 				case 'south':
-					// southArray
-					const sArray = prop.value + 'Array';
-					if (!nodeObj[sArray]) {
-						model.setDataProperty(nodeObj, sArray, []);
-					}
-					model.insertArrayItem(nodeObj[sArray], -1, portObj);
 					portValue = PortDirection.S;
 					break;
-				// northArray
 				case 'north':
-					const nArray = prop.value + 'Array';
-					if (!nodeObj[nArray]) {
-						model.setDataProperty(nodeObj, nArray, []);
-					}
-					model.insertArrayItem(nodeObj[nArray], -1, portObj);
 					portValue = PortDirection.N;
 					break;
 				case 'east':
@@ -194,7 +188,10 @@ function setConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 					break;
 			}
 			model.setDataProperty(portObj, portProp, portValue);
-			model.setDataProperty(portObj, 'category', NodeUiItemCategory.PositionPort);
+			model.setCategoryForNodeData(portObj, NodeUiItemCategory.DirectionPort);
+			break;
+		case 'connectorName':
+			model.setCategoryForNodeData(portObj, NodeUiItemCategory.PositionPort);
 			break;
 		default:
 			portProp = prop.key as keyof PortData;
@@ -205,6 +202,39 @@ function setConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 
 	// (ports[portIndex] as any)[portProp] = portValue;
 	// diagram.setDataProperty(nodeObj, 'ports', ports);
+}
+function removeConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
+	if (prop.node.type !== 'connector') return;
+	const model = diagram.model as GraphLinksModel;
+	const nodeObj = model.findNodeDataForKey(prop.node.node.id);
+	if (!nodeObj) return;
+	const ports: PortData[] = nodeObj.ports;
+	if (!ports) return;
+	const portIndex = ports.findIndex((p) => p.portId === prop.node.id);
+	if (portIndex < 0) return;
+	const portObj = ports[portIndex];
+	let portProp: keyof PortData;
+	switch (prop.key) {
+		case 'direction':
+			portProp = 'direction';
+			const sArray = prop.value + 'Array';
+			if (!nodeObj[sArray]) {
+				return;
+				// model.setDataProperty(nodeObj, sArray, []);
+			}
+			const directionPorts: PortData[] = nodeObj[sArray];
+			const directionPortIndex = directionPorts.findIndex((p) => p.portId === prop.node.id);
+			model.removeArrayItem(directionPorts, directionPortIndex);
+
+			model.setDataProperty(portObj, portProp, null);
+			break;
+		default:
+			portProp = prop.key as keyof PortData;
+			model.setDataProperty(portObj, portProp, null);
+
+			break;
+	}
+	model.setCategoryForNodeData(portObj, NodeUiItemCategory.Default);
 }
 function setNodeCategory(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
 	const dataObj = model.findNodeDataForKey(prop.node.id)!;
@@ -262,28 +292,43 @@ function addSymbolProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier)
 	model.setDataProperty(data, 'ports', data.ports);
 }
 
-function removeProperty(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
-	const ignoredProps = ['relativePosition', 'connectorName'];
-	if (ignoredProps.includes(prop.key)) {
-		// console.log('Ignored prop:', prop.key);
-		// console.log('Ignored prop obj:', { prop });
-		return;
-	}
-
-	//console.log(prop.key);
+function removeProperty(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
+	// const ignoredProps = ['relativePosition', 'connectorName'];
+	// if (ignoredProps.includes(prop.key)) {
+	// 	// console.log('Ignored prop:', prop.key);
+	// 	// console.log('Ignored prop obj:', { prop });
+	// 	return;
+	// }
+	const model = diagram.model as GraphLinksModel;
 
 	switch (prop.key) {
 		case 'symbol':
-			//addSymbolProp(model, prop);
+			// addSymbolProp(model, prop);
+			console.warn('remove property "symbol" not implemented!');
 			break;
 		case 'shape':
-			//setMappedProp(model, prop, (p: string) => shapeMap[p]);
+			// setMappedProp(model, prop, (p: string) => shapeMap[p]);
+			console.warn('remove property "shape" not implemented!');
+
 			break;
 		case 'parent':
-			// ode.move({ parent: prop.node.parent!.id });
+			console.warn('remove property "parent" not implemented!');
+
+			// TODO: Implement...
+			break;
+		case nodeTemplateKey:
+			console.warn('remove property nodeTemplateKey not implemented!');
+
+			// setNodeCategory(model, prop);
+			break;
+		case 'direction':
+			removeConnectorProp(diagram, prop);
+			break;
+		case 'relativePosition':
+		case 'connectorName':
+			removeConnectorProp(diagram, prop);
 			break;
 		default:
-		//console.log('prop key:', prop.key);
-		//setMappedProp(model, prop);
+		// setMappedProp(model, prop);
 	}
 }

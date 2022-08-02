@@ -11,6 +11,7 @@ export enum NodeUiCategory {
 export enum NodeUiItemCategory {
 	Default = '',
 	PositionPort = 'PositionPort',
+	DirectionPort = 'DirectionPort',
 }
 
 export type BaseNodeData = {

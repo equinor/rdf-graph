@@ -48,7 +48,8 @@ function initDiagram() {
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
+		.add(NodeUiCategory.EdgeConnectorNode, createDefaultNodeTemplate(clickHandler));
+	// .add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler))
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -159,7 +160,12 @@ function getLayout(layout: GoGraphLayout) {
 		case GoGraphLayoutType.ForceDirectedLayout:
 			return new go.ForceDirectedLayout();
 		case GoGraphLayoutType.LayeredDigraphLayout:
-			return new go.LayeredDigraphLayout();
+			return new go.LayeredDigraphLayout({
+				direction: 90,
+				setsPortSpots: false,
+				layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
+				layerSpacing: 100,
+			});
 		default:
 			return new go.ForceDirectedLayout();
 	}
