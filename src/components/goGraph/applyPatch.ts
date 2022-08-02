@@ -12,7 +12,7 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 		const model = d.model as GraphLinksModel;
 		let i = 1;
 		for (const a of graphPatch) {
-			// console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
+			console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
 			switch (a.action) {
 				case 'add':
 					switch (a.assertion.type) {
@@ -125,6 +125,7 @@ function addProperty(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 	// 	return;
 	// }
 	const model = diagram.model as GraphLinksModel;
+
 	switch (prop.key) {
 		case 'symbol':
 			addSymbolProp(model, prop);
@@ -236,11 +237,16 @@ function removeConnectorProp(diagram: go.Diagram, prop: GraphPropertyIdentifier)
 	}
 	model.setCategoryForNodeData(portObj, NodeUiItemCategory.Default);
 }
-function setNodeCategory(model: go.GraphLinksModel, prop: GraphPropertyIdentifier) {
-	const dataObj = model.findNodeDataForKey(prop.node.id)!;
-	switch (prop.value) {
+function setNodeCategory(model: go.GraphLinksModel, { value, node }: GraphPropertyIdentifier) {
+	const dataObj = model.findNodeDataForKey(node.id)!;
+
+	switch (value) {
 		case 'BorderConnectorTemplate':
 			model.setCategoryForNodeData(dataObj, NodeUiCategory.EdgeConnectorNode);
+			break;
+		case shapeMap[value]:
+			model.commit((m) => m.set(dataObj, 'nodeTemplate', value), 'changed node template/shape');
+			break;
 	}
 }
 function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier, valueTransformer?: (v: any) => any) {
