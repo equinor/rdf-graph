@@ -179,9 +179,7 @@ export const GoGraph = (props: OptionsGraphProps) => {
 
 	useEffect(() => {
 		const { model, nodes } = diagramRef.current;
-		nodes.map(({ data }) => {
-			model.commit((m) => m.set(data, 'setPortDirection', isPortDirection), 'Set port direction');
-		});
+		nodes.map(({ data }) => model.commit((m) => m.set(data, 'setPortDirection', isPortDirection), 'Set port direction'));
 	}, [isPortDirection]);
 
 	useEffect(() => {
