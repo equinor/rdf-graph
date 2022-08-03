@@ -6,7 +6,7 @@ import { NodeType } from '../../models/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
 import { GraphProps } from '../../state/GraphStateProps';
-import { AbstractNode, GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
+import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api';
 import cytoscape from 'cytoscape';
 

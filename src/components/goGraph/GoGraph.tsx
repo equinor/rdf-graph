@@ -1,13 +1,13 @@
 import go, { Diagram } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from './link-templates/link-template-map';
-import { createDefaultNodeTemplate, createSymbolNodeTemplate, createEdgeConnectorNodeTemplate } from './node-templates';
+import { createDefaultNodeTemplate, createSymbolNodeTemplate } from './node-templates';
 import { applyPatch } from './applyPatch';
 
 import { NodeUiCategory } from './types';
-import { GraphLayout, GraphLayouts, GoGraphNodeHighlightProps, OptionsGraphProps } from '../../config/Layout';
+import { GraphLayout, GraphLayouts, OptionsGraphProps } from '../../config/Layout';
 import { GraphSelection, GraphState } from '../../models';
 import { getUiTheme } from './style/colors';
 
@@ -52,7 +52,6 @@ function initDiagram() {
 	// .add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler))
 
 	d.linkTemplateMap = linkTemplateMap;
-
 	// d.addDiagramListener('ChangedSelection', () => {
 	// 	// Highlights
 	// 	const { nodes, model, selection } = d;
@@ -155,23 +154,8 @@ function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSel
 	return selectedPayload;
 }
 
-function getLayout(layout: GraphLayout) {
-	switch (layout.type) {
-		case GraphLayouts.ForceDirected:
-			return new go.ForceDirectedLayout();
-		case GraphLayouts.LayeredDigraph:
-			return new go.LayeredDigraphLayout({
-				direction: 90,
-				setsPortSpots: false,
-				layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
-				layerSpacing: 100,
-			});
-		default:
-			return new go.ForceDirectedLayout();
-	}
-}
-
 export const GoGraph = (props: OptionsGraphProps) => {
+	const [isPortDirection, setPortDirection] = useState(false);
 	const [isDarkMode, setDarkMode] = useState(false);
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
@@ -194,11 +178,38 @@ export const GoGraph = (props: OptionsGraphProps) => {
 	}, [props.graphPatch]);
 
 	useEffect(() => {
+		const { model, nodes } = diagramRef.current;
+		nodes.map(({ data }) => {
+			model.commit((m) => m.set(data, 'setPortDirection', isPortDirection), 'Set port direction');
+		});
+	}, [isPortDirection]);
+
+	useEffect(() => {
 		diagramRef.current.addDiagramListener('ChangedSelection', handleChangedSelection);
 		return () => {
 			diagramRef.current.removeDiagramListener('ChangedSelection', handleChangedSelection);
 		};
 	}, []);
+
+	const getLayout = (layout: GraphLayout) => {
+		switch (layout.type) {
+			case GraphLayouts.ForceDirected:
+				setPortDirection(false);
+
+				return new go.ForceDirectedLayout();
+			case GraphLayouts.LayeredDigraph:
+				setPortDirection(true);
+
+				return new go.LayeredDigraphLayout({
+					direction: 90,
+					setsPortSpots: false,
+					layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
+					layerSpacing: 100,
+				});
+			default:
+				return new go.ForceDirectedLayout();
+		}
+	};
 
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
@@ -208,11 +219,12 @@ export const GoGraph = (props: OptionsGraphProps) => {
 
 	useEffect(() => {
 		if (!props.options?.layout) return;
+
 		diagramRef.current.layout = getLayout(props.options.layout);
 	}, [props.options?.layout]);
 
 	const handleModelChange = (e: go.IncrementalData) => {
-		console.log(1);
+		// console.log(1, e);
 		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;
 	};
 

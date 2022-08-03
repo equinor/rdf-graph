@@ -12,7 +12,7 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 		const model = d.model as GraphLinksModel;
 		let i = 1;
 		for (const a of graphPatch) {
-			console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
+			// console.log(`applying patch ${i++} action = ${a.action} ${a.assertion.type} ${(a.assertion as any).key}`, a.assertion);
 			switch (a.action) {
 				case 'add':
 					switch (a.assertion.type) {

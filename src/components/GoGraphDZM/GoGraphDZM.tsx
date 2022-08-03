@@ -314,8 +314,8 @@ const initDiagram = () => {
 	return diagram;
 };
 // posX & posY - original position (width/height) of connectors in original svg
-const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
-const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
+// const getX = (width: number, orgW: number, posX: number) => (width * posX) / orgW - width / 2;
+// const getY = (height: number, orgH: number, posY: number) => (height * posY) / orgH - height / 2;
 
 // const ArrowRight = (key: number, width: number, height: number, angle: number) => {
 // 	// Original width & height of svg

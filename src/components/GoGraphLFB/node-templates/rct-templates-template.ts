@@ -2,7 +2,7 @@ import go from 'gojs';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
 
 export function createRCTNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
-	const $ = go.GraphObject.make;
+	// const $ = go.GraphObject.make;
 	// const node = new go.Node(go.Panel.Spot);
 	// const linksInto = node.findLinksConnected();
 	// const linksConnected = node.findLinksOutOf();

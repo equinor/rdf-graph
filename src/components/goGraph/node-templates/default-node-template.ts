@@ -19,10 +19,12 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 			new go.Binding('strokeWidth', 'highlightStrokeColor', (v) => (v ? 3 : 1))
 		),
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
+		new go.Binding('fromSpot', 'setPortDirection', (v) => (v ? go.Spot.BottomSide : go.Spot.None)).makeTwoWay(),
+		new go.Binding('toSpot', 'setPortDirection', (v) => (v ? go.Spot.TopSide : go.Spot.None)).makeTwoWay(),
 		{
 			click: clickHandler,
-			fromSpot: go.Spot.BottomSide,
-			toSpot: go.Spot.TopSide,
+			// fromSpot: go.Spot.BottomSide,
+			// toSpot: go.Spot.TopSide,
 		}
 	);
 }
