@@ -1,4 +1,5 @@
 import go from 'gojs';
+import { getUiTheme } from '../style/colors';
 
 export function createDefaultLinkTemplate(): go.Link {
 	const $ = go.GraphObject.make;
@@ -10,10 +11,9 @@ export function createDefaultLinkTemplate(): go.Link {
 		$(
 			go.Shape,
 			{
-				stroke: '#000',
 				toArrow: 'Triangle',
 			},
-			new go.Binding('stroke', 'strokeColor').ofModel() // meaning a property of Model.modelData
+			new go.Binding('stroke', 'uiTheme', ({ node }) => node.stroke).ofModel() // meaning a property of Model.modelData
 		)
 	);
 }

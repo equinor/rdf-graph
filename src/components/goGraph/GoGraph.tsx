@@ -167,8 +167,7 @@ export const GoGraph = (props: OptionsGraphProps) => {
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
-		model.setDataProperty(model.modelData, 'strokeColor', isDarkMode ? '#fff' : '#000');
-		model.setDataProperty(model.modelData, 'nodeColor', isDarkMode ? '#fff' : 'lightgreen');
+
 		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
 	}, [isDarkMode]);
 

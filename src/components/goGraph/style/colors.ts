@@ -25,7 +25,7 @@ export const lightModeTheme: UiTheme = {
 		background: '#fafaf9',
 	},
 	node: {
-		fill: '',
+		fill: 'lightgreen',
 		stroke: '#1c1917',
 		text: '',
 	},
@@ -43,7 +43,7 @@ export const darkModeTheme: UiTheme = {
 		background: '#1c1917',
 	},
 	node: {
-		fill: null,
+		fill: '#fff',
 		stroke: '#e7e5e4',
 		text: '',
 	},
