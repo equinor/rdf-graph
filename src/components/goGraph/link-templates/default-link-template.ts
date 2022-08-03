@@ -1,5 +1,4 @@
 import go from 'gojs';
-import { getUiTheme } from '../style/colors';
 
 export function createDefaultLinkTemplate(): go.Link {
 	const $ = go.GraphObject.make;
