@@ -1,6 +1,6 @@
 import { GraphProps } from '../state/GraphStateProps';
 
-export type GoGraphProps = GraphProps & { options?: GoGraphOptions };
+export type OptionsGraphProps = GraphProps & { options?: Partial<LayoutProps> };
 
 export type GoGraphNodeHighlightProps = go.Node & { highlight?: number };
 
@@ -13,32 +13,32 @@ export type LayoutWrapper = {
 
 //const layouts = ['LayeredDigraphLayout', 'ForceDirectedLayout'] as const;
 
-export enum GoGraphLayoutType {
-	LayeredDigraphLayout = 'LayeredDigraphLayout',
-	ForceDirectedLayout = 'ForceDirectedLayout',
+export enum GraphLayouts {
+	LayeredDigraph = 'LayeredDigraphLayout',
+	ForceDirected = 'ForceDirectedLayout',
 }
 
-interface BaseLayout<T extends GoGraphLayoutType, TData> {
+interface BaseLayout<T extends GraphLayouts, TData> {
 	readonly type: T;
-	readonly data: Required<TData>;
+	readonly data: TData;
 }
 
 export type LayeredDigraphLayout = BaseLayout<
-	GoGraphLayoutType.LayeredDigraphLayout,
+	GraphLayouts.LayeredDigraph,
 	{
-		a: number;
+		direction: number;
 	}
 >;
 
 export type ForceDirectedLayout = BaseLayout<
-	GoGraphLayoutType.ForceDirectedLayout,
+	GraphLayouts.ForceDirected,
 	{
 		b: string;
 	}
 >;
 
-export type GoGraphLayout = LayeredDigraphLayout | ForceDirectedLayout;
+export type GraphLayout = LayeredDigraphLayout | ForceDirectedLayout;
 
-export type GoGraphOptions = {
-	layout: GoGraphLayout;
+export type LayoutProps = {
+	layout: GraphLayout;
 };

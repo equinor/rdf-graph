@@ -7,7 +7,7 @@ import { createDefaultNodeTemplate, createSymbolNodeTemplate, createEdgeConnecto
 import { applyPatch } from './applyPatch';
 
 import { NodeUiCategory } from './types';
-import { GoGraphLayout, GoGraphLayoutType, GoGraphNodeHighlightProps, GoGraphProps } from './GoGraph.types';
+import { GraphLayout, GraphLayouts, GoGraphNodeHighlightProps, OptionsGraphProps } from '../../config/Layout';
 import { GraphSelection, GraphState } from '../../models';
 import { getUiTheme } from './style/colors';
 
@@ -53,79 +53,79 @@ function initDiagram() {
 
 	d.linkTemplateMap = linkTemplateMap;
 
-	d.addDiagramListener('ChangedSelection', () => {
-		// Highlights
-		const { nodes, model, selection } = d;
+	// d.addDiagramListener('ChangedSelection', () => {
+	// 	// Highlights
+	// 	const { nodes, model, selection } = d;
 
-		// Set highlight to 0 for everything before updating
-		nodes.each((node: GoGraphNodeHighlightProps) => (node.highlight = 0));
+	// 	// Set highlight to 0 for everything before updating
+	// 	nodes.each((node: GoGraphNodeHighlightProps) => (node.highlight = 0));
 
-		const sel = selection.first();
+	// 	const sel = selection.first();
 
-		// if (sel === null) return;
+	// 	// if (sel === null) return;
 
-		// const nodesConnect = () => {
-		// 	if (sel instanceof go.Link) {
-		// 		x.toNode.highlight = i;
-		// 		x.fromNode.highlight = i;
-		// 	} else {
-		// 		x.findNodesConnected().each(node => node.highlight = i);
-		// 	}
-		// };
+	// 	// const nodesConnect = () => {
+	// 	// 	if (sel instanceof go.Link) {
+	// 	// 		x.toNode.highlight = i;
+	// 	// 		x.fromNode.highlight = i;
+	// 	// 	} else {
+	// 	// 		x.findNodesConnected().each(node => node.highlight = i);
+	// 	// 	}
+	// 	// };
 
-		const nodesReach = (x: go.Part, i: number) => {
-			if (x instanceof go.Link) {
-				const toNode: GoGraphNodeHighlightProps | null = x.toNode;
-				if (!toNode) return;
+	// 	const nodesReach = (x: go.Part, i: number) => {
+	// 		if (x instanceof go.Link) {
+	// 			const toNode: GoGraphNodeHighlightProps | null = x.toNode;
+	// 			if (!toNode) return;
 
-				toNode.highlight = i;
-				nodesReach(toNode, i + 1);
-			} else {
-				// TODO: fix types
-				// Problem: go.Part type hasnt findNodesOutOf
-				// https://github.com/dert261/cucm_axl/blob/master/src/main/resources/static/assets/gojs/1.5.2/goJS.d.ts
-				// @ts-ignore:next-line
-				x.findNodesOutOf().each((node: GoGraphNodeHighlightProps) => {
-					if (node.highlight === 0 || (node.highlight && node.highlight > i)) {
-						node.highlight = i;
-						nodesReach(node, i + 1);
-					}
-				});
-			}
-		};
+	// 			toNode.highlight = i;
+	// 			nodesReach(toNode, i + 1);
+	// 		} else {
+	// 			// TODO: fix types
+	// 			// Problem: go.Part type hasnt findNodesOutOf
+	// 			// https://github.com/dert261/cucm_axl/blob/master/src/main/resources/static/assets/gojs/1.5.2/goJS.d.ts
+	// 			// @ts-ignore:next-line
+	// 			x.findNodesOutOf().each((node: GoGraphNodeHighlightProps) => {
+	// 				if (node.highlight === 0 || (node.highlight && node.highlight > i)) {
+	// 					node.highlight = i;
+	// 					nodesReach(node, i + 1);
+	// 				}
+	// 			});
+	// 		}
+	// 	};
 
-		// perform the actual highlighting
-		const highlight = ({ highlight, data }: GoGraphNodeHighlightProps) => {
-			let color: string;
+	// 	// perform the actual highlighting
+	// 	const highlight = ({ highlight, data }: GoGraphNodeHighlightProps) => {
+	// 		let color: string;
 
-			switch (highlight) {
-				case 1:
-					color = 'blue';
-					break;
-				case 2:
-					color = 'green';
-					break;
-				case 3:
-					color = 'orange';
-					break;
-				case 4:
-					color = 'red';
-					break;
-				case 0:
-				default:
-					color = 'lightgreen';
-					break;
-			}
+	// 		switch (highlight) {
+	// 			case 1:
+	// 				color = 'blue';
+	// 				break;
+	// 			case 2:
+	// 				color = 'green';
+	// 				break;
+	// 			case 3:
+	// 				color = 'orange';
+	// 				break;
+	// 			case 4:
+	// 				color = 'red';
+	// 				break;
+	// 			case 0:
+	// 			default:
+	// 				color = 'lightgreen';
+	// 				break;
+	// 		}
 
-			model.commit((m) => m.set(data, 'highlightStrokeColor', color), 'changed node color');
-		};
+	// 		model.commit((m) => m.set(data, 'highlightStrokeColor', color), 'changed node color');
+	// 	};
 
-		// => Indicating a closer relationship to the original node.
-		if (sel !== null) nodesReach(sel, 1);
-		// => Highlight all nodes linked to this one
-		// nodesConnect(sel, 1);
-		nodes.each((node) => highlight(node));
-	});
+	// 	// => Indicating a closer relationship to the original node.
+	// 	if (sel !== null) nodesReach(sel, 1);
+	// 	// => Highlight all nodes linked to this one
+	// 	// nodesConnect(sel, 1);
+	// 	nodes.each((node) => highlight(node));
+	// });
 
 	d.layout = new go.ForceDirectedLayout();
 
@@ -155,11 +155,11 @@ function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSel
 	return selectedPayload;
 }
 
-function getLayout(layout: GoGraphLayout) {
+function getLayout(layout: GraphLayout) {
 	switch (layout.type) {
-		case GoGraphLayoutType.ForceDirectedLayout:
+		case GraphLayouts.ForceDirected:
 			return new go.ForceDirectedLayout();
-		case GoGraphLayoutType.LayeredDigraphLayout:
+		case GraphLayouts.LayeredDigraph:
 			return new go.LayeredDigraphLayout({
 				direction: 90,
 				setsPortSpots: false,
@@ -171,7 +171,7 @@ function getLayout(layout: GoGraphLayout) {
 	}
 }
 
-export const GoGraph = (props: GoGraphProps) => {
+export const GoGraph = (props: OptionsGraphProps) => {
 	const [isDarkMode, setDarkMode] = useState(false);
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
@@ -201,8 +201,9 @@ export const GoGraph = (props: GoGraphProps) => {
 	}, []);
 
 	const handleChangedSelection = (e: go.DiagramEvent) => {
+		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
-		props.onElementsSelected && props.onElementsSelected(selection);
+		applyPatch(diagramRef.current, props.selectionEffect(selection));
 	};
 
 	useEffect(() => {

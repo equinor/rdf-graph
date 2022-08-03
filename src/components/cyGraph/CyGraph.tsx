@@ -5,7 +5,7 @@ import CytoscapeComponent from 'react-cytoscapejs';
 import { NodeType } from '../../models/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
-import { GraphProps } from '../state/GraphStateProps';
+import { GraphProps } from '../../state/GraphStateProps';
 import { AbstractNode, GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api';
 import cytoscape from 'cytoscape';
@@ -150,7 +150,7 @@ const layouthandler = (_event: cytoscape.EventObject) => {
 		.run();
 };
 
-export const CyGraph = ({ graphState, graphPatch, onElementsSelected }: GraphProps) => {
+export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSelected }: GraphProps) => {
 	const selectedLayout = layoutDagre;
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();

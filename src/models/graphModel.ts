@@ -75,4 +75,4 @@ export type GraphState = {
 
 export type GraphSelection = Array<AbstractNode>;
 
-export type SelectionCallback = (selection: GraphSelection) => void;
+export type SelectionCallback = (selection: GraphSelection) => PropertyAssertion[];

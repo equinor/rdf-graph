@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 // import { getData } from '../../cytoscape-api/cytoscapeApi';
 // import { SymbolKey } from '../../symbol-api';
 import { RdfGoGraph } from '../components';
-import { useRdfActionReducer } from '../state/useRdfState';
+import { useRdfActionReducer } from '../../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';
 // import { reducer } from '../state/reducer';
 // import { initState } from '../state/state';

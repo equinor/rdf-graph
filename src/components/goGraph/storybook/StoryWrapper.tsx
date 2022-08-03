@@ -1,28 +1,31 @@
 import { Button } from '@equinor/eds-core-react';
 import { useEffect, useState } from 'react';
 import { turtle2RdfTriples } from '../../../mapper';
-import { GraphSelection } from '../../../models';
+import { GraphSelection, PropertyAssertion, SelectionCallback } from '../../../models';
 import { RdfGoGraph } from '../../components';
 
-import { useRdfActionReducer } from '../../state/useRdfState';
-import { GoGraphLayoutType, GoGraphOptions } from '../GoGraph.types';
+import { useRdfActionReducer } from '../../../state/useRdfState';
+import { GraphLayouts, LayoutProps } from '../../../config/Layout';
 import { getDefaultLayout } from '../layout/default-layouts';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
-	layout: GoGraphLayoutType;
+	layout: GraphLayouts;
+	selectionEffect?: SelectionCallback;
 };
 
-export const StoryWrapper = ({ turtleString, layout }: SparqlWrapperProps) => {
+export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 
-	const [options, setOptions] = useState<GoGraphOptions>();
+	const [options, setOptions] = useState<LayoutProps>();
 
-	const [selection, setSelection] = useState<GraphSelection>([]);
-
-	function handleSelection(sel: GraphSelection) {
-		setSelection(sel);
+	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
+		if (!selectionEffect) {
+			console.log('No selection handler for ', sel);
+			return [];
+		}
+		return selectionEffect(sel);
 	}
 
 	const loadTurtle = (): void => {
@@ -33,10 +36,6 @@ export const StoryWrapper = ({ turtleString, layout }: SparqlWrapperProps) => {
 		const quads = turtle2RdfTriples(turtleString);
 		dispatch({ type: 'replace', data: quads });
 	}, [turtle]);
-
-	useEffect(() => {
-		console.log('Got selection from GoGraph:', selection);
-	}, [selection]);
 
 	useEffect(() => {
 		const lay = getDefaultLayout(layout);
@@ -55,7 +54,7 @@ export const StoryWrapper = ({ turtleString, layout }: SparqlWrapperProps) => {
 			{/* <Button onClick={changeEdgeStyle}> Change Edge Style </Button>
 			<Button onClick={toggleConnectors}> Toggle Connectors </Button> */}
 
-			<RdfGoGraph options={options} onElementSelected={handleSelection} {...state} />
+			<RdfGoGraph options={options} selectionEffect={handleSelection} {...state} />
 		</div>
 	);
 };

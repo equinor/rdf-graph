@@ -335,6 +335,6 @@ function removeProperty(diagram: go.Diagram, prop: GraphPropertyIdentifier) {
 			removeConnectorProp(diagram, prop);
 			break;
 		default:
-		// setMappedProp(model, prop);
+			setMappedProp(model, { ...prop, value: null });
 	}
 }

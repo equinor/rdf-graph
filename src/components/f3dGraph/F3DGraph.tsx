@@ -3,7 +3,7 @@ import { CSS3DSprite, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRe
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphNode, GraphEdge, AbstractNode } from '../../models/graphModel';
-import { GraphProps } from '../state/GraphStateProps';
+import { GraphProps } from '../../state/GraphStateProps';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
 # www.blender.org

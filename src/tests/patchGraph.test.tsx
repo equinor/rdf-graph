@@ -1,5 +1,5 @@
 /* eslint-disable jest/no-conditional-expect */
-import { patchGraph } from '../components/state/patchGraph';
+import { patchGraph } from '../state/patchGraph';
 import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';

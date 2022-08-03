@@ -6,7 +6,7 @@ import { Icon } from '@equinor/engineering-symbols';
 // import svg from './images/ArrowRight.svg';
 
 import { CustomLink } from './CustomLink';
-import { GraphStateProps } from '../state/GraphStateProps';
+import { GraphStateProps } from '../../state/GraphStateProps';
 import { useEffect, useRef, useState } from 'react';
 import { GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api/types/NodeSymbol';

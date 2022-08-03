@@ -12,11 +12,11 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 			{
 				name: 'SHAPE',
 				fill: 'lightgreen',
-				strokeWidth: 0,
 			},
 			new go.Binding('fill', 'nodeColor').ofModel(), // meaning a property of Model.modelData
-			new go.Binding('fill', 'highlightStrokeColor').makeTwoWay(), // meaning a property of Model.modelData
-			new go.Binding('figure', 'nodeTemplate').makeTwoWay()
+			new go.Binding('figure', 'nodeTemplate').makeTwoWay(),
+			new go.Binding('stroke', 'highlightStrokeColor', (v) => v ?? 'black'),
+			new go.Binding('strokeWidth', 'highlightStrokeColor', (v) => (v ? 3 : 1))
 		),
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
 		{

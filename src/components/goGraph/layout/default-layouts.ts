@@ -1,10 +1,10 @@
-import { ForceDirectedLayout, GoGraphLayout, GoGraphLayoutType, LayeredDigraphLayout } from '../GoGraph.types';
+import { ForceDirectedLayout, GraphLayout, GraphLayouts, LayeredDigraphLayout } from '../../../config/Layout';
 
-export function getDefaultLayout(type: GoGraphLayoutType): GoGraphLayout {
+export function getDefaultLayout(type: GraphLayouts): GraphLayout {
 	switch (type) {
-		case GoGraphLayoutType.LayeredDigraphLayout:
+		case GraphLayouts.LayeredDigraph:
 			return createLayeredDigraphLayout();
-		case GoGraphLayoutType.ForceDirectedLayout:
+		case GraphLayouts.ForceDirected:
 			return createForceDirectedLayout();
 		default:
 			return createForceDirectedLayout();
@@ -13,17 +13,17 @@ export function getDefaultLayout(type: GoGraphLayoutType): GoGraphLayout {
 
 export function createLayeredDigraphLayout(): LayeredDigraphLayout {
 	return {
-		type: GoGraphLayoutType.LayeredDigraphLayout,
+		type: GraphLayouts.LayeredDigraph,
 		data: {
 			// TODO: Add default settings
-			a: 1,
+			direction: 1,
 		},
 	};
 }
 
 export function createForceDirectedLayout(): ForceDirectedLayout {
 	return {
-		type: GoGraphLayoutType.ForceDirectedLayout,
+		type: GraphLayouts.ForceDirected,
 		data: {
 			// TODO: Add default settings
 			b: 's',

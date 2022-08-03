@@ -3,6 +3,7 @@ export const propMap: Record<string, string> = {
 	shape: 'figure',
 	rotation: 'angle',
 	label: 'label',
+	highlightStrokeColor: 'highlightStrokeColor',
 } as const;
 
 /** Map of shape properties to GoJs shapes
