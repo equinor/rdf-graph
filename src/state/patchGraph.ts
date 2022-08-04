@@ -40,24 +40,39 @@ const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
 
 const initAN = () => ({
-	incoming: new Map<string, GraphNode[]>(),
-	outgoing: new Map<string, GraphNode[]>(),
+	incoming: new Map<string, GraphEdge[]>(),
+	outgoing: new Map<string, GraphEdge[]>(),
 	properties: new Map<string, string[]>(),
 });
-const initM = () => ({ ...initAN(), edges: [] as GraphEdge[] });
+const initM = () => ({ ...initAN(), edges: new Map<string, GraphEdge[]>() });
 const refCount = (node: AbstractNode) =>
-	[node.incoming.size, node.outgoing.size, node.properties.size, (node as GraphMetadata).edges?.length || 0].reduce((a, n) => a + n);
+	[node.incoming.size, node.outgoing.size, node.properties.size, (node as GraphMetadata).edges?.size || 0].reduce((a, n) => a + n);
 
 function add<T>(index: Map<string, T[]>, key: string, value: T) {
 	if (index.has(key)) index.get(key)!.push(value);
 	else index.set(key, [value]);
 }
 function removeElement<T>(array: T[], element: T) {
-	array.splice(array.indexOf(element), 1);
+	if (!array) {
+		debugger;
+	}
+	const idx = array.indexOf(element);
+	if (idx < 0) debugger;
+	array.splice(idx, 1);
+}
+function removeElementId<T, K extends keyof T>(array: T[], prop: K, id: T[K]) {
+	const index = array.findIndex((e) => e[prop] == id);
+	if (index < 0) debugger;
+	array.splice(index, 1);
 }
 function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	const arr = index.get(key)!;
 	removeElement(arr, value);
+	if (arr.length === 0) index.delete(key);
+}
+function removeId<T, K extends keyof T>(index: Map<string, T[]>, key: string, prop: K, id: T[K]) {
+	const arr = index.get(key)!;
+	removeElementId(arr, prop, id);
 	if (arr.length === 0) index.delete(key);
 }
 
@@ -169,14 +184,31 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	},
 };
 
-function* dependentQuads(n: AbstractNode) {
-	for (const [iri, vals] of n.properties.entries())
-		for (const l of vals) yield new Quad(termFromId(n.id, DataFactory), termFromId(iri, DataFactory), DataFactory.literal(l));
-	for (const [iri, val] of n.outgoing.entries())
-		for (const nn of val) yield new Quad(...([n.id, iri, nn.id].map((x) => termFromId(x, DataFactory)) as [Term, Term, Term]));
-	for (const [iri, val] of n.incoming.entries())
-		for (const nn of val) yield new Quad(...([nn.id, iri, n.id].map((x) => termFromId(x, DataFactory)) as [Term, Term, Term]));
+function* uniques<T>(ts: Iterable<T>): Iterable<T> {
+	const set = new Set<T>();
+	for (const t of ts) {
+		if (set.has(t)) continue;
+		set.add(t);
+		yield t;
+	}
 }
+const dependentQuads = (n: AbstractNode) =>
+	uniques(
+		(function* (n: AbstractNode) {
+			const set = new Set<Quad>();
+			for (const [iri, vals] of n.properties.entries())
+				for (const l of vals) yield new Quad(termFromId(n.id, DataFactory), termFromId(iri, DataFactory), DataFactory.literal(l));
+			for (const val of n.outgoing.values())
+				for (const { origin } of val)
+					if ('termType' in origin) yield origin;
+					else yield origin.origin;
+			for (const val of n.incoming.values())
+				for (const { origin } of val)
+					if ('termType' in origin) yield origin;
+					else yield origin.origin;
+		})(n)
+	);
+
 function* flatMap<T, R>(i: Iterable<T>, c: (a: T) => Iterable<R>) {
 	for (const e of i) yield* c(e);
 }
@@ -215,6 +247,7 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 
 	delete (s as any).__changingNodeType__;
 }
+
 function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCache?: Map<string, AbstractNode>): Iterable<GraphAssertion> {
 	const q = p.assertion;
 	let sNode: AbstractNode, pNode: GraphMetadata, oNode: AbstractNode;
@@ -287,39 +320,63 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 						break;
 				}
 			}
-			add(sNode.outgoing, pTerm, oNode);
-			add(oNode.incoming, pTerm, sNode);
+			let edge: GraphEdge = {
+				id: quadToString(q),
+				metadata: pNode,
+				type: 'edge',
+				source: sTerm,
+				sourceRef: sNode,
+				target: oTerm,
+				targetRef: oNode,
+				origin: p.assertion,
+			};
+			// Populate incoming/outgoing collections,
+			// in order to preserve RDF/property-graph correspondence
+			add(sNode.outgoing, pTerm, edge);
+			add(oNode.incoming, pTerm, edge);
+			add(pNode.edges, edge.id, edge);
 
 			if (isConnectorPredicate) {
+				// not part of visual edges, populate connector-array in lieu of yielding a GraphEdge
 				sNode[connectorKey] = sNode[connectorKey] || [];
 				sNode[connectorKey]!.push(oNode as GraphConnector);
 			} else if (pTerm === typeIri) {
-			} else {
+				// not part of visual edges, for now do nothing more than keep in property-graph
+			} else if (sNode.type == 'connector' || oNode.type == 'connector') {
+				// source and|or target node is a connector, track and yield an edge hooked up to connectors
 				console.log('TYPE', sNode.type, oNode.type);
-				const sc =
-					sNode.type === 'connector'
-						? { source: sNode.node.id, sourceRef: sNode.node, sourceConnector: sNode.id, sourceConnectorRef: sNode }
-						: { source: sNode.id, sourceRef: sNode };
-				const tc =
-					oNode.type === 'connector'
-						? { target: oNode.node.id, targetRef: oNode.node, targetConnector: oNode.id, targetConnectorRef: oNode }
-						: { target: oNode.id, targetRef: oNode };
-				const linkId = quadToString(q);
-				const addLink: GraphEdge = {
-					id: linkId,
-					metadata: pNode,
-					type: 'edge',
-					...sc,
-					...tc,
-				};
+				let sc: Partial<GraphEdge>, tc: Partial<GraphEdge>;
+				let source: AbstractNode, target: AbstractNode;
 
-				pNode.edges.push(addLink);
-				state.linkIndex.set(linkId, addLink);
-				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: addLink };
+				if (sNode.type === 'connector') {
+					sc = { source: sNode.node.id, sourceRef: sNode.node, sourceConnector: sNode.id, sourceConnectorRef: sNode };
+					source = sNode.node;
+				} else {
+					sc = { source: sNode.id, sourceRef: sNode };
+					source = sNode;
+				}
+				if (oNode.type === 'connector') {
+					tc = { target: oNode.node.id, targetRef: oNode.node, targetConnector: oNode.id, targetConnectorRef: oNode };
+					target = oNode.node;
+				} else {
+					tc = { target: oNode.id, targetRef: oNode };
+					target = oNode;
+				}
+				const connectorEdge = { ...edge, ...sc, ...tc, origin: edge };
+				add(source.outgoing, pTerm, connectorEdge);
+				add(target.incoming, pTerm, connectorEdge);
+				add(pNode.edges, connectorEdge.id, connectorEdge);
+				state.linkIndex.set(connectorEdge.id, connectorEdge);
+				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: connectorEdge };
+				yield edgeAssertion;
+			} else {
+				// regular edge, no connectors. Track and yield.
+				state.linkIndex.set(edge.id, edge);
+				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: edge };
 				yield edgeAssertion;
 			}
-
 			if (predicate2prop.hasOwnProperty(pTerm)) {
+				// calculate dependencies (if any)
 				yield* propInvalidations[predicate2prop[pTerm] as NodeProp](sNode);
 			}
 			break;
@@ -333,28 +390,38 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				}
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
-
-				remove(sNode.outgoing, pTerm, oNode);
-				remove(oNode.incoming, pTerm, sNode);
+				const edgeId = quadToString(q);
+				removeId(sNode.outgoing, pTerm, 'target', oTerm);
+				removeId(oNode.incoming, pTerm, 'source', sTerm);
+				pNode.edges.delete(edgeId);
 
 				if (isConnectorPredicate) {
+					// sNode.
 					removeElement(sNode[connectorKey]!, oNode);
 					yield { action: 'remove', assertion: { type: 'property', node: sNode, key: connectorKey, value: oNode } };
 					if (oNode.type === 'connector' && (oNode.incoming.get(hasConnectorIri) || []).length < 1) {
 						yield* changeNodeType(state, oNode, 'node');
 					}
-					if ((oNode.incoming.get(hasConnectorIri) || []).length > 0) {
-						oNode.node = oNode.incoming.get(hasConnectorIri)![0];
-						yield* changeNodeType(state, oNode, 'connector');
-					}
+					// if ((oNode.incoming.get(hasConnectorIri) || []).length > 0) {
+					// 	oNode.node = oNode.incoming.get(hasConnectorIri)![0];
+					// 	yield* changeNodeType(state, oNode, 'connector');
+					// }
 				} else if (pTerm === typeIri) {
 				} else {
-					const delLinkId = quadToString(q);
-					const delLink = state.linkIndex.get(delLinkId)!;
-					state.linkIndex.delete(delLinkId);
-					removeElement(pNode.edges, delLink);
+					const edge = state.linkIndex.get(edgeId)!;
+					state.linkIndex.delete(edgeId);
+					if ('type' in edge.origin && edge.origin.type == 'edge') {
+						let source: AbstractNode, target: AbstractNode;
+						if (sNode.type == 'connector') source = sNode.node;
+						else source = sNode;
+						if (oNode.type == 'connector') target = oNode.node;
+						else target = oNode;
 
-					const edgeAssertion: EdgeAssertion = { action: 'remove', assertion: delLink };
+						remove(source.outgoing, pTerm, edge);
+						remove(target.incoming, pTerm, edge);
+					}
+
+					const edgeAssertion: EdgeAssertion = { action: 'remove', assertion: edge };
 					yield edgeAssertion;
 				}
 
@@ -365,31 +432,26 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 					state.nodeIndex.delete(oTerm);
 					nodeCache?.set(oNode.id, oNode);
 					yield { action: 'remove', assertion: oNode };
-					if (refCount(pNode) < 1) {
-						state.nodeIndex.delete(pTerm);
-						nodeCache?.set(pNode.id, pNode);
-						yield { action: 'remove', assertion: pNode };
-					} else if (pNode.edges.length < 1) {
-						yield* changeNodeType(state, pNode, 'node');
-					}
 				}
-				if (refCount(sNode) < 1) {
-					state.nodeIndex.delete(sTerm);
-					nodeCache?.set(sNode.id, sNode);
-					console.log('refCount: ', refCount(sNode), sNode.id);
-
-					yield { action: 'remove', assertion: sNode };
+				if (refCount(pNode) < 1) {
+					state.nodeIndex.delete(pTerm);
+					nodeCache?.set(pNode.id, pNode);
+					yield { action: 'remove', assertion: pNode };
+				} else if (pNode.edges.size < 1) {
+					yield* changeNodeType(state, pNode, 'node');
 				}
-
-				break;
 			}
+			if (refCount(sNode) < 1) {
+				state.nodeIndex.delete(sTerm);
+				nodeCache?.set(sNode.id, sNode);
+				console.log('refCount: ', refCount(sNode), sNode.id);
+
+				yield { action: 'remove', assertion: sNode };
+			}
+			break;
 	}
 }
 
 export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P): GraphStateProps {
-	// const graphPatch: GraphAssertion[] = [];
-	// for (const p of patch) {
-	// 	graphPatch.push(...graphAssertion(state, p));
-	// }
 	return { graphState: state, graphPatch: flatMap(patch, (p) => graphAssertion(state, p)) };
 }

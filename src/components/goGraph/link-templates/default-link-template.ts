@@ -12,7 +12,9 @@ export function createDefaultLinkTemplate(): go.Link {
 			{
 				toArrow: 'Triangle',
 			},
-			new go.Binding('stroke', 'uiTheme', ({ link }) => link.stroke).ofModel() // meaning a property of Model.modelData
+
+			new go.Binding('stroke', 'uiTheme', ({ link }) => link.stroke).ofModel(), // meaning a property of Model.modelData
+			new go.Binding('stroke', 'highlightStrokeColor', (v, s) => (v ? v : (s as go.Part).diagram?.model.modelData.uiTheme.link.stroke))
 		)
 	);
 }

@@ -250,7 +250,8 @@ function setNodeCategory(model: go.GraphLinksModel, { value, node }: GraphProper
 	}
 }
 function setMappedProp(model: go.GraphLinksModel, prop: GraphPropertyIdentifier, valueTransformer?: (v: any) => any) {
-	const dataObj = model.findNodeDataForKey(prop.node.id);
+	const dataObj = prop.node.type == 'edge' ? model.findLinkDataForKey(prop.node.id) : model.findNodeDataForKey(prop.node.id);
+
 	if (!dataObj) return;
 	const value = valueTransformer ? valueTransformer(prop.value) : prop.value;
 	if (!(prop.key in propMap)) {

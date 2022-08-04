@@ -38,9 +38,24 @@ esdStory.args = {
 	layout: GraphLayouts.LayeredDigraph,
 	selectionEffect: (sel: GraphSelection) => {
 		const effect: PropertyAssertion[] = [];
-		for (const n of sel) {
-			if (n.type === 'node') {
-				effect.push({ action: 'add', assertion: { type: 'property', node: n, key: 'highlightStrokeColor', value: 'green' } });
+		const visited = new Set<string>(sel.map((el) => el.id));
+		const stack = [...sel];
+		while (stack.length > 0) {
+			const el = stack.pop()!;
+			if (el.type === 'node') {
+				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: 'red' } });
+				for (const edges of el.outgoing.values())
+					for (const edge of edges) {
+						if (visited.has(edge.id)) continue;
+						visited.add(edge.id);
+						stack.push(edge);
+					}
+			}
+			if (el.type === 'edge') {
+				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: 'red' } });
+				if (visited.has(el.target)) continue;
+				visited.add(el.target);
+				stack.push(el.targetRef);
 			}
 		}
 		return effect;

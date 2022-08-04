@@ -1,10 +1,11 @@
+import { Quad } from 'n3';
 import { NodeSymbol, Point, SymbolRotation } from '../symbol-api';
 
 type GraphId = string;
 type GraphElementBase = {
 	id: GraphId;
-	incoming: Map<string, AbstractNode[]>;
-	outgoing: Map<string, AbstractNode[]>;
+	incoming: Map<string, GraphEdge[]>;
+	outgoing: Map<string, GraphEdge[]>;
 	properties: Map<string, string[]>;
 };
 // type GraphNodeType = {
@@ -36,7 +37,7 @@ export type GraphConnector = GraphElementBase & {
 
 export type GraphMetadata = GraphElementBase & {
 	type: 'metadata';
-	edges: GraphEdge[];
+	edges: Map<string, GraphEdge[]>;
 } & GraphVisualProps;
 
 export type GraphEdge = {
@@ -51,11 +52,12 @@ export type GraphEdge = {
 	sourceConnectorRef?: GraphConnector;
 	targetConnectorRef?: GraphConnector;
 	metadata: GraphMetadata;
+	origin: Quad | GraphEdge;
 };
 
 export type GraphPropertyIdentifier = {
 	type: 'property';
-	node: GraphNode | GraphConnector | GraphMetadata;
+	node: AbstractNode | GraphEdge;
 	key: string;
 	value: any;
 };
@@ -73,6 +75,6 @@ export type GraphState = {
 	linkIndex: Map<string, GraphEdge>;
 };
 
-export type GraphSelection = Array<AbstractNode>;
+export type GraphSelection = Array<AbstractNode | GraphEdge>;
 
 export type SelectionCallback = (selection: GraphSelection) => PropertyAssertion[];
