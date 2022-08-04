@@ -339,17 +339,17 @@ function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdenti
 		case 'node':
 			d.model.addNodeData(a);
 			break;
-		case 'link':
+		case 'edge':
 			(d.model as GraphLinksModel).addLinkData(a);
 			break;
-		case 'linkNode':
-			break;
+		// case 'connector':
+		// 	break;
 		case 'property':
 			d.model.setDataProperty(a.node, a.key, a.value);
 			break;
 	}
 }
-export const GoGraphDZM = ({ graphState, graphPatch }: GraphStateProps) => {
+export const GoGraphDZM = ({ graphPatch }: GraphStateProps) => {
 	const [diagram, setDiagram] = useState<Diagram>();
 	const patchBuffer = useRef<GraphAssertion[]>([]);
 
@@ -508,10 +508,11 @@ export const GoGraphDZM = ({ graphState, graphPatch }: GraphStateProps) => {
 function applyPatch(diagram: Diagram, graphPatch: GraphPatch) {
 	console.log('PATCH¤¤¤¤¤¤¤¤¤¤¤¤¤¤¤', graphPatch);
 	diagram.commit((d) => {
-		for (const a of graphPatch) {
-			switch (a.action) {
+		for (const { action, assertion } of graphPatch) {
+			switch (action) {
 				case 'add':
-					addAssertion(d, a.assertion);
+					// @ts-ignore:next-line
+					addAssertion(d, assertion);
 					break;
 				case 'remove':
 					break;
