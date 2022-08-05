@@ -16,7 +16,10 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 			new go.Binding('fill', 'uiTheme', ({ node }) => node.fill).ofModel(), // meaning a property of Model.modelData
 			new go.Binding('figure', 'nodeTemplate').makeTwoWay(),
 			new go.Binding('stroke', 'highlightStrokeColor', (v) => v ?? 'black'),
-			new go.Binding('strokeWidth', 'highlightStrokeColor', (v) => (v ? 3 : 1))
+			new go.Binding('strokeWidth', 'highlightStrokeColor', (v) => (v ? 3 : 1)),
+			new go.AnimationTrigger('stroke'),
+			new go.AnimationTrigger('fill'),
+			new go.AnimationTrigger('strokeWidth')
 		),
 		$(go.TextBlock, { margin: 8, editable: true }, new go.Binding('text', 'label').makeTwoWay()),
 		new go.Binding('fromSpot', 'setPortDirection', (v) => (v ? go.Spot.BottomSide : go.Spot.None)).makeTwoWay(),

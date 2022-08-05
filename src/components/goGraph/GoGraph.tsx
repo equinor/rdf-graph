@@ -240,6 +240,7 @@ export const GoGraph = (props: OptionsGraphProps) => {
 					border: '1px solid lightgrey',
 					overflow: 'hidden',
 					background: isDarkMode ? '#262626' : '#fafaf9',
+					transition: 'background 0.2s ease',
 				}}
 				initDiagram={() => diagramRef.current}
 				divClassName="graph-links-model"
