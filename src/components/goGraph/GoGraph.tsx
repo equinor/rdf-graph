@@ -239,7 +239,7 @@ export const GoGraph = (props: OptionsGraphProps) => {
 					width: '100%',
 					border: '1px solid lightgrey',
 					overflow: 'hidden',
-					background: isDarkMode ? '#262626' : '#fafaf9',
+					background: getUiTheme(isDarkMode).canvas.background,
 					transition: 'background 0.2s ease',
 				}}
 				initDiagram={() => diagramRef.current}
