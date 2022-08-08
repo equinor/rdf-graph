@@ -1,3 +1,4 @@
+import { StringMappingType } from 'typescript';
 import { NodeSymbolConnector, PortDirection } from '../../../symbol-api';
 
 /** Categories that determine the type of node template to use */
@@ -13,57 +14,55 @@ export enum NodeUiItemCategory {
 	PositionPort = 'PositionPort',
 	DirectionPort = 'DirectionPort',
 }
+export enum EdgeUiCategory {
+	Default = '',
+}
 
 export type BaseNodeData = {
+	type: 'node';
 	id: string;
-	category?: NodeUiCategory;
+	category: NodeUiCategory;
 	label?: string;
-	ports?: PortData[];
+	ports: PortData[];
 };
 
 export type PortData = {
+	type: 'port';
 	id: string;
 	portId: string;
-	name: string;
+	name?: string;
 	category: NodeUiItemCategory;
 	width?: number;
 	height?: number;
 	relativePosition?: go.Point;
 	direction?: PortDirection;
 };
-
-export type RequireNodeCategory<TNodeUiType extends NodeUiCategory> = Omit<BaseNodeData, 'category'> & {
-	category: TNodeUiType;
+export type EdgeData = {
+	type: 'edge';
+	id: string;
+	from: string;
+	fromPort?: string;
+	category?: EdgeUiCategory;
+	to: string;
+	toPort?: string;
 };
 
-export type DefaultNodeData = RequireNodeCategory<NodeUiCategory.Default>;
+export type DefaultNodeData = BaseNodeData;
 
-export type SymbolNodeData = RequireNodeCategory<NodeUiCategory.SvgSymbol> & {
-	symbolId: string;
-	svgDataURI: string;
-	height: number;
-	width: number;
+export type SymbolNodeData = BaseNodeData & {
+	symbolId?: string;
+	svgDataURI?: string;
+	height?: number;
+	width?: number;
 	angle?: number;
 	symConnectors?: NodeSymbolConnector[];
 };
 
 /** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */
-export type EdgeConnectorNodeData = RequireNodeCategory<NodeUiCategory.EdgeConnectorNode> & {
-	text: string;
-	fill: string;
-	height: number;
-	width: number;
+export type EdgeConnectorNodeData = BaseNodeData & {
+	text?: string;
+	fill?: string;
+	height?: number;
+	width?: number;
 	angle?: number;
 };
-
-// test
-
-// const symbol: SymbolNodeData = {
-// 	id: '',
-// 	category: NodeUiType.SvgSymbol,
-// 	symbolId: 'sd',
-// 	symbolPorts: [],
-// 	svgDataURI: '',
-// 	height: 1,
-// 	width: 1,
-// };

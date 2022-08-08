@@ -38,6 +38,7 @@ function initDiagram() {
 			linkKeyProperty: 'id',
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
+			// nodeCategoryProperty: 'category',
 		}),
 	});
 

@@ -24,7 +24,13 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	return (
 		<div>
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<Rdf3dGraph {...state} selectionEffect={(something) => console.log(something)} />
+			<Rdf3dGraph
+				{...state}
+				selectionEffect={(something) => {
+					console.log(something);
+					return [];
+				}}
+			/>
 		</div>
 	);
 };

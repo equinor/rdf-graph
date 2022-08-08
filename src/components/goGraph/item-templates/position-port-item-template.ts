@@ -16,12 +16,43 @@ export function portDirectionToSpot(direction: PortDirection): go.Spot {
 	}
 }
 
+export function createDefaultItemTemplate(): go.Panel {
+	const $ = go.GraphObject.make;
+	return $(
+		go.Panel,
+		'Position',
+		$(
+			go.TextBlock,
+			new go.Binding('text', 'name', (v, e) => {
+				return v;
+			})
+		),
+		// new go.Binding('category'),
+		$(
+			go.Shape,
+			'Circle', //"Rectangle",
+			{
+				name: 'CONN',
+				fill: 'blue',
+				strokeWidth: 0,
+				opacity: 0.6,
+				fromEndSegmentLength: 50,
+				toEndSegmentLength: 50,
+			},
+			new go.Binding('portId'),
+			new go.Binding('height', 'portSize').ofModel(),
+			new go.Binding('width', 'portSize').ofModel()
+		)
+	);
+}
+
 export function createPositionPortItemTemplate(): go.Panel {
 	const $ = go.GraphObject.make;
 	return $(
 		go.Panel,
 		'Position',
 		//{ alignment: new go.Spot(0, 0) },
+		// $(go.TextBlock, new go.Binding('text','id')),
 		$(
 			go.Shape,
 			'Circle', //"Rectangle",
@@ -31,13 +62,16 @@ export function createPositionPortItemTemplate(): go.Panel {
 				// toSpot: go.Spot.LeftSide,
 				fill: 'blue',
 				// stroke: "red",
-				strokeWidth: 5,
+				strokeWidth: 0,
 				opacity: 0.6,
 				// width: 1,
 				// height: 1,
 				fromEndSegmentLength: 50,
 				toEndSegmentLength: 50,
 			},
+			// new go.Binding('textContent', 'name', (v, t) => {
+			// 	return v;
+			// }),
 			new go.Binding('portId'),
 			//  new go.Binding("position", "position", (pos: go.Point) => {
 			//    return new go.Point(pos.x - 0.5, pos.y - 0.5);

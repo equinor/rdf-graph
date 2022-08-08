@@ -1,12 +1,10 @@
-import go, { GraphLinksModel } from 'gojs';
+import go, { Diagram, GraphLinksModel } from 'gojs';
 import { ModifierFlags } from 'typescript';
 import { nodeTemplateKey } from '../../mapper/predicates';
 import { GraphAssertion, GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../../models/graphModel';
 import { getNodeSymbolTemplate, PortDirection } from '../../symbol-api';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
-import { createDefaultNodeData } from './node-data-factory/default-node-factory';
-import { createSymbolNodeData } from './node-data-factory/symbol-node-factory';
-import { BaseNodeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
+import { BaseNodeData, EdgeData, EdgeUiCategory, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	diagram.commit((d) => {
@@ -38,7 +36,13 @@ export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 function patchNode(model: go.GraphLinksModel, { action, assertion }: Assertion<GraphNode>) {
 	switch (action) {
 		case 'add':
-			model.addNodeData(createDefaultNodeData(assertion.id));
+			const n: BaseNodeData = {
+				type: 'node',
+				id: assertion.id,
+				category: NodeUiCategory.Default,
+				ports: [],
+			};
+			model.addNodeData(n);
 			break;
 		case 'remove':
 			const node = model.findNodeDataForKey(assertion.id);
@@ -51,13 +55,15 @@ function patchNode(model: go.GraphLinksModel, { action, assertion }: Assertion<G
 function patchEdge(model: go.GraphLinksModel, { action, assertion }: Assertion<GraphEdge>) {
 	switch (action) {
 		case 'add':
-			model.addLinkData({
+			const edge: EdgeData = {
+				type: 'edge',
 				id: assertion.id,
 				from: assertion.source,
 				fromPort: assertion.sourceConnector,
 				to: assertion.target,
 				toPort: assertion.targetConnector,
-			});
+			};
+			model.addLinkData(edge);
 			break;
 		case 'remove':
 			const link = model.findLinkDataForKey(assertion.id);
@@ -75,15 +81,15 @@ function patchConnector(model: go.GraphLinksModel, { action, assertion }: Assert
 				console.warn(`Parent node of connector not found, node id: ${assertion.node.id}`);
 				return;
 			}
-			// const portType = assertion.node.symbolName ? NodeUiItemCategory.PositionPort : NodeUiItemCategory.Default;
-			const port = {
+			const port: PortData = {
+				type: 'port',
+				category: NodeUiItemCategory.Default,
 				id: assertion.id,
 				portId: assertion.id,
-				// category: portType,-
 			};
 
 			if (nodeData.ports) {
-				model.addArrayItem(nodeData.ports, port);
+				model.insertArrayItem(nodeData.ports, -1, port);
 			} else {
 				model.setDataProperty(nodeData, 'ports', [port]);
 			}
@@ -102,6 +108,7 @@ function patchConnector(model: go.GraphLinksModel, { action, assertion }: Assert
 				return;
 			}
 			model.removeArrayItem(nodeData.ports!, portIdx);
+
 			break;
 	}
 }
@@ -109,26 +116,26 @@ function patchProperty(model: go.GraphLinksModel, { action, assertion }: Asserti
 	let data, parent;
 	switch (assertion.node.type) {
 		case 'edge':
-			data = model.findLinkDataForKey(assertion.node.id);
+			data = model.findLinkDataForKey(assertion.node.id) as EdgeData;
 			break;
 		case 'connector':
-			parent = model.findNodeDataForKey(assertion.node.node.id);
+			parent = model.findNodeDataForKey(assertion.node.node.id) as BaseNodeData;
 			if (!parent) return;
-			data = (parent.ports as PortData[])?.find((x) => x.portId == assertion.node.id);
+			data = (parent.ports as PortData[])?.find((x) => x.portId == assertion.node.id) as PortData;
 			break;
 		default:
-			data = model.findNodeDataForKey(assertion.node.id);
+			data = model.findNodeDataForKey(assertion.node.id) as BaseNodeData;
 			break;
 	}
 	if (!data) return;
 	switch (assertion.key) {
 		case 'symbolName':
-			patchSymbol(model, data, { action, assertion });
+			patchSymbol(model, data as SymbolNodeData, { action, assertion });
 			break;
 		case 'direction':
 		case 'relativePosition':
 		case 'connectorName':
-			patchConnectorProp(model, parent, data, { action, assertion });
+			patchConnectorProp(model, parent, data as PortData, { action, assertion });
 			break;
 		case 'shape':
 			patchMappedProp(model, data, { action, assertion }, (p: string) => shapeMap[p]);
@@ -143,7 +150,7 @@ function patchProperty(model: go.GraphLinksModel, { action, assertion }: Asserti
 function patchConnectorProp(
 	model: go.GraphLinksModel,
 	parent: go.ObjectData | undefined,
-	data: Partial<PortData>,
+	data: PortData,
 	{ action, assertion }: Assertion<GraphProperty>
 ) {
 	let portProp: keyof PortData, portValue: any;
@@ -189,7 +196,10 @@ function patchConnectorProp(
 			break;
 		case 'connectorName':
 			effect(model, data, 'name', assertion.value);
-			if (parent) syncSymbolPort(model, data, parent, effect);
+			if (parent) {
+				syncSymbolPort(model, data, parent, effect);
+				model.updateTargetBindings(parent, 'ports');
+			}
 			break;
 		default:
 			portProp = assertion.key as keyof PortData;
@@ -206,7 +216,7 @@ function patchMappedProp(model: go.GraphLinksModel, data: any, { action, asserti
 	effect(model, data, propMap[assertion.key] ?? 'error_unknown_prop', value);
 }
 
-function patchSymbol(model: go.GraphLinksModel, data: Partial<SymbolNodeData>, { action, assertion }: Assertion<GraphProperty>) {
+function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, assertion }: Assertion<GraphProperty>) {
 	// const data = model.findNodeDataForKey(assertion.node.id) as SymbolNodeData;
 	if (!data) return;
 	const effect = action == 'add' ? set : unset;
@@ -227,42 +237,46 @@ function patchSymbol(model: go.GraphLinksModel, data: Partial<SymbolNodeData>, {
 		// Port from generated symbol
 		syncSymbolPort(model, p, data, effect);
 	}
+	model.updateTargetBindings(data, 'ports');
+	// model.update
 }
 
 function syncSymbolPort(
 	model: go.GraphLinksModel,
-	p: Partial<PortData>,
+	p: PortData,
 	parent: Partial<SymbolNodeData>,
-	effect: <T, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K]) => void
+	effect: <T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K]) => void
 ) {
 	const c = parent.symConnectors?.find((x) => x.id == p.name);
 	if (!c) {
 	} else {
-		effect(model, p, 'category', NodeUiItemCategory.PositionPort);
+		// const what = model.getCategoryForNodeData(p);
 		effect(model, p, 'height', 2);
 		effect(model, p, 'width', 2);
 		effect(model, p, 'relativePosition', new go.Point(c.point.x, c.point.y));
 		effect(model, p, 'direction', c.portDirection);
+		effect(model, p, 'category', NodeUiItemCategory.PositionPort);
 	}
 }
 
-function change<T, K extends keyof T>(model: GraphLinksModel, o: T, p: string, v: T[K] | null) {
-	switch (p) {
-		case 'category':
-			if ('type' in o && (o as any).type == 'edge') {
-				model.setCategoryForLinkData(o, typeof v === 'string' ? v : `${v}`);
-			} else {
-				model.setCategoryForNodeData(o, typeof v === 'string' ? v : `${v}`);
-			}
-			break;
-		default:
-			model.setDataProperty(o, p, v);
-	}
+function change<T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: string, v: T[K] | null) {
+	if (p == 'category' && typeof v == 'string')
+		switch (o.type) {
+			case 'node':
+			case 'port':
+				model.setCategoryForNodeData(o, v);
+				return;
+			case 'edge':
+				model.setCategoryForLinkData(o, v);
+				return;
+		}
+
+	model.setDataProperty(o, p, v);
 }
-function set<T, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K]) {
+function set<T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K]) {
 	change(model, ...push(o, p, v));
 }
-function unset<T, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K] | undefined) {
+function unset<T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K] | undefined) {
 	change(model, ...pop(o, p, v));
 }
 function push<T, K extends keyof T>(obj: T, prop: K, val: T[K]): [T, string, T[K]] {

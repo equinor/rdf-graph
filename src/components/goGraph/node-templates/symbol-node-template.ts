@@ -1,8 +1,10 @@
 import go, { GraphObject } from 'gojs';
 import { getSymbolDataURI } from '../../../symbol-api';
+import { stringToSvgElement } from '../../../symbol-api/svg-manipulation';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
+import { createDefaultItemTemplate, createPositionPortItemTemplate } from '../item-templates/position-port-item-template';
 import { UiTheme } from '../style/colors';
-import { SymbolNodeData } from '../types';
+import { NodeUiItemCategory, SymbolNodeData } from '../types';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -74,7 +76,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								new go.Binding('source', 'uiTheme', (theme: UiTheme, d) => {
 									const data = d.part.data as SymbolNodeData;
 									const fill = theme.node.fill == null ? 'transparent' : theme.node.fill;
-									const dataU = getSymbolDataURI(data.symbolId, { fill: fill, stroke: theme.node.stroke });
+									const dataU = getSymbolDataURI(data.symbolId!, { fill: fill, stroke: theme.node.stroke });
 									return dataU;
 								}).ofObject()
 							)
@@ -82,8 +84,14 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.add(
 						// CONNECTOR PANEL
 						new go.Panel(go.Panel.Position, {
+							// itemTemplateMap: itemTemplateMap,
 							// itemCategoryProperty: 'category',
-							itemTemplateMap: itemTemplateMap,
+							// itemCategoryProperty: d => {
+							// 	return d.category
+							// },
+							// itemCategoryProperty: 'category',
+							// itemTemplateMap : new go.Map<string, go.Panel>().add('', createDefaultItemTemplate()).add(NodeUiItemCategory.PositionPort, createPositionPortItemTemplate())
+							itemTemplate: createPositionPortItemTemplate(),
 						})
 							.bind('itemArray', 'ports')
 							.bind('width')
