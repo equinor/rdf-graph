@@ -6,7 +6,7 @@ import { NodeType } from '../../models/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../../mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../../mapper/predicates';
 import { GraphProps } from '../../state/GraphStateProps';
-import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
+import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api';
 import cytoscape from 'cytoscape';
 
@@ -24,7 +24,7 @@ const addNode = (n: AbstractNode, cy: Cytoscape.Core) => {
 	cy.add(elem);
 };
 
-const addProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
+const addProperty = (prop: GraphProperty, cy: Cytoscape.Core) => {
 	const node = cy.getElementById(prop.node.id);
 
 	switch (prop.key) {
@@ -54,7 +54,7 @@ const addEdge = (n: GraphEdge, cy: Cytoscape.Core) => {
 const removeElement = (element: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
 	cy.remove(cy.getElementById(element.id));
 };
-const removeProperty = (prop: GraphPropertyIdentifier, cy: Cytoscape.Core) => {
+const removeProperty = (prop: GraphProperty, cy: Cytoscape.Core) => {
 	const element = cy.getElementById(prop.node.id);
 	element.removeData(prop.key);
 	if (prop.key in ['symbol', 'relativePosition']) {

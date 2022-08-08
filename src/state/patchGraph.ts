@@ -398,7 +398,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				if (isConnectorPredicate) {
 					// sNode.
 					removeElement(sNode[connectorKey]!, oNode);
-					yield { action: 'remove', assertion: { type: 'property', node: sNode, key: connectorKey, value: oNode } };
+					// yield { action: 'remove', assertion: { type: 'property', node: sNode, key: connectorKey, value: oNode } };
 					if (oNode.type === 'connector' && (oNode.incoming.get(hasConnectorIri) || []).length < 1) {
 						yield* changeNodeType(state, oNode, 'node');
 					}

@@ -31,7 +31,7 @@ export function createPositionPortItemTemplate(): go.Panel {
 				// toSpot: go.Spot.LeftSide,
 				fill: 'blue',
 				// stroke: "red",
-				strokeWidth: 0,
+				strokeWidth: 5,
 				opacity: 0.6,
 				// width: 1,
 				// height: 1,
@@ -42,9 +42,9 @@ export function createPositionPortItemTemplate(): go.Panel {
 			//  new go.Binding("position", "position", (pos: go.Point) => {
 			//    return new go.Point(pos.x - 0.5, pos.y - 0.5);
 			//  }),
-			// new go.Binding('position', 'relativePosition', (pos: go.Point) => {
-			// 	return new go.Point(pos.x, pos.y);
-			// }),
+			new go.Binding('position', 'relativePosition', (pos: go.Point) => {
+				return new go.Point(pos.x, pos.y);
+			}),
 			// new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
 			// 	const pos = shape.position;
 			// 	return new go.Point(pos.x - size / 2, pos.y - size / 2);

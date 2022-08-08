@@ -8,7 +8,7 @@ import { Icon } from '@equinor/engineering-symbols';
 import { CustomLink } from './CustomLink';
 import { GraphStateProps } from '../../state/GraphStateProps';
 import { useEffect, useRef, useState } from 'react';
-import { GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphPropertyIdentifier } from '../../models/graphModel';
+import { GraphAssertion, GraphEdge, GraphNode, GraphPatch, GraphProperty } from '../../models/graphModel';
 import { NodeSymbol } from '../../symbol-api/types/NodeSymbol';
 
 const ll = <Icon appearance="dark" name="arrow-right" height={40} width={40} getPosition={(el) => console.log(123, el)} />;
@@ -334,7 +334,7 @@ const initDiagram = () => {
 // 		leftArray: [{ portId: 'left0' }],
 // 	};
 // };
-function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphPropertyIdentifier) {
+function addAssertion(d: Diagram, a: GraphEdge | GraphNode | GraphProperty) {
 	switch (a.type) {
 		case 'node':
 			d.model.addNodeData(a);

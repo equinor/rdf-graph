@@ -82,7 +82,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.add(
 						// CONNECTOR PANEL
 						new go.Panel(go.Panel.Position, {
-							itemCategoryProperty: 'category',
+							// itemCategoryProperty: 'category',
 							itemTemplateMap: itemTemplateMap,
 						})
 							.bind('itemArray', 'ports')

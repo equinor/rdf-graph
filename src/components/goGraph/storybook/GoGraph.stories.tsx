@@ -7,7 +7,7 @@ import { GoGraph } from '../GoGraph';
 import { esd_turtle } from './data/esd-turtle';
 import { martinsTurtle } from './data/martins_verden_turtle';
 import { GraphLayouts } from '../../../config/Layout';
-import { GraphSelection, PropertyAssertion } from '../../../models/graphModel';
+import { GraphSelection, Assertion, GraphProperty } from '../../../models/graphModel';
 
 export default {
 	title: 'GoGraph',
@@ -37,7 +37,7 @@ esdStory.args = {
 	turtleString: esd_turtle, // NOTE! File not in version control...
 	layout: GraphLayouts.LayeredDigraph,
 	selectionEffect: (sel: GraphSelection) => {
-		const effect: PropertyAssertion[] = [];
+		const effect: Assertion<GraphProperty>[] = [];
 		const visited = new Set<string>(sel.map((el) => el.id));
 		const stack = [...sel];
 		while (stack.length > 0) {

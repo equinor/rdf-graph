@@ -1,4 +1,4 @@
-import { PortDirection } from '../../../symbol-api';
+import { NodeSymbolConnector, PortDirection } from '../../../symbol-api';
 
 /** Categories that determine the type of node template to use */
 export enum NodeUiCategory {
@@ -44,6 +44,7 @@ export type SymbolNodeData = RequireNodeCategory<NodeUiCategory.SvgSymbol> & {
 	height: number;
 	width: number;
 	angle?: number;
+	symConnectors?: NodeSymbolConnector[];
 };
 
 /** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */

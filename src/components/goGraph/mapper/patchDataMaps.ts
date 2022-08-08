@@ -1,9 +1,12 @@
+import { nodeTemplateKey } from '../../../mapper/predicates';
+
 /** Map of properties to GoJS data properties */
 export const propMap: Record<string, string> = {
 	shape: 'figure',
 	rotation: 'angle',
 	label: 'label',
 	highlightStrokeColor: 'highlightStrokeColor',
+	[nodeTemplateKey]: nodeTemplateKey,
 } as const;
 
 /** Map of shape properties to GoJs shapes
