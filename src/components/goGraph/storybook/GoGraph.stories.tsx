@@ -62,11 +62,3 @@ esdStory.args = {
 	},
 };
 esdStory.storyName = 'ESD';
-
-export const dmzStory = Template.bind({});
-
-dmzStory.args = {
-	turtleString: esd_turtle, // NOTE! File not in version control...
-	layout: GraphLayouts.LayeredDigraph,
-};
-dmzStory.storyName = 'DMZ Magic';

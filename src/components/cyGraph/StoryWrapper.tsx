@@ -39,6 +39,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 
 	const handleSelection = (selection: GraphSelection) => {
 		setSelection(selection);
+		return [];
 	};
 
 	useEffect(() => {

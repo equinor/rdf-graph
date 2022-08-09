@@ -37,8 +37,8 @@ export type GraphConnector = GraphElementBase & {
 
 export type GraphMetadata = GraphElementBase & {
 	type: 'metadata';
-	// edges: Map<string, GraphEdge[]>;
-	edges: GraphEdge[];
+	edges: Map<string, GraphEdge[]>;
+	// edges: GraphEdge[];
 } & GraphVisualProps;
 
 export type GraphEdge = {

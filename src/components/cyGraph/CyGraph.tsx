@@ -37,7 +37,7 @@ const addProperty = (prop: GraphProperty, cy: Cytoscape.Core) => {
 			node.data(prop.key, prop.value);
 			break;
 		case 'parent':
-			node.move({ parent: prop.node.parent!.id });
+			node.move({ parent: (prop.node as any).parent!.id });
 			break;
 		default:
 			node.data(prop.key, prop.value);
@@ -101,7 +101,7 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 					case 'property':
 						addProperty(a.assertion, cy);
 						if (a.assertion.key === 'symbol') {
-							createImageNode(a.assertion.node.id, a.assertion.node.symbol!, cy);
+							createImageNode(a.assertion.node.id, (a.assertion.node as any).symbol!, cy);
 						}
 
 						break;

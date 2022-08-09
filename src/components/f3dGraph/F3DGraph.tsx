@@ -4,6 +4,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphEdge, AbstractNode } from '../../models/graphModel';
 import { GraphProps } from '../../state/GraphStateProps';
+import { Group, Renderer } from 'three';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
 # www.blender.org
@@ -99,13 +100,13 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 			nodeLabel={(node: any) => node.label}
 			nodeAutoColorBy="group"
 			nodeThreeObjectExtend={true}
-			extraRenderers={[renderer.current]}
+			extraRenderers={[renderer.current as any as Renderer]}
 			nodeThreeObject={(node: any) => {
 				if (node.properties.get('http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType') === 'VG') {
 					const group = loader.parse(obj);
 					return group;
 				}
-				return null;
+				return new Group();
 
 				// const nodeEl = document.createElement('div');
 				// nodeEl.className = 'node-label';
