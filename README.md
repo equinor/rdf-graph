@@ -45,7 +45,7 @@ return (
 );
 ```
 
-# Props
+### Props
 
 | Name               | Type                                | Description                                 |
 | ------------------ | ----------------------------------- | ------------------------------------------- |
@@ -53,6 +53,10 @@ return (
 | `layout`           | `Cola, Cose-Bilkent, Dagre`         | Layout name                                 |
 | `onElementChanged` | `(selection: RdfSelection) => void` | Callback when user (de)selects elements     |
 | `patches`          | `RdfPatch[]`                        | List of changes to facilitate interactivity |
+
+## Gojs dependency
+
+If using gojs dependency this must be installed seperatly using `npm intstall gojs`. Clients will be responsable for choosing appropiate license.
 
 ## Dependabot
 
