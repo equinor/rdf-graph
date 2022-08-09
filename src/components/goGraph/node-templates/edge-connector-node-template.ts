@@ -1,5 +1,4 @@
 import go from 'gojs';
-import { itemTemplateMap } from '../item-templates/item-templates-map';
 
 export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;

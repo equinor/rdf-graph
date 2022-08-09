@@ -34,7 +34,6 @@ import {
 	typeIri,
 } from '../mapper/predicates';
 import { getSymbol, Point } from '../symbol-api';
-import { setEquals } from '../utils/setEquals';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);

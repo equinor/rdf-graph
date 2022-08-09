@@ -61,7 +61,8 @@
 				"rules": {
 					"react/no-unknown-property": 2,
 					"react-hooks/rules-of-hooks": "off",
-					"react-hooks/exhaustive-deps": "off"
+					"react-hooks/exhaustive-deps": "off",
+					"no-throw-literal": 0
 				}
 			}
 		]

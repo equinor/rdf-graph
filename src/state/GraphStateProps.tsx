@@ -1,4 +1,4 @@
-import { GraphPatch, GraphSelection, GraphState, SelectionCallback } from '../models/graphModel';
+import { GraphPatch, GraphState, SelectionCallback } from '../models/graphModel';
 
 export type GraphStateProps = {
 	graphState: GraphState;

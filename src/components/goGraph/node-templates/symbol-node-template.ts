@@ -1,10 +1,8 @@
-import go, { GraphObject } from 'gojs';
+import go from 'gojs';
 import { getSymbolDataURI } from '../../../symbol-api';
-import { stringToSvgElement } from '../../../symbol-api/svg-manipulation';
-import { itemTemplateMap } from '../item-templates/item-templates-map';
-import { createDefaultItemTemplate, createPositionPortItemTemplate } from '../item-templates/position-port-item-template';
+import { createPositionPortItemTemplate } from '../item-templates/position-port-item-template';
 import { UiTheme } from '../style/colors';
-import { NodeUiItemCategory, SymbolNodeData } from '../types';
+import { SymbolNodeData } from '../types';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -66,7 +64,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							background: 'transparent',
 						})
 							.bind('source', 'symbolId', (id, d) => {
-								const data = d.part.data as SymbolNodeData;
+								// const data = d.part.data as SymbolNodeData;
 
 								return getSymbolDataURI(id);
 							})
@@ -75,7 +73,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							.bind(
 								new go.Binding('source', 'uiTheme', (theme: UiTheme, d) => {
 									const data = d.part.data as SymbolNodeData;
-									const fill = theme.node.fill == null ? 'transparent' : theme.node.fill;
+									const fill = theme.node.fill === null ? 'transparent' : theme.node.fill;
 									const dataU = getSymbolDataURI(data.symbolId!, { fill: fill, stroke: theme.node.stroke });
 									return dataU;
 								}).ofObject()

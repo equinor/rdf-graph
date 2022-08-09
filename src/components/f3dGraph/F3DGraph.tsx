@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react';
-import { CSS3DSprite, CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
+import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphEdge, AbstractNode } from '../../models/graphModel';
@@ -82,8 +82,8 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 		links: [],
 	});
 	useEffect(() => {
-		for (const p of graphPatch) {
-		}
+		// for (const p of graphPatch) {
+		// }
 		update({ nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')], links: [...graphState.linkIndex.values()] });
 		console.log('whats up with', model);
 	}, [graphPatch]);
@@ -107,32 +107,32 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 				}
 				return null;
 
-				const nodeEl = document.createElement('div');
-				nodeEl.className = 'node-label';
-				nodeEl.style.pointerEvents = 'none';
-				nodeEl.style.width = '5em';
-				nodeEl.style.height = '5em';
-				nodeEl.style.padding = '0.5em';
-				nodeEl.style.background = 'white';
-				const labelEl = document.createElement('div');
-				labelEl.textContent = node.label;
-				labelEl.style.color = 'black';
-				labelEl.style.fontSize = '1em';
-				labelEl.style.pointerEvents = 'none';
-				labelEl.style.textAlign = 'center';
-				nodeEl.appendChild(labelEl);
-				let imgSrc = node.symbol?.svgDataURI();
-				console.log(imgSrc);
-				if (imgSrc) {
-					nodeEl.style.backgroundImage = `url(${imgSrc})`;
-					nodeEl.style.backgroundSize = 'contain';
-					nodeEl.style.backgroundRepeat = 'no-repeat';
-					nodeEl.style.backgroundPosition = 'bottom';
-				}
+				// const nodeEl = document.createElement('div');
+				// nodeEl.className = 'node-label';
+				// nodeEl.style.pointerEvents = 'none';
+				// nodeEl.style.width = '5em';
+				// nodeEl.style.height = '5em';
+				// nodeEl.style.padding = '0.5em';
+				// nodeEl.style.background = 'white';
+				// const labelEl = document.createElement('div');
+				// labelEl.textContent = node.label;
+				// labelEl.style.color = 'black';
+				// labelEl.style.fontSize = '1em';
+				// labelEl.style.pointerEvents = 'none';
+				// labelEl.style.textAlign = 'center';
+				// nodeEl.appendChild(labelEl);
+				// let imgSrc = node.symbol?.svgDataURI();
+				// console.log(imgSrc);
+				// if (imgSrc) {
+				// 	nodeEl.style.backgroundImage = `url(${imgSrc})`;
+				// 	nodeEl.style.backgroundSize = 'contain';
+				// 	nodeEl.style.backgroundRepeat = 'no-repeat';
+				// 	nodeEl.style.backgroundPosition = 'bottom';
+				// }
 
-				const sprite = new CSS3DSprite(nodeEl);
-				sprite.scale.set(0.2, 0.2, 1);
-				return sprite;
+				// const sprite = new CSS3DSprite(nodeEl);
+				// sprite.scale.set(0.2, 0.2, 1);
+				// return sprite;
 			}}
 			{...rest}
 		/>

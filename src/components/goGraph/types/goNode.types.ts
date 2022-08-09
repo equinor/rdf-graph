@@ -1,4 +1,3 @@
-import { StringMappingType } from 'typescript';
 import { NodeSymbolConnector, PortDirection } from '../../../symbol-api';
 
 /** Categories that determine the type of node template to use */

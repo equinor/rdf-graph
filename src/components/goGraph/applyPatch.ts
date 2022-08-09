@@ -1,10 +1,9 @@
-import go, { Diagram, GraphLinksModel } from 'gojs';
-import { ModifierFlags } from 'typescript';
+import go, { GraphLinksModel } from 'gojs';
 import { nodeTemplateKey } from '../../mapper/predicates';
-import { GraphAssertion, GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../../models/graphModel';
+import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../../models/graphModel';
 import { getNodeSymbolTemplate, PortDirection } from '../../symbol-api';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
-import { BaseNodeData, EdgeData, EdgeUiCategory, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
+import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
 export function applyPatch(diagram: go.Diagram, graphPatch: GraphPatch) {
 	diagram.commit((d) => {
@@ -100,7 +99,7 @@ function patchConnector(model: go.GraphLinksModel, { action, assertion }: Assert
 				err = `parent node for connector ${assertion.node.id} not found`;
 				portIdx = nodeData.ports as PortData[];
 				err = `node ${assertion.node.id} has no ports array`;
-				portIdx = portIdx.findIndex((p) => p.id == assertion.id) as number;
+				portIdx = portIdx.findIndex((p) => p.id === assertion.id) as number;
 				err = `port ${assertion.id} not found on node ${assertion.node.id}`;
 				if (portIdx < 0) throw '';
 			} catch {
@@ -121,7 +120,7 @@ function patchProperty(model: go.GraphLinksModel, { action, assertion }: Asserti
 		case 'connector':
 			parent = model.findNodeDataForKey(assertion.node.node.id) as BaseNodeData;
 			if (!parent) return;
-			data = (parent.ports as PortData[])?.find((x) => x.portId == assertion.node.id) as PortData;
+			data = (parent.ports as PortData[])?.find((x) => x.portId === assertion.node.id) as PortData;
 			break;
 		default:
 			data = model.findNodeDataForKey(assertion.node.id) as BaseNodeData;
@@ -154,7 +153,7 @@ function patchConnectorProp(
 	{ action, assertion }: Assertion<GraphProperty>
 ) {
 	let portProp: keyof PortData, portValue: any;
-	const effect = action == 'add' ? set : unset;
+	const effect = action === 'add' ? set : unset;
 	switch (assertion.key) {
 		case 'relativePosition':
 			break;
@@ -164,7 +163,7 @@ function patchConnectorProp(
 			if (parent) {
 				const sArray = assertion.value + 'Array';
 				const portArray = parent[sArray] as PortData[];
-				if (action == 'add')
+				if (action === 'add')
 					if (!portArray) model.setDataProperty(parent, sArray, [data]);
 					else model.insertArrayItem(portArray, -1, data);
 				else {
@@ -211,7 +210,7 @@ function patchConnectorProp(
 function patchMappedProp(model: go.GraphLinksModel, data: any, { action, assertion }: Assertion<GraphProperty>, valueTransformer?: (v: any) => any) {
 	if (!(assertion.key in propMap)) return;
 	if (!data) return;
-	const effect = action == 'add' ? set : unset;
+	const effect = action === 'add' ? set : unset;
 	const value = valueTransformer ? valueTransformer(assertion.value) : assertion.value;
 	effect(model, data, propMap[assertion.key] ?? 'error_unknown_prop', value);
 }
@@ -219,7 +218,7 @@ function patchMappedProp(model: go.GraphLinksModel, data: any, { action, asserti
 function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, assertion }: Assertion<GraphProperty>) {
 	// const data = model.findNodeDataForKey(assertion.node.id) as SymbolNodeData;
 	if (!data) return;
-	const effect = action == 'add' ? set : unset;
+	const effect = action === 'add' ? set : unset;
 	const sym = getNodeSymbolTemplate(assertion.value);
 	effect(model, data, 'category', NodeUiCategory.SvgSymbol);
 	effect(model, data, 'symbolId', assertion.value);
@@ -247,7 +246,7 @@ function syncSymbolPort(
 	parent: Partial<SymbolNodeData>,
 	effect: <T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K]) => void
 ) {
-	const c = parent.symConnectors?.find((x) => x.id == p.name);
+	const c = parent.symConnectors?.find((x) => x.id === p.name);
 	if (!c) {
 	} else {
 		// const what = model.getCategoryForNodeData(p);
@@ -260,7 +259,7 @@ function syncSymbolPort(
 }
 
 function change<T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: string, v: T[K] | null) {
-	if (p == 'category' && typeof v == 'string')
+	if (p === 'category' && typeof v == 'string')
 		switch (o.type) {
 			case 'node':
 			case 'port':

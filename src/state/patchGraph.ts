@@ -1,4 +1,4 @@
-import { Quad, termFromId, termToId, Writer, DataFactory, Term } from 'n3';
+import { Quad, termFromId, termToId, Writer, DataFactory } from 'n3';
 import { RdfAssertion, RdfPatch2 } from '../models';
 import {
 	GraphEdge,
@@ -34,7 +34,6 @@ import {
 	typeIri,
 } from '../mapper/predicates';
 import { getSymbol, Point } from '../symbol-api';
-import { setEquals } from '../utils/setEquals';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -61,7 +60,7 @@ function removeElement<T>(array: T[], element: T) {
 	array.splice(idx, 1);
 }
 function removeElementId<T, K extends keyof T>(array: T[], prop: K, id: T[K]) {
-	const index = array.findIndex((e) => e[prop] == id);
+	const index = array.findIndex((e) => e[prop] === id);
 	if (index < 0) debugger;
 	array.splice(index, 1);
 }
@@ -195,7 +194,7 @@ function* uniques<T>(ts: Iterable<T>): Iterable<T> {
 const dependentQuads = (n: AbstractNode) =>
 	uniques(
 		(function* (n: AbstractNode) {
-			const set = new Set<Quad>();
+			// const set = new Set<Quad>();
 			for (const [iri, vals] of n.properties.entries())
 				for (const l of vals) yield new Quad(termFromId(n.id, DataFactory), termFromId(iri, DataFactory), DataFactory.literal(l));
 			for (const val of n.outgoing.values())
@@ -342,7 +341,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				sNode[connectorKey]!.push(oNode as GraphConnector);
 			} else if (pTerm === typeIri) {
 				// not part of visual edges, for now do nothing more than keep in property-graph
-			} else if (sNode.type == 'connector' || oNode.type == 'connector') {
+			} else if (sNode.type === 'connector' || oNode.type === 'connector') {
 				// source and|or target node is a connector, track and yield an edge hooked up to connectors
 				console.log('TYPE', sNode.type, oNode.type);
 				let sc: Partial<GraphEdge>, tc: Partial<GraphEdge>;
@@ -410,11 +409,11 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				} else {
 					const edge = state.linkIndex.get(edgeId)!;
 					state.linkIndex.delete(edgeId);
-					if ('type' in edge.origin && edge.origin.type == 'edge') {
+					if ('type' in edge.origin && edge.origin.type === 'edge') {
 						let source: AbstractNode, target: AbstractNode;
-						if (sNode.type == 'connector') source = sNode.node;
+						if (sNode.type === 'connector') source = sNode.node;
 						else source = sNode;
-						if (oNode.type == 'connector') target = oNode.node;
+						if (oNode.type === 'connector') target = oNode.node;
 						else target = oNode;
 
 						remove(source.outgoing, pTerm, edge);

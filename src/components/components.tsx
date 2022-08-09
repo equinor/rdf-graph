@@ -9,7 +9,7 @@ import { CyGraph } from './cyGraph/CyGraph';
 import { GoGraph } from './goGraph/GoGraph';
 
 function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(Component: FC<P>): FC<R & RdfStateProps> {
-	return ({ rdfStore, rdfPatch, selectionEffect: selectionEffect, ...props }: RdfStateProps) => {
+	return ({ rdfStore, rdfPatch, selectionEffect, ...props }: RdfStateProps) => {
 		const prevSelectionEffect = useRef<PropertyAssertion[]>([]);
 		const forwardSelection = (selection: GraphSelection) => {
 			if (!selectionEffect) return [];
