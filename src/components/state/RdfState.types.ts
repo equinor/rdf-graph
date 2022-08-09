@@ -1,6 +1,5 @@
-import { RdfPatch2 } from '../models';
 import { Store, Quad } from 'n3';
-import { GraphSelection } from '../models/graphModel';
+import { RdfPatch2, GraphSelection } from '../../models';
 
 export type RdfAction =
 	| { type: 'add'; data: Iterable<Quad> }

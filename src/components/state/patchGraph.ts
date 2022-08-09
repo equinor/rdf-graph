@@ -1,5 +1,4 @@
 import { Quad, termFromId, termToId, Writer, DataFactory, Term } from 'n3';
-import { RdfAssertion, RdfPatch2 } from '../models';
 import {
 	GraphEdge,
 	GraphState,
@@ -10,8 +9,10 @@ import {
 	GraphMetadata,
 	AbstractNode,
 	GraphConnector,
-} from '../models/graphModel';
-import { GraphStateProps } from './GraphStateProps';
+	RdfAssertion,
+	RdfPatch2,
+} from '../../models';
+import { GraphStateProps } from '../../state/GraphStateProps';
 import {
 	colorKey,
 	labelKey,
@@ -32,8 +33,8 @@ import {
 	directionKey,
 	hasDirectionIri,
 	typeIri,
-} from '../mapper/predicates';
-import { getSymbol, Point } from '../symbol-api';
+} from '../../mapper/predicates';
+import { getSymbol, Point } from '../../symbol-api';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -149,7 +150,7 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	relativePosition: invalidator('relativePosition', (g) => {
 		if (g.type !== 'connector' || !g.node) return undefined;
 		if (!g.connectorName || !g.node.symbol) return new Point(0, 0);
-		const c = g.node.symbol.connectors.find((x) => x.id === g.connectorName);
+		const c = g.node.symbol.connectors.find((x: { id: any }) => x.id === g.connectorName);
 		return c?.point || new Point(0, 0);
 	}),
 	[directionKey]: invalidator(directionKey, hasDirectionIri),

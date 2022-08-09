@@ -2,7 +2,7 @@ import { Quad } from 'n3';
 import { NodeSymbol, Point, SymbolRotation } from '../symbol-api';
 
 type GraphId = string;
-type GraphElementBase = {
+export type GraphElementBase = {
 	id: GraphId;
 	incoming: Map<string, GraphEdge[]>;
 	outgoing: Map<string, GraphEdge[]>;
@@ -37,7 +37,8 @@ export type GraphConnector = GraphElementBase & {
 
 export type GraphMetadata = GraphElementBase & {
 	type: 'metadata';
-	edges: Map<string, GraphEdge[]>;
+	// edges: Map<string, GraphEdge[]>;
+	edges: GraphEdge[];
 } & GraphVisualProps;
 
 export type GraphEdge = {
@@ -63,10 +64,10 @@ export type GraphProperty = {
 };
 
 type AssertionBase = { action: 'add' | 'remove' };
-// export type EdgeAssertion = AssertionBase & { assertion: GraphEdge };
+export type EdgeAssertion = AssertionBase & { assertion: GraphEdge };
 // export type NodeAssertion = AssertionBase & { assertion: GraphNode };
 // export type ConnectorAssertion = AssertionBase & { assertion: GraphConnector };
-// export type PropertyAssertion = AssertionBase & { assertion: GraphPropertyIdentifier };
+export type PropertyAssertion = AssertionBase & { assertion: GraphProperty };
 
 export type Assertion<T> = AssertionBase & { assertion: T };
 export type GraphAssertion = Assertion<GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty>;

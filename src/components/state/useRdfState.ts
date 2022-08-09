@@ -1,5 +1,5 @@
 import { useReducer } from 'react';
-import { RdfAssertion } from '../models';
+import { RdfAssertion } from '../../models';
 import { Store, Quad } from 'n3';
 import { RdfAction, RdfState } from './RdfState.types';
 
