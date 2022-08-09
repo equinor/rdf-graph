@@ -14,7 +14,7 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 				fill: 'lightgreen',
 			},
 			new go.Binding('fill', 'uiTheme', ({ node }) => node.fill).ofModel(), // meaning a property of Model.modelData
-			new go.Binding('figure', 'nodeTemplate').makeTwoWay(),
+			new go.Binding('figure', 'shape'),
 			new go.Binding('stroke', 'highlightStrokeColor', (v) => v ?? 'black'),
 			new go.Binding('strokeWidth', 'highlightStrokeColor', (v) => (v ? 3 : 1)),
 			new go.AnimationTrigger('stroke'),

@@ -3,7 +3,7 @@ import { ReactDiagram } from 'gojs-react';
 import { useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from './link-templates/link-template-map';
-import { createDefaultNodeTemplate, createSymbolNodeTemplate } from './node-templates';
+import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from './node-templates';
 import { applyPatch } from './applyPatch';
 
 import { NodeUiCategory } from './types';
@@ -49,7 +49,7 @@ function initDiagram() {
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-		.add(NodeUiCategory.EdgeConnectorNode, createDefaultNodeTemplate(clickHandler));
+		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 	// .add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler))
 
 	d.linkTemplateMap = linkTemplateMap;

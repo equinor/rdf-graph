@@ -82,8 +82,8 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 		links: [],
 	});
 	useEffect(() => {
-		// for (const p of graphPatch) {
-		// }
+		for (const _ of graphPatch) {
+		}
 		update({ nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')], links: [...graphState.linkIndex.values()] });
 		console.log('whats up with', model);
 	}, [graphPatch]);

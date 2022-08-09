@@ -1,6 +1,6 @@
 import go from 'gojs';
 import { getSymbolDataURI } from '../../../symbol-api';
-import { createPositionPortItemTemplate } from '../item-templates/position-port-item-template';
+import { itemTemplateMap } from '../item-templates/item-templates-map';
 import { UiTheme } from '../style/colors';
 import { SymbolNodeData } from '../types';
 
@@ -82,14 +82,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.add(
 						// CONNECTOR PANEL
 						new go.Panel(go.Panel.Position, {
-							// itemTemplateMap: itemTemplateMap,
-							// itemCategoryProperty: 'category',
-							// itemCategoryProperty: d => {
-							// 	return d.category
-							// },
-							// itemCategoryProperty: 'category',
-							// itemTemplateMap : new go.Map<string, go.Panel>().add('', createDefaultItemTemplate()).add(NodeUiItemCategory.PositionPort, createPositionPortItemTemplate())
-							itemTemplate: createPositionPortItemTemplate(),
+							itemTemplateMap: itemTemplateMap,
 						})
 							.bind('itemArray', 'ports')
 							.bind('width')
