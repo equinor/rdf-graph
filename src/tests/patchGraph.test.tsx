@@ -1,5 +1,5 @@
 /* eslint-disable jest/no-conditional-expect */
-import { patchGraph } from '../components/state/patchGraph';
+import { patchGraph } from '../state/patchGraph';
 import { DataFactory, termToId } from 'n3';
 import * as P from '../mapper/predicates';
 import { GraphEdge, GraphNode } from '../models/graphModel';
@@ -19,7 +19,9 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
-
+		// const assertions = [...res.graphPatch];
+		for (const _ of res.graphPatch) {
+		}
 		for (const q of quads) {
 			let node;
 			switch (termToId(q.predicate)) {
@@ -33,13 +35,13 @@ describe('patchGraph', () => {
 				case P.hasConnectorIri:
 					const parent = res.graphState.nodeIndex.get(termToId(q.subject));
 					const child = res.graphState.nodeIndex.get(termToId(q.object));
-					expect(child!.parent!).toBe(parent);
+					expect(child!.node!).toBe(parent);
 					expect(parent!.connector!).toContain(child);
 					break;
 				case P.hasConnectorSuffixIri:
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.connectorName!).toBe(q.object.value);
-					for (const c of node!.parent!.symbol!.connectors) {
+					for (const c of node!.node!.symbol!.connectors) {
 						if (c.id === q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
 					}
 					break;
@@ -59,6 +61,8 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
+		for (const _ of res.graphPatch) {
+		}
 		expect(res.graphState.nodeIndex.get('C')!.relativePosition!).toMatchObject({ x: 0, y: 0 });
 	});
 });

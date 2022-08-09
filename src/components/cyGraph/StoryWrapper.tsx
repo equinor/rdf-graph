@@ -1,7 +1,7 @@
 import { Button } from '@equinor/eds-core-react';
 import { useEffect, useState } from 'react';
 import { RdfCyGraph } from '../components';
-import { useRdfActionReducer } from '../state/useRdfState';
+import { useRdfActionReducer } from '../../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';
 import { createPatch } from './createPatch';
 import { GraphSelection } from '../../models/graphModel';
@@ -39,6 +39,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 
 	const handleSelection = (selection: GraphSelection) => {
 		setSelection(selection);
+		return [];
 	};
 
 	useEffect(() => {
@@ -51,7 +52,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={deleteSelection}> Delete </Button>
 			<Button onClick={rotateSelection}> Rotate </Button>
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<RdfCyGraph onElementSelected={handleSelection} {...state} />
+			<RdfCyGraph selectionEffect={handleSelection} {...state} />
 		</div>
 	);
 };

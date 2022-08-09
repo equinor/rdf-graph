@@ -1,12 +1,12 @@
 import { stringToSvgElement } from './svg-manipulation';
 import { SymbolLibrary, SymbolKey } from './symbol-library';
-import { NodeSymbol } from './types/NodeSymbol';
-import { NodeSymbolConnector } from './types/NodeSymbolConnector';
+import { NodeSymbol, NodeSymbolTemplate } from './types/NodeSymbol';
+import { NodeSymbolConnector, PortDirection } from './types/NodeSymbolConnector';
 import { SymbolOptions } from './types/SymbolOptions';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 
-export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
-	if (!(id in SymbolKey)) throw new TypeError(`Symbol with id '${id}' does not exist.`);
+export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol | undefined {
+	if (!(id in SymbolKey)) return undefined;
 
 	const symbol = SymbolLibrary[id as keyof typeof SymbolKey];
 
@@ -22,8 +22,8 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 		if (rotation > 0) {
 			p = rotatePoint(p, rotation);
 		}
-
-		connectors.push(new NodeSymbolConnector(c.id, p));
+		// TODO: Not implemented PortBearing !!
+		connectors.push(new NodeSymbolConnector(c.id, p, PortDirection.N));
 	});
 
 	if (rotation > 0) {
@@ -31,4 +31,29 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol {
 	}
 
 	return new NodeSymbol(id, svgEl.outerHTML, width, height, connectors);
+}
+
+export function getSymbolDataURI(id: string, options?: SymbolOptions): string | undefined {
+	if (!(id in SymbolKey)) return undefined;
+
+	const symbol = SymbolLibrary[id as keyof typeof SymbolKey];
+
+	const fill = options?.fill ?? 'none';
+	const stroke = options?.stroke ?? 'black';
+
+	const svgEl = stringToSvgElement(symbol.svg);
+
+	if (options?.fill) {
+		svgEl.setAttribute('fill', fill);
+	}
+
+	if (options?.stroke) {
+		svgEl.setAttribute('stroke', stroke);
+	}
+
+	return 'data:image/svg+xml;utf8,' + encodeURIComponent(svgEl.outerHTML);
+}
+
+export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
+	return SymbolLibrary[id as keyof typeof SymbolKey];
 }

@@ -20,6 +20,10 @@ export enum SymbolKey {
 	Vessel_4 = 'VS_4',
 	Pump_2 = 'Pump_2',
 }
+export enum SimpleSymbolKey {
+	Ellipse = 'Ellipse',
+	Rectangle = 'Rectangle',
+}
 
 export const SymbolLibrary: Record<keyof typeof SymbolKey, NodeSymbolTemplate> = {
 	Valve_1: Valve_1,

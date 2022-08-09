@@ -1,6 +1,6 @@
-import { RdfPatch2 } from '../../models';
+import { RdfPatch2 } from '../models';
 import { Store, Quad } from 'n3';
-import { GraphSelection } from '../../models/graphModel';
+import { SelectionCallback } from '../models/graphModel';
 
 export type RdfAction =
 	| { type: 'add'; data: Iterable<Quad> }
@@ -15,5 +15,5 @@ export type RdfState = {
 };
 
 export type RdfStateProps = RdfState & {
-	onElementSelected: (selection: GraphSelection) => void;
+	selectionEffect?: SelectionCallback;
 };

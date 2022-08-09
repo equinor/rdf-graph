@@ -1,5 +1,5 @@
 import { NodeSymbolTemplate } from '../types/NodeSymbol';
-import { NodeSymbolConnector } from '../types/NodeSymbolConnector';
+import { NodeSymbolConnector, PortDirection } from '../types/NodeSymbolConnector';
 
 const svg = `<svg width="117" height="117" viewBox="0 0 117 117" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g id="Symbol 3" clip-path="url(#clip0_155_51397)">
@@ -59,8 +59,8 @@ export const Separator_1: NodeSymbolTemplate = {
 	height: 117,
 	width: 117,
 	connectors: [
-		new NodeSymbolConnector('c1', { x: 50.5, y: 3.50226 }),
-		new NodeSymbolConnector('c2', { x: 40.5, y: 24.5023 }),
-		new NodeSymbolConnector('c3', { x: 59.5, y: 114.502 }),
+		new NodeSymbolConnector('c1', { x: 50.5, y: 3.50226 }, PortDirection.N),
+		new NodeSymbolConnector('c2', { x: 40.5, y: 24.5023 }, PortDirection.W),
+		new NodeSymbolConnector('c3', { x: 59.5, y: 114.502 }, PortDirection.S),
 	],
 };

@@ -1,7 +1,7 @@
 import { Button } from '@equinor/eds-core-react';
 import { useEffect, useState } from 'react';
 import { Rdf3dGraph } from '../components';
-import { useRdfActionReducer } from '../state/useRdfState';
+import { useRdfActionReducer } from '../../state/useRdfState';
 import { turtle2RdfTriples } from '../../mapper';
 
 export type SparqlWrapperProps = {
@@ -24,7 +24,13 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	return (
 		<div>
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<Rdf3dGraph {...state} onElementSelected={(something) => console.log(something)} />
+			<Rdf3dGraph
+				{...state}
+				selectionEffect={(something) => {
+					console.log(something);
+					return [];
+				}}
+			/>
 		</div>
 	);
 };

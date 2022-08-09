@@ -1,7 +1,7 @@
 import { DataFactory } from 'n3';
 import { labelPredicate, rotationIri, rotationPredicate } from '../../mapper/predicates';
 import { RdfPatch2 } from '../../models';
-import { GraphSelection } from '../../models/graphModel';
+import { GraphElementBase, GraphSelection } from '../../models/graphModel';
 import { SymbolKey } from '../../symbol-api';
 
 const { namedNode, literal, quad } = DataFactory;
@@ -80,7 +80,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			yield { action: 'add', assertion: quad(namedNode(action.iri), labelPredicate, literal(action.label)) };
 			return;
 		case 'deleteSelection':
-			for (const node of action.selection) {
+			for (const node of action.selection as GraphElementBase[]) {
 				for (const [predicate, value] of node.incoming) {
 					for (const subject of value) {
 						yield { action: 'remove', assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(node.id)) };
@@ -101,7 +101,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			}
 			break;
 		case 'rotateSelection':
-			for (const node of action.selection) {
+			for (const node of action.selection as GraphElementBase[]) {
 				let currentRotation = node.properties.get(rotationIri);
 				if (currentRotation) {
 					yield { action: 'remove', assertion: quad(namedNode(node.id), rotationPredicate, literal(currentRotation[0])) };

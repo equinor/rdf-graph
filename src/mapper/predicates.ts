@@ -9,8 +9,12 @@ export const colorIri = 'http://rdf.equinor.com/ui/color';
 export const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
 export const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
 export const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
+export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
 export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
+export const hasNodeTemplateIri = 'http://rdf.equinor.com/ui/hasNodeTemplate';
+export const hasDirectionIri = 'http://rdf.equinor.com/ui/hasDirection';
+export const typeIri = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
 // keys linked to predicates
 export const compoundNodeKey = 'parent';
@@ -18,8 +22,11 @@ export const labelKey = 'label';
 export const colorKey = 'color';
 export const svgKey = 'svgId';
 export const simpleSvgKey = 'simpleImage';
+export const simpleSymbolKey = 'simpleSymbol';
 export const rotationKey = 'rotation';
 export const connectorKey = 'connector';
+export const nodeTemplateKey = 'nodeTemplate';
+export const directionKey = 'direction';
 
 export const compoundNodePredicate = namedNode(compoundNodeIri);
 export const labelPredicate = namedNode(labelIri);

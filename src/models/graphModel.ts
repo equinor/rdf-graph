@@ -1,14 +1,20 @@
+import { Quad } from 'n3';
 import { NodeSymbol, Point, SymbolRotation } from '../symbol-api';
 
 type GraphId = string;
-type GraphNodeBase = {
+export type GraphElementBase = {
 	id: GraphId;
+	incoming: Map<string, GraphEdge[]>;
+	outgoing: Map<string, GraphEdge[]>;
+	properties: Map<string, string[]>;
 };
-type GraphNodeType = {
-	type: 'node' | 'linkNode';
-};
+// type GraphNodeType = {
+// 	type: 'node' | 'linkNode';
+// };
 
-export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
+// export type GraphNodeIdentifier = GraphNodeBase & GraphNodeType;
+
+export type AbstractNode = GraphNode | GraphConnector | GraphMetadata;
 
 export type GraphVisualProps = {
 	symbol?: NodeSymbol;
@@ -17,59 +23,60 @@ export type GraphVisualProps = {
 	parent?: GraphNode;
 	symbolName?: string;
 	rotation?: SymbolRotation;
-	connector?: GraphNode[];
-};
-export type GraphNode = GraphNodeIdentifier & {
-	incoming: Map<string, GraphNode[]>;
-	outgoing: Map<string, GraphNode[]>;
-	links: GraphEdge[];
-	properties: Map<string, string[]>;
+	connector?: GraphConnector[];
 	[index: string]: any;
+};
+export type GraphNode = GraphElementBase & {
+	type: 'node';
 } & GraphVisualProps;
 
-export type GraphEdgeIdentifier = {
+export type GraphConnector = GraphElementBase & {
+	type: 'connector';
+	node: GraphNode;
+} & GraphVisualProps;
+
+export type GraphMetadata = GraphElementBase & {
+	type: 'metadata';
+	edges: Map<string, GraphEdge[]>;
+	// edges: GraphEdge[];
+} & GraphVisualProps;
+
+export type GraphEdge = {
+	type: 'edge';
 	id: GraphId;
-	type: 'link';
-};
-export type GraphEdge = GraphEdgeIdentifier & {
 	source: GraphId;
 	target: GraphId;
-	sourceRef?: GraphNode;
-	targetRef?: GraphNode;
-	linkRef?: GraphNode;
+	sourceRef: AbstractNode;
+	targetRef: AbstractNode;
+	sourceConnector?: GraphId;
+	targetConnector?: GraphId;
+	sourceConnectorRef?: GraphConnector;
+	targetConnectorRef?: GraphConnector;
+	metadata: GraphMetadata;
+	origin: Quad | GraphEdge;
 };
 
-export type GraphPropertyIdentifier = {
+export type GraphProperty = {
 	type: 'property';
-	node: GraphNode;
+	node: AbstractNode | GraphEdge;
 	key: string;
 	value: any;
 };
 
-type GraphAssertionBase = { action: 'add' | 'remove' };
-export type EdgeAssertion = GraphAssertionBase & { assertion: GraphEdge };
-export type NodeAssertion = GraphAssertionBase & { assertion: GraphNode };
-export type PropertyAssertion = GraphAssertionBase & { assertion: GraphPropertyIdentifier };
+type AssertionBase = { action: 'add' | 'remove' };
+export type EdgeAssertion = AssertionBase & { assertion: GraphEdge };
+// export type NodeAssertion = AssertionBase & { assertion: GraphNode };
+// export type ConnectorAssertion = AssertionBase & { assertion: GraphConnector };
+export type PropertyAssertion = AssertionBase & { assertion: GraphProperty };
 
-export type GraphAssertion = GraphAssertionBase & { assertion: GraphEdge | GraphNode | GraphPropertyIdentifier };
+export type Assertion<T> = AssertionBase & { assertion: T };
+export type GraphAssertion = Assertion<GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty>;
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
-	nodeIndex: Map<string, GraphNode>;
+	nodeIndex: Map<string, AbstractNode>;
 	linkIndex: Map<string, GraphEdge>;
 };
 
-export type AbstractNode = GraphNodeIdentifier & {
-	incoming: Map<string, GraphNode[]>;
-	outgoing: Map<string, GraphNode[]>;
-	properties: Map<string, string[]>;
-};
+export type GraphSelection = Array<AbstractNode | GraphEdge>;
 
-export type AbstractEdge = {
-	source: GraphId;
-	target: GraphId;
-	linkRef: AbstractNode;
-};
-
-export type GraphSelection = Array<AbstractNode>;
-
-export type SelectionCallback = (selection: GraphSelection) => void;
+export type SelectionCallback = (selection: GraphSelection) => Assertion<GraphProperty>[];

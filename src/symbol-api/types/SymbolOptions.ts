@@ -2,7 +2,8 @@ import { SymbolRotation } from './SymbolRotation';
 
 export interface SymbolOptions {
 	rotation?: SymbolRotation;
-	color?: string;
+	fill?: string;
+	stroke?: string;
 	height?: number;
 	width?: number;
 }
