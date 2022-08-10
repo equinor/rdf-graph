@@ -40,6 +40,7 @@ esdStory.args = {
 		const effect: Assertion<GraphProperty>[] = [];
 		const visited = new Set<string>(sel.map((el) => el.id));
 		const stack = [...sel];
+
 		while (stack.length > 0) {
 			const el = stack.pop()!;
 			if (el.type === 'node') {
