@@ -1,9 +1,9 @@
 {
-	"name": "@equinor/sparql-graph",
+	"name": "@equinor/rdf-graph",
 	"version": "0.7.1",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/equinor/sparql-graph"
+		"url": "https://github.com/equinor/rdf-graph"
 	},
 	"author": {
 		"name": "Dzianis Makeichyk",
