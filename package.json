@@ -12,6 +12,24 @@
 	"publishConfig": {
 		"registry": "https://registry.npmjs.org"
 	},
+	"contributors": [
+		{
+			"name": "Lorentz Fjellanger Barstad",
+			"email": "loba@equinor.com"
+		},
+		{
+			"name": "Martin Tofteberg Ulvesæter",
+			"email": "mulv@equinor.com"
+		},
+		{
+			"name": "Eirik Nordstrand",
+			"email": "einor@equinor.com"
+		},
+		{
+			"name": "Arne Måge",
+			"email": "arnm@equinor.com"
+		}
+	],
 	"license": "MIT",
 	"scripts": {
 		"test": "react-scripts test",
@@ -88,9 +106,7 @@
 	},
 	"dependencies": {
 		"@equinor/eds-core-react": "^0.20.4",
-		"@equinor/engineering-symbols": "^0.0.7",
 		"@rdfjs/types": "^1.1.0",
-		"@rollup/plugin-json": "^4.1.0",
 		"@types/jest": "^28.1.6",
 		"@types/n3": "^1.10.4",
 		"@types/node": "^18.6.4",
@@ -99,50 +115,35 @@
 		"@types/react-dom": "^18.0.6",
 		"@types/three": "^0.143.0",
 		"3d-force-graph": "^1.70.10",
-		"bluebird": "^3.7.2",
-		"chalk": "^2.4.1",
-		"chalk-rainbow": "^1.0.0",
 		"cytoscape": "^3.22.1",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
 		"lint-staged": "^13.0.3",
-		"md5": "^2.3.0",
 		"n3": "^1.16.2",
-		"nanoid": "^4.0.0",
 		"react-cytoscapejs": "^1.2.1",
 		"react-force-graph": "^1.41.12",
 		"rollup": "^2.75.6",
 		"rollup-plugin-ignore": "^1.0.10",
 		"rollup-plugin-svg": "^2.0.0",
-		"sass": "^1.52.2",
-		"sparqljs": "^3.5.1",
 		"three": "^0.143.0",
-		"three-css2drender": "^1.0.0",
-		"three-spritetext": "^1.6.5",
 		"typescript": "^4.6.4"
 	},
 	"devDependencies": {
-		"@babel/plugin-proposal-export-default-from": "^7.17.12",
-		"@babel/plugin-proposal-export-namespace-from": "^7.16.7",
-		"@babel/plugin-transform-runtime": "^7.17.10",
-		"@rollup/plugin-babel": "^5.3.1",
 		"@rollup/plugin-commonjs": "^22.0.0",
 		"@rollup/plugin-node-resolve": "^13.3.0",
 		"@rollup/plugin-typescript": "^8.3.2",
-		"@storybook/addon-actions": "^6.4.22",
 		"@storybook/addon-essentials": "^6.5.7",
 		"@storybook/addon-links": "^6.5.7",
-		"@storybook/node-logger": "^6.4.21",
 		"@storybook/preset-create-react-app": "^3.2.0",
 		"@storybook/react": "^6.5.7",
 		"@testing-library/dom": "^8.16.1",
 		"@testing-library/jest-dom": "^5.14.1",
 		"@testing-library/react": "^12.1.5",
 		"babel-loader": "^8.2.5",
-		"husky": "^8.0.1",
 		"gojs": "^2.2.12",
 		"gojs-react": "^1.1.1",
+		"husky": "^8.0.1",
 		"prettier": "^2.6.2",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
