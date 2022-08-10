@@ -6,6 +6,8 @@ import cleaner from 'rollup-plugin-cleaner';
 import sass from 'rollup-plugin-sass';
 import svg from 'rollup-plugin-svg';
 import ignore from 'rollup-plugin-ignore';
+import { terser } from 'rollup-plugin-terser';
+import sizes from 'rollup-plugin-sizes';
 
 import packageJson from './package.json';
 
@@ -26,6 +28,8 @@ export default {
 	plugins: [
 		ignore(['@equinor/hylar']),
 		peerDepsExternal(),
+		terser(),
+		sizes(),
 		nodeResolve({
 			browser: true,
 			preferBuiltins: false,
