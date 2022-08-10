@@ -36,6 +36,7 @@ export type PortData = {
 	relativePosition?: go.Point;
 	direction?: PortDirection;
 };
+
 export type EdgeData = {
 	type: 'edge';
 	id: string;

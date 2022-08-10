@@ -1,6 +1,6 @@
 # @equinor/rdf-graph
 
-### Example
+# Example 🪴
 
 ```tsx
 const dummyNode = 'NewNode';
@@ -45,7 +45,7 @@ return (
 );
 ```
 
-### Props
+# Props 📦
 
 | Name               | Type                                | Description                                 |
 | ------------------ | ----------------------------------- | ------------------------------------------- |
@@ -54,11 +54,11 @@ return (
 | `onElementChanged` | `(selection: RdfSelection) => void` | Callback when user (de)selects elements     |
 | `patches`          | `RdfPatch[]`                        | List of changes to facilitate interactivity |
 
-## Gojs dependency
+## Gojs dependency 🪚
 
 If using gojs dependency this must be installed seperatly using `npm install gojs` and `npm install gojs-react`. Clients will be responsable for choosing appropiate license.
 
-## Dependabot
+## Dependabot 🩺
 
 ### DON'T UPDATT MAJOR VERSION:
 
@@ -66,7 +66,7 @@ If using gojs dependency this must be installed seperatly using `npm install goj
 -   `react-scripts`
 -   `chalk`
 
-## PR's & releases version
+## PR's & releases version 🦆
 
 Consistent title names help maintainers organise their projects better 📚
 
@@ -78,7 +78,7 @@ Consistent title names help maintainers organise their projects better 📚
 
 Example: `chore: Update README.md`, | `fix: Colors for head`
 
-## For development at the library
+## For development at the library 🥷
 
 <details>
   <summary>Click to expand!</summary>

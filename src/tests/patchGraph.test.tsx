@@ -20,6 +20,7 @@ describe('patchGraph', () => {
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
 		// const assertions = [...res.graphPatch];
+		// Requiered for 3DGraph rendering
 		for (const _ of res.graphPatch) {
 		}
 		for (const q of quads) {
@@ -61,6 +62,7 @@ describe('patchGraph', () => {
 		});
 		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
 		const res = patchGraph(graphState, patch);
+		// Requiered for 3DGraph rendering
 		for (const _ of res.graphPatch) {
 		}
 		expect(res.graphState.nodeIndex.get('C')!.relativePosition!).toMatchObject({ x: 0, y: 0 });
