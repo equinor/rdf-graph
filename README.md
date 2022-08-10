@@ -1,4 +1,4 @@
-# @equinor/sparql-graph
+# @equinor/rdf-graph
 
 ### Example
 
