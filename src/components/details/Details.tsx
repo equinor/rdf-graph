@@ -2,9 +2,9 @@ import { FC } from 'react';
 import { Table } from '@equinor/eds-core-react';
 
 import { httpResult2SparqlResult } from '../../mapper';
-import { SparqlType } from '../../models';
+import { Binding, Result, SparqlType } from '../../models';
 
-import { SparqlValueProps, DetailsProps, SparqlResultBindingProps } from './Details.types';
+import { SparqlValueProps, DetailsProps } from './Details.types';
 
 export const SparqlValue = ({ sparqlBinding }: SparqlValueProps) => {
 	const type2jsx: { [key in SparqlType]: JSX.Element } = {
@@ -30,8 +30,7 @@ export const Details: FC<DetailsProps> = ({ resultAsString, isAlphabetised }: De
 	const sparqlResult = httpResult2SparqlResult(resultAsString);
 
 	if (isAlphabetised) {
-		const filterValueByKey = ({ bindings }: any) =>
-			bindings.filter(({ variableName }: SparqlResultBindingProps) => variableName === 'key')[0].value;
+		const filterValueByKey = ({ bindings }: Result) => bindings.filter(({ variableName }: Binding) => variableName === 'key')[0].value;
 
 		sparqlResult.results.sort((a, b) => (filterValueByKey(a) !== filterValueByKey(b) ? (filterValueByKey(a) < filterValueByKey(b) ? -1 : 1) : 0));
 	}

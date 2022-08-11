@@ -10,54 +10,53 @@ import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty } fr
 import { NodeSymbol } from '../../symbol-api';
 import cytoscape from 'cytoscape';
 
-const addNode = (n: AbstractNode, cy: Cytoscape.Core) => {
-	const { id, type } = n;
-	const elem: ElementDefinition = { data: { id: id } };
+const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
+	const elem: ElementDefinition = { data: { id } };
+
 	if (type === 'metadata') {
 		if (!elem.style) elem.style = {};
 		elem.style.display = 'none';
 		return;
 	}
 	if (type === 'connector') {
-		elem.data.parent = n.node.id;
+		elem.data.parent = node.id;
 	}
 	cy.add(elem);
 };
 
-const addProperty = (prop: GraphProperty, cy: Cytoscape.Core) => {
-	const node = cy.getElementById(prop.node.id);
+const addProperty = ({ key, node, value }: GraphProperty, cy: Cytoscape.Core) => {
+	const nodeById = cy.getElementById(node.id);
 
-	switch (prop.key) {
+	switch (key) {
 		case 'symbol':
-			node.data(nodeTypeKey, NodeType.SymbolContainer);
-			node.data(prop.key, prop.value);
+			nodeById.data(nodeTypeKey, NodeType.SymbolContainer);
+			nodeById.data(key, value);
 			break;
 		case 'relativePosition':
-			node.data(nodeTypeKey, NodeType.SymbolConnector);
-			node.data(prop.key, prop.value);
+			nodeById.data(nodeTypeKey, NodeType.SymbolConnector);
+			nodeById.data(key, value);
 			break;
 		case 'parent':
-			node.move({ parent: (prop.node as any).parent!.id });
+			nodeById.move({ parent: (node as any).parent!.id });
 			break;
 		default:
-			node.data(prop.key, prop.value);
+			nodeById.data(key, value);
 	}
 };
 
-const addEdge = (n: GraphEdge, cy: Cytoscape.Core) => {
-	const { id, source, sourceConnector, target, targetConnector } = n;
-	const { [labelIri]: label } = n.metadata! || {};
-	const elem: ElementDefinition = { data: { id: id, source: sourceConnector || source, target: targetConnector || target, [labelKey]: label } };
+const addEdge = ({ id, source, sourceConnector, target, targetConnector, metadata }: GraphEdge, cy: Cytoscape.Core) => {
+	const { [labelIri]: label } = metadata! || {};
+	const elem: ElementDefinition = { data: { id, source: sourceConnector || source, target: targetConnector || target, [labelKey]: label } };
 	cy.add(elem);
 	return [];
 };
-const removeElement = (element: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
-	cy.remove(cy.getElementById(element.id));
+const removeElement = ({ id }: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
+	cy.remove(cy.getElementById(id));
 };
-const removeProperty = (prop: GraphProperty, cy: Cytoscape.Core) => {
-	const element = cy.getElementById(prop.node.id);
-	element.removeData(prop.key);
-	if (prop.key in ['symbol', 'relativePosition']) {
+const removeProperty = ({ key, node }: GraphProperty, cy: Cytoscape.Core) => {
+	const element = cy.getElementById(node.id);
+	element.removeData(key);
+	if (key in ['symbol', 'relativePosition']) {
 		element.removeData(nodeTypeKey);
 	}
 };
@@ -90,39 +89,39 @@ const layoutIgnoreKey = 'layoutIgnore';
 const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 	const postprocess: (() => void)[] = [];
 
-	for (const a of graphPatch) {
-		switch (a.action) {
+	for (const { action, assertion } of graphPatch) {
+		switch (action) {
 			case 'add':
-				switch (a.assertion.type) {
+				switch (assertion.type) {
 					case 'node':
 					case 'connector':
-						addNode(a.assertion, cy);
+						addNode(assertion, cy);
 						break;
 					case 'property':
-						addProperty(a.assertion, cy);
-						if (a.assertion.key === 'symbol') {
-							createImageNode(a.assertion.node.id, (a.assertion.node as any).symbol!, cy);
+						addProperty(assertion, cy);
+						if (assertion.key === 'symbol') {
+							createImageNode(assertion.node.id, (assertion.node as any).symbol!, cy);
 						}
 
 						break;
 					case 'edge':
-						if (a.assertion.metadata.id !== hasConnectorIri) {
-							postprocess.push(...addEdge(a.assertion, cy));
+						if (assertion.metadata.id !== hasConnectorIri) {
+							postprocess.push(...addEdge(assertion, cy));
 						}
 						break;
 				}
 				break;
 			case 'remove':
-				switch (a.assertion.type) {
+				switch (assertion.type) {
 					case 'edge':
 					case 'connector':
 					case 'node':
-						removeElement(a.assertion, cy);
+						removeElement(assertion, cy);
 						break;
 					case 'property':
-						removeProperty(a.assertion, cy);
-						if (a.assertion.key === 'symbol') {
-							removeImageNode(a.assertion.node.id, cy);
+						removeProperty(assertion, cy);
+						if (assertion.key === 'symbol') {
+							removeImageNode(assertion.node.id, cy);
 						}
 						break;
 				}
@@ -140,7 +139,7 @@ const layouthandler = (_event: cytoscape.EventObject) => {
 		.layout({
 			name: 'preset',
 			animate: false,
-			transform: (node, pos) => {
+			transform: (node) => {
 				const parentPosition = node.parent().first().position();
 				const relativePosition = node.data('relativePosition') || { x: 0, y: 0 };
 				const position = { x: parentPosition.x + relativePosition.x, y: parentPosition.y + relativePosition.y };
@@ -158,6 +157,7 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 
 	const runLayout = (cy: cytoscape.Core) => {
 		const layout = cy.layout(selectedLayout);
+
 		layout.on('layoutstop', layouthandler);
 		layout.run();
 	};
@@ -167,6 +167,7 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 			patches.current.push(...graphPatch);
 			return;
 		}
+
 		nullableCy.batch(() => {
 			applyPatch(graphPatch, nullableCy);
 		});
@@ -177,14 +178,17 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 	useEffect(() => {
 		if (nullableCy) {
 			const cy = nullableCy!;
+
 			cy.on('select', () => {
 				const selection = cy.$('node:selected').map((n) => graphState.nodeIndex.get(n.data().id) as AbstractNode);
 				onElementsSelected(selection);
 			});
+
 			cy.batch(() => {
 				applyPatch(patches.current, nullableCy);
 				patches.current = [];
 			});
+
 			runLayout(nullableCy);
 		}
 	}, [nullableCy]);

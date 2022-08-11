@@ -1,5 +1,4 @@
 // Produce a Geometry that includes an arrowhead at the end of each segment.
-
 import go from 'gojs';
 
 // This only works with orthogonal non-Bezier routing.
@@ -13,6 +12,7 @@ export class MultiArrowLink extends go.Link {
 	makeGeometry() {
 		// get the Geometry created by the standard behavior
 		const geo = super.makeGeometry();
+
 		if (geo.type !== go.Geometry.Path || geo.figures.length === 0) return geo;
 		const mainfig = geo.figures.elt(0); // assume there's just one PathFigure
 		const mainsegs = mainfig.segments;
@@ -21,6 +21,7 @@ export class MultiArrowLink extends go.Link {
 		const arrowWid = 3; // actually half-width of each arrowhead
 		let fx = mainfig.startX;
 		let fy = mainfig.startY;
+
 		for (let i = 0; i < mainsegs.length - 1; i++) {
 			// NOTE: mainsegs.length - 1 to not include last arrow!!!
 			const a = mainsegs.elt(i);

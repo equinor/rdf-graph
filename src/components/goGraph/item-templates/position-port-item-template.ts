@@ -18,6 +18,7 @@ export function portDirectionToSpot(direction: PortDirection): go.Spot {
 
 export function createDefaultItemTemplate(): go.Panel {
 	const $ = go.GraphObject.make;
+
 	return $(
 		go.Panel,
 		'Position',

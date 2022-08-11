@@ -56,21 +56,25 @@ function removeElement<T>(array: T[], element: T) {
 		debugger;
 	}
 	const idx = array.indexOf(element);
+
 	if (idx < 0) debugger;
 	array.splice(idx, 1);
 }
 function removeElementId<T, K extends keyof T>(array: T[], prop: K, id: T[K]) {
 	const index = array.findIndex((e) => e[prop] === id);
+
 	if (index < 0) debugger;
 	array.splice(index, 1);
 }
 function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	const arr = index.get(key)!;
+
 	removeElement(arr, value);
 	if (arr.length === 0) index.delete(key);
 }
 function removeId<T, K extends keyof T>(index: Map<string, T[]>, key: string, prop: K, id: T[K]) {
 	const arr = index.get(key)!;
+
 	removeElementId(arr, prop, id);
 	if (arr.length === 0) index.delete(key);
 }
@@ -142,6 +146,7 @@ function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 		} else yield* propInvalidations[currDep](currNode);
 	}
 }
+
 function invalidator(prop: NodeProp | ValueProp, accessor: string | ((g: AbstractNode) => any)) {
 	return function* (a: AbstractNode): Iterable<PropertyAssertion> {
 		const declared = typeof accessor === 'string' ? (a.properties.get(accessor) || [undefined])[0] : accessor(a);
@@ -158,13 +163,15 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
 	//[simpleShapeKey]: invalidator(simpleShapeKey, hasSimpleSymbolIri),
-	[rotationKey]: invalidator(rotationKey, (g) => (g.properties.has(rotationIri) ? parseInt(g.properties.get(rotationIri)![0]) : undefined)),
+	[rotationKey]: invalidator(rotationKey, ({ properties }) =>
+		properties.has(rotationIri) ? parseInt(properties.get(rotationIri)![0]) : undefined
+	),
 	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
-	relativePosition: invalidator('relativePosition', (g) => {
-		if (g.type !== 'connector' || !g.node) return undefined;
-		if (!g.connectorName || !g.node.symbol) return new Point(0, 0);
-		const c = g.node.symbol.connectors.find((x) => x.id === g.connectorName);
+	relativePosition: invalidator('relativePosition', ({ type, node, connectorName }) => {
+		if (type !== 'connector' || !node) return undefined;
+		if (!connectorName || !node.symbol) return new Point(0, 0);
+		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
 		return c?.point || new Point(0, 0);
 	}),
 	[directionKey]: invalidator(directionKey, hasDirectionIri),
@@ -175,9 +182,12 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	[compoundNodeKey]: function* (g: AbstractNode) {
 		const declared = (g.outgoing.get(compoundNodeIri) || [undefined])[0] as GraphNode | undefined;
 		const prev = g.parent;
+
 		if (declared === prev) return;
 		if (prev) yield { action: 'remove', assertion: { type: 'property', node: g, key: compoundNodeKey, value: prev } };
+
 		g.parent = declared;
+
 		if (declared) yield { action: 'add', assertion: { type: 'property', node: g, key: compoundNodeKey, value: g.parent } };
 		yield* propagator(g, compoundNodeKey);
 	},
@@ -191,6 +201,7 @@ function* uniques<T>(ts: Iterable<T>): Iterable<T> {
 		yield t;
 	}
 }
+
 const dependentQuads = (n: AbstractNode) =>
 	uniques(
 		(function* (n: AbstractNode) {
@@ -247,15 +258,19 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 	delete (s as any).__changingNodeType__;
 }
 
-function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCache?: Map<string, AbstractNode>): Iterable<GraphAssertion> {
-	const q = p.assertion;
+function* graphAssertion<M extends GraphState>(
+	state: M,
+	{ assertion, action }: RdfAssertion,
+	nodeCache?: Map<string, AbstractNode>
+): Iterable<GraphAssertion> {
+	const q = assertion;
 	let sNode: AbstractNode, pNode: GraphMetadata, oNode: AbstractNode;
 	const sTerm = termToId(q.subject);
 	const pTerm = termToId(q.predicate);
 	const isConnectorPredicate = pTerm === hasConnectorIri;
 	const oTerm = q.object.termType !== 'Literal' ? termToId(q.object) : false;
 
-	switch (p.action) {
+	switch (action) {
 		case 'add':
 			// Subject
 			if (!state.nodeIndex.has(sTerm)) {
@@ -309,6 +324,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				yield { action: 'add', assertion: oNode };
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
+
 				switch (pTerm) {
 					case hasConnectorIri:
 						oNode.node = sNode;
@@ -327,7 +343,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				sourceRef: sNode,
 				target: oTerm,
 				targetRef: oNode,
-				origin: p.assertion,
+				origin: assertion,
 			};
 			// Populate incoming/outgoing collections,
 			// in order to preserve RDF/property-graph correspondence
@@ -362,15 +378,18 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 					target = oNode;
 				}
 				const connectorEdge = { ...edge, ...sc, ...tc, origin: edge };
+
 				add(source.outgoing, pTerm, connectorEdge);
 				add(target.incoming, pTerm, connectorEdge);
 				add(pNode.edges, connectorEdge.id, connectorEdge);
 				state.linkIndex.set(connectorEdge.id, connectorEdge);
+
 				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: connectorEdge };
 				yield edgeAssertion;
 			} else {
 				// regular edge, no connectors. Track and yield.
 				state.linkIndex.set(edge.id, edge);
+
 				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: edge };
 				yield edgeAssertion;
 			}
@@ -382,8 +401,9 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 		case 'remove':
 			sNode = state.nodeIndex.get(sTerm)!;
 			pNode = state.nodeIndex.get(pTerm)! as GraphMetadata;
+
 			if (!oTerm) {
-				remove(sNode.properties, pTerm, p.assertion.object.value);
+				remove(sNode.properties, pTerm, assertion.object.value);
 				if (predicate2prop.hasOwnProperty(pTerm)) {
 					yield* propInvalidations[predicate2prop[pTerm] as ValueProp](sNode);
 				}
@@ -408,9 +428,11 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				} else if (pTerm === typeIri) {
 				} else {
 					const edge = state.linkIndex.get(edgeId)!;
+
 					state.linkIndex.delete(edgeId);
 					if ('type' in edge.origin && edge.origin.type === 'edge') {
 						let source: AbstractNode, target: AbstractNode;
+
 						if (sNode.type === 'connector') source = sNode.node;
 						else source = sNode;
 						if (oNode.type === 'connector') target = oNode.node;
@@ -427,11 +449,13 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 				if (predicate2prop.hasOwnProperty(pTerm)) {
 					yield* propInvalidations[predicate2prop[pTerm] as NodeProp](sNode);
 				}
+
 				if (refCount(oNode) < 1) {
 					state.nodeIndex.delete(oTerm);
 					nodeCache?.set(oNode.id, oNode);
 					yield { action: 'remove', assertion: oNode };
 				}
+
 				if (refCount(pNode) < 1) {
 					state.nodeIndex.delete(pTerm);
 					nodeCache?.set(pNode.id, pNode);
@@ -440,6 +464,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 					yield* changeNodeType(state, pNode, 'node');
 				}
 			}
+
 			if (refCount(sNode) < 1) {
 				state.nodeIndex.delete(sTerm);
 				nodeCache?.set(sNode.id, sNode);
@@ -447,6 +472,7 @@ function* graphAssertion<M extends GraphState>(state: M, p: RdfAssertion, nodeCa
 
 				yield { action: 'remove', assertion: sNode };
 			}
+
 			break;
 	}
 }
