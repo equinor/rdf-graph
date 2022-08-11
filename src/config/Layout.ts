@@ -9,10 +9,6 @@ export type LayoutWrapper = {
 	layout: string;
 };
 
-//export type GoGraphLayout = 'LayeredDigraphLayout' | 'ForceDirectedLayout';
-
-//const layouts = ['LayeredDigraphLayout', 'ForceDirectedLayout'] as const;
-
 export enum GraphLayouts {
 	LayeredDigraph = 'LayeredDigraphLayout',
 	ForceDirected = 'ForceDirectedLayout',

@@ -14,7 +14,9 @@ export const httpResult2SparqlResult = (result: string): SparqlResult => {
 		if (!result) {
 			return emptySparqlResult;
 		}
+
 		const json = JSON.parse(result);
+
 		return {
 			headers: json.head.vars,
 			results: json.results.bindings.map((b: any) => ({

@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/rdf-graph",
-	"version": "0.7.2",
+	"version": "0.7.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/equinor/rdf-graph"
@@ -123,7 +123,7 @@
 		"n3": "^1.16.2",
 		"react-cytoscapejs": "^1.2.1",
 		"react-force-graph": "^1.41.12",
-		"rollup": "^2.75.6",
+		"rollup": "^2.77.2",
 		"rollup-plugin-ignore": "^1.0.10",
 		"rollup-plugin-svg": "^2.0.0",
 		"three": "^0.143.0",
@@ -151,6 +151,8 @@
 		"rollup-plugin-cleaner": "^1.0.0",
 		"rollup-plugin-peer-deps-external": "^2.2.4",
 		"rollup-plugin-sass": "^1.2.10",
+		"rollup-plugin-sizes": "^1.0.4",
+		"rollup-plugin-terser": "^7.0.2",
 		"storybook-addon-state": "^1.0.3",
 		"storybook-addon-theme-playground": "^2.1.0"
 	}

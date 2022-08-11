@@ -11,17 +11,9 @@ import { GraphLayout, GraphLayouts, OptionsGraphProps } from '../../config/Layou
 import { GraphSelection, GraphState } from '../../models';
 import { getUiTheme } from './style/colors';
 
-const clickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
-	// console.log('Node clicked!');
-	// console.log({ e });
-	// console.log(thisObj);
-};
+const clickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {};
 
-const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {
-	// console.log('Symbol Node clicked!');
-	// console.log({ e });
-	// console.log(thisObj.name);
-};
+const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {};
 
 function initDiagram() {
 	const $ = go.GraphObject.make;
