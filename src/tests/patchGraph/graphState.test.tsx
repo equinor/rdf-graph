@@ -1,26 +1,14 @@
 /* eslint-disable jest/no-conditional-expect */
-import { patchGraph } from '../state/patchGraph';
+import { patchGraph } from '../../state/patchGraph';
 import { DataFactory, termToId } from 'n3';
-import * as P from '../mapper/predicates';
-import { GraphEdge, GraphNode } from '../models/graphModel';
-import { RdfPatch2 } from '../models/rdfPatch';
-import { SymbolKey } from '../symbol-api';
-const { quad: q, literal: l, namedNode: n } = DataFactory;
+import * as P from '../../mapper/predicates';
+import { SymbolKey } from '../../symbol-api';
+import { emptyGraph, svgWithConnectorQuads, toPatch } from './testUtils';
+
 describe('patchGraph', () => {
 	test('normal svg', () => {
-		const quads = [
-			q(n('S'), P.hasSvgPredicate, l('Separator_1')),
-			q(n('S'), P.hasConnectorPredicate, n('C')),
-			q(n('C'), P.hasConnectorSuffixPredicate, l('c1')),
-		];
-
-		const patch: RdfPatch2 = quads.map((quad) => {
-			return { action: 'add', assertion: quad };
-		});
-		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
-		const res = patchGraph(graphState, patch);
-		// const assertions = [...res.graphPatch];
-		// Requiered for 3DGraph rendering
+		const quads = svgWithConnectorQuads('c1');
+		const res = patchGraph(emptyGraph(), toPatch(quads));
 		for (const _ of res.graphPatch) {
 		}
 		for (const q of quads) {
@@ -51,18 +39,7 @@ describe('patchGraph', () => {
 	});
 
 	test('Without existing connector', () => {
-		const quads = [
-			q(n('S'), P.hasSvgPredicate, l('Separator_1')),
-			q(n('S'), P.hasConnectorPredicate, n('C')),
-			q(n('C'), P.hasConnectorSuffixPredicate, l('c11')),
-		];
-
-		const patch: RdfPatch2 = quads.map((quad) => {
-			return { action: 'add', assertion: quad };
-		});
-		const graphState = { linkIndex: new Map<string, GraphEdge>(), nodeIndex: new Map<string, GraphNode>() };
-		const res = patchGraph(graphState, patch);
-		// Requiered for 3DGraph rendering
+		const res = patchGraph(emptyGraph(), toPatch(svgWithConnectorQuads("I don't exist in Seperator_1")));
 		for (const _ of res.graphPatch) {
 		}
 		expect(res.graphState.nodeIndex.get('C')!.relativePosition!).toMatchObject({ x: 0, y: 0 });
