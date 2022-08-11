@@ -35,7 +35,7 @@ test('Node becomes connector', () => {
 	testPatchOrder(originalData, change, expectedOrder);
 });
 
-export const testPatchOrder = (originalData: Quad[], change: Quad[], expectedOrder: SimplifiedAssertion[]) => {
+const testPatchOrder = (originalData: Quad[], change: Quad[], expectedOrder: SimplifiedAssertion[]) => {
 	const originalRes = patchGraph(emptyGraph(), toPatch(originalData));
 	for (const _patch of originalRes.graphPatch) {
 	}

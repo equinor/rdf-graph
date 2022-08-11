@@ -2,6 +2,7 @@ import go, { GraphLinksModel } from 'gojs';
 import { nodeTemplateKey } from '../../mapper/predicates';
 import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../../models/graphModel';
 import { getNodeSymbolTemplate, PortDirection } from '../../symbol-api';
+import { flat, unique } from '../../utils/iteratorUtils';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
@@ -108,7 +109,6 @@ function patchConnector(model: go.GraphLinksModel, { action, assertion }: Assert
 				console.warn(err);
 				return;
 			}
-
 			model.removeArrayItem(nodeData.ports!, portIdx);
 			break;
 	}
@@ -127,6 +127,16 @@ function patchProperty(model: go.GraphLinksModel, { action, assertion }: Asserti
 			if (idx === -1 || idx === undefined) break;
 			data = (parent.ports as PortData[])[idx] as PortData;
 			break;
+		case 'metadata':
+			const edges = flat(assertion.node.edges.values());
+			for (const edge of edges) {
+				console.log('Coloring ', edge.id);
+				patchProperty(model, {
+					action,
+					assertion: { ...assertion, node: edge },
+				});
+			}
+			return;
 		default:
 			data = model.findNodeDataForKey(assertion.node.id) as BaseNodeData;
 			break;

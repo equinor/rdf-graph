@@ -34,6 +34,7 @@ import {
 	typeIri,
 } from '../mapper/predicates';
 import { getSymbol, Point } from '../symbol-api';
+import { flatMap, unique } from '../utils/iteratorUtils';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -193,17 +194,8 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	},
 };
 
-function* uniques<T>(ts: Iterable<T>): Iterable<T> {
-	const set = new Set<T>();
-	for (const t of ts) {
-		if (set.has(t)) continue;
-		set.add(t);
-		yield t;
-	}
-}
-
 const dependentQuads = (n: AbstractNode) =>
-	uniques(
+	unique(
 		(function* (n: AbstractNode) {
 			// const set = new Set<Quad>();
 			for (const [iri, vals] of n.properties.entries())
@@ -219,12 +211,8 @@ const dependentQuads = (n: AbstractNode) =>
 		})(n)
 	);
 
-function* flatMap<T, R>(i: Iterable<T>, c: (a: T) => Iterable<R>) {
-	for (const e of i) yield* c(e);
-}
 function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['type']) {
 	// re-entrancy check, dont change type on other nodes or it could become turtles all the way down
-	console.log('CHANGING ', n.id, n.type, type);
 	if (n.type === type) return;
 	if ((s as any).__changingNodeType__) return;
 	(s as any).__changingNodeType__ = true;
@@ -276,7 +264,6 @@ function* graphAssertion<M extends GraphState>(
 			if (!state.nodeIndex.has(sTerm)) {
 				sNode = nodeCache?.get(sTerm) || { type: 'node', id: sTerm, ...initAN() };
 				state.nodeIndex.set(sTerm, sNode);
-				console.log('Yielding subject node', sNode.id);
 				yield { action: 'add', assertion: sNode };
 			} else {
 				sNode = state.nodeIndex.get(sTerm)!;
@@ -319,8 +306,6 @@ function* graphAssertion<M extends GraphState>(
 						break;
 				}
 				state.nodeIndex.set(oTerm, oNode);
-				console.log('Yielding object node', oNode.id);
-
 				yield { action: 'add', assertion: oNode };
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
@@ -359,7 +344,6 @@ function* graphAssertion<M extends GraphState>(
 				// not part of visual edges, for now do nothing more than keep in property-graph
 			} else if (sNode.type === 'connector' || oNode.type === 'connector') {
 				// source and|or target node is a connector, track and yield an edge hooked up to connectors
-				console.log('TYPE', sNode.type, oNode.type);
 				let sc: Partial<GraphEdge>, tc: Partial<GraphEdge>;
 				let source: AbstractNode, target: AbstractNode;
 
@@ -468,7 +452,6 @@ function* graphAssertion<M extends GraphState>(
 			if (refCount(sNode) < 1) {
 				state.nodeIndex.delete(sTerm);
 				nodeCache?.set(sNode.id, sNode);
-				console.log('refCount: ', refCount(sNode), sNode.id);
 
 				yield { action: 'remove', assertion: sNode };
 			}
