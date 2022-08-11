@@ -174,7 +174,7 @@ function patchConnectorProp(
 	idx: number | undefined,
 	{ action, assertion }: Assertion<GraphProperty>
 ) {
-	let portProp: keyof PortData, portValue: any;
+	let portProp: keyof PortData, portValue: PortDirection;
 	const effect = action === 'add' ? set : unset;
 
 	switch (assertion.key) {
@@ -229,14 +229,19 @@ function patchConnectorProp(
 	}
 }
 
-function patchMappedProp(model: go.GraphLinksModel, data: any, { action, assertion }: Assertion<GraphProperty>, valueTransformer?: (v: any) => any) {
+function patchMappedProp(
+	model: go.GraphLinksModel,
+	data: PortData | BaseNodeData | EdgeData,
+	{ action, assertion }: Assertion<GraphProperty>,
+	valueTransformer?: (v: any) => any
+) {
 	if (!(assertion.key in propMap) || !data) return;
 
 	const value = valueTransformer ? valueTransformer(assertion.value) : assertion.value;
 
 	patchProp(model, data, action, propMap[assertion.key] ?? 'error_unknown_prop', value);
 }
-function patchProp(model: go.GraphLinksModel, data: any, action: 'add' | 'remove', prop: string, val: any) {
+function patchProp(model: go.GraphLinksModel, data: PortData | BaseNodeData | EdgeData, action: 'add' | 'remove', prop: string | any, val: any) {
 	const effect = action === 'add' ? set : unset;
 
 	effect(model, data, prop, val);

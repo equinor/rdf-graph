@@ -46,6 +46,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		const quads = turtle2RdfTriples(turtleString);
 		dispatch({ type: 'replace', data: quads });
 	}, [turtle]);
+
 	return (
 		<div>
 			<Button onClick={addNode}> Add </Button>

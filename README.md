@@ -1,4 +1,4 @@
-# @equinor/rdf-graph
+# @equinor/rdf-graph 🔭
 
 # Example 🪴
 
@@ -56,7 +56,13 @@ return (
 
 ## Gojs dependency 🪚
 
-If using gojs dependency this must be installed seperatly using `npm install gojs` and `npm install gojs-react`. Clients will be responsable for choosing appropiate license.
+If using gojs dependency this must be installed seperatly using
+
+```sh
+npm install gojs gojs-react
+```
+
+Clients will be responsable for choosing appropiate license.
 
 ## Dependabot 🩺
 

@@ -29,6 +29,7 @@ function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(
 			},
 			graphPatch: [],
 		});
+
 		useEffect(() => {
 			const newGraphState = patchGraph(state.graphState, rdfPatch);
 			update(newGraphState);
@@ -37,6 +38,7 @@ function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(
 		return <Component {...({ ...state, ...props, selectionEffect: forwardSelection } as P)} />;
 	};
 }
+
 function createRdfViewHoc<P extends RdfStateProps, R = Omit<P, keyof RdfStateProps>>(Component: FC<P>) {
 	return (props: R) => <RdfContext.Consumer>{(value) => <Component {...(value as P)} {...(props as R)} />}</RdfContext.Consumer>;
 }
