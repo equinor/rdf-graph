@@ -2,7 +2,7 @@ import go, { GraphLinksModel } from 'gojs';
 import { nodeTemplateKey } from '../../mapper/predicates';
 import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../../models/graphModel';
 import { getNodeSymbolTemplate, PortDirection } from '../../symbol-api';
-import { flat, unique } from '../../utils/iteratorUtils';
+import { flat } from '../../utils/iteratorUtils';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 

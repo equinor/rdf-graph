@@ -11,16 +11,14 @@ import { GraphLayout, GraphLayouts, OptionsGraphProps } from '../../config/Layou
 import { GraphSelection, GraphState } from '../../models';
 import { getUiTheme } from './style/colors';
 
-const clickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {};
+const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
-const symbolNodeClickHandler = (e: go.InputEvent, thisObj: go.GraphObject) => {};
+const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
 function initDiagram() {
 	const $ = go.GraphObject.make;
-	// set your license key here before creating the diagram: go.Diagram.licenseKey = "...";
 	const d = $(go.Diagram, {
 		'undoManager.isEnabled': true,
-		// 'undoManager.maxHistoryLength': 0,  // uncomment disable undo/redo functionality
 		'clickCreatingTool.archetypeNodeData': {
 			text: 'new node',
 			color: 'lightblue',
@@ -30,7 +28,6 @@ function initDiagram() {
 			linkKeyProperty: 'id',
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
-			// nodeCategoryProperty: 'category',
 		}),
 	});
 
@@ -42,7 +39,6 @@ function initDiagram() {
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
 		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
-	// .add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler))
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -90,7 +86,6 @@ export const GoGraph = (props: OptionsGraphProps) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		//uiNegotiator.current.applyPatch(graphPatch);
 		applyPatch(diagramRef.current, props.graphPatch);
 	}, [props.graphPatch]);
 
@@ -139,10 +134,7 @@ export const GoGraph = (props: OptionsGraphProps) => {
 		diagramRef.current.layout = getLayout(props.options.layout);
 	}, [props.options?.layout]);
 
-	const handleModelChange = (e: go.IncrementalData) => {
-		// console.log(1, e);
-		//const { modelData, insertedNodeKeys, modifiedNodeData, removedNodeKeys, insertedLinkKeys, modifiedLinkData, removedLinkKeys } = e;
-	};
+	const handleModelChange = (_e: go.IncrementalData) => {};
 
 	return (
 		<>

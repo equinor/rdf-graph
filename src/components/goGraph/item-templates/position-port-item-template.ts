@@ -24,7 +24,7 @@ export function createDefaultItemTemplate(): go.Panel {
 		'Position',
 		$(
 			go.TextBlock,
-			new go.Binding('text', 'name', (v, e) => {
+			new go.Binding('text', 'name', (v, _e) => {
 				return v;
 			})
 		),

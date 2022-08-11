@@ -1,6 +1,6 @@
 /* eslint-disable jest/no-conditional-expect */
 import { patchGraph } from '../../state/patchGraph';
-import { DataFactory, termToId } from 'n3';
+import { termToId } from 'n3';
 import * as P from '../../mapper/predicates';
 import { SymbolKey } from '../../symbol-api';
 import { emptyGraph, svgWithConnectorQuads, toPatch } from './testUtils';

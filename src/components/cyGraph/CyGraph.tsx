@@ -130,7 +130,7 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 	}
 };
 
-const layouthandler = (_event: cytoscape.EventObject) => {
+const layoutHandler = (_event: cytoscape.EventObject) => {
 	const connectorSelector = `[nodeType = "${NodeType.SymbolConnector}"]`;
 	const imageSelector = `[nodeType = "${NodeType.SymbolImage}"]`;
 
@@ -157,8 +157,7 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 
 	const runLayout = (cy: cytoscape.Core) => {
 		const layout = cy.layout(selectedLayout);
-
-		layout.on('layoutstop', layouthandler);
+		layout.on('layoutstop', layoutHandler);
 		layout.run();
 	};
 

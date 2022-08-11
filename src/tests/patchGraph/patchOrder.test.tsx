@@ -7,6 +7,11 @@ const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 type SimplifiedAssertion = { type: 'metadata' | 'property' | 'node' | 'edge' | 'connector' | 'NA'; action: 'add' | 'remove' | 'NA' };
 
+type DebugElement = {
+	expected: SimplifiedAssertion;
+	actual: SimplifiedAssertion;
+};
+
 test('Node becomes connector', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
@@ -65,7 +70,7 @@ const printDebugArray = (expected: SimplifiedAssertion[], actual: SimplifiedAsse
 	const filledExpected = addFillElements(expected, actual.length - expected.length);
 	const filledActual = addFillElements(actual, expected.length - actual.length);
 
-	const debugArray = [];
+	const debugArray: DebugElement[] = [];
 	for (let i = 0; i < filledExpected.length; i++) {
 		debugArray.push({ expected: filledExpected[i], actual: filledActual[i] });
 	}
