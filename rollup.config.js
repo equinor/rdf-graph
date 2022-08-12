@@ -5,13 +5,12 @@ import typescript from '@rollup/plugin-typescript';
 import cleaner from 'rollup-plugin-cleaner';
 import sass from 'rollup-plugin-sass';
 import svg from 'rollup-plugin-svg';
-import ignore from 'rollup-plugin-ignore';
 import { terser } from 'rollup-plugin-terser';
 import sizes from 'rollup-plugin-sizes';
 
 import packageJson from './package.json';
 
-export default {
+const cfg = {
 	input: './src/index.ts',
 	output: [
 		{
@@ -26,7 +25,6 @@ export default {
 		},
 	],
 	plugins: [
-		ignore(['@equinor/hylar']),
 		peerDepsExternal(),
 		terser(),
 		sizes(),
@@ -43,7 +41,9 @@ export default {
 			tsconfig: './tsconfig.build.json',
 		}),
 		cleaner({
-			targets: ['./build/'],
+			targets: ['./dist/'],
 		}),
 	],
 };
+
+export default cfg;
