@@ -54,4 +54,6 @@ example:Bilde
 	ui:hasSimpleSvg 'https://dugtrioexperimental.blob.core.windows.net/graph-icons/esd-draft/logicsymbols/LogicPort-OR.svg';
 	example:connectedTo example:Hallais .
 
+example:connectedTo
+        ui:color "pink" .
 `;

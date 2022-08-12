@@ -1,6 +1,6 @@
 import go from 'gojs';
 
-export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
+export function createEdgeConnectorNodeTemplate(_clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
 	const portSize = new go.Size(8, 8);
 	return $(
@@ -10,9 +10,7 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 			locationObjectName: 'BODY',
 			locationSpot: go.Spot.Center,
 			selectionObjectName: 'BODY',
-			//   contextMenu: nodeMenu
 		},
-		// new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
 
 		// the body
 		$(
@@ -22,13 +20,11 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 				row: 1,
 				column: 1,
 				name: 'BODY',
-				// stretch: go.GraphObject.Fill
 			},
 			$(go.Shape, 'Rectangle', {
 				fill: '#dbf6cb',
 				stroke: null,
 				strokeWidth: 0,
-				//   minSize: new go.Size(60, 60)
 			}),
 			$(
 				go.TextBlock,
@@ -51,7 +47,6 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 					fromLinkable: true,
 					toLinkable: true,
 					cursor: 'pointer',
-					//   contextMenu: portMenu
 				},
 				new go.Binding('portId', 'portId'),
 				$(
@@ -113,7 +108,6 @@ export function createEdgeConnectorNodeTemplate(clickHandler?: ((e: go.InputEven
 					fromLinkable: true,
 					toLinkable: true,
 					cursor: 'pointer',
-					//   contextMenu: portMenu
 				},
 				new go.Binding('portId', 'portId'),
 				$(

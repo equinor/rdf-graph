@@ -5,6 +5,7 @@ export const propMap: Record<string, string> = {
 	shape: 'figure',
 	rotation: 'angle',
 	label: 'label',
+	color: 'highlightStrokeColor',
 	highlightStrokeColor: 'highlightStrokeColor',
 	[nodeTemplateKey]: 'category',
 } as const;

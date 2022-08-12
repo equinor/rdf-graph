@@ -1,5 +1,5 @@
 import { DataFactory } from 'n3';
-import { TwoWayMap } from '../utils/twoWayDictionary';
+import { TwoWayMap } from '../utils';
 
 const { namedNode } = DataFactory;
 

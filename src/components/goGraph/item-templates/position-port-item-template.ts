@@ -18,12 +18,13 @@ export function portDirectionToSpot(direction: PortDirection): go.Spot {
 
 export function createDefaultItemTemplate(): go.Panel {
 	const $ = go.GraphObject.make;
+
 	return $(
 		go.Panel,
 		'Position',
 		$(
 			go.TextBlock,
-			new go.Binding('text', 'name', (v, e) => {
+			new go.Binding('text', 'name', (v, _e) => {
 				return v;
 			})
 		),

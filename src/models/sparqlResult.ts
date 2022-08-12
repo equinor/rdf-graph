@@ -5,6 +5,7 @@ export type Binding = {
 	type: SparqlType;
 	datatype: string;
 	value: string;
+	[index: string]: any;
 };
 
 export type Result = {

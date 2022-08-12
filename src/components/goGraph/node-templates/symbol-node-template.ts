@@ -1,8 +1,8 @@
 import go from 'gojs';
-import { getSymbolDataURI } from '../../../symbol-api';
 import { itemTemplateMap } from '../item-templates/item-templates-map';
 import { UiTheme } from '../style/colors';
 import { SymbolNodeData } from '../types';
+import { getSymbolDataURI } from '../../../symbol-api';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -63,11 +63,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 						new go.Picture({
 							background: 'transparent',
 						})
-							.bind('source', 'symbolId', (id, d) => {
-								// const data = d.part.data as SymbolNodeData;
-
-								return getSymbolDataURI(id);
-							})
+							.bind('source', 'symbolId', (id, _d) => getSymbolDataURI(id))
 							.bind('width')
 							.bind('height')
 							.bind(

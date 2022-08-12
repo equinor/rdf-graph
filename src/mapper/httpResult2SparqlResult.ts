@@ -1,6 +1,6 @@
 import { Binding, emptySparqlResult, SparqlResult } from '../models';
 
-const mapBinding = (b: any): Binding[] => {
+const mapBinding = (b: Binding) => {
 	return Object.keys(b).map((variableName) => ({
 		variableName: variableName,
 		type: b[variableName].type,
@@ -19,7 +19,7 @@ export const httpResult2SparqlResult = (result: string): SparqlResult => {
 
 		return {
 			headers: json.head.vars,
-			results: json.results.bindings.map((b: any) => ({
+			results: json.results.bindings.map((b: Binding) => ({
 				bindings: mapBinding(b),
 			})),
 		};

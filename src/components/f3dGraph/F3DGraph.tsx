@@ -1,10 +1,10 @@
 import { FC, useEffect, useRef, useState } from 'react';
+import { Group, Renderer } from 'three';
 import { CSS3DRenderer } from 'three/examples/jsm/renderers/CSS3DRenderer';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { ForceGraph3D } from 'react-force-graph';
 import { GraphEdge, AbstractNode } from '../../models/graphModel';
 import { GraphProps } from '../../state/GraphStateProps';
-import { Group, Renderer } from 'three';
 
 const obj = `# Blender v3.2.0 OBJ File: 'DummyValve.blend'
 # www.blender.org
@@ -82,11 +82,13 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 		nodes: [],
 		links: [],
 	});
+
 	useEffect(() => {
 		// Requiered for 3DGraph rendering
 		for (const _ of graphPatch) {
 		}
 		update({ nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')], links: [...graphState.linkIndex.values()] });
+
 		console.log('whats up with', model);
 	}, [graphPatch]);
 
@@ -102,8 +104,7 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 			extraRenderers={[renderer.current as any as Renderer]}
 			nodeThreeObject={(node: any) => {
 				if (node.properties.get('http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType') === 'VG') {
-					const group = loader.parse(obj);
-					return group;
+					return loader.parse(obj);
 				}
 				return new Group();
 			}}

@@ -20,6 +20,7 @@ const coercePatch = function* (store: Store<Quad, Quad, Quad, Quad>, patches: It
 		}
 	}
 };
+
 const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action) => {
 	switch (action.type) {
 		case 'add':
@@ -49,10 +50,12 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 					replacements.push({ action: 'remove', assertion: q });
 				}
 			}
+
 			for (const q of diffStore) {
 				state.rdfStore.addQuad(q);
 				replacements.push({ action: 'add', assertion: q });
 			}
+
 			if (replacements.length === 0) return state;
 			return { rdfStore: state.rdfStore, rdfPatch: replacements };
 
@@ -62,6 +65,7 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 					for (const q of s) yield { action: 'remove', assertion: q };
 				})(state.rdfStore),
 			];
+
 			if (clearing.length === 0) return state;
 			return { rdfStore: new Store<Quad, Quad, Quad, Quad>(), rdfPatch: clearing };
 	}
