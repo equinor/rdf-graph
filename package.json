@@ -131,7 +131,7 @@
 		"n3": "^1.16.2",
 		"react-cytoscapejs": "^1.2.1",
 		"react-force-graph": "^1.41.12",
-		"rollup": "^2.77.2",
+		"rollup": "^2.78.0",
 		"rollup-plugin-ignore": "^1.0.10",
 		"rollup-plugin-svg": "^2.0.0",
 		"three": "^0.143.0",
