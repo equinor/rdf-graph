@@ -1,6 +1,6 @@
 # @equinor/rdf-graph 🔭
 
-# Example 🪴
+# Example 🪴!
 
 ```tsx
 const dummyNode = 'NewNode';
