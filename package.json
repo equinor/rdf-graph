@@ -86,41 +86,6 @@
 		"cyGraph.d.ts",
 		"f3dGraph.d.ts"
 	],
-	"eslintConfig": {
-		"extends": [
-			"react-app",
-			"react-app/jest"
-		],
-		"overrides": [
-			{
-				"files": [
-					"**/*.stories.*"
-				],
-				"rules": {
-					"import/no-anonymous-default-export": "off"
-				}
-			},
-			{
-				"files": [
-					"**/*/*.*"
-				],
-				"rules": {
-					"react/no-unknown-property": 2,
-					"react-hooks/rules-of-hooks": "off",
-					"react-hooks/exhaustive-deps": "off",
-					"no-throw-literal": 0,
-					"@typescript-eslint/no-unused-vars": [
-						"warn",
-						{
-							"argsIgnorePattern": "^_",
-							"varsIgnorePattern": "^_",
-							"caughtErrorsIgnorePattern": "^_"
-						}
-					]
-				}
-			}
-		]
-	},
 	"browser": {
 		"fs": false
 	},
@@ -170,6 +135,8 @@
 		"@types/three": "^0.143.0",
 		"@vitejs/plugin-react": "^2.0.1",
 		"babel-loader": "^8.2.5",
+		"eslint": "^8.22.0",
+		"eslint-config-react-app": "^7.0.1",
 		"gojs": "^2.2.12",
 		"gojs-react": "^1.1.1",
 		"husky": "^8.0.1",
