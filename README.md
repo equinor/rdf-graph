@@ -54,16 +54,6 @@ return (
 | `onElementChanged` | `(selection: RdfSelection) => void` | Callback when user (de)selects elements     |
 | `patches`          | `RdfPatch[]`                        | List of changes to facilitate interactivity |
 
-## Gojs dependency 🪚
-
-If using gojs dependency this must be installed seperatly using
-
-```sh
-npm install gojs gojs-react
-```
-
-Clients will be responsable for choosing appropiate license.
-
 ## Dependabot 🩺
 
 ### DON'T UPDATT MAJOR VERSION:
@@ -83,6 +73,11 @@ Consistent title names help maintainers organise their projects better 📚
 -   `major: major`
 
 Example: `chore: Update README.md`, | `fix: Colors for head`
+
+## License 🪶
+
+This project is intended to be used alongside [GoJS](https://gojs.net/latest/index.html),
+and is covered by the GoJS <a href="https://gojs.net/latest/license.html">software license</a>
 
 ## For development at the library 🥷
 
