@@ -1,4 +1,3 @@
-
 module.exports = {
 	core: { builder: '@storybook/builder-vite' },
 	staticDirs: ['../storybook-public'],
