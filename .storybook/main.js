@@ -1,5 +1,5 @@
 // use `mergeConfig` to recursively merge Vite options
-const { mergeConfig } = require('vite');
+//const { mergeConfig } = require('vite');
 
 module.exports = {
 	core: { builder: '@storybook/builder-vite' },

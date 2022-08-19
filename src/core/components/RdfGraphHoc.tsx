@@ -39,8 +39,3 @@ export function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphP
 export function createRdfViewHoc<P extends RdfStateProps, R = Omit<P, keyof RdfStateProps>>(Component: FC<P>) {
 	return (props: R) => <RdfContext.Consumer>{(value) => <Component {...(value as P)} {...(props as R)} />}</RdfContext.Consumer>;
 }
-
-// export const Rdf3dGraph = createRdfGraphHoc(F3DGraph);
-// export const Rdf3dGraphView = createRdfViewHoc(Rdf3dGraph);
-// export const RdfCyGraph = createRdfGraphHoc(CyGraph);
-// export const RdfGoGraph = createRdfGraphHoc(GoGraph);
