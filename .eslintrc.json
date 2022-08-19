@@ -1,0 +1,28 @@
+{
+	"extends": ["react-app", "react-app/jest"],
+	"overrides": [
+		{
+			"files": ["**/*.stories.*"],
+			"rules": {
+				"import/no-anonymous-default-export": "off"
+			}
+		},
+		{
+			"files": ["**/*/*.*"],
+			"rules": {
+				"react/no-unknown-property": 2,
+				"react-hooks/rules-of-hooks": "off",
+				"react-hooks/exhaustive-deps": "off",
+				"no-throw-literal": 0,
+				"@typescript-eslint/no-unused-vars": [
+					"warn",
+					{
+						"argsIgnorePattern": "^_",
+						"varsIgnorePattern": "^_",
+						"caughtErrorsIgnorePattern": "^_"
+					}
+				]
+			}
+		}
+	]
+}
