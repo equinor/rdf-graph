@@ -5,6 +5,7 @@ import { StoryWrapper } from './StoryWrapper';
 import { GoGraph } from '../components/GoGraph';
 
 import { esd_turtle_border as esd_turtle } from './data/esd-turtle';
+//import * as TURTLE from './data-no-vc/SHUTDOWN_PRES';
 import { martinsTurtle } from './data/martins_verden_turtle';
 
 import { GraphLayouts } from '../types/layout.types';
@@ -16,6 +17,7 @@ export default {
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
+		//turtleString: { control: { type: 'inline-radio' }, options: Object.keys('TURTLE'), mapping: 'TURTLE' },
 		layout: { control: { type: 'inline-radio' }, options: [GraphLayouts.ForceDirected, GraphLayouts.LayeredDigraph] },
 	},
 } as ComponentMeta<typeof GoGraph>;
@@ -45,7 +47,7 @@ esdStory.args = {
 		while (stack.length > 0) {
 			const el = stack.pop()!;
 			if (el.type === 'node') {
-				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: 'red' } });
+				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: '#FF9200' } });
 				for (const edges of el.outgoing.values())
 					for (const edge of edges) {
 						if (visited.has(edge.id)) continue;
@@ -54,7 +56,7 @@ esdStory.args = {
 					}
 			}
 			if (el.type === 'edge') {
-				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: 'red' } });
+				effect.push({ action: 'add', assertion: { type: 'property', node: el, key: 'highlightStrokeColor', value: '#FF9200' } });
 				if (visited.has(el.target)) continue;
 				visited.add(el.target);
 				stack.push(el.targetRef);
