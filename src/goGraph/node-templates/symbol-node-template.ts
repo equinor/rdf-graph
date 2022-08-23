@@ -67,10 +67,10 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							.bind('width')
 							.bind('height')
 							.bind(
-								new go.Binding('source', 'uiTheme', (theme: UiTheme, d) => {
-									const data = d.part.data as SymbolNodeData;
-									const fill = theme.node.fill === null ? 'transparent' : theme.node.fill;
-									const dataU = getSymbolDataURI(data.symbolId!, { fill: fill, stroke: theme.node.stroke });
+								new go.Binding('source', 'uiTheme', ({ node }: UiTheme, { part }) => {
+									const data = part.data as SymbolNodeData;
+									const fill = node.fill === null ? 'transparent' : node.fill;
+									const dataU = getSymbolDataURI(data.symbolId!, { fill, stroke: node.stroke });
 									return dataU;
 								}).ofObject()
 							)

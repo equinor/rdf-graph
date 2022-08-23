@@ -6,6 +6,11 @@ export type UiTheme = {
 		fill: string | null;
 		stroke: string;
 		text: string;
+		hover: {
+			fill: string | null;
+			stroke: string;
+			text: string;
+		};
 	};
 	link: {
 		stroke: string;
@@ -27,7 +32,12 @@ export const lightModeTheme: UiTheme = {
 	node: {
 		fill: 'lightgreen',
 		stroke: '#1c1917',
-		text: '',
+		text: '#000',
+		hover: {
+			fill: 'RebeccaPurple',
+			stroke: 'lightgreen',
+			text: '#fff',
+		},
 	},
 	link: {
 		stroke: '#1c1917',
@@ -45,7 +55,12 @@ export const darkModeTheme: UiTheme = {
 	node: {
 		fill: '#fff',
 		stroke: '#e7e5e4',
-		text: '',
+		text: '#000',
+		hover: {
+			fill: 'RebeccaPurple',
+			stroke: '#fff',
+			text: '#fff',
+		},
 	},
 	link: {
 		stroke: '#e7e5e4',
