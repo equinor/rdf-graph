@@ -6,10 +6,12 @@ export type UiTheme = {
 		fill: string | null;
 		stroke: string;
 		text: string;
+		highlight: string;
 	};
 	link: {
 		stroke: string;
 		text: string;
+		highlight: string;
 	};
 	port: {
 		fill: string | null;
@@ -28,10 +30,12 @@ export const lightModeTheme: UiTheme = {
 		fill: 'lightgreen',
 		stroke: '#1c1917',
 		text: '',
+		highlight: '#323285',
 	},
 	link: {
 		stroke: '#1c1917',
 		text: '',
+		highlight: '#323285',
 	},
 	port: {
 		fill: '#b91c1c',
@@ -46,10 +50,12 @@ export const darkModeTheme: UiTheme = {
 		fill: '#fff',
 		stroke: '#e7e5e4',
 		text: '',
+		highlight: '#FF9200',
 	},
 	link: {
 		stroke: '#e7e5e4',
 		text: '',
+		highlight: '#FF9200',
 	},
 	port: {
 		fill: '#dc2626',

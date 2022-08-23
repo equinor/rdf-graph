@@ -69,7 +69,7 @@ function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSel
 }
 
 export const GoGraph = (props: OptionsGraphProps) => {
-	const [isPortDirection, setPortDirection] = useState(false);
+	const [isPortDirection, setPortDirection] = useState(props.options?.layout?.type === GraphLayouts.LayeredDigraph);
 	const [isDarkMode, setDarkMode] = useState(false);
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
@@ -91,8 +91,8 @@ export const GoGraph = (props: OptionsGraphProps) => {
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
-
-		model.commit((m) => m.nodeDataArray.map((d) => m.set(d, 'setPortDirection', isPortDirection)));
+		model.set(model.modelData, 'setPortDirection', isPortDirection);
+		// model.commit((m) => m.nodeDataArray.map((d) => m.set(d, 'setPortDirection', isPortDirection)));
 	}, [isPortDirection]);
 
 	useEffect(() => {
