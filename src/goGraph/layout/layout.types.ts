@@ -1,8 +1,5 @@
-import { GraphProps } from '../../core/state/GraphStateProps';
-
 export enum GoGraphLayout {
 	LayeredDigraph = 'LayeredDigraph',
-	//LayeredDigraph2 = 'LayeredDigraph2',
 	ForceDirected = 'ForceDirected',
 }
 

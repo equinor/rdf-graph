@@ -84,17 +84,10 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 			transition: 'background 0.1s ease',
 		};
 	});
+
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
-
-	// SYSTEM COLOR
-	// const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-	// console.log('prefersDark:', prefersDark);
-
-	useEffect(() => {
-		//diagramRef.current.zoomToRect(diagramRef.current.documentBounds);
-	}, []);
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
@@ -109,7 +102,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.set(model.modelData, 'setPortDirection', isPortDirection);
-		// model.commit((m) => m.nodeDataArray.map((d) => m.set(d, 'setPortDirection', isPortDirection)));
 	}, [isPortDirection]);
 
 	useEffect(() => {

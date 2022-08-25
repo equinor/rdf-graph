@@ -21,22 +21,6 @@ export function getLayout(layout: GoGraphLayoutConfig): go.Layout {
 	}
 }
 
-// export function getDefaultLayout(layout: GoGraphLayout): go.Layout {
-// 	switch (layout) {
-// 		case GoGraphLayout.LayeredDigraph:
-// 			return createLayeredDigraphLayout({
-// 				direction: 90,
-// 				setsPortSpots: false,
-// 				layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
-// 				layerSpacing: 100,
-// 			});
-// 		case GoGraphLayout.ForceDirected:
-// 			return createForceDirectedLayout();
-// 		default:
-// 			return createForceDirectedLayout();
-// 	}
-// }
-
 export function getDefaultLayoutConfig(layout: GoGraphLayout): GoGraphLayoutConfig {
 	let cfg: GoGraphLayoutConfig = { type: layout };
 	switch (layout) {
