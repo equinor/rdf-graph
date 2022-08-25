@@ -1,15 +1,16 @@
 import go, { Diagram } from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from '../link-templates/link-template-map';
 import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
 import { applyPatch } from '../applyPatch';
 
 import { NodeUiCategory } from '../types';
-import { GraphLayout, GraphLayouts, OptionsGraphProps } from '../types/layout.types';
+import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
 import { GraphSelection, GraphState } from '../../core/types';
 import { getUiTheme } from '../style/colors';
+import { GoGraphProps } from '../types/component.types';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
@@ -18,6 +19,8 @@ const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => 
 function initDiagram() {
 	const $ = go.GraphObject.make;
 	const d = $(go.Diagram, {
+		initialAutoScale: go.Diagram.Uniform,
+		initialContentAlignment: go.Spot.Center,
 		'undoManager.isEnabled': true,
 		'clickCreatingTool.archetypeNodeData': {
 			text: 'new node',
@@ -42,7 +45,7 @@ function initDiagram() {
 
 	d.linkTemplateMap = linkTemplateMap;
 
-	d.layout = new go.ForceDirectedLayout();
+	d.layout = getLayout(getDefaultLayoutConfig(GoGraphLayout.ForceDirected));
 
 	return d;
 }
@@ -68,21 +71,28 @@ function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSel
 	return selectedPayload;
 }
 
-export const GoGraph = (props: OptionsGraphProps) => {
-	const [isPortDirection, setPortDirection] = useState(props.options?.layout?.type === GraphLayouts.LayeredDigraph);
+export const GoGraph: FC<GoGraphProps> = (props) => {
+	const [isPortDirection, setPortDirection] = useState(props.options?.layout?.type === GoGraphLayout.LayeredDigraph);
 	const [isDarkMode, setDarkMode] = useState(false);
+	const [diagramStyle, setDiagramStyle] = useState<React.CSSProperties>(() => {
+		return {
+			height: '100vh',
+			width: '100%',
+			border: '1px solid lightgrey',
+			overflow: 'hidden',
+			background: getUiTheme(isDarkMode).canvas.background,
+			transition: 'background 0.1s ease',
+		};
+	});
+
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
-	// SYSTEM COLOR
-	const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-	console.log('prefersDark:', prefersDark);
-
 	useEffect(() => {
 		const { model } = diagramRef.current;
-
 		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
+		setDiagramStyle({ ...diagramStyle, background: getUiTheme(isDarkMode).canvas.background });
 	}, [isDarkMode]);
 
 	useEffect(() => {
@@ -92,7 +102,6 @@ export const GoGraph = (props: OptionsGraphProps) => {
 	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.set(model.modelData, 'setPortDirection', isPortDirection);
-		// model.commit((m) => m.nodeDataArray.map((d) => m.set(d, 'setPortDirection', isPortDirection)));
 	}, [isPortDirection]);
 
 	useEffect(() => {
@@ -102,26 +111,6 @@ export const GoGraph = (props: OptionsGraphProps) => {
 		};
 	}, []);
 
-	const getLayout = (layout: GraphLayout) => {
-		switch (layout.type) {
-			case GraphLayouts.ForceDirected:
-				setPortDirection(false);
-
-				return new go.ForceDirectedLayout();
-			case GraphLayouts.LayeredDigraph:
-				setPortDirection(true);
-
-				return new go.LayeredDigraphLayout({
-					direction: 90,
-					setsPortSpots: false,
-					layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
-					layerSpacing: 100,
-				});
-			default:
-				return new go.ForceDirectedLayout();
-		}
-	};
-
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
@@ -129,29 +118,41 @@ export const GoGraph = (props: OptionsGraphProps) => {
 	};
 
 	useEffect(() => {
-		if (!props.options?.layout) return;
+		const layout = props.options?.layout;
+		if (!layout) return;
 
-		diagramRef.current.layout = getLayout(props.options.layout);
+		switch (layout.type) {
+			case GoGraphLayout.ForceDirected:
+				setPortDirection(false);
+				break;
+			case GoGraphLayout.LayeredDigraph:
+				setPortDirection(true);
+				break;
+			default:
+				break;
+		}
+
+		diagramRef.current.layout = getLayout(layout);
 	}, [props.options?.layout]);
 
 	const handleModelChange = (_e: go.IncrementalData) => {};
 
+	useEffect(() => {
+		const style = props.options?.containerStyle;
+		if (!style) return;
+		setDiagramStyle({ ...diagramStyle, ...style });
+	}, [props.options?.containerStyle]);
+
+	useEffect(() => {
+		const theme = props.options?.theme;
+		if (!theme) return;
+		setDarkMode(theme === 'dark');
+	}, [props.options?.theme]);
+
 	return (
 		<>
-			<button
-				style={{ fontSize: '18px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-				onClick={() => setDarkMode(!isDarkMode)}>
-				{isDarkMode ? '☀️' : '🌙'}
-			</button>
 			<ReactDiagram
-				style={{
-					height: 'calc(100vh - 70px)',
-					width: '100%',
-					border: '1px solid lightgrey',
-					overflow: 'hidden',
-					background: getUiTheme(isDarkMode).canvas.background,
-					transition: 'background 0.2s ease',
-				}}
+				style={diagramStyle}
 				initDiagram={() => diagramRef.current}
 				divClassName="graph-links-model"
 				nodeDataArray={nodeDataArrayRef.current}

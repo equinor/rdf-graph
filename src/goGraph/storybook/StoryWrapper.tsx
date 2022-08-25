@@ -4,13 +4,14 @@ import { turtle2RdfTriples } from '../../core/mapper';
 import { GraphSelection, PropertyAssertion, SelectionCallback } from '../../core/types';
 
 import { useRdfActionReducer } from '../../core/state/useRdfState';
-import { GraphLayouts, LayoutProps } from '../types/layout.types';
-import { getDefaultLayout } from '../layout/default-layouts';
+
 import { RdfGoGraph } from '../RdfGoGraph';
+import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
+import { GoGraphOptions } from '../types/component.types';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
-	layout: GraphLayouts;
+	layout: GoGraphLayout;
 	selectionEffect?: SelectionCallback;
 };
 
@@ -18,7 +19,13 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 
-	const [options, setOptions] = useState<LayoutProps>();
+	const [options, setOptions] = useState<GoGraphOptions>(() => {
+		return {
+			layout: getDefaultLayoutConfig(layout),
+			containerStyle: { height: 'calc(100vh - 70px)' },
+		};
+	});
+	const [isDarkMode, setDarkMode] = useState(false);
 
 	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
 		if (!selectionEffect) {
@@ -38,21 +45,23 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 	}, [turtle]);
 
 	useEffect(() => {
-		const lay = getDefaultLayout(layout);
-		setOptions({ ...options, layout: lay });
+		const conf = getDefaultLayoutConfig(layout);
+		setOptions({ ...options, layout: conf });
 	}, [layout]);
+
+	useEffect(() => {
+		setOptions({ ...options, theme: isDarkMode ? 'dark' : 'light' });
+	}, [isDarkMode]);
 
 	return (
 		<div>
-			{/* <Button onClick={deleteSelection}> Delete </Button>
-			<Button onClick={rotateSelection}> Rotate </Button>
-			<Button onClick={switchSvg}> Switch svg </Button>
-			<Button onClick={connect}> Connect </Button>
-			<Button onClick={addNode}> Add </Button>
-			<Button onClick={changeColor}> Color </Button> */}
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			{/* <Button onClick={changeEdgeStyle}> Change Edge Style </Button>
-			<Button onClick={toggleConnectors}> Toggle Connectors </Button> */}
+
+			<button
+				style={{ fontSize: '18px', border: 'none', background: 'transparent', cursor: 'pointer' }}
+				onClick={() => setDarkMode(!isDarkMode)}>
+				{isDarkMode ? '☀️' : '🌙'}
+			</button>
 
 			<RdfGoGraph options={options} selectionEffect={handleSelection} {...state} />
 		</div>

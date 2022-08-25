@@ -60,4 +60,4 @@ export const darkModeTheme: UiTheme = {
 	port: {
 		fill: '#dc2626',
 	},
-};
+} as const;

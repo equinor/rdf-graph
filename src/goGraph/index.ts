@@ -1,3 +1,3 @@
 export * from './types';
 export { RdfGoGraph } from './RdfGoGraph';
-export * from './layout/default-layouts';
+export * from './layout/layout';
