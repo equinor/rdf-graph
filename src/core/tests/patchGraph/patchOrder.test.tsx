@@ -4,7 +4,7 @@ import { createState, SimplifiedAssertion, testPatchOrder, toAddPatch, toRmPatch
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
-test.skip('Node becomes connector and node again', () => {
+test('Node becomes connector and node again', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N1'), P.hasSvgPredicate, l('Separator_1')),
@@ -46,7 +46,7 @@ test.skip('Node becomes connector and node again', () => {
 	testPatchOrder(addedState.graphState, rmChange, expectedRmOrder);
 });
 
-test.skip('Edges becomes colored', () => {
+test('Edges becomes colored', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N2'), P.labelPredicate, l('Node 2')),
