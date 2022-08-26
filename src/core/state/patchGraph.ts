@@ -298,12 +298,6 @@ function* graphAssertion<M extends GraphState>(
 				}
 				return;
 			}
-			type FindByType<Type, Discriminator> = Type extends { type: Discriminator } ? Type : never;
-			type NodeOf<Discriminator extends AbstractNode['type']> = FindByType<AbstractNode, Discriminator>;
-			const convertNode = <T extends AbstractNode['type']>(node: AbstractNode, type: T): NodeOf<T> => {
-				node.type = type;
-				return node as NodeOf<T>;
-			};
 
 			type EdgeProps = {
 				key: string;
@@ -320,7 +314,7 @@ function* graphAssertion<M extends GraphState>(
 					pNode = p;
 				} else {
 					yield* changeNodeType(state, p, 'metadata');
-					pNode = convertNode(p, 'metadata');
+					pNode = p as any as GraphMetadata;
 				}
 				// store properties from old node (maybe just converted metadata node) in newEdgeProperties so they can be yielded later
 				for (const prop of pNode.properties.keys()) {
