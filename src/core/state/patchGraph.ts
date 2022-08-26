@@ -299,36 +299,6 @@ function* graphAssertion<M extends GraphState>(
 				return;
 			}
 
-			type EdgeProps = {
-				key: string;
-				value: string;
-			};
-			let newEdgeProperties: EdgeProps[] = [];
-			// Predicate
-			if (!state.nodeIndex.has(pTerm)) {
-				pNode = (nodeCache?.get(pTerm) as GraphMetadata) || { id: pTerm, type: 'metadata', ...initM() };
-				state.nodeIndex.set(pTerm, pNode);
-			} else {
-				const p = state.nodeIndex.get(pTerm)!;
-				if (p.type === 'metadata') {
-					pNode = p;
-				} else {
-					yield* changeNodeType(state, p, 'metadata');
-					pNode = p as any as GraphMetadata;
-				}
-				// store properties from old node (maybe just converted metadata node) in newEdgeProperties so they can be yielded later
-				for (const prop of pNode.properties.keys()) {
-					if (edgePredicate2prop.hasOwnProperty(prop)) {
-						const values = pNode.properties.get(prop);
-						if (values) {
-							for (const value of values) {
-								newEdgeProperties.push({ key: edgePredicate2prop[prop], value });
-							}
-						}
-					}
-				}
-			}
-
 			// Object IRI
 			if (!state.nodeIndex.has(oTerm)) {
 				switch (pTerm) {
@@ -356,6 +326,36 @@ function* graphAssertion<M extends GraphState>(
 					case typeIri:
 						yield* changeNodeType(state, oNode, 'metadata');
 						break;
+				}
+			}
+
+			type EdgeProps = {
+				key: string;
+				value: string;
+			};
+			let newEdgeProperties: EdgeProps[] = [];
+			// Predicate
+			if (!state.nodeIndex.has(pTerm)) {
+				pNode = (nodeCache?.get(pTerm) as GraphMetadata) || { id: pTerm, type: 'metadata', ...initM() };
+				state.nodeIndex.set(pTerm, pNode);
+			} else {
+				const p = state.nodeIndex.get(pTerm)!;
+				if (p.type === 'metadata') {
+					pNode = p;
+				} else {
+					yield* changeNodeType(state, p, 'metadata');
+					pNode = p as any as GraphMetadata;
+				}
+				// store properties from old node (maybe just converted metadata node) in newEdgeProperties so they can be yielded later
+				for (const prop of pNode.properties.keys()) {
+					if (edgePredicate2prop.hasOwnProperty(prop)) {
+						const values = pNode.properties.get(prop);
+						if (values) {
+							for (const value of values) {
+								newEdgeProperties.push({ key: edgePredicate2prop[prop], value });
+							}
+						}
+					}
 				}
 			}
 
