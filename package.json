@@ -128,7 +128,7 @@
 		"@storybook/react": "^6.5.7",
 		"@types/estree": "^1.0.0",
 		"@types/n3": "^1.10.4",
-		"@types/node": "^18.7.9",
+		"@types/node": "^18.7.13",
 		"@types/react": "^18.0.15",
 		"@types/react-cytoscapejs": "^1.2.2",
 		"@types/react-dom": "^18.0.6",
