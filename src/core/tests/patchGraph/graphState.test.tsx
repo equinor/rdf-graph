@@ -3,12 +3,12 @@ import { patchGraph } from '../../state/patchGraph';
 import { termToId } from 'n3';
 import * as P from '../../mapper/predicates';
 import { SymbolKey } from '../../../symbol-api';
-import { emptyGraph, svgWithConnectorQuads, toPatch } from './testUtils';
+import { emptyGraph, svgWithConnectorQuads, toAddPatch } from './testUtils';
 
 describe('patchGraph', () => {
 	test('normal svg', () => {
 		const quads = svgWithConnectorQuads('c1');
-		const res = patchGraph(emptyGraph(), toPatch(quads));
+		const res = patchGraph(emptyGraph(), toAddPatch(quads));
 		for (const _ of res.graphPatch) {
 		}
 		for (const q of quads) {
@@ -39,7 +39,7 @@ describe('patchGraph', () => {
 	});
 
 	test('Without existing connector', () => {
-		const res = patchGraph(emptyGraph(), toPatch(svgWithConnectorQuads("I don't exist in Seperator_1")));
+		const res = patchGraph(emptyGraph(), toAddPatch(svgWithConnectorQuads("I don't exist in Seperator_1")));
 		for (const _ of res.graphPatch) {
 		}
 		expect(res.graphState.nodeIndex.get('C')!.relativePosition!).toMatchObject({ x: 0, y: 0 });
