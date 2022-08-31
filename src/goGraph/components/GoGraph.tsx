@@ -11,6 +11,8 @@ import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
 import { GraphSelection, GraphState } from '../../core/types';
 import { getUiTheme } from '../style/colors';
 import { GoGraphProps } from '../types/component.types';
+import { UiNegotiator } from '../../core/ui/uiNegotiator';
+import { GoJsPatchHandler } from '../uiPatchHandler';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
@@ -89,6 +91,8 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
+	const uiNegotiatorRef = useRef<UiNegotiator>(new UiNegotiator(new GoJsPatchHandler(diagramRef.current)));
+
 	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
@@ -96,7 +100,9 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		applyPatch(diagramRef.current, props.graphPatch);
+		// Old approach commented out below (before ui negotiator)
+		//applyPatch(diagramRef.current, props.graphPatch);
+		uiNegotiatorRef.current.applyPatch(props.graphPatch);
 	}, [props.graphPatch]);
 
 	useEffect(() => {

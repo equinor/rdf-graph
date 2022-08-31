@@ -1,8 +1,7 @@
 import go, { GraphLinksModel } from 'gojs';
 import { nodeTemplateKey } from '../core/mapper/predicates';
-import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion } from '../core/types/graphModel';
+import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion, GraphPropertyTarget } from '../core/types/graphModel';
 import { getNodeSymbolTemplate, PortDirection } from '../symbol-api';
-import { flat } from '../core/utils/iteratorUtils';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
@@ -113,24 +112,24 @@ function patchConnector(model: go.GraphLinksModel, { action, assertion }: Assert
 			break;
 	}
 }
-function patchProperty(model: go.GraphLinksModel, { action, assertion }: Assertion<GraphProperty>) {
+function patchProperty(model: go.GraphLinksModel, { action, assertion }: Assertion<GraphProperty<GraphPropertyTarget>>) {
 	let data, parent, idx;
 
-	switch (assertion.node.type) {
+	switch (assertion.target.type) {
 		case 'edge':
-			data = model.findLinkDataForKey(assertion.node.id) as EdgeData;
+			data = model.findLinkDataForKey(assertion.target.id) as EdgeData;
 			break;
 		case 'connector':
-			parent = model.findNodeDataForKey(assertion.node.node.id) as BaseNodeData;
+			parent = model.findNodeDataForKey(assertion.target.node.id) as BaseNodeData;
 			if (!parent) break;
-			idx = (parent.ports as PortData[])?.findIndex((x) => x.portId === assertion.node.id);
+			idx = (parent.ports as PortData[])?.findIndex((x) => x.portId === assertion.target.id);
 			if (idx === -1 || idx === undefined) break;
 			data = (parent.ports as PortData[])[idx] as PortData;
 			break;
 		case 'metadata':
 			break;
 		default:
-			data = model.findNodeDataForKey(assertion.node.id) as BaseNodeData;
+			data = model.findNodeDataForKey(assertion.target.id) as BaseNodeData;
 			break;
 	}
 	if (!data) return;
@@ -174,7 +173,7 @@ function patchConnectorProp(
 	parent: go.ObjectData | undefined,
 	data: PortData,
 	idx: number | undefined,
-	{ action, assertion }: Assertion<GraphProperty>
+	{ action, assertion }: Assertion<GraphProperty<GraphPropertyTarget>>
 ) {
 	let portProp: keyof PortData, portValue: PortDirection;
 	const effect = action === 'add' ? set : unset;
@@ -234,7 +233,7 @@ function patchConnectorProp(
 function patchMappedProp(
 	model: go.GraphLinksModel,
 	data: PortData | BaseNodeData | EdgeData,
-	{ action, assertion }: Assertion<GraphProperty>,
+	{ action, assertion }: Assertion<GraphProperty<GraphPropertyTarget>>,
 	valueTransformer?: (v: any) => any
 ) {
 	if (!(assertion.key in propMap) || !data) return;
@@ -249,7 +248,7 @@ function patchProp(model: go.GraphLinksModel, data: PortData | BaseNodeData | Ed
 	effect(model, data, prop, val);
 }
 
-function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, assertion }: Assertion<GraphProperty>) {
+function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, assertion }: Assertion<GraphProperty<GraphPropertyTarget>>) {
 	if (!data) return;
 
 	const effect = action === 'add' ? set : unset;
