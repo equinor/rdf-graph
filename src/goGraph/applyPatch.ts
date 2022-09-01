@@ -259,7 +259,7 @@ function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, 
 	effect(model, data, 'width', sym.width);
 	effect(model, data, 'height', sym.height);
 	effect(model, data, 'svgDataURI', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(sym.svg));
-	effect(model, data, 'symConnectors', sym.connectors);
+	effect(model, data, 'symbolConnectors', sym.connectors);
 
 	const ports = data.ports;
 
@@ -279,7 +279,7 @@ function syncSymbolPort(
 	effect: <T extends { type: string }, K extends keyof T>(model: GraphLinksModel, o: T, p: K, v: T[K], arr?: T[], idx?: number) => void
 ) {
 	const p = parent.ports[idx];
-	const c = parent.symConnectors?.find((x) => x.id === p.name);
+	const c = parent.symbolConnectors?.find((x) => x.id === p.name);
 
 	if (c) {
 		effect(model, p, 'height', 2);

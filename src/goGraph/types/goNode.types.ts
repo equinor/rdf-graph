@@ -55,7 +55,7 @@ export type SymbolNodeData = BaseNodeData & {
 	height?: number;
 	width?: number;
 	angle?: number;
-	symConnectors?: NodeSymbolConnector[];
+	symbolConnectors?: NodeSymbolConnector[];
 };
 
 /** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */

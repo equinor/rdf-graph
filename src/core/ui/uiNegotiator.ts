@@ -1,3 +1,4 @@
+import { nodeTemplateKey } from '../mapper/predicates';
 import { Assertion, GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, GraphPropertyTarget } from '../types';
 
 export type Point = { x: number; y: number };
@@ -9,7 +10,8 @@ export interface UiNodePatchProperties {
 	borderColor: string;
 	label: string;
 	shape: UiNodeShape;
-	symbol: string;
+	symbolId: string;
+	nodeTemplate: string;
 }
 
 export interface UiEdge {
@@ -53,15 +55,15 @@ export interface IUiPatchHandler {
 	onAfterApplyPatch?: () => void;
 }
 
+// Future UiNegotiator options
 export type UiNegotiatorOptions = {};
-
-const UiNegotiatorDefaultOptions = {} as const;
+export const UiNegotiatorDefaultOptions = {} as const;
 
 /**  */
 export class UiNegotiator {
 	constructor(readonly ui: IUiPatchHandler, readonly options: UiNegotiatorOptions = UiNegotiatorDefaultOptions) {}
 
-	/**  */
+	/** Apply a GraphPatch to the UI using the IUiPatchHandler */
 	applyPatch(graphPatch: GraphPatch): void {
 		// Invoke onBeforeApplyPatch if defined
 		this.ui.onBeforeApplyPatch?.call(this.ui);
@@ -81,8 +83,20 @@ export class UiNegotiator {
 					this.patchProperty({ action, assertion });
 					break;
 				default:
-					break;
+					continue;
 			}
+			// Handy console logs for debug.
+			// console.log(
+			// 	action.toUpperCase() +
+			// 		': ' +
+			// 		assertion.type +
+			// 		' - ' +
+			// 		(assertion.target as GraphPropertyTarget)?.type +
+			// 		' - ' +
+			// 		assertion.key +
+			// 		' - ' +
+			// 		JSON.stringify(assertion.value)
+			// );
 		}
 		// Invoke onAfterApplyPatch if defined
 		this.ui.onAfterApplyPatch?.call(this.ui);
@@ -136,11 +150,14 @@ export class UiNegotiator {
 
 		switch (assertion.key) {
 			case 'symbolName':
-				propKey = 'symbol';
+				propKey = 'symbolId';
 				break;
-			// case 'direction':
-			// 	propKey = 'normalDirection';
-			// 	break;
+			case 'label':
+				propKey = 'label';
+				break;
+			case nodeTemplateKey:
+				propKey = 'nodeTemplate';
+				break;
 			default:
 				return;
 		}
