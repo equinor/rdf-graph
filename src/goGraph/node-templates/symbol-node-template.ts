@@ -57,6 +57,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					)
 					.bind(new go.Binding('text', 'label'))
 			)
+			// SYMBOL
 			.add(
 				new go.Panel(go.Panel.Position, { margin: 10 })
 					.add(
@@ -64,8 +65,8 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							background: 'transparent',
 						})
 							.bind('source', 'symbolId', (id, _d) => getSymbolDataURI(id))
-							.bind('width')
-							.bind('height')
+							.bind('width', 'symbolWidth')
+							.bind('height', 'symbolHeight')
 							.bind(
 								new go.Binding('source', 'uiTheme', (theme: UiTheme, d) => {
 									const data = d.part.data as SymbolNodeData;
@@ -81,8 +82,8 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 							itemTemplateMap: itemTemplateMap,
 						})
 							.bind('itemArray', 'ports')
-							.bind('width')
-							.bind('height')
+							.bind('width', 'symbolWidth')
+							.bind('height', 'symbolHeight')
 					)
 					.bind(new go.Binding('angle').makeTwoWay())
 					.bind(new go.Binding('scale').makeTwoWay())

@@ -23,6 +23,13 @@ export type BaseNodeData = {
 	category: NodeUiCategory;
 	label?: string;
 	ports: PortData[];
+	angle?: number;
+	height?: number;
+	width?: number;
+	symbolId?: string;
+	symbolHeight?: number;
+	symbolWidth?: number;
+	symbolConnectors?: NodeSymbolConnector[];
 };
 
 export type PortData = {

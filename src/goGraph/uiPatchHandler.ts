@@ -1,7 +1,15 @@
 import go from 'gojs';
-import { IUiPatchHandler, UiConnectorPatchProperties, UiEdge, UiEdgePatchProperties, UiNodePatchProperties } from '../core/ui/uiNegotiator';
+import {
+	IUiPatchHandler,
+	UiConnectorPatchProperties,
+	UiEdge,
+	UiEdgePatchProperties,
+	UiNodeConnector,
+	UiNodePatchProperties,
+	UiNodeSymbol,
+} from '../core/ui/uiNegotiator';
 import { getNodeSymbolTemplate } from '../symbol-api';
-import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
+import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } from './types';
 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	backgroundColor: 'fill',
@@ -10,13 +18,11 @@ const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	shape: 'shape',
 	symbolId: 'symbolId',
 	nodeTemplate: 'nodeTemplate',
+	symbolHeight: 'symbolHeight',
+	symbolWidth: 'symbolWidth',
 };
 
 export class GoJsPatchHandler implements IUiPatchHandler {
-	private _linkModel(): go.GraphLinksModel {
-		return this.diagram.model as go.GraphLinksModel;
-	}
-
 	constructor(readonly diagram: go.Diagram) {}
 
 	addNode(id: string): void {
@@ -40,15 +46,8 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		if (!nodeData) return;
 
 		if (prop === 'symbolId') {
-			const symbol = getNodeSymbolTemplate(value);
 			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.SvgSymbol);
-			this.diagram.model.setDataProperty(nodeData, 'width', symbol.width);
-			this.diagram.model.setDataProperty(nodeData, 'height', symbol.height);
 			this.diagram.model.setDataProperty(nodeData, 'symbolId', value);
-			this.diagram.model.setDataProperty(nodeData, 'symbolConnectors', symbol.connectors);
-
-			// Add port information (from symbol.connectors) to any existing ports
-			if (nodeData.ports) this.syncSymbolPorts(nodeId);
 			return;
 		}
 
@@ -69,7 +68,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			return;
 		}
 
-		// Set property directly using map
+		// Set property directly using map for other node props
 		const nodePropKey = nodePropMap[prop];
 		this.diagram.model.setDataProperty(nodeData, nodePropKey, value);
 	}
@@ -106,7 +105,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		const ports = nodeData.ports as PortData[];
 		const portIdx = ports.findIndex((p) => p.id === id);
 		if (portIdx < 0) {
-			console.error(`port ${id} not found on node ${nodeId}`);
+			console.error(`Port '${id}' not found on node ${nodeId}`);
 			return;
 		}
 		this.diagram.model.removeArrayItem(nodeData.ports, portIdx);
@@ -118,9 +117,6 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		prop: P,
 		value: UiConnectorPatchProperties[P]
 	): void {
-		//console.warn('<addConnectorProperty> not implemented.');
-		//console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}, value: ${value}`);
-
 		const nodeData = this.getNodeData(nodeId) as BaseNodeData;
 		const portIdx = nodeData.ports.findIndex((p) => p.id === id);
 
@@ -134,13 +130,16 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		switch (prop) {
 			case 'name':
 				model.set(nodeData.ports[portIdx], 'name', value);
-				this.syncSymbolPorts(nodeId);
 				break;
 			case 'normalDirection':
+				model.set(nodeData.ports[portIdx], 'direction', value);
 				break;
 			case 'color':
+				// TODO: ?
 				break;
 			case 'position':
+				const p = value as go.Point;
+				model.set(nodeData.ports[portIdx], 'relativePosition', new go.Point(p.x, p.y));
 				break;
 			default:
 				break;
@@ -178,6 +177,19 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		console.warn('<removeEdgeProperty> not implemented.');
 	}
 
+	getNodeSymbol(id: string): UiNodeSymbol {
+		const symbol = getNodeSymbolTemplate(id);
+
+		return {
+			id: symbol.id,
+			width: symbol.width,
+			height: symbol.height,
+			connectors: symbol.connectors.map<UiNodeConnector>((c) => {
+				return { id: c.id, width: 2, height: 2, direction: c.portDirection, position: { x: c.point.x, y: c.point.y } };
+			}, []),
+		};
+	}
+
 	onBeforeApplyPatch() {
 		this.transactionId = 'patch_' + Date.now();
 		this.diagram.startTransaction(this.transactionId);
@@ -185,11 +197,12 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 
 	onAfterApplyPatch() {
 		this.diagram.commitTransaction(this.transactionId);
+		console.info('GoJS Transaction completed:', this.transactionId);
 		this.transactionId = '';
 
 		// Handy console logs for debug.
-		// console.log({ ...this.diagram.model.nodeDataArray });
-		// console.log({ ...(this.diagram.model as go.GraphLinksModel).linkDataArray });
+		console.log({ ...this.diagram.model.nodeDataArray });
+		console.log({ ...(this.diagram.model as go.GraphLinksModel).linkDataArray });
 	}
 
 	// Private stuff
@@ -198,24 +211,5 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 
 	private getNodeData(id: go.Key) {
 		return this.diagram.model.findNodeDataForKey(id);
-	}
-
-	/** Syncs node ports and the node's symbol connectors.
-	 *  We need to get direction and position from the symbol port data
-	 */
-	private syncSymbolPorts(nodeId: string) {
-		const nodeData = this.getNodeData(nodeId) as SymbolNodeData;
-
-		if (!nodeData.symbolConnectors) return;
-
-		for (let i = 0; i < nodeData.ports.length; i++) {
-			const p = nodeData.ports[i];
-			const c = nodeData.symbolConnectors.find((co) => co.id === p.name);
-
-			if (!c) continue;
-			this.diagram.model.setDataProperty(p, 'direction', c.portDirection);
-			this.diagram.model.setDataProperty(p, 'relativePosition', new go.Point(c.point.x, c.point.y));
-			this.diagram.model.setDataProperty(p, 'category', NodeUiItemCategory.PositionPort);
-		}
 	}
 }

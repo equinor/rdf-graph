@@ -120,7 +120,8 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
-		applyPatch(diagramRef.current, props.selectionEffect(selection));
+		uiNegotiatorRef.current.applyPatch(props.selectionEffect(selection));
+		//applyPatch(diagramRef.current, props.selectionEffect(selection));
 	};
 
 	useEffect(() => {
