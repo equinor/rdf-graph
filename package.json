@@ -107,7 +107,7 @@
 	},
 	"dependencies": {
 		"@equinor/eds-core-react": "^0.20.4",
-		"3d-force-graph": "^1.70.12",
+		"3d-force-graph": "^1.70.13",
 		"cytoscape": "^3.22.1",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
@@ -115,7 +115,7 @@
 		"n3": "^1.16.2",
 		"react-cytoscapejs": "^1.2.1",
 		"react-force-graph": "^1.41.12",
-		"three": "^0.143.0"
+		"three": "^0.144.0"
 	},
 	"devDependencies": {
 		"@rdfjs/types": "^1.1.0",

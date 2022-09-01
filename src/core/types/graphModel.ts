@@ -53,7 +53,7 @@ export type GraphEdge = {
 	targetConnectorRef?: GraphConnector;
 	metadata: GraphMetadata;
 	origin: Quad | GraphEdge;
-};
+} & GraphVisualProps;
 
 export type GraphProperty = {
 	type: 'property';

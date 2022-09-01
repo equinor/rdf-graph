@@ -128,15 +128,7 @@ function patchProperty(model: go.GraphLinksModel, { action, assertion }: Asserti
 			data = (parent.ports as PortData[])[idx] as PortData;
 			break;
 		case 'metadata':
-			const edges = flat(assertion.node.edges.values());
-			for (const edge of edges) {
-				console.log('Coloring ', edge.id);
-				patchProperty(model, {
-					action,
-					assertion: { ...assertion, node: edge },
-				});
-			}
-			return;
+			break;
 		default:
 			data = model.findNodeDataForKey(assertion.node.id) as BaseNodeData;
 			break;
