@@ -1,7 +1,7 @@
 import { DataFactory } from 'n3';
 import { labelPredicate, rotationIri, rotationPredicate } from '../core/mapper/predicates';
-import { RdfPatch2 } from '../core/types';
-import { GraphElementBase, GraphSelection } from '../core/types/graphModel';
+import { RdfAssertion, RdfPatch2 } from '../core/types';
+import { GraphElementBase, GraphNode, GraphSelection } from '../core/types/graphModel';
 import { SymbolKey } from '../symbol-api';
 
 const { namedNode, literal, quad } = DataFactory;
@@ -53,8 +53,16 @@ type ChangeLabelAction = {
 };
 
 type ConnectAction = {
-	type: 'connect';
-	payload: { subject: string; predicate: string; object: string };
+	type: 'connectSelection';
+	predicate: string;
+	selection: GraphSelection;
+};
+
+type AddPropertyAction = {
+	type: 'addProperty';
+	key: string;
+	value: string;
+	selection: GraphSelection;
 };
 
 type RedrawAction = {
@@ -71,6 +79,7 @@ export type ClientAction =
 	| ChangeLabelAction
 	| ChangeDataAction
 	| ConnectAction
+	| AddPropertyAction
 	| RotateSelection
 	| RedrawAction;
 
@@ -80,22 +89,22 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			yield { action: 'add', assertion: quad(namedNode(action.iri), labelPredicate, literal(action.label)) };
 			return;
 		case 'deleteSelection':
-			for (const node of action.selection as GraphElementBase[]) {
-				for (const [predicate, value] of node.incoming) {
+			for (const element of action.selection as GraphElementBase[]) {
+				for (const [predicate, value] of element.incoming) {
 					for (const subject of value) {
-						yield { action: 'remove', assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(node.id)) };
+						yield { action: 'remove', assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(element.id)) };
 					}
 				}
 
-				for (const [predicate, value] of node.outgoing) {
-					for (const object of value) {
-						yield { action: 'remove', assertion: quad(namedNode(node.id), namedNode(predicate), namedNode(object.id)) };
+				for (const [predicate, value] of element.outgoing) {
+					for (const edgy of value) {
+						yield { action: 'remove', assertion: quad(namedNode(element.id), namedNode(predicate), namedNode(edgy.targetRef.id)) };
 					}
 				}
 
-				for (const [key, values] of node.properties) {
+				for (const [key, values] of element.properties) {
 					for (const value of values) {
-						yield { action: 'remove', assertion: quad(namedNode(node.id), namedNode(key), literal(value)) };
+						yield { action: 'remove', assertion: quad(namedNode(element.id), namedNode(key), literal(value)) };
 					}
 				}
 			}
@@ -113,6 +122,24 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			}
 			break;
 
+		case 'addProperty':
+			for (const node of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
+				const assertion: RdfAssertion = { action: 'add', assertion: quad(namedNode(node.id), namedNode(action.key), literal(action.value)) };
+				yield assertion;
+			}
+			break;
+
+		case 'connectSelection':
+			const nodesToConnect = action.selection.filter((s) => s.type === 'node') as GraphNode[];
+			for (const node1 of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
+				for (const node2 of nodesToConnect) {
+					if (node1 !== node2) {
+						yield { action: 'add', assertion: quad(namedNode(node1.id), namedNode(action.predicate), namedNode(node2.id)) };
+					}
+				}
+			}
+			break;
+
 		/* case 'updateSelection':
 			return { ...state, graphSelection: action.payload };
 		case 'updateTurtle':
@@ -125,10 +152,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			return createNewState(state, updateData([action.payload.id], labelPredicate.value, action.payload.label));
 		case 'changeData':
 			return createNewState(state, updateData(action.payload.ids, action.payload.predicate, action.payload.value));
-		case 'connect':
-			return createNewPatchState(state, [
-				quad(namedNode(action.payload.subject), namedNode(action.payload.predicate), namedNode(action.payload.object)),
-			]);
+		
 		case 'redraw':
 			return { ...state, forceRedraw: state.forceRedraw + 1 };
 		case 'updateUiConfig':

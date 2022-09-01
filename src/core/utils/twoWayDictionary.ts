@@ -9,6 +9,14 @@ export class TwoWayMap {
 		}
 	}
 
+	keys() {
+		return Object.keys(this.dict);
+	}
+
+	values() {
+		return Object.keys(this.reverseMap);
+	}
+
 	includes(key: string) {
 		return this.dict.hasOwnProperty(key);
 	}
