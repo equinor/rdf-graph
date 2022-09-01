@@ -135,7 +135,7 @@
 		"@types/three": "^0.143.0",
 		"@vitejs/plugin-react": "^2.0.1",
 		"babel-loader": "^8.2.5",
-		"eslint": "^8.22.0",
+		"eslint": "^8.23.0",
 		"eslint-config-react-app": "^7.0.1",
 		"gojs": "^2.2.14",
 		"gojs-react": "^1.1.1",
