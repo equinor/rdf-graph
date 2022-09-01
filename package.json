@@ -121,7 +121,7 @@
 		"@rdfjs/types": "^1.1.0",
 		"@rollup/plugin-commonjs": "^22.0.0",
 		"@rollup/plugin-node-resolve": "^13.3.0",
-		"@rollup/plugin-typescript": "^8.3.2",
+		"@rollup/plugin-typescript": "^8.4.0",
 		"@storybook/addon-essentials": "^6.5.7",
 		"@storybook/addon-links": "^6.5.7",
 		"@storybook/builder-vite": "^0.2.2",

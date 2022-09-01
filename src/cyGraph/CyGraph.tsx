@@ -25,22 +25,28 @@ const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
 };
 
 const addProperty = ({ key, node, value }: GraphProperty, cy: Cytoscape.Core) => {
-	const nodeById = cy.getElementById(node.id);
+	const elementById = cy.getElementById(node.id);
 
 	switch (key) {
 		case 'symbol':
-			nodeById.data(nodeTypeKey, NodeType.SymbolContainer);
-			nodeById.data(key, value);
+			elementById.data(nodeTypeKey, NodeType.SymbolContainer);
+			elementById.data(key, value);
 			break;
 		case 'relativePosition':
-			nodeById.data(nodeTypeKey, NodeType.SymbolConnector);
-			nodeById.data(key, value);
+			elementById.data(nodeTypeKey, NodeType.SymbolConnector);
+			elementById.data(key, value);
 			break;
 		case 'parent':
-			nodeById.move({ parent: (node as any).parent!.id });
+			elementById.move({ parent: (node as any).parent!.id });
+			break;
+		case 'color':
+			if (elementById.isEdge()) {
+				elementById.data('lineColor', value);
+			}
+			elementById.data(key, value);
 			break;
 		default:
-			nodeById.data(key, value);
+			elementById.data(key, value);
 	}
 };
 
@@ -102,7 +108,6 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 						if (assertion.key === 'symbol') {
 							createImageNode(assertion.node.id, (assertion.node as any).symbol!, cy);
 						}
-
 						break;
 					case 'edge':
 						if (assertion.metadata.id !== hasConnectorIri) {
@@ -283,12 +288,16 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 						// 'curve-style': state.uiConfig.edgeStyle,
 						'curve-style': 'bezier',
 						width: '1px',
-						color: 'black',
-						'line-color': 'black',
 						'target-arrow-color': '#ccc',
 						'target-arrow-fill': 'filled',
 						'target-arrow-shape': 'chevron',
 						'arrow-scale': 1.5,
+					},
+				},
+				{
+					selector: `edge[${colorKey}]`,
+					style: {
+						'line-color': `data(${colorKey})`,
 					},
 				},
 			]}

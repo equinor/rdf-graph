@@ -33,8 +33,9 @@ import {
 	hasDirectionIri,
 	typeIri,
 } from '../mapper/predicates';
+
 import { getSymbol, Point } from '../../symbol-api';
-import { flatMap, unique } from '../utils/iteratorUtils';
+import { flat, flatMap, unique } from '../utils/iteratorUtils';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -124,6 +125,12 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasNodeTemplateIri]: nodeTemplateKey,
 	[hasDirectionIri]: directionKey,
 };
+
+const edgePredicate2prop: { [index: string]: ValueProp } = {
+	[labelIri]: labelKey,
+	[colorIri]: colorKey,
+};
+
 function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 	for (const dep of propertyDependents[prop]) {
 		let queue = [...dep];
@@ -131,7 +138,6 @@ function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 		let currDep = queue.shift()!;
 		while (queue.length > 0) {
 			if (Array.isArray(currNode)) {
-				// TODO ask Eirik about this
 				// eslint-disable-next-line no-loop-func
 				currNode = currNode.map((n) => n[currDep]).filter((n) => n);
 			} else {
@@ -170,8 +176,7 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
 	relativePosition: invalidator('relativePosition', ({ type, node, connectorName }) => {
-		if (type !== 'connector' || !node) return undefined;
-		if (!connectorName || !node.symbol) return new Point(0, 0);
+		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
 		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
 		return c?.point || new Point(0, 0);
 	}),
@@ -197,7 +202,6 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 const dependentQuads = (n: AbstractNode) =>
 	unique(
 		(function* (n: AbstractNode) {
-			// const set = new Set<Quad>();
 			for (const [iri, vals] of n.properties.entries())
 				for (const l of vals) yield new Quad(termFromId(n.id, DataFactory), termFromId(iri, DataFactory), DataFactory.literal(l));
 			for (const val of n.outgoing.values())
@@ -219,6 +223,7 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 
 	// fetch sub-graph directly connected to this node
 	const quads = [...dependentQuads(n)];
+
 	// seed node-cache with changed node
 	const nodeCache = new Map<string, AbstractNode>();
 	// disconnect the node completely (remove properties, incoming/outgoing edges and lastly the node itself)
@@ -226,7 +231,7 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 
 	// the ol' switcharoo
 	n.type = type;
-	switch (n.type) {
+	switch (type) {
 		case 'node':
 			delete n.edges;
 			delete n.node;
@@ -235,7 +240,7 @@ function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['typ
 			delete n.edges;
 			break;
 		case 'metadata':
-			n.edges = n.edges || [];
+			n.edges = n.edges || new Map();
 			delete n.node;
 			break;
 	}
@@ -252,7 +257,7 @@ function* graphAssertion<M extends GraphState>(
 	nodeCache?: Map<string, AbstractNode>
 ): Iterable<GraphAssertion> {
 	const q = assertion;
-	let sNode: AbstractNode, pNode: GraphMetadata, oNode: AbstractNode;
+	let sNode: AbstractNode, pNode: AbstractNode, oNode: AbstractNode;
 	const sTerm = termToId(q.subject);
 	const pTerm = termToId(q.predicate);
 	const isConnectorPredicate = pTerm === hasConnectorIri;
@@ -264,32 +269,34 @@ function* graphAssertion<M extends GraphState>(
 			if (!state.nodeIndex.has(sTerm)) {
 				sNode = nodeCache?.get(sTerm) || { type: 'node', id: sTerm, ...initAN() };
 				state.nodeIndex.set(sTerm, sNode);
-				yield { action: 'add', assertion: sNode };
+				if (sNode.type !== 'metadata') {
+					yield { action: 'add', assertion: sNode };
+				}
 			} else {
+				//Handle existing predicate...
 				sNode = state.nodeIndex.get(sTerm)!;
 			}
 			// Object literal
 			if (!oTerm) {
 				add(sNode.properties, pTerm, q.object.value);
-
-				if (predicate2prop.hasOwnProperty(pTerm)) {
+				if (sNode.type === 'metadata') {
+					if (edgePredicate2prop.hasOwnProperty(pTerm)) {
+						const edges = flat(sNode.edges.values());
+						for (const edge of edges) {
+							yield {
+								action: 'add',
+								assertion: { type: 'property', key: edgePredicate2prop[pTerm], value: q.object.value, node: edge },
+							};
+						}
+					} else {
+						console.warn(
+							`${sTerm} is used as predicate before and subject now, but ${pTerm} is an unknown predicate, triple will be ignored.`
+						);
+					}
+				} else if (predicate2prop.hasOwnProperty(pTerm)) {
 					yield* propInvalidations[predicate2prop[pTerm] as ValueProp](sNode);
 				}
 				return;
-			}
-			// Predicate
-			if (!state.nodeIndex.has(pTerm)) {
-				pNode = (nodeCache?.get(pTerm) as GraphMetadata) || { id: pTerm, type: 'metadata', ...initM() };
-				state.nodeIndex.set(pTerm, pNode);
-				yield { action: 'add', assertion: pNode };
-			} else {
-				const p = state.nodeIndex.get(pTerm)!;
-				if (p.type === 'metadata') {
-					pNode = p;
-				} else {
-					pNode = p as any as GraphMetadata;
-					yield* changeNodeType(state, p, 'metadata');
-				}
 			}
 
 			// Object IRI
@@ -297,16 +304,17 @@ function* graphAssertion<M extends GraphState>(
 				switch (pTerm) {
 					case hasConnectorIri:
 						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'connector', node: sNode, ...initAN() } as GraphConnector);
+						yield { action: 'add', assertion: oNode };
 						break;
 					case typeIri:
 						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'metadata', ...initM() } as GraphMetadata);
 						break;
 					default:
 						oNode = nodeCache?.get(oTerm) || ({ id: oTerm, type: 'node', ...initAN() } as GraphNode);
+						yield { action: 'add', assertion: oNode };
 						break;
 				}
 				state.nodeIndex.set(oTerm, oNode);
-				yield { action: 'add', assertion: oNode };
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
 
@@ -320,6 +328,37 @@ function* graphAssertion<M extends GraphState>(
 						break;
 				}
 			}
+
+			type EdgeProps = {
+				key: string;
+				value: string;
+			};
+			let newEdgeProperties: EdgeProps[] = [];
+			// Predicate
+			if (!state.nodeIndex.has(pTerm)) {
+				pNode = (nodeCache?.get(pTerm) as GraphMetadata) || { id: pTerm, type: 'metadata', ...initM() };
+				state.nodeIndex.set(pTerm, pNode);
+			} else {
+				const p = state.nodeIndex.get(pTerm)!;
+				if (p.type === 'metadata') {
+					pNode = p;
+				} else {
+					yield* changeNodeType(state, p, 'metadata');
+					pNode = p as any as GraphMetadata;
+				}
+				// store properties from old node (maybe just converted metadata node) in newEdgeProperties so they can be yielded later
+				for (const prop of pNode.properties.keys()) {
+					if (edgePredicate2prop.hasOwnProperty(prop)) {
+						const values = pNode.properties.get(prop);
+						if (values) {
+							for (const value of values) {
+								newEdgeProperties.push({ key: edgePredicate2prop[prop], value });
+							}
+						}
+					}
+				}
+			}
+
 			let edge: GraphEdge = {
 				id: quadToString(q),
 				metadata: pNode,
@@ -342,6 +381,10 @@ function* graphAssertion<M extends GraphState>(
 				sNode[connectorKey]!.push(oNode as GraphConnector);
 			} else if (pTerm === typeIri) {
 				// not part of visual edges, for now do nothing more than keep in property-graph
+			} else if (sNode.type === 'metadata') {
+				console.warn(
+					`${sTerm} is used as predicate before and subject now, but ${oTerm} is an IRI, only literals allowed when using predicates as subject, triple will be ignored.`
+				);
 			} else if (sNode.type === 'connector' || oNode.type === 'connector') {
 				// source and|or target node is a connector, track and yield an edge hooked up to connectors
 				let sc: Partial<GraphEdge>, tc: Partial<GraphEdge>;
@@ -368,14 +411,20 @@ function* graphAssertion<M extends GraphState>(
 				add(pNode.edges, connectorEdge.id, connectorEdge);
 				state.linkIndex.set(connectorEdge.id, connectorEdge);
 
-				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: connectorEdge };
-				yield edgeAssertion;
+				const connectorEdgeAssertion: EdgeAssertion = { action: 'add', assertion: connectorEdge };
+				yield connectorEdgeAssertion;
+				for (const prop of newEdgeProperties) {
+					yield { action: 'add', assertion: { type: 'property', key: prop.key, value: prop.value, node: connectorEdge } };
+				}
 			} else {
 				// regular edge, no connectors. Track and yield.
 				state.linkIndex.set(edge.id, edge);
 
 				const edgeAssertion: EdgeAssertion = { action: 'add', assertion: edge };
 				yield edgeAssertion;
+				for (const prop of newEdgeProperties) {
+					yield { action: 'add', assertion: { type: 'property', key: prop.key, value: prop.value, node: edge } };
+				}
 			}
 			if (predicate2prop.hasOwnProperty(pTerm)) {
 				// calculate dependencies (if any)
@@ -391,6 +440,16 @@ function* graphAssertion<M extends GraphState>(
 				if (predicate2prop.hasOwnProperty(pTerm)) {
 					yield* propInvalidations[predicate2prop[pTerm] as ValueProp](sNode);
 				}
+
+				if (edgePredicate2prop.hasOwnProperty(pTerm) && sNode.type === 'metadata') {
+					const edges = flat(sNode.edges.values());
+					for (const edge of edges) {
+						yield {
+							action: 'remove',
+							assertion: { type: 'property', key: edgePredicate2prop[pTerm], value: q.object.value, node: edge },
+						};
+					}
+				}
 			} else {
 				oNode = state.nodeIndex.get(oTerm)!;
 				const edgeId = quadToString(q);
@@ -401,14 +460,9 @@ function* graphAssertion<M extends GraphState>(
 				if (isConnectorPredicate) {
 					// sNode.
 					removeElement(sNode[connectorKey]!, oNode);
-					// yield { action: 'remove', assertion: { type: 'property', node: sNode, key: connectorKey, value: oNode } };
 					if (oNode.type === 'connector' && (oNode.incoming.get(hasConnectorIri) || []).length < 1) {
 						yield* changeNodeType(state, oNode, 'node');
 					}
-					// if ((oNode.incoming.get(hasConnectorIri) || []).length > 0) {
-					// 	oNode.node = oNode.incoming.get(hasConnectorIri)![0];
-					// 	yield* changeNodeType(state, oNode, 'connector');
-					// }
 				} else if (pTerm === typeIri) {
 				} else {
 					const edge = state.linkIndex.get(edgeId)!;
@@ -426,6 +480,16 @@ function* graphAssertion<M extends GraphState>(
 						remove(target.incoming, pTerm, edge);
 					}
 
+					for (const prop of pNode.properties.keys()) {
+						if (edgePredicate2prop.hasOwnProperty(prop)) {
+							const values = pNode.properties.get(prop);
+							if (values) {
+								for (const value of values) {
+									yield { action: 'remove', assertion: { type: 'property', key: prop, value: value, node: edge } };
+								}
+							}
+						}
+					}
 					const edgeAssertion: EdgeAssertion = { action: 'remove', assertion: edge };
 					yield edgeAssertion;
 				}
@@ -443,7 +507,6 @@ function* graphAssertion<M extends GraphState>(
 				if (refCount(pNode) < 1) {
 					state.nodeIndex.delete(pTerm);
 					nodeCache?.set(pNode.id, pNode);
-					yield { action: 'remove', assertion: pNode };
 				} else if (pNode.edges.size < 1) {
 					yield* changeNodeType(state, pNode, 'node');
 				}
@@ -452,8 +515,9 @@ function* graphAssertion<M extends GraphState>(
 			if (refCount(sNode) < 1) {
 				state.nodeIndex.delete(sTerm);
 				nodeCache?.set(sNode.id, sNode);
-
-				yield { action: 'remove', assertion: sNode };
+				if (sNode.type !== 'metadata') {
+					yield { action: 'remove', assertion: sNode };
+				}
 			}
 
 			break;
