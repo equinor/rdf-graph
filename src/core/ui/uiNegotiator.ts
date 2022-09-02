@@ -38,7 +38,7 @@ export interface UiConnectorPatchProperties {
 	name: string;
 	color: string;
 	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
-	/** The angle that the connector has to  */
+	/** The angle that the connector arm has to the node at default rotation */
 	normalDirection: number;
 }
 
@@ -46,7 +46,7 @@ export interface UiNodeSymbol {
 	id: string;
 	width: number;
 	height: number;
-	//angle?: number;
+	angle?: number;
 	svg?: string;
 	connectors: UiNodeConnector[];
 }
@@ -85,7 +85,6 @@ export interface IUiPatchHandler {
 export type UiNegotiatorOptions = {};
 export const UiNegotiatorDefaultOptions = {} as const;
 
-/**  */
 export class UiNegotiator {
 	// In memory symbol store
 	private _nodeSymbols: Map<string, Readonly<UiNodeSymbol> | undefined> = new Map();
@@ -97,7 +96,6 @@ export class UiNegotiator {
 
 	/** Apply a GraphPatch to the UI using the IUiPatchHandler */
 	applyPatch(graphPatch: GraphPatch): void {
-		// Invoke onBeforeApplyPatch if defined
 		this.ui.onBeforeApplyPatch?.call(this.ui);
 
 		for (const { action, assertion } of graphPatch) {
@@ -131,7 +129,6 @@ export class UiNegotiator {
 			// );
 		}
 
-		// Invoke onAfterApplyPatch if defined
 		this.ui.onAfterApplyPatch?.call(this.ui);
 	}
 

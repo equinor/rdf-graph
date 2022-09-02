@@ -10,8 +10,6 @@ import { martinsTurtle } from './data/martins_verden_turtle';
 
 import { lorentz_turtle } from './data/lorentz_ttl';
 
-//import lorentzTurtle from './data/lorentz.ttl?raw';
-
 import { Assertion, GraphProperty, GraphPropertyTarget, GraphSelection } from '../../core/types';
 import { GoGraphLayout } from '../layout';
 

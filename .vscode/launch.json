@@ -16,7 +16,7 @@
 			"name": "Launch Microsoft Edge",
 			"request": "launch",
 			"runtimeArgs": ["--remote-debugging-port=9222"],
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
@@ -26,7 +26,7 @@
 			"name": "Launch Microsoft Edge in headless mode",
 			"request": "launch",
 			"runtimeArgs": ["--headless", "--remote-debugging-port=9222"],
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
@@ -35,7 +35,7 @@
 			"type": "vscode-edge-devtools.debug",
 			"name": "Open Edge DevTools",
 			"request": "attach",
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
@@ -45,7 +45,7 @@
 			"name": "Launch Chrome",
 			"request": "launch",
 			"runtimeArgs": ["--remote-debugging-port=9222"],
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
