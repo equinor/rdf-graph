@@ -1,6 +1,7 @@
 import go from 'gojs';
 import {
 	IUiPatchHandler,
+	Point,
 	UiConnectorPatchProperties,
 	UiEdge,
 	UiEdgePatchProperties,
@@ -31,6 +32,13 @@ const edgePropMap: Record<keyof UiEdgePatchProperties, string> = {
 	thickness: 'stroke',
 };
 
+const connectorPropMap: Record<keyof UiConnectorPatchProperties, string> = {
+	color: 'color',
+	name: 'name',
+	normalDirection: 'direction',
+	position: 'relativePosition',
+};
+
 export class GoJsPatchHandler implements IUiPatchHandler {
 	constructor(readonly diagram: go.Diagram) {}
 
@@ -45,13 +53,13 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeNode(id: string): void {
-		const nodeData = this.getNodeData(id);
+		const nodeData = this._getNodeData(id);
 		if (!nodeData) return;
 		this.diagram.model.removeNodeData(nodeData);
 	}
 
 	addNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P, value: UiNodePatchProperties[P]): void {
-		const nodeData = this.getNodeData(nodeId) as BaseNodeData;
+		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 		if (!nodeData) return;
 
 		if (prop === 'symbolId') {
@@ -83,7 +91,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void {
-		const nodeData = this.getNodeData(nodeId);
+		const nodeData = this._getNodeData(nodeId);
 		if (!nodeData) return;
 
 		const nodePropKey = nodePropMap[prop];
@@ -103,7 +111,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	addConnector(id: string, nodeId: string): void {
-		const nodeData = this.getNodeData(nodeId) as BaseNodeData;
+		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 
 		const port: PortData = {
 			type: 'port',
@@ -120,7 +128,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeConnector(id: string, nodeId: string): void {
-		const nodeData = this.getNodeData(nodeId) as BaseNodeData;
+		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 		if (!nodeData.ports) return;
 
 		const ports = nodeData.ports as PortData[];
@@ -138,7 +146,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		prop: P,
 		value: UiConnectorPatchProperties[P]
 	): void {
-		const nodeData = this.getNodeData(nodeId) as BaseNodeData;
+		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 		const portIdx = nodeData.ports.findIndex((p) => p.id === id);
 
 		if (portIdx < 0 && typeof portIdx != 'number') {
@@ -146,25 +154,16 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			return;
 		}
 
-		const model = this.diagram.model as go.GraphLinksModel;
+		let commitValue: UiConnectorPatchProperties[P] | unknown = value;
 
-		switch (prop) {
-			case 'name':
-				model.set(nodeData.ports[portIdx], 'name', value);
-				break;
-			case 'normalDirection':
-				model.set(nodeData.ports[portIdx], 'direction', value);
-				break;
-			case 'color':
-				// TODO: ?
-				break;
-			case 'position':
-				const p = value as go.Point;
-				model.set(nodeData.ports[portIdx], 'relativePosition', new go.Point(p.x, p.y));
-				break;
-			default:
-				break;
+		// Convert point value to a go.Point
+		if (prop === 'position') {
+			const p = value as Point;
+			commitValue = new go.Point(p.x, p.y);
 		}
+
+		const connectorPropKey = connectorPropMap[prop];
+		this.diagram.model.set(nodeData.ports[portIdx], connectorPropKey, commitValue);
 	}
 
 	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(id: string, nodeId: string, prop: P): void {
@@ -182,17 +181,17 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			toPort: edge.toConnector,
 		};
 
-		(this.diagram.model as go.GraphLinksModel).addLinkData(edgeData);
+		this._linkModel.addLinkData(edgeData);
 	}
 
 	removeEdge(edgeId: string): void {
-		const link = (this.diagram.model as go.GraphLinksModel).findLinkDataForKey(edgeId);
+		const link = this._linkModel.findLinkDataForKey(edgeId);
 		if (!link) return;
-		(this.diagram.model as go.GraphLinksModel).removeLinkData(link);
+		this._linkModel.removeLinkData(link);
 	}
 
 	addEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P, value: UiEdgePatchProperties[P]): void {
-		const linkData = (this.diagram.model as go.GraphLinksModel).findLinkDataForKey(edgeId);
+		const linkData = this._linkModel.findLinkDataForKey(edgeId);
 		if (!linkData) return;
 
 		const edgePropKey = edgePropMap[prop];
@@ -200,7 +199,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void {
-		const linkData = (this.diagram.model as go.GraphLinksModel).findLinkDataForKey(edgeId);
+		const linkData = this._linkModel.findLinkDataForKey(edgeId);
 		if (!linkData) return;
 
 		const edgePropKey = edgePropMap[prop];
@@ -251,7 +250,11 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 
 	private transactionId: string = '';
 
-	private getNodeData(id: go.Key) {
+	private _getNodeData(id: go.Key) {
 		return this.diagram.model.findNodeDataForKey(id);
+	}
+
+	private get _linkModel(): go.GraphLinksModel {
+		return this.diagram.model as go.GraphLinksModel;
 	}
 }
