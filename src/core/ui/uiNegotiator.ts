@@ -248,7 +248,7 @@ export class UiNegotiator {
 		}
 	}
 
-	/** Add or remove edge property (TOTALLY INCOMPLETE)  */
+	/** Add or remove edge property  */
 	private patchEdgeProperty({ action, assertion }: Assertion<GraphProperty<GraphEdge>>) {
 		let propKey: keyof UiEdgePatchProperties;
 
@@ -292,7 +292,7 @@ export class UiNegotiator {
 
 			this.syncSymbolConnectors(assertion.target.id);
 		} else {
-			// TODO: implement remove action
+			// TODO: implement remove action?
 		}
 	}
 
