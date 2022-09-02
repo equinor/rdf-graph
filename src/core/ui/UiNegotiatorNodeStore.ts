@@ -7,6 +7,7 @@ type ConnectorData = {
 	name: string | null;
 };
 
+/** Store for node data used for UI synchronization  */
 export class UiNegotiatorNodeStore {
 	private _nodes: Record<string, NodeDataCache> = {};
 

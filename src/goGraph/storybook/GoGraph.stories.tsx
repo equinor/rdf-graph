@@ -42,41 +42,43 @@ martinsVerden.args = {
 } as SparqlWrapperProps;
 martinsVerden.storyName = 'Martins Verden';
 
-export const lorryLand = Template.bind({});
-lorryLand.args = {
+export const lorentzCorner = Template.bind({});
+lorentzCorner.args = {
 	turtleString: lorentz_turtle, //,storyTurtle
 	layout: GoGraphLayout.ForceDirected,
 } as SparqlWrapperProps;
-lorryLand.storyName = 'Lorentz';
+lorentzCorner.storyName = `Lorentz Corner`;
 
 export const esdStory = Template.bind({});
 esdStory.args = {
 	turtleString: esd_turtle, // NOTE! File not in version control...
 	layout: GoGraphLayout.LayeredDigraph,
-	selectionEffect: (sel: GraphSelection) => {
-		const effect: Assertion<GraphProperty<GraphPropertyTarget>>[] = [];
-		const visited = new Set<string>(sel.map((el) => el.id));
-		const stack = [...sel];
-
-		while (stack.length > 0) {
-			const el = stack.pop()!;
-			if (el.type === 'node') {
-				effect.push({ action: 'add', assertion: { type: 'property', target: el, key: 'highlightStrokeColor', value: '#FF9200' } });
-				for (const edges of el.outgoing.values())
-					for (const edge of edges) {
-						if (visited.has(edge.id)) continue;
-						visited.add(edge.id);
-						stack.push(edge);
-					}
-			}
-			if (el.type === 'edge') {
-				effect.push({ action: 'add', assertion: { type: 'property', target: el, key: 'highlightStrokeColor', value: '#FF9200' } });
-				if (visited.has(el.target)) continue;
-				visited.add(el.target);
-				stack.push(el.targetRef);
-			}
-		}
-		return effect;
-	},
+	selectionEffect: selectionEffect,
 } as SparqlWrapperProps;
 esdStory.storyName = 'ESD';
+
+function selectionEffect(sel: GraphSelection) {
+	const effect: Assertion<GraphProperty<GraphPropertyTarget>>[] = [];
+	const visited = new Set<string>(sel.map((el) => el.id));
+	const stack = [...sel];
+
+	while (stack.length > 0) {
+		const el = stack.pop()!;
+		if (el.type === 'node') {
+			effect.push({ action: 'add', assertion: { type: 'property', target: el, key: 'highlight', value: true } });
+			for (const edges of el.outgoing.values())
+				for (const edge of edges) {
+					if (visited.has(edge.id)) continue;
+					visited.add(edge.id);
+					stack.push(edge);
+				}
+		}
+		if (el.type === 'edge') {
+			effect.push({ action: 'add', assertion: { type: 'property', target: el, key: 'highlight', value: true } });
+			if (visited.has(el.target)) continue;
+			visited.add(el.target);
+			stack.push(el.targetRef);
+		}
+	}
+	return effect;
+}

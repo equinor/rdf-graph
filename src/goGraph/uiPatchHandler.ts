@@ -14,12 +14,21 @@ import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	backgroundColor: 'fill',
 	borderColor: 'stroke',
+	highlight: 'highlight',
+	highlightBorderColor: 'highlightBorderColor',
 	label: 'label',
 	shape: 'shape',
 	symbolId: 'symbolId',
 	nodeTemplate: 'nodeTemplate',
 	symbolHeight: 'symbolHeight',
 	symbolWidth: 'symbolWidth',
+};
+
+const edgePropMap: Record<keyof UiEdgePatchProperties, string> = {
+	color: 'color',
+	highlight: 'highlight',
+	highlightColor: 'highlightColor',
+	thickness: 'stroke',
 };
 
 export class GoJsPatchHandler implements IUiPatchHandler {
@@ -78,7 +87,19 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		if (!nodeData) return;
 
 		const nodePropKey = nodePropMap[prop];
-		this.diagram.model.setDataProperty(nodeData, nodePropKey, undefined);
+		const currentValue = nodeData[nodePropKey];
+
+		let newValue = undefined;
+
+		switch (typeof currentValue) {
+			case 'boolean':
+				newValue = false;
+				break;
+			default:
+				break;
+		}
+
+		this.diagram.model.setDataProperty(nodeData, nodePropKey, newValue);
 	}
 
 	addConnector(id: string, nodeId: string): void {
@@ -171,10 +192,31 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	addEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P, value: UiEdgePatchProperties[P]): void {
-		console.warn('<addEdgeProperty> not implemented.');
+		const linkData = (this.diagram.model as go.GraphLinksModel).findLinkDataForKey(edgeId);
+		if (!linkData) return;
+
+		const edgePropKey = edgePropMap[prop];
+		this.diagram.model.setDataProperty(linkData, edgePropKey, value);
 	}
+
 	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void {
-		console.warn('<removeEdgeProperty> not implemented.');
+		const linkData = (this.diagram.model as go.GraphLinksModel).findLinkDataForKey(edgeId);
+		if (!linkData) return;
+
+		const edgePropKey = edgePropMap[prop];
+		const currentValue = linkData[edgePropKey];
+
+		let newValue = undefined;
+
+		switch (typeof currentValue) {
+			case 'boolean':
+				newValue = false;
+				break;
+			default:
+				break;
+		}
+
+		this.diagram.model.setDataProperty(linkData, edgePropKey, newValue);
 	}
 
 	getNodeSymbol(id: string): UiNodeSymbol {
@@ -201,8 +243,8 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this.transactionId = '';
 
 		// Handy console logs for debug.
-		console.log({ ...this.diagram.model.nodeDataArray });
-		console.log({ ...(this.diagram.model as go.GraphLinksModel).linkDataArray });
+		// console.log({ ...this.diagram.model.nodeDataArray });
+		// console.log({ ...(this.diagram.model as go.GraphLinksModel).linkDataArray });
 	}
 
 	// Private stuff

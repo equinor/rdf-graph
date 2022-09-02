@@ -4,7 +4,6 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from '../link-templates/link-template-map';
 import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
-import { applyPatch } from '../applyPatch';
 
 import { NodeUiCategory } from '../types';
 import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
@@ -100,8 +99,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		// Old approach commented out below (before ui negotiator)
-		//applyPatch(diagramRef.current, props.graphPatch);
 		uiNegotiatorRef.current.applyPatch(props.graphPatch);
 	}, [props.graphPatch]);
 
@@ -121,7 +118,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
 		uiNegotiatorRef.current.applyPatch(props.selectionEffect(selection));
-		//applyPatch(diagramRef.current, props.selectionEffect(selection));
 	};
 
 	useEffect(() => {

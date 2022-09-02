@@ -29,7 +29,7 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 
 	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
 		if (!selectionEffect) {
-			console.log('No selection handler for ', sel);
+			//console.log('No selection handler for ', sel);
 			return [];
 		}
 		return selectionEffect(sel);

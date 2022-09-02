@@ -9,6 +9,8 @@ export type UiNodeShape = 'Circle' | 'Square';
 export interface UiNodePatchProperties {
 	backgroundColor: string;
 	borderColor: string;
+	highlightBorderColor: string;
+	highlight: boolean;
 	label: string;
 	shape: UiNodeShape;
 	nodeTemplate: string;
@@ -27,6 +29,8 @@ export interface UiEdge {
 
 export interface UiEdgePatchProperties {
 	color: string;
+	highlightColor: string;
+	highlight: boolean;
 	thickness: string;
 }
 
@@ -195,6 +199,12 @@ export class UiNegotiator {
 			case nodeTemplateKey:
 				propKey = 'nodeTemplate';
 				break;
+			case 'highlight':
+				propKey = 'highlight';
+				break;
+			case 'highlightStrokeColor':
+				propKey = 'highlightBorderColor';
+				break;
 			case 'symbolName':
 				// Special handling for symbols
 				this.patchNodeSymbol({ action, assertion });
@@ -243,8 +253,11 @@ export class UiNegotiator {
 		let propKey: keyof UiEdgePatchProperties;
 
 		switch (assertion.key) {
-			case '':
-				propKey = 'color';
+			case 'highlight':
+				propKey = 'highlight';
+				break;
+			case 'highlightStrokeColor':
+				propKey = 'highlightColor';
 				break;
 			case 'direction':
 				propKey = 'thickness';
@@ -253,8 +266,8 @@ export class UiNegotiator {
 				return;
 		}
 
-		// if (action === 'add') this.ui.addEdgeProperty(assertion.target.id, propKey, assertion.value);
-		// else this.ui.removeEdgeProperty(assertion.target.id, propKey);
+		if (action === 'add') this.ui.addEdgeProperty(assertion.target.id, propKey, assertion.value);
+		else this.ui.removeEdgeProperty(assertion.target.id, propKey);
 	}
 
 	/** Add or remove symbol data to a node */
