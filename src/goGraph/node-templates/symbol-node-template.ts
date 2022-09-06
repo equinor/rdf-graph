@@ -60,6 +60,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.add(
 						new go.Shape({
 							name: 'GEOMETRY',
+							strokeWidth: 1,
 						})
 							.bind('geometryString', 'symbolGeometry', (v) => `F ${v}`)
 							.bind(new go.Binding('fill', 'uiTheme', ({ symbol }) => symbol.fill).ofModel())

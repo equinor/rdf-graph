@@ -9,7 +9,7 @@ import { RdfGoGraph } from '../RdfGoGraph';
 import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
 import { GoGraphOptions } from '../types/component.types';
 import { getNodeSymbolTemplate, NodeSymbol } from '../../symbol-api';
-import { UiNodeSymbol } from '../../core/ui/uiNegotiator';
+import { UiNodeSymbol } from '../../core/ui/uiApplyPatch';
 import { NodeSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 
 export type SparqlWrapperProps = {

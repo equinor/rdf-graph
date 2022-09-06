@@ -1,7 +1,7 @@
 import { RdfPatch2 } from '../types';
 import { Store, Quad } from 'n3';
 import { SelectionCallback } from '../types/graphModel';
-import { UiNodeSymbol } from '../ui/uiNegotiator';
+import { UiNodeSymbol } from '../ui/uiApplyPatch';
 
 export type RdfAction =
 	| { type: 'add'; data: Iterable<Quad> }

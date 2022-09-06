@@ -35,7 +35,7 @@ import {
 } from '../mapper/predicates';
 
 import { flat, flatMap, unique } from '../utils/iteratorUtils';
-import { UiNodeSymbol } from '../ui/uiNegotiator';
+import { UiNodeSymbol } from '../ui/uiApplyPatch';
 import { defaultSymbolProvider } from '../ui/defaultSymbolProvider';
 
 const writer = new Writer();

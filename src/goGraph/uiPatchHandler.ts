@@ -5,11 +5,9 @@ import {
 	UiConnectorPatchProperties,
 	UiEdge,
 	UiEdgePatchProperties,
-	UiNodeConnector,
 	UiNodePatchProperties,
 	UiNodeSymbol,
-} from '../core/ui/uiNegotiator';
-import { getNodeSymbolTemplate } from '../symbol-api';
+} from '../core/ui/uiApplyPatch';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } from './types';
 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
@@ -91,7 +89,6 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			return;
 		}
 
-		// Set property directly using map for other node props
 		const nodePropKey = nodePropMap[prop];
 		this.diagram.model.setDataProperty(nodeData, nodePropKey, value);
 	}
@@ -162,7 +159,6 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 
 		let commitValue: UiConnectorPatchProperties[P] | unknown = value;
 
-		// Convert point value to a go.Point
 		if (prop === 'connectorRelativePosition') {
 			const p = value as Point;
 			commitValue = new go.Point(p.x, p.y);
@@ -222,19 +218,6 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		}
 
 		this.diagram.model.setDataProperty(linkData, edgePropKey, newValue);
-	}
-
-	getNodeSymbol(id: string): UiNodeSymbol {
-		const symbol = getNodeSymbolTemplate(id);
-
-		return {
-			id: symbol.id,
-			width: symbol.width,
-			height: symbol.height,
-			connectors: symbol.connectors.map<UiNodeConnector>((c) => {
-				return { id: c.id, width: 2, height: 2, direction: c.portDirection, position: { x: c.point.x, y: c.point.y } };
-			}, []),
-		};
 	}
 
 	onBeforeApplyPatch() {

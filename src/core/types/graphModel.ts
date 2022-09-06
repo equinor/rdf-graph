@@ -1,5 +1,5 @@
 import { Quad } from 'n3';
-import { Point, UiNodeSymbol } from '../ui/uiNegotiator';
+import { Point, UiNodeSymbol } from '../ui/uiApplyPatch';
 
 type ElementId = string;
 export type GraphElementBase = {

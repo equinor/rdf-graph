@@ -1,5 +1,5 @@
 import { getSymbol, NodeSymbol, SymbolRotation } from '../../symbol-api';
-import { UiNodeConnector, UiNodeSymbol } from './uiNegotiator';
+import { UiNodeConnector, UiNodeSymbol } from './uiApplyPatch';
 
 export function NodeSymbolToUiNodeSymbol(symbol: NodeSymbol): UiNodeSymbol {
 	return {

@@ -8,7 +8,7 @@ import { GraphProps } from '../core/state/GraphStateProps';
 import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty, GraphPropertyTarget } from '../core/types/graphModel';
 import cytoscape from 'cytoscape';
 import { layoutDagre } from './layout';
-import { UiNodeSymbol } from '../core/ui/uiNegotiator';
+import { UiNodeSymbol } from '../core/ui/uiApplyPatch';
 
 const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
 	const elem: ElementDefinition = { data: { id } };

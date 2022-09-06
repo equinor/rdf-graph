@@ -37,10 +37,8 @@ export interface UiEdgePatchProperties {
 export interface UiConnectorPatchProperties {
 	name: string;
 	color: string;
-	//relativePosition: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
 	connectorRelativePosition: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
 	/** The angle that the connector arm has to the node at default rotation */
-	//normalDirection: number;
 	connectorDirection: number;
 }
 
@@ -79,20 +77,18 @@ export interface IUiPatchHandler {
 	addEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P, value: UiEdgePatchProperties[P]): void;
 	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void;
 
-	//getNodeSymbol(id: string): UiNodeSymbol;
-
 	onBeforeApplyPatch?: () => void;
 	onAfterApplyPatch?: () => void;
 }
 
 /** Apply a GraphPatch to the UI using the IUiPatchHandler */
-export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
+export function uiApplyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	ui.onBeforeApplyPatch?.call(ui);
 
 	for (const { action, assertion } of graphPatch) {
-		console.log(
-			action + ' type=' + assertion.type + ' id=' + assertion.key + ' value="' + JSON.stringify(assertion.value) + '" targ=' + assertion.target
-		);
+		// console.log(
+		// 	action + ' type=' + assertion.type + ' id=' + assertion.key + ' value="' + JSON.stringify(assertion.value) + '" targ=' + assertion.target
+		// );
 		switch (assertion.type) {
 			case 'node':
 				if (action === 'add') ui.addNode(assertion.id);
