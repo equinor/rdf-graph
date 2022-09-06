@@ -198,7 +198,7 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	connectorDirection: invalidator('connectorDirection', ({ type, node, connectorName }) => {
 		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
 		const c = node.symbol.connectors.find(({ id }) => id === connectorName)!;
-		return c.direction ?? 0;
+		return c?.direction ?? 0;
 	}),
 	connectorRelativePosition: invalidator('connectorRelativePosition', ({ type, node, connectorName }) => {
 		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;

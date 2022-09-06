@@ -6,9 +6,9 @@ import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../cor
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../core/mapper/predicates';
 import { GraphProps } from '../core/state/GraphStateProps';
 import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty, GraphPropertyTarget } from '../core/types/graphModel';
-import { NodeSymbol } from '../symbol-api';
 import cytoscape from 'cytoscape';
 import { layoutDagre } from './layout';
+import { UiNodeSymbol } from '../core/ui/uiNegotiator';
 
 const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
 	const elem: ElementDefinition = { data: { id } };
@@ -32,7 +32,7 @@ const addProperty = ({ key, target, value }: GraphProperty<GraphPropertyTarget>,
 			elementById.data(nodeTypeKey, NodeType.SymbolContainer);
 			elementById.data(key, value);
 			break;
-		case 'relativePosition':
+		case 'connectorRelativePosition':
 			elementById.data(nodeTypeKey, NodeType.SymbolConnector);
 			elementById.data(key, value);
 			break;
@@ -69,12 +69,12 @@ const removeProperty = ({ key, target }: GraphProperty<GraphPropertyTarget>, cy:
 
 const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId.replace('#', 'HASH')}_svg`;
 
-const createImageNode = (nodeId: string, symbol: NodeSymbol, cy: Cytoscape.Core) => {
+const createImageNode = (nodeId: string, symbol: UiNodeSymbol, cy: Cytoscape.Core) => {
 	const imageElement: ElementDefinition = {
 		data: {
 			id: getImageNodeId(nodeId),
 			[nodeTypeKey]: NodeType.SymbolImage,
-			[imageKey]: symbol.svgDataURI(),
+			[imageKey]: 'data:image/svg+xml;utf8,' + encodeURIComponent(symbol.svg!),
 			[imageWidthKey]: symbol.width,
 			[imageHeightKey]: symbol.height,
 			[layoutIgnoreKey]: true,
@@ -146,7 +146,7 @@ const layoutHandler = (_event: cytoscape.EventObject) => {
 			animate: false,
 			transform: (node) => {
 				const parentPosition = node.parent().first().position();
-				const relativePosition = node.data('relativePosition') || { x: 0, y: 0 };
+				const relativePosition = node.data('connectorRelativePosition') || { x: 0, y: 0 };
 				const position = { x: parentPosition.x + relativePosition.x, y: parentPosition.y + relativePosition.y };
 				return position;
 			},

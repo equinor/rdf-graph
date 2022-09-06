@@ -6,6 +6,7 @@ import { createPatch } from '../createPatch';
 import { GraphSelection } from '../../core/types/graphModel';
 import { RdfCyGraph } from '../RdfCyGraph';
 import { DataFactory } from 'n3';
+import { defaultSymbolProvider } from '../../core/ui/defaultSymbolProvider';
 
 const { namedNode } = DataFactory;
 
@@ -112,7 +113,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={connectSelection}> Connect </Button>
 			<Input onChange={(x) => handleConnectionPredicateSelect(x)} />
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<RdfCyGraph selectionEffect={handleSelection} {...state} />
+			<RdfCyGraph selectionEffect={handleSelection} symbolProvider={defaultSymbolProvider} {...state} />
 			<Table>
 				<Table.Head>
 					<Table.Row key="Details">

@@ -4,6 +4,7 @@ import { RdfPatch2 } from '../../types/rdfPatch';
 
 import * as P from '../../mapper/predicates';
 import { patchGraph } from '../../state/patchGraph';
+import { defaultSymbolProvider } from '../../ui/defaultSymbolProvider';
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 export type SimplifiedAssertion = { type: 'metadata' | 'property' | 'node' | 'edge' | 'connector' | 'NA'; action: 'add' | 'remove' | 'NA' };
@@ -24,7 +25,7 @@ export const emptyGraph = (): GraphState => {
 };
 
 export const createState = (quads: Quad[]): GraphState => {
-	const originalRes = patchGraph(emptyGraph(), toAddPatch(quads));
+	const originalRes = patchGraph(emptyGraph(), toAddPatch(quads), { symbolProvider: defaultSymbolProvider });
 	for (const _patch of originalRes.graphPatch) {
 	}
 	return originalRes.graphState;
@@ -41,7 +42,7 @@ export const toRmPatch = (quads: Quad[]): RdfPatch2 =>
 	});
 
 export const testPatchOrder = (originalData: GraphState, change: RdfPatch2, expectedOrder: SimplifiedAssertion[]) => {
-	const changeRes = patchGraph(originalData, change);
+	const changeRes = patchGraph(originalData, change, { symbolProvider: defaultSymbolProvider });
 	let actualAssertions: SimplifiedAssertion[] = [];
 
 	for (const assertion of changeRes.graphPatch) {

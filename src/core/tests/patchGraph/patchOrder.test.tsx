@@ -26,7 +26,8 @@ test('Node becomes connector and node again', () => {
 		{ type: 'connector', action: 'add' }, // N2 as connector
 		{ type: 'property', action: 'add' }, // Label
 		{ type: 'property', action: 'add' }, // Connector id
-		{ type: 'property', action: 'add' }, // Relative pos
+		{ type: 'property', action: 'add' }, // connectorRelativePosition
+		{ type: 'property', action: 'add' }, // connectorDirection
 		{ type: 'edge', action: 'add' }, // Edge to N3
 	];
 
