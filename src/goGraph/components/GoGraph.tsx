@@ -10,8 +10,8 @@ import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
 import { GraphSelection, GraphState } from '../../core/types';
 import { getUiTheme } from '../style/colors';
 import { GoGraphProps } from '../types/component.types';
-import { UiNegotiator } from '../../core/ui/uiNegotiator';
 import { GoJsPatchHandler } from '../uiPatchHandler';
+import { applyPatch, IUiPatchHandler } from '../../core/ui/uiNegotiator';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
@@ -37,7 +37,7 @@ function initDiagram() {
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
-	d.model.modelData.portSize = 6;
+	d.model.modelData.portSize = 3;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
@@ -90,7 +90,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
-	const uiNegotiatorRef = useRef<UiNegotiator>(new UiNegotiator(new GoJsPatchHandler(diagramRef.current)));
+	const patchHandlerRef = useRef<IUiPatchHandler>(new GoJsPatchHandler(diagramRef.current));
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
@@ -99,7 +99,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		uiNegotiatorRef.current.applyPatch(props.graphPatch);
+		applyPatch(props.graphPatch, patchHandlerRef.current);
 	}, [props.graphPatch]);
 
 	useEffect(() => {
@@ -117,7 +117,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
-		uiNegotiatorRef.current.applyPatch(props.selectionEffect(selection));
+		applyPatch(props.selectionEffect(selection), patchHandlerRef.current);
 	};
 
 	useEffect(() => {

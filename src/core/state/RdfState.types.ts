@@ -1,6 +1,7 @@
 import { RdfPatch2 } from '../types';
 import { Store, Quad } from 'n3';
 import { SelectionCallback } from '../types/graphModel';
+import { UiNodeSymbol } from '../ui/uiNegotiator';
 
 export type RdfAction =
 	| { type: 'add'; data: Iterable<Quad> }
@@ -16,4 +17,5 @@ export type RdfState = {
 
 export type RdfStateProps = RdfState & {
 	selectionEffect?: SelectionCallback;
+	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;
 };

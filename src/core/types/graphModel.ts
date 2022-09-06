@@ -1,5 +1,5 @@
 import { Quad } from 'n3';
-import { NodeSymbol, Point, SymbolRotation } from '../../symbol-api';
+import { Point, UiNodeSymbol } from '../ui/uiNegotiator';
 
 type ElementId = string;
 export type GraphElementBase = {
@@ -17,12 +17,12 @@ export type GraphElementBase = {
 export type AbstractNode = GraphNode | GraphConnector | GraphMetadata;
 
 export type GraphVisualProps = {
-	symbol?: NodeSymbol;
+	symbol?: UiNodeSymbol;
 	relativePosition?: Point;
 	connectorName?: string;
 	parent?: GraphNode;
 	symbolName?: string;
-	rotation?: SymbolRotation;
+	rotation?: number;
 	connector?: GraphConnector[];
 	[index: string]: any;
 };

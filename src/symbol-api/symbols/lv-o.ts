@@ -17,6 +17,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 export const LV_O: NodeSymbolTemplate = {
 	id: 'lv-o',
 	svg: svg,
+	geometry: '',
 	height: 93,
 	width: 98,
 	connectors: [

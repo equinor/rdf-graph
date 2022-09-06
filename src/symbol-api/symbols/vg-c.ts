@@ -19,6 +19,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 export const VG_C: NodeSymbolTemplate = {
 	id: 'vg-c',
 	svg: svg,
+	geometry: '',
 	height: 50,
 	width: 98,
 	connectors: [new NodeSymbolConnector('c1', { x: 1, y: 25 }, PortDirection.E), new NodeSymbolConnector('c2', { x: 97, y: 25 }, PortDirection.W)],

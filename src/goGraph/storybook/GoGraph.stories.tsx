@@ -10,6 +10,8 @@ import { martinsTurtle } from './data/martins_verden_turtle';
 
 import { lorentz_turtle } from './data/lorentz_ttl';
 
+import { lorentz_turtle_2 } from './data/lorentz_ttl_2';
+
 import { Assertion, GraphProperty, GraphPropertyTarget, GraphSelection } from '../../core/types';
 import { GoGraphLayout } from '../layout';
 
@@ -42,7 +44,7 @@ martinsVerden.storyName = 'Martins Verden';
 
 export const lorentzCorner = Template.bind({});
 lorentzCorner.args = {
-	turtleString: lorentz_turtle, //,storyTurtle
+	turtleString: lorentz_turtle_2, //,storyTurtle
 	layout: GoGraphLayout.ForceDirected,
 } as SparqlWrapperProps;
 lorentzCorner.storyName = `Lorentz Corner`;

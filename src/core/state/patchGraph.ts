@@ -34,8 +34,9 @@ import {
 	typeIri,
 } from '../mapper/predicates';
 
-import { getSymbol, Point } from '../../symbol-api';
 import { flat, flatMap, unique } from '../utils/iteratorUtils';
+import { UiNodeSymbol } from '../ui/uiNegotiator';
+import { defaultSymbolProvider } from '../ui/defaultSymbolProvider';
 
 const writer = new Writer();
 const quadToString = ({ subject, predicate, object, graph }: Quad) => writer.quadToString(subject, predicate, object, graph);
@@ -81,11 +82,20 @@ function removeId<T, K extends keyof T>(index: Map<string, T[]>, key: string, pr
 	if (arr.length === 0) index.delete(key);
 }
 
+let symbolProvider = (id: string, rotation?: number) => {
+	console.warn('Using default symbol provider!');
+	return defaultSymbolProvider(id, rotation);
+};
+
 const dataProps = [
 	'symbolName',
 	'symbol',
+	'symbolGeometry',
 	'relativePosition',
 	'connectorName',
+	'connectorDirection',
+	'connectorRelativePosition',
+	//'connectorPosition',
 	'node',
 	labelKey,
 	colorKey,
@@ -102,10 +112,16 @@ type Dep = [...NodeProp[], NodeProp | ValueProp];
 const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	symbolName: [['symbol']],
 	[rotationKey]: [['symbol']],
-	symbol: [[connectorKey, 'relativePosition']],
-	connectorName: [[`relativePosition`]],
+	symbol: [[connectorKey, 'connectorRelativePosition'], [connectorKey, 'connectorDirection'], ['symbolGeometry']],
+	symbolGeometry: [],
+	connectorName: [[`connectorRelativePosition`], ['connectorDirection']],
+	connectorDirection: [],
+	connectorRelativePosition: [],
 	relativePosition: [],
-	[connectorKey]: [[connectorKey, 'relativePosition']],
+	[connectorKey]: [
+		[connectorKey, 'connectorRelativePosition'],
+		[connectorKey, 'connectorDirection'],
+	],
 	[compoundNodeKey]: [],
 	node: [['relativePosition']],
 	[labelKey]: [],
@@ -161,7 +177,7 @@ function invalidator(prop: NodeProp | ValueProp, accessor: string | ((g: Abstrac
 		if (declared === prev) return;
 		if (prev) yield { action: 'remove', assertion: { type: 'property', target: a, key: prop, value: prev } };
 		a[prop] = declared;
-		if (declared) yield { action: 'add', assertion: { type: 'property', target: a, key: prop, value: declared } };
+		if (declared !== undefined) yield { action: 'add', assertion: { type: 'property', target: a, key: prop, value: declared } };
 		yield* propagator(a, prop);
 	};
 }
@@ -169,17 +185,27 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	[labelKey]: invalidator(labelKey, labelIri),
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
+	symbolGeometry: invalidator('symbolGeometry', ({ type, symbol }) => {
+		if (type !== 'node' || !symbol) return undefined;
+		return symbol.geometry;
+	}),
 	//[simpleShapeKey]: invalidator(simpleShapeKey, hasSimpleSymbolIri),
 	[rotationKey]: invalidator(rotationKey, ({ properties }) =>
 		properties.has(rotationIri) ? parseInt(properties.get(rotationIri)![0]) : undefined
 	),
-	symbol: invalidator('symbol', (g) => (g['symbolName'] ? getSymbol(g['symbolName'], { rotation: g[rotationKey] }) : undefined)),
+	symbol: invalidator('symbol', (g) => (g['symbolName'] ? symbolProvider(g['symbolName'], g[rotationKey]) : undefined)),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
-	relativePosition: invalidator('relativePosition', ({ type, node, connectorName }) => {
+	connectorDirection: invalidator('connectorDirection', ({ type, node, connectorName }) => {
+		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
+		const c = node.symbol.connectors.find(({ id }) => id === connectorName)!;
+		return c.direction ?? 0;
+	}),
+	connectorRelativePosition: invalidator('connectorRelativePosition', ({ type, node, connectorName }) => {
 		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
 		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
-		return c?.point || new Point(0, 0);
+		return c?.position || { x: 0, y: 0 };
 	}),
+	relativePosition: invalidator('relativePosition', 'TODO'),
 	[directionKey]: invalidator(directionKey, hasDirectionIri),
 	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
 	[nodeTemplateKey]: invalidator(nodeTemplateKey, hasNodeTemplateIri),
@@ -524,6 +550,11 @@ function* graphAssertion<M extends GraphState>(
 	}
 }
 
-export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P): GraphStateProps {
+export interface PatchGraphOptions {
+	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;
+}
+
+export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P, options?: PatchGraphOptions): GraphStateProps {
+	if (options?.symbolProvider) symbolProvider = options.symbolProvider;
 	return { graphState: state, graphPatch: flatMap(patch, (p) => graphAssertion(state, p)) };
 }

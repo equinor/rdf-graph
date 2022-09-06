@@ -20,6 +20,8 @@ const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	label: 'label',
 	shape: 'shape',
 	symbolId: 'symbolId',
+	symbolGeometry: 'symbolGeometry',
+	symbol: 'symbol',
 	nodeTemplate: 'nodeTemplate',
 	symbolHeight: 'symbolHeight',
 	symbolWidth: 'symbolWidth',
@@ -35,8 +37,8 @@ const edgePropMap: Record<keyof UiEdgePatchProperties, string> = {
 const connectorPropMap: Record<keyof UiConnectorPatchProperties, string> = {
 	color: 'color',
 	name: 'name',
-	normalDirection: 'direction',
-	position: 'relativePosition',
+	connectorDirection: 'direction',
+	connectorRelativePosition: 'relativePosition',
 };
 
 export class GoJsPatchHandler implements IUiPatchHandler {
@@ -62,9 +64,13 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 		if (!nodeData) return;
 
-		if (prop === 'symbolId') {
+		if (prop === 'symbol') {
+			const symbol = value as UiNodeSymbol;
+
 			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.SvgSymbol);
-			this.diagram.model.setDataProperty(nodeData, 'symbolId', value);
+			this.diagram.model.setDataProperty(nodeData, 'symbolGeometry', symbol.geometry);
+			this.diagram.model.setDataProperty(nodeData, 'symbolHeight', symbol.height);
+			this.diagram.model.setDataProperty(nodeData, 'symbolWidth', symbol.width);
 			return;
 		}
 
@@ -157,7 +163,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		let commitValue: UiConnectorPatchProperties[P] | unknown = value;
 
 		// Convert point value to a go.Point
-		if (prop === 'position') {
+		if (prop === 'connectorRelativePosition') {
 			const p = value as Point;
 			commitValue = new go.Point(p.x, p.y);
 		}

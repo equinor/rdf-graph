@@ -64,11 +64,17 @@ export function createPositionPortItemTemplate(): go.Panel {
 				toEndSegmentLength: 50,
 			},
 			new go.Binding('portId'),
-			new go.Binding('position', 'relativePosition'),
-			new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
-				const pos = shape.position;
-				return new go.Point(pos.x - size / 2, pos.y - size / 2);
-			}).ofModel(),
+			new go.Binding('position', 'relativePosition', (pos) => {
+				return new go.Point(pos.x, pos.y);
+			}),
+			//new go.Binding('position', 'relativePosition'),
+			// new go.Binding('alignment', 'relativePosition', (p) => {
+			// 	return new go.Spot(p.x, p.y);
+			// }),
+			// new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
+			// 	const pos = shape.position;
+			// 	return new go.Point(pos.x - size / 2, pos.y - size / 2);
+			// }).ofModel(),
 			new go.Binding('fromSpot', 'direction', portDirectionToSpot),
 			new go.Binding('toSpot', 'direction', portDirectionToSpot),
 			new go.Binding('height', 'portSize').ofModel(),
