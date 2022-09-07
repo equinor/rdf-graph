@@ -13,10 +13,11 @@
 		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
+		"noImplicitOverride": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
 		"types": ["vitest/globals"]
 	},
-	"include": ["src", ".storybook/preview.js"],
+	"include": ["vite.config.ts", "src", ".storybook/preview.js"],
 	"exclude": ["**/*.stories.tsx"]
 }

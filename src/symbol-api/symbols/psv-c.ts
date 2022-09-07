@@ -35,6 +35,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 export const PSV_C: NodeSymbolTemplate = {
 	id: 'psv-c',
 	svg: svg,
+	geometry: '',
 	height: 112,
 	width: 74,
 	connectors: [

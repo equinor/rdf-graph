@@ -1,5 +1,4 @@
 import { Separator_1 } from './symbols/separator-1';
-import { Valve_1 } from './symbols/valve-1';
 import { Valve_3Way_1 } from './symbols/valve-3Way-1';
 import { PSV_C } from './symbols/psv-c';
 import { LV_O } from './symbols/lv-o';
@@ -8,9 +7,10 @@ import { VG_O } from './symbols/vg-o';
 import { Vessel_4 } from './symbols/vessel-4';
 import { Pump_2 } from './symbols/pump-2';
 import { NodeSymbolTemplate } from './types/NodeSymbol';
+import { Valve_Gate_O } from './symbols/Valve_Gate_O';
+import { Compressor_1 } from './symbols/Compressor_1';
 
 export enum SymbolKey {
-	Valve_1 = 'Valve_1',
 	Valve_3Way_1 = 'Valve_3Way_1',
 	Separator_1 = 'Separator_1',
 	PSV_C = 'PSV_C',
@@ -19,6 +19,8 @@ export enum SymbolKey {
 	VG_O = 'VG_O',
 	Vessel_4 = 'VS_4',
 	Pump_2 = 'Pump_2',
+	Valve_Gate_O = 'Valve_Gate_O',
+	Compressor_1 = 'Compressor_1',
 }
 export enum SimpleSymbolKey {
 	Ellipse = 'Ellipse',
@@ -26,7 +28,6 @@ export enum SimpleSymbolKey {
 }
 
 export const SymbolLibrary: Record<keyof typeof SymbolKey, NodeSymbolTemplate> = {
-	Valve_1: Valve_1,
 	Separator_1: Separator_1,
 	Valve_3Way_1: Valve_3Way_1,
 	PSV_C: PSV_C,
@@ -35,4 +36,6 @@ export const SymbolLibrary: Record<keyof typeof SymbolKey, NodeSymbolTemplate> =
 	VG_O: VG_O,
 	Vessel_4: Vessel_4,
 	Pump_2: Pump_2,
+	Valve_Gate_O: Valve_Gate_O,
+	Compressor_1: Compressor_1,
 };

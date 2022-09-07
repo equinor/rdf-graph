@@ -27,6 +27,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 export const Pump_2: NodeSymbolTemplate = {
 	id: 'Pump-2',
 	svg: svg,
+	geometry: '',
 	height: 96,
 	width: 85,
 	connectors: [

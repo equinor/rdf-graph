@@ -5,6 +5,10 @@ import { NodeSymbolConnector, PortDirection } from './types/NodeSymbolConnector'
 import { SymbolOptions } from './types/SymbolOptions';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 
+export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
+	return SymbolLibrary[id as keyof typeof SymbolKey];
+}
+
 export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol | undefined {
 	if (!(id in SymbolKey)) return undefined;
 
@@ -30,7 +34,7 @@ export function getSymbol(id: string, options?: SymbolOptions): NodeSymbol | und
 		svgEl.setAttribute('transform', `rotate(${rotation})`);
 	}
 
-	return new NodeSymbol(id, svgEl.outerHTML, width, height, connectors);
+	return new NodeSymbol(id, svgEl.outerHTML, symbol.geometry, width, height, connectors);
 }
 
 export function getSymbolDataURI(id: string, options?: SymbolOptions): string | undefined {
@@ -52,8 +56,4 @@ export function getSymbolDataURI(id: string, options?: SymbolOptions): string | 
 	}
 
 	return 'data:image/svg+xml;utf8,' + encodeURIComponent(svgEl.outerHTML);
-}
-
-export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
-	return SymbolLibrary[id as keyof typeof SymbolKey];
 }

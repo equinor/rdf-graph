@@ -5,28 +5,28 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"type": "pwa-msedge",
+			"type": "msedge",
 			"request": "attach",
 			"name": "Launch Edge against localhost",
 			"url": "http://localhost:3000",
 			"webRoot": "${workspaceFolder}"
 		},
 		{
-			"type": "pwa-msedge",
+			"type": "msedge",
 			"name": "Launch Microsoft Edge",
 			"request": "launch",
 			"runtimeArgs": ["--remote-debugging-port=9222"],
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
 		},
 		{
-			"type": "pwa-msedge",
+			"type": "msedge",
 			"name": "Launch Microsoft Edge in headless mode",
 			"request": "launch",
 			"runtimeArgs": ["--headless", "--remote-debugging-port=9222"],
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
 			"presentation": {
 				"hidden": true
 			}
@@ -35,7 +35,27 @@
 			"type": "vscode-edge-devtools.debug",
 			"name": "Open Edge DevTools",
 			"request": "attach",
-			"url": "http://localhost:3000", // Provide your project's url to finish configuring
+			"url": "http://localhost:3000",
+			"presentation": {
+				"hidden": true
+			}
+		},
+		{
+			"type": "chrome",
+			"name": "Launch Chrome",
+			"request": "launch",
+			"runtimeArgs": ["--remote-debugging-port=9222"],
+			"url": "http://localhost:3000",
+			"presentation": {
+				"hidden": true
+			}
+		},
+		{
+			"type": "chrome",
+			"name": "Attach to Chrome",
+			"request": "attach",
+			"url": "http://localhost:3000",
+			"port": 9222,
 			"presentation": {
 				"hidden": true
 			}
@@ -49,6 +69,10 @@
 		{
 			"name": "Launch Edge and attach DevTools",
 			"configurations": ["Launch Microsoft Edge", "Open Edge DevTools"]
+		},
+		{
+			"name": "Launch Chrome and attach DevTools",
+			"configurations": ["Launch Chrome", "Open Edge DevTools"]
 		}
 	]
 }

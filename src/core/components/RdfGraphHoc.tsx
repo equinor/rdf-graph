@@ -28,7 +28,7 @@ export function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphP
 		});
 
 		useEffect(() => {
-			const newGraphState = patchGraph(state.graphState, rdfPatch);
+			const newGraphState = patchGraph(state.graphState, rdfPatch, { symbolProvider: props.symbolProvider });
 			update(newGraphState);
 		}, [rdfPatch]);
 

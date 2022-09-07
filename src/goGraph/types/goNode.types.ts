@@ -23,6 +23,13 @@ export type BaseNodeData = {
 	category: NodeUiCategory;
 	label?: string;
 	ports: PortData[];
+	angle?: number;
+	height?: number;
+	width?: number;
+	symbolId?: string;
+	symbolHeight?: number;
+	symbolWidth?: number;
+	symbolConnectors?: NodeSymbolConnector[];
 };
 
 export type PortData = {
@@ -55,7 +62,7 @@ export type SymbolNodeData = BaseNodeData & {
 	height?: number;
 	width?: number;
 	angle?: number;
-	symConnectors?: NodeSymbolConnector[];
+	symbolConnectors?: NodeSymbolConnector[];
 };
 
 /** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */

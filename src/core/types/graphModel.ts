@@ -1,9 +1,9 @@
 import { Quad } from 'n3';
-import { NodeSymbol, Point, SymbolRotation } from '../../symbol-api';
+import { Point, UiNodeSymbol } from '../ui/applyPatch';
 
-type GraphId = string;
+type ElementId = string;
 export type GraphElementBase = {
-	id: GraphId;
+	id: ElementId;
 	incoming: Map<string, GraphEdge[]>;
 	outgoing: Map<string, GraphEdge[]>;
 	properties: Map<string, string[]>;
@@ -17,12 +17,12 @@ export type GraphElementBase = {
 export type AbstractNode = GraphNode | GraphConnector | GraphMetadata;
 
 export type GraphVisualProps = {
-	symbol?: NodeSymbol;
+	symbol?: UiNodeSymbol;
 	relativePosition?: Point;
 	connectorName?: string;
 	parent?: GraphNode;
 	symbolName?: string;
-	rotation?: SymbolRotation;
+	rotation?: number;
 	connector?: GraphConnector[];
 	[index: string]: any;
 };
@@ -42,22 +42,24 @@ export type GraphMetadata = GraphElementBase & {
 
 export type GraphEdge = {
 	type: 'edge';
-	id: GraphId;
-	source: GraphId;
-	target: GraphId;
+	id: ElementId;
+	source: ElementId;
+	target: ElementId;
 	sourceRef: AbstractNode;
 	targetRef: AbstractNode;
-	sourceConnector?: GraphId;
-	targetConnector?: GraphId;
+	sourceConnector?: ElementId;
+	targetConnector?: ElementId;
 	sourceConnectorRef?: GraphConnector;
 	targetConnectorRef?: GraphConnector;
 	metadata: GraphMetadata;
 	origin: Quad | GraphEdge;
 } & GraphVisualProps;
 
-export type GraphProperty = {
+export type GraphPropertyTarget = AbstractNode | GraphEdge;
+
+export type GraphProperty<TTarget extends GraphPropertyTarget> = {
 	type: 'property';
-	node: AbstractNode | GraphEdge;
+	target: TTarget;
 	key: string;
 	value: any;
 };
@@ -66,10 +68,10 @@ type AssertionBase = { action: 'add' | 'remove' };
 export type EdgeAssertion = AssertionBase & { assertion: GraphEdge };
 // export type NodeAssertion = AssertionBase & { assertion: GraphNode };
 // export type ConnectorAssertion = AssertionBase & { assertion: GraphConnector };
-export type PropertyAssertion = AssertionBase & { assertion: GraphProperty };
+export type PropertyAssertion = AssertionBase & { assertion: GraphProperty<GraphPropertyTarget> };
 
 export type Assertion<T> = AssertionBase & { assertion: T };
-export type GraphAssertion = Assertion<GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty>;
+export type GraphAssertion = Assertion<GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty<GraphPropertyTarget>>;
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
 	nodeIndex: Map<string, AbstractNode>;
@@ -78,4 +80,8 @@ export type GraphState = {
 
 export type GraphSelection = Array<AbstractNode | GraphEdge>;
 
-export type SelectionCallback = (selection: GraphSelection) => Assertion<GraphProperty>[];
+export type SelectionCallback = (selection: GraphSelection) => Assertion<GraphProperty<GraphPropertyTarget>>[];
+
+export interface PatchGraphOptions {
+	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;
+}

@@ -29,7 +29,7 @@ export function createDefaultLinkTemplate(): go.Link {
 				strokeWidth: 3,
 				stroke: 'transparent',
 			},
-			new go.Binding('stroke', 'highlightStrokeColor', (v, m) => (v ? m.diagram.model.modelData.uiTheme.link.highlight : 'transparent')),
+			new go.Binding('stroke', 'highlight', (v, m) => (v ? m.diagram.model.modelData.uiTheme.link.highlight : 'transparent')),
 			new go.Binding('stroke', 'uiTheme', (v, o) => (o.stroke !== 'transparent' ? v.link.highlight : 'transparent')).ofModel(),
 
 			new go.AnimationTrigger('stroke')
