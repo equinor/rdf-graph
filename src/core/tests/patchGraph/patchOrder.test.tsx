@@ -34,7 +34,8 @@ test('Node becomes connector and node again', () => {
 	const expectedRmOrder: SimplifiedAssertion[] = [
 		{ type: 'property', action: 'remove' }, // Lable
 		{ type: 'property', action: 'remove' }, // Connector id
-		{ type: 'property', action: 'remove' }, // Relative pos from svg api
+		{ type: 'property', action: 'remove' }, // connectorRelativePosition
+		{ type: 'property', action: 'remove' }, // connectorDirection
 		{ type: 'edge', action: 'remove' }, // Edge to N3
 		{ type: 'connector', action: 'remove' }, // N2 as Connector
 		{ type: 'node', action: 'add' }, // N2 as Node

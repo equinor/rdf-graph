@@ -47,6 +47,12 @@ export const testPatchOrder = (originalData: GraphState, change: RdfPatch2, expe
 
 	for (const assertion of changeRes.graphPatch) {
 		actualAssertions.push({ type: assertion.assertion.type, action: assertion.action });
+		/* // Useful for debugging properties not included in SimplifiedAssertion
+		console.log("Got patch", {assertion});
+		if (assertion.assertion.type === 'property') {
+			console.log("Property value is ", assertion.assertion.value)
+		}
+		*/
 	}
 
 	if (actualAssertions.length !== expectedOrder.length) {

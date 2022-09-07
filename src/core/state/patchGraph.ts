@@ -89,12 +89,9 @@ let symbolProvider = (id: string, rotation?: number) => {
 const dataProps = [
 	'symbolName',
 	'symbol',
-	'symbolGeometry',
-	'relativePosition',
 	'connectorName',
 	'connectorDirection',
 	'connectorRelativePosition',
-	'node',
 	labelKey,
 	colorKey,
 	rotationKey,
@@ -110,18 +107,18 @@ type Dep = [...NodeProp[], NodeProp | ValueProp];
 const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	symbolName: [['symbol']],
 	[rotationKey]: [['symbol']],
-	symbol: [[connectorKey, 'connectorRelativePosition'], [connectorKey, 'connectorDirection'], ['symbolGeometry']],
-	symbolGeometry: [],
-	connectorName: [[`connectorRelativePosition`], ['connectorDirection']],
+	symbol: [
+		[connectorKey, 'connectorDirection'],
+		[connectorKey, 'connectorRelativePosition'],
+	],
+	connectorName: [['connectorDirection'], [`connectorRelativePosition`]],
 	connectorDirection: [],
 	connectorRelativePosition: [],
-	relativePosition: [],
 	[connectorKey]: [
-		[connectorKey, 'connectorRelativePosition'],
 		[connectorKey, 'connectorDirection'],
+		[connectorKey, 'connectorRelativePosition'],
 	],
 	[compoundNodeKey]: [],
-	node: [['relativePosition']],
 	[labelKey]: [],
 	[colorKey]: [],
 	[simpleSymbolKey]: [],
@@ -173,7 +170,7 @@ function invalidator(prop: NodeProp | ValueProp, accessor: string | ((g: Abstrac
 		const declared = typeof accessor === 'string' ? (a.properties.get(accessor) || [undefined])[0] : accessor(a);
 		const prev = a[prop];
 		if (declared === prev) return;
-		if (prev) yield { action: 'remove', assertion: { type: 'property', target: a, key: prop, value: prev } };
+		if (prev !== undefined) yield { action: 'remove', assertion: { type: 'property', target: a, key: prop, value: prev } };
 		a[prop] = declared;
 		if (declared !== undefined) yield { action: 'add', assertion: { type: 'property', target: a, key: prop, value: declared } };
 		yield* propagator(a, prop);
@@ -183,11 +180,6 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	[labelKey]: invalidator(labelKey, labelIri),
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
-	symbolGeometry: invalidator('symbolGeometry', ({ type, symbol }) => {
-		if (type !== 'node' || !symbol) return undefined;
-		return symbol.geometry;
-	}),
-	//[simpleShapeKey]: invalidator(simpleShapeKey, hasSimpleSymbolIri),
 	[rotationKey]: invalidator(rotationKey, ({ properties }) =>
 		properties.has(rotationIri) ? parseInt(properties.get(rotationIri)![0]) : undefined
 	),
@@ -195,19 +187,17 @@ const propInvalidations: { [index in NodeProp | ValueProp]: (node: AbstractNode)
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
 	connectorDirection: invalidator('connectorDirection', ({ type, node, connectorName }) => {
 		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
-		const c = node.symbol.connectors.find(({ id }) => id === connectorName)!;
+		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
 		return c?.direction ?? 0;
 	}),
 	connectorRelativePosition: invalidator('connectorRelativePosition', ({ type, node, connectorName }) => {
 		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
 		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
-		return c?.position || { x: 0, y: 0 };
+		return c?.position ?? { x: 0, y: 0 };
 	}),
-	relativePosition: invalidator('relativePosition', 'TODO'),
 	[directionKey]: invalidator(directionKey, hasDirectionIri),
 	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
 	[nodeTemplateKey]: invalidator(nodeTemplateKey, hasNodeTemplateIri),
-	node: (g: AbstractNode) => propagator(g, 'node'),
 	[connectorKey]: (g: AbstractNode) => propagator(g, connectorKey),
 	[compoundNodeKey]: function* (g: AbstractNode) {
 		const declared = (g.outgoing.get(compoundNodeIri) || [undefined])[0] as GraphNode | undefined;
