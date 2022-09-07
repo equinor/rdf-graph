@@ -11,7 +11,7 @@ import { GraphSelection, GraphState } from '../../core/types';
 import { getUiTheme } from '../style/colors';
 import { GoGraphProps } from '../types/component.types';
 import { GoJsPatchHandler } from '../uiPatchHandler';
-import { uiApplyPatch, IUiPatchHandler } from '../../core/ui/uiApplyPatch';
+import { applyPatch, IUiPatchHandler } from '../../core/ui/applyPatch';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
@@ -99,7 +99,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		uiApplyPatch(props.graphPatch, patchHandlerRef.current);
+		applyPatch(props.graphPatch, patchHandlerRef.current);
 	}, [props.graphPatch]);
 
 	useEffect(() => {
@@ -117,7 +117,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
-		uiApplyPatch(props.selectionEffect(selection), patchHandlerRef.current);
+		applyPatch(props.selectionEffect(selection), patchHandlerRef.current);
 	};
 
 	useEffect(() => {

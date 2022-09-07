@@ -7,7 +7,7 @@ import {
 	UiEdgePatchProperties,
 	UiNodePatchProperties,
 	UiNodeSymbol,
-} from '../core/ui/uiApplyPatch';
+} from '../core/ui/applyPatch';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } from './types';
 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {

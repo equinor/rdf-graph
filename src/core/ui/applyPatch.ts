@@ -82,7 +82,7 @@ export interface IUiPatchHandler {
 }
 
 /** Apply a GraphPatch to the UI using the IUiPatchHandler */
-export function uiApplyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
+export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	ui.onBeforeApplyPatch?.call(ui);
 
 	for (const { action, assertion } of graphPatch) {
