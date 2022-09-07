@@ -86,9 +86,6 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	ui.onBeforeApplyPatch?.call(ui);
 
 	for (const { action, assertion } of graphPatch) {
-		// console.log(
-		// 	action + ' type=' + assertion.type + ' id=' + assertion.key + ' value="' + JSON.stringify(assertion.value) + '" targ=' + assertion.target
-		// );
 		switch (assertion.type) {
 			case 'node':
 				if (action === 'add') ui.addNode(assertion.id);

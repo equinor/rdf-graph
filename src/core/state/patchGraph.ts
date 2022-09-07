@@ -1,5 +1,5 @@
 import { Quad, termFromId, termToId, Writer, DataFactory } from 'n3';
-import { RdfAssertion, RdfPatch2 } from '../types';
+import { PatchGraphOptions, RdfAssertion, RdfPatch2 } from '../types';
 import {
 	GraphEdge,
 	GraphState,
@@ -35,7 +35,6 @@ import {
 } from '../mapper/predicates';
 
 import { flat, flatMap, unique } from '../utils/iteratorUtils';
-import { UiNodeSymbol } from '../ui/applyPatch';
 import { defaultSymbolProvider } from '../ui/defaultSymbolProvider';
 
 const writer = new Writer();
@@ -95,7 +94,6 @@ const dataProps = [
 	'connectorName',
 	'connectorDirection',
 	'connectorRelativePosition',
-	//'connectorPosition',
 	'node',
 	labelKey,
 	colorKey,
@@ -548,10 +546,6 @@ function* graphAssertion<M extends GraphState>(
 
 			break;
 	}
-}
-
-export interface PatchGraphOptions {
-	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;
 }
 
 export function patchGraph<M extends GraphState, P extends RdfPatch2>(state: M, patch: P, options?: PatchGraphOptions): GraphStateProps {

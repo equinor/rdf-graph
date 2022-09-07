@@ -81,3 +81,7 @@ export type GraphState = {
 export type GraphSelection = Array<AbstractNode | GraphEdge>;
 
 export type SelectionCallback = (selection: GraphSelection) => Assertion<GraphProperty<GraphPropertyTarget>>[];
+
+export interface PatchGraphOptions {
+	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;
+}

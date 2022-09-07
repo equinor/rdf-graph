@@ -18,7 +18,7 @@ export type SparqlWrapperProps = {
 	selectionEffect?: SelectionCallback;
 };
 
-function symbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
+function symbolProvider(id: string, _rotation?: number): UiNodeSymbol | undefined {
 	console.log('Using custom symbol resolver!');
 	// IGNORE ROTATION for GoJS!
 	const symbol = getNodeSymbolTemplate(id) as NodeSymbol;
