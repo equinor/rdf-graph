@@ -1,5 +1,4 @@
 import go from 'gojs';
-import { itemTemplateMap } from '../item-templates/item-templates-map';
 import { portDirectionToSpot } from '../item-templates/position-port-item-template';
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
@@ -31,28 +30,6 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 		})
 			.bind('width', 'symbolWidth', (w) => w + nodePadding * 2)
 			.bind('height', 'symbolHeight', (h) => h + nodePadding * 2)
-
-			// TOP TEXT
-			// .add(
-			// 	new go.TextBlock('', {
-			// 		alignment: go.Spot.TopCenter,
-			// 		alignmentFocus: go.Spot.TopCenter,
-			// 	})
-			// 		.bind(new go.Binding('text', 'key').ofObject())
-			// 		.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
-			// 		.bind(
-			// 			new go.Binding('alignment', 'angle', (a: number) => {
-			// 				return getTopLabelAlignment(a);
-			// 			}).ofObject()
-			// 		)
-			// 		.bind(
-			// 			new go.Binding('alignmentFocus', 'angle', (a: number) => {
-			// 				return getTopLabelAlignment(a);
-			// 			}).ofObject()
-			// 		)
-			// 		.bind(new go.Binding('text', 'label'))
-			// 		.bind(new go.Binding('stroke', 'uiTheme', ({ node }) => node.text).ofModel())
-			// )
 			// SYMBOL
 			.add(
 				new go.Panel(go.Panel.Auto, { margin: 0, background: 'transparent', position: new go.Point(nodePadding, nodePadding) })
@@ -70,9 +47,6 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 			// CONNECTOR PANEL
 			.add(
 				new go.Panel(go.Panel.Position, {
-					//itemTemplateMap: itemTemplateMap,
-					//background: 'grey',
-					//opacity: 0.5,
 					itemTemplate: $(
 						go.Panel,
 						'Position',
@@ -88,9 +62,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								toEndSegmentLength: 50,
 							},
 							new go.Binding('portId'),
-							new go.Binding('position', 'relativePosition', (pos) => {
-								return new go.Point(pos.x, pos.y);
-							}),
+							new go.Binding('position', 'relativePosition'),
 							new go.Binding('fromSpot', 'direction', portDirectionToSpot),
 							new go.Binding('toSpot', 'direction', portDirectionToSpot),
 							new go.Binding('height', 'portSize').ofModel(),
@@ -106,27 +78,4 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					)
 			)
 	);
-}
-
-function getTopLabelAlignment(angle: number): go.Spot {
-	switch (angle) {
-		case 0:
-			return go.Spot.TopCenter;
-		case 45:
-			return go.Spot.TopLeft;
-		case 90:
-			return go.Spot.LeftCenter;
-		case 135:
-			return go.Spot.BottomLeft;
-		case 180:
-			return go.Spot.BottomCenter;
-		case 225:
-			return go.Spot.BottomRight;
-		case 270:
-			return go.Spot.RightCenter;
-		case 315:
-			return go.Spot.TopRight;
-		default:
-			return go.Spot.TopCenter;
-	}
 }
