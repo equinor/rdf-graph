@@ -5,10 +5,8 @@ import { SparqlWrapperProps, StoryWrapper } from './StoryWrapper';
 import { GoGraph } from '../components/GoGraph';
 
 import { esd_turtle_border as esd_turtle } from './data/esd-turtle';
-//import * as TURTLE from './data-no-vc/SHUTDOWN_PRES';
-import { martinsTurtle } from './data/martins_verden_turtle';
 
-import { lorentz_turtle } from './data/lorentz_ttl';
+import { martinsTurtle } from './data/martins_verden_turtle';
 
 import { lorentz_turtle_2 } from './data/lorentz_ttl_2';
 
@@ -21,7 +19,6 @@ export default {
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
-		//turtleString: { control: { type: 'inline-radio' }, options: Object.keys('TURTLE'), mapping: 'TURTLE' },
 		layout: {
 			control: { type: 'inline-radio' },
 			options: [GoGraphLayout.ForceDirected, GoGraphLayout.LayeredDigraph],
