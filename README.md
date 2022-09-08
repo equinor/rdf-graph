@@ -64,32 +64,21 @@ Examples: `chore: Update README.md`, `fix: Colors for head`
 
 ### Setup of development environment
 
-Install the latest [LTS] (<https://nodejs.org>) version of Node.js, and at the same time make sure you are on version 8 of the `npm`-CLI.
+[Node.js LTS](https://nodejs.org) version is required.
 
 ```sh
+# Make sure you are on version 8 of the npm CLI
 $ node -v && npm -v
 v16.14.0
 8.31.0
-```
 
-#### Install Npm
-
-```sh
+#  Install npm if not already installed
 npm install --global npm
-```
 
-#### Install project dependencies
-
-```sh
+# Install project dependencies
 npm i
-```
 
-#### Run
-
-```sh
-npm run storybook
-
-# Run a local dev version of Storybook - Both good tools to use to quickly see changes along the way.
+# Run a local dev version of Storybook
 npm run dev
 ```
 
