@@ -8,9 +8,9 @@ An open source library for visualizing RDF as a graph network.
 
 The following UI implementations (React components) are shipped with the library:
 
--   RdfGoGraph - [GoJS](https://gojs.net/latest/index.html) (Licensed)
--   RdfCyGraph - [Cytoscape.js](https://js.cytoscape.org) (Open Source)
--   Rdf3dGraph - [3D Force-Directed Graph](https://github.com/vasturiano/3d-force-graph) (Open Source) - Experimental
+- RdfGoGraph - [GoJS](https://gojs.net/latest/index.html) (Licensed)
+- RdfCyGraph - [Cytoscape.js](https://js.cytoscape.org) (Open Source)
+- Rdf3dGraph - [3D Force-Directed Graph](https://github.com/vasturiano/3d-force-graph) (Open Source) - Experimental
 
 > Note: The team will focus on the GoJS implementation for further development.
 
@@ -18,19 +18,19 @@ The following UI implementations (React components) are shipped with the library
 
 Please refer to the Storybook stories for the respective UI implementations:
 
--   [RdfGoGraph - /src/goGraph/storybook/StoryWrapper.tsx](/src/goGraph/storybook/StoryWrapper.tsx)
--   [RdfCyGraph - /src/cyGraph/storybook/StoryWrapper.tsx](/src/cyGraph/storybook/StoryWrapper.tsx)
--   [Rdf3dGraph - /src/f3dGraph/storybook/StoryWrapper.tsx](/src/f3dGraph/storybook/StoryWrapper.tsx)
+- [RdfGoGraph - /src/goGraph/storybook/StoryWrapper.tsx](/src/goGraph/storybook/StoryWrapper.tsx)
+- [RdfCyGraph - /src/cyGraph/storybook/StoryWrapper.tsx](/src/cyGraph/storybook/StoryWrapper.tsx)
+- [Rdf3dGraph - /src/f3dGraph/storybook/StoryWrapper.tsx](/src/f3dGraph/storybook/StoryWrapper.tsx)
 
 ## Custom UI implementation
 
 ```tsx
 export const MyCustomUiComponent: FC<GraphProps> = (props) => {
-	const patchHandlerRef = useRef<IUiPatchHandler>(myPatchHandler);
+ const patchHandlerRef = useRef<IUiPatchHandler>(myPatchHandler);
 
-	useEffect(() => {
-		applyPatch(props.graphPatch, patchHandlerRef.current);
-	}, [props.graphPatch]);
+ useEffect(() => {
+  applyPatch(props.graphPatch, patchHandlerRef.current);
+ }, [props.graphPatch]);
 };
 
 export const MyCustomUi = createRdfGraphHoc(MyCustomUiComponent);
@@ -46,9 +46,9 @@ The core of this project is open source, but it also ships with an UI implementa
 
 Don't update major version for the following:
 
--   @storybook/preset-create-react-app
--   react-scripts
--   chalk
+- @storybook/preset-create-react-app
+- react-scripts
+- chalk
 
 ### PR's & releases version 🦆
 
@@ -56,9 +56,9 @@ Consistent title names help maintainers organize their projects better 📚
 
 Prefixes:
 
--   `patch: patch,fixes,fix,chore,Bump`
--   `minor: feat`
--   `major: major`
+- `patch: patch,fixes,fix,chore,Bump`
+- `minor: feat`
+- `major: major`
 
 Examples: `chore: Update README.md`, `fix: Colors for head`
 
