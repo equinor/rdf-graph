@@ -11,7 +11,13 @@ export type UiTheme = {
 	symbol: {
 		fill: string | null;
 		stroke: string;
+		text: string;
 		highlight: string;
+		hover: {
+			fill: string | null;
+			stroke: string;
+			text: string;
+		};
 	};
 	link: {
 		stroke: string;
@@ -40,7 +46,13 @@ export const lightModeTheme: UiTheme = {
 	symbol: {
 		fill: 'transparent',
 		stroke: '#1c1917',
+		text: '#1c1917',
 		highlight: '#323285',
+		hover: {
+			fill: '',
+			stroke: 'dodgerblue',
+			text: 'dodgerblue',
+		},
 	},
 	link: {
 		stroke: '#1c1917',
@@ -65,7 +77,13 @@ export const darkModeTheme: UiTheme = {
 	symbol: {
 		fill: 'transparent',
 		stroke: '#e7e5e4',
+		text: '#e7e5e4',
 		highlight: '#FF9200',
+		hover: {
+			fill: '',
+			stroke: '#FF9200',
+			text: '#FF9200',
+		},
 	},
 	link: {
 		stroke: '#e7e5e4',

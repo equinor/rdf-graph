@@ -37,7 +37,7 @@ function initDiagram() {
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
-	d.model.modelData.portSize = 3;
+	d.model.modelData.portSize = 5;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
