@@ -28,7 +28,6 @@ export function createDefaultItemTemplate(): go.Panel {
 				return v;
 			})
 		),
-		// new go.Binding('category'),
 		$(
 			go.Shape,
 			'Circle', //"Rectangle",
@@ -64,7 +63,9 @@ export function createPositionPortItemTemplate(): go.Panel {
 				toEndSegmentLength: 50,
 			},
 			new go.Binding('portId'),
-			new go.Binding('position', 'relativePosition'),
+			new go.Binding('position', 'relativePosition', (pos) => {
+				return new go.Point(pos.x, pos.y);
+			}),
 			new go.Binding('position', 'portSize', (size, shape: go.Shape) => {
 				const pos = shape.position;
 				return new go.Point(pos.x - size / 2, pos.y - size / 2);

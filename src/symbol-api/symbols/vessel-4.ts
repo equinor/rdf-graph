@@ -38,6 +38,7 @@ const svg = `<svg width="96" height="282" viewBox="0 0 96 282" fill="none" xmlns
 export const Vessel_4: NodeSymbolTemplate = {
 	id: 'vessel-4',
 	svg: svg,
+	geometry: '',
 	height: 282,
 	width: 96,
 	connectors: [

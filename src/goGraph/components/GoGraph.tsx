@@ -4,13 +4,14 @@ import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from '../link-templates/link-template-map';
 import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
-import { applyPatch } from '../applyPatch';
 
 import { NodeUiCategory } from '../types';
 import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
 import { GraphSelection, GraphState } from '../../core/types';
 import { getUiTheme } from '../style/colors';
 import { GoGraphProps } from '../types/component.types';
+import { GoJsPatchHandler } from '../uiPatchHandler';
+import { applyPatch, IUiPatchHandler } from '../../core/ui/applyPatch';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
 
@@ -36,7 +37,7 @@ function initDiagram() {
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
-	d.model.modelData.portSize = 6;
+	d.model.modelData.portSize = 3;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
@@ -89,6 +90,8 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
+	const patchHandlerRef = useRef<IUiPatchHandler>(new GoJsPatchHandler(diagramRef.current));
+
 	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
@@ -96,7 +99,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		applyPatch(diagramRef.current, props.graphPatch);
+		applyPatch(props.graphPatch, patchHandlerRef.current);
 	}, [props.graphPatch]);
 
 	useEffect(() => {
@@ -114,7 +117,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
 		const selection = getGraphSelection(e, props.graphState);
-		applyPatch(diagramRef.current, props.selectionEffect(selection));
+		applyPatch(props.selectionEffect(selection), patchHandlerRef.current);
 	};
 
 	useEffect(() => {

@@ -19,6 +19,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE svg>
 export const Valve_3Way_1: NodeSymbolTemplate = {
 	id: 'Valve_3Way_1',
 	svg: svg,
+	geometry: '',
 	height: 48,
 	width: 48,
 	connectors: [

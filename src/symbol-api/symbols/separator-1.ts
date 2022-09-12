@@ -56,6 +56,7 @@ const svg = `<svg width="117" height="117" viewBox="0 0 117 117" fill="none" xml
 export const Separator_1: NodeSymbolTemplate = {
 	id: 'Separator_1',
 	svg: svg,
+	geometry: '',
 	height: 117,
 	width: 117,
 	connectors: [

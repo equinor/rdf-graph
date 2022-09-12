@@ -8,6 +8,11 @@ export type UiTheme = {
 		text: string;
 		highlight: string;
 	};
+	symbol: {
+		fill: string | null;
+		stroke: string;
+		highlight: string;
+	};
 	link: {
 		stroke: string;
 		text: string;
@@ -29,7 +34,12 @@ export const lightModeTheme: UiTheme = {
 	node: {
 		fill: 'lightgreen',
 		stroke: '#1c1917',
-		text: '',
+		text: '#1c1917',
+		highlight: '#323285',
+	},
+	symbol: {
+		fill: 'transparent',
+		stroke: '#1c1917',
 		highlight: '#323285',
 	},
 	link: {
@@ -49,7 +59,12 @@ export const darkModeTheme: UiTheme = {
 	node: {
 		fill: '#fff',
 		stroke: '#e7e5e4',
-		text: '',
+		text: '#e7e5e4',
+		highlight: '#FF9200',
+	},
+	symbol: {
+		fill: 'transparent',
+		stroke: '#e7e5e4',
 		highlight: '#FF9200',
 	},
 	link: {

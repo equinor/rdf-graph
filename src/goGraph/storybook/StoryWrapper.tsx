@@ -8,12 +8,23 @@ import { useRdfActionReducer } from '../../core/state/useRdfState';
 import { RdfGoGraph } from '../RdfGoGraph';
 import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
 import { GoGraphOptions } from '../types/component.types';
+import { getNodeSymbolTemplate, NodeSymbol } from '../../symbol-api';
+import { UiNodeSymbol } from '../../core/ui/applyPatch';
+import { NodeSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 
 export type SparqlWrapperProps = {
 	turtleString: string;
 	layout: GoGraphLayout;
 	selectionEffect?: SelectionCallback;
 };
+
+function symbolProvider(id: string, _rotation?: number): UiNodeSymbol | undefined {
+	console.log('Using custom symbol resolver!');
+	// IGNORE ROTATION for GoJS!
+	const symbol = getNodeSymbolTemplate(id) as NodeSymbol;
+	if (!symbol) return;
+	return NodeSymbolToUiNodeSymbol(symbol);
+}
 
 export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
@@ -29,7 +40,6 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 
 	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
 		if (!selectionEffect) {
-			console.log('No selection handler for ', sel);
 			return [];
 		}
 		return selectionEffect(sel);
@@ -63,7 +73,7 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 				{isDarkMode ? '☀️' : '🌙'}
 			</button>
 
-			<RdfGoGraph options={options} selectionEffect={handleSelection} {...state} />
+			<RdfGoGraph options={options} selectionEffect={handleSelection} symbolProvider={symbolProvider} {...state} />
 		</div>
 	);
 };

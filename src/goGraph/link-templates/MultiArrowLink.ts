@@ -9,7 +9,7 @@ export class MultiArrowLink extends go.Link {
 	}
 
 	// produce a Geometry from the Link's route
-	makeGeometry() {
+	override makeGeometry() {
 		// get the Geometry created by the standard behavior
 		const geo = super.makeGeometry();
 

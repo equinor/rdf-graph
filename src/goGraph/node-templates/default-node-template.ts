@@ -21,7 +21,7 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 			).ofModel(),
 			new go.Binding(
 				'stroke',
-				'highlightStrokeColor',
+				'highlight',
 				(
 					v,
 					{

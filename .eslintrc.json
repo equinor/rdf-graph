@@ -15,7 +15,7 @@
 				"react-hooks/exhaustive-deps": "off",
 				"no-throw-literal": 0,
 				"@typescript-eslint/no-unused-vars": [
-					"warn",
+					"error",
 					{
 						"argsIgnorePattern": "^_",
 						"varsIgnorePattern": "^_",
