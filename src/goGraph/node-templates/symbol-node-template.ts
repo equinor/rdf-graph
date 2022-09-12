@@ -1,6 +1,59 @@
 import go from 'gojs';
 import { portDirectionToSpot } from '../item-templates/position-port-item-template';
 
+// this is shown by the mouseHover event handler
+var nodeHoverMenu = new go.Adornment('Spot', {
+	mouseLeave: (e, obj) => {
+		const ad = obj.part as go.Adornment;
+		if (!ad.adornedPart) return;
+		ad.adornedPart.removeAdornment('nodeHoverMenu');
+	},
+})
+	.add(
+		new go.Placeholder({
+			isActionable: true,
+			click: (e, obj) => {
+				var node = (obj.part as go.Adornment).adornedPart;
+				node?.diagram?.select(node);
+			},
+		})
+	)
+	.add(
+		new go.Panel('Auto', { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, background: 'transparent', padding: 10 })
+			.add(
+				new go.Panel('Vertical', { padding: 10 })
+					.bind(
+						new go.Binding('background', 'uiTheme', ({ menu }) => {
+							return menu.background;
+						}).ofModel()
+					)
+					.add(
+						new go.TextBlock('<no-label>', { font: 'bold 16px sans-serif', alignment: go.Spot.Left, margin: new go.Margin(0, 0, 8, 0) })
+							.bind('text', 'label')
+							.bind(
+								new go.Binding('stroke', 'uiTheme', ({ menu }) => {
+									return menu.text;
+								}).ofModel()
+							)
+					)
+					.add(
+						new go.TextBlock('Some cool info!', { alignment: go.Spot.Left, margin: new go.Margin(0, 0, 5, 0) }).bind(
+							new go.Binding('stroke', 'uiTheme', ({ menu }) => {
+								return menu.text;
+							}).ofModel()
+						)
+					)
+					.add(
+						new go.TextBlock('Mystery link', { alignment: go.Spot.Left }).bind(
+							new go.Binding('stroke', 'uiTheme', ({ menu }) => {
+								return menu.text;
+							}).ofModel()
+						)
+					)
+			)
+			.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
+	);
+
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
 	const nodePadding = 16;
@@ -17,6 +70,12 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 			selectable: true,
 			selectionAdorned: true,
 			scale: 1,
+			mouseOver: (_e, obj) => {
+				var node = obj.part;
+				if (!node) return;
+				nodeHoverMenu.adornedObject = node;
+				node.addAdornment('nodeHoverMenu', nodeHoverMenu);
+			},
 			mouseEnter: (_e: any, obj: any) => {
 				const { stroke, text } = obj.diagram?.model.modelData.uiTheme.symbol.hover;
 
@@ -85,17 +144,25 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					//background: 'blue',
 					alignment: go.Spot.Top,
 					alignmentFocus: go.Spot.Top,
-				}).add(
-					new go.TextBlock({ name: 'LABEL' })
-						.bind('text', 'label')
-						.bind(new go.Binding('stroke', 'uiTheme', ({ symbol }) => symbol.text).ofModel())
-						.bind(
-							new go.Binding('stroke', 'isSelected', (v, targetObj) => {
-								const theme = targetObj.diagram.model.modelData.uiTheme;
-								return v ? theme.symbol.hover.text : theme.symbol.text;
-							}).ofObject('')
-						)
-				)
+				})
+					.add(
+						new go.TextBlock({ name: 'LABEL' })
+							.bind('text', 'label')
+							.bind(
+								new go.Binding('stroke', 'uiTheme', ({ symbol }, obj) => {
+									const node = obj.part.findObject('NODE');
+									if (node && node.isSelected) return symbol.hover.text;
+									return symbol.text;
+								}).ofModel()
+							)
+							.bind(
+								new go.Binding('stroke', 'isSelected', (v, targetObj) => {
+									const theme = targetObj.diagram.model.modelData.uiTheme;
+									return v ? theme.symbol.hover.text : theme.symbol.text;
+								}).ofObject('')
+							)
+					)
+					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
 			)
 			// Symbol and connector position panel
 			.add(
@@ -112,17 +179,20 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								})
 									.bind('geometryString', 'symbolGeometry', (v) => `F ${v}`)
 									.bind(
-										new go.Binding('fill', 'uiTheme', ({ symbol }) => {
-											// TODO: Check if node is selected!!!
+										new go.Binding('fill', 'uiTheme', ({ symbol }, obj) => {
+											const node = obj.part.findObject('NODE');
+											if (node && node.isSelected) return symbol.hover.fill;
 											return symbol.fill;
 										}).ofModel()
 									)
 									.bind(
-										new go.Binding('stroke', 'uiTheme', ({ symbol }) => {
-											// TODO: Check if node is selected!!!
+										new go.Binding('stroke', 'uiTheme', ({ symbol }, obj) => {
+											const node = obj.part.findObject('NODE');
+											if (node && node.isSelected) return symbol.hover.text;
 											return symbol.stroke;
 										}).ofModel()
 									)
+
 									.bind(
 										new go.Binding('stroke', 'isSelected', (v, targetObj) => {
 											const theme = targetObj.diagram.model.modelData.uiTheme;
@@ -169,7 +239,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 									go.Shape,
 									'Circle',
 									{
-										name: 'CONNECTOR',
+										name: 'CONNECTOR-VISUAL',
 										//fill: 'blue',
 										strokeWidth: 0,
 										opacity: 1,
@@ -179,7 +249,8 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 									new go.Binding('position', 'relativePosition'),
 									new go.Binding('height', 'portSize').ofModel(),
 									new go.Binding('width', 'portSize').ofModel(),
-									new go.Binding('fill', 'uiTheme', ({ symbol }) => symbol.stroke).ofModel()
+									new go.Binding('fill', 'uiTheme', ({ symbol }) => symbol.stroke).ofModel(),
+									new go.Binding('opacity', 'portOpacity').ofModel()
 								)
 							),
 						})

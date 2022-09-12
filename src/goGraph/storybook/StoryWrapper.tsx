@@ -34,9 +34,10 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 		return {
 			layout: getDefaultLayoutConfig(layout),
 			containerStyle: { height: 'calc(100vh - 70px)' },
+			showSymbolPorts: true,
 		};
 	});
-	const [isDarkMode, setDarkMode] = useState(false);
+	const [isDarkMode, setDarkMode] = useState(true);
 
 	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
 		if (!selectionEffect) {
@@ -47,6 +48,12 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 
 	const loadTurtle = (): void => {
 		updateTurtle(turtleString);
+	};
+
+	const togglePortVisibility = (): void => {
+		let v = false;
+		if (options.showSymbolPorts !== undefined) v = !options.showSymbolPorts;
+		setOptions({ ...options, showSymbolPorts: v });
 	};
 
 	useEffect(() => {
@@ -65,7 +72,9 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 
 	return (
 		<div>
-			<Button onClick={loadTurtle}> Load turtle </Button>
+			<Button onClick={loadTurtle}>Load turtle</Button>
+
+			<Button onClick={togglePortVisibility}>{options.showSymbolPorts === true ? 'Hide' : 'Show'} Ports</Button>
 
 			<button
 				style={{ fontSize: '18px', border: 'none', background: 'transparent', cursor: 'pointer' }}

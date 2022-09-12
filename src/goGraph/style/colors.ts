@@ -2,6 +2,11 @@ export type UiTheme = {
 	canvas: {
 		background: string;
 	};
+	menu: {
+		background: string;
+		border: string;
+		text: string;
+	};
 	node: {
 		fill: string | null;
 		stroke: string;
@@ -37,6 +42,11 @@ export const lightModeTheme: UiTheme = {
 	canvas: {
 		background: '#fafaf9',
 	},
+	menu: {
+		background: '#44403c',
+		border: '#292524',
+		text: '#f5f5f5',
+	},
 	node: {
 		fill: 'lightgreen',
 		stroke: '#1c1917',
@@ -67,6 +77,11 @@ export const lightModeTheme: UiTheme = {
 export const darkModeTheme: UiTheme = {
 	canvas: {
 		background: '#1c1917',
+	},
+	menu: {
+		background: '#44403c',
+		border: '#292524',
+		text: '#f5f5f5',
 	},
 	node: {
 		fill: '#fff',

@@ -38,6 +38,7 @@ function initDiagram() {
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 5;
+	d.model.modelData.portOpacity = 0.0;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
@@ -97,6 +98,13 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		model.setDataProperty(model.modelData, 'uiTheme', getUiTheme(isDarkMode));
 		setDiagramStyle({ ...diagramStyle, background: getUiTheme(isDarkMode).canvas.background });
 	}, [isDarkMode]);
+
+	useEffect(() => {
+		let visible = false;
+		if (props.options?.showSymbolPorts) visible = props.options?.showSymbolPorts;
+		const { model } = diagramRef.current;
+		model.setDataProperty(model.modelData, 'portOpacity', visible ? 1 : 0);
+	}, [props.options?.showSymbolPorts]);
 
 	useEffect(() => {
 		applyPatch(props.graphPatch, patchHandlerRef.current);
