@@ -161,6 +161,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 									return v ? theme.symbol.hover.text : theme.symbol.text;
 								}).ofObject('')
 							)
+							.trigger(new go.AnimationTrigger('stroke', { duration: 150 }))
 					)
 					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
 			)
@@ -192,13 +193,13 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 											return symbol.stroke;
 										}).ofModel()
 									)
-
 									.bind(
 										new go.Binding('stroke', 'isSelected', (v, targetObj) => {
 											const theme = targetObj.diagram.model.modelData.uiTheme;
 											return v ? theme.symbol.hover.stroke : theme.symbol.stroke;
 										}).ofObject('')
 									)
+									.trigger(new go.AnimationTrigger('stroke', { duration: 150 }))
 							)
 					)
 					// CONNECTOR PANEL (PORT MAPPING, invisible...)
