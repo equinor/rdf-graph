@@ -1,4 +1,4 @@
-import go from 'gojs';
+import go, { GraphObject } from 'gojs';
 import { portDirectionToSpot } from '../item-templates/position-port-item-template';
 
 // this is shown by the mouseHover event handler
@@ -19,7 +19,7 @@ var nodeHoverMenu = new go.Adornment('Spot', {
 		})
 	)
 	.add(
-		new go.Panel('Auto', { alignment: go.Spot.Right, alignmentFocus: go.Spot.Left, background: 'transparent', padding: 10 })
+		new go.Panel('Auto', { alignment: go.Spot.Top, alignmentFocus: go.Spot.Bottom, background: 'transparent', padding: 10 })
 			.add(
 				new go.Panel('Vertical', { padding: 10 })
 					.bind(
@@ -56,11 +56,12 @@ var nodeHoverMenu = new go.Adornment('Spot', {
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
-	const nodePadding = 16;
+	const nodePadding = 24;
+	const colorizeLayers = false;
 	// Port diameter
 	const dPort = 0.1;
 	return (
-		new go.Node(go.Panel.Auto, {
+		new go.Node(go.Panel.Spot, {
 			name: 'NODE',
 			background: 'transparent',
 			resizable: false,
@@ -79,21 +80,21 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 			mouseEnter: (_e: any, obj: any) => {
 				const { stroke, text } = obj.diagram?.model.modelData.uiTheme.symbol.hover;
 
-				const shape = obj.part.findObject('GEOMETRY');
+				const geometry = obj.part.findObject('GEOMETRY');
 				const label = obj.part.findObject('LABEL');
 
-				if (shape) shape.stroke = stroke;
+				if (geometry) geometry.fill = stroke;
 				if (label) label.stroke = text;
 			},
 			mouseLeave: (_e: any, obj: any) => {
 				const { stroke, text } = obj.diagram?.model.modelData.uiTheme.symbol;
 
-				const shape = obj.part.findObject('GEOMETRY');
+				const geometry = obj.part.findObject('GEOMETRY');
 				const label = obj.part.findObject('LABEL');
 
 				if (obj.part.isSelected) return;
 
-				if (shape) shape.stroke = stroke;
+				if (geometry) geometry.fill = stroke;
 				if (label) label.stroke = text;
 			},
 			selectionAdornmentTemplate: $(
@@ -129,19 +130,20 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 				// more ContextMenuButtons would go here
 			), // end Adornment
 		})
-			//
+			// MARGIN PANEL
 			.add(
 				new go.Panel(go.Panel.Spot, {
-					//background: 'blue',
+					background: colorizeLayers ? 'orange' : 'transparent',
 					alignment: go.Spot.Center,
 				})
 					.bind('width', 'symbolWidth', (w) => w + nodePadding * 2)
 					.bind('height', 'symbolHeight', (h) => h + nodePadding * 2)
 			)
+
 			// TOP LABEL
 			.add(
 				new go.Panel(go.Panel.Auto, {
-					//background: 'blue',
+					background: colorizeLayers ? 'purple' : 'transparent',
 					alignment: go.Spot.Top,
 					alignmentFocus: go.Spot.Top,
 				})
@@ -165,103 +167,115 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					)
 					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
 			)
-			// Symbol and connector position panel
+
+			// GEOMETRY (single path)
+			.add(
+				new go.Panel(go.Panel.Spot, {
+					alignment: go.Spot.Center,
+				})
+					.bind('width', 'symbolWidth')
+					.bind('height', 'symbolHeight')
+					.add(
+						new go.Panel(go.Panel.Position, {
+							background: colorizeLayers ? 'blue' : 'transparent',
+							alignment: go.Spot.Center,
+						}).add(
+							new go.Shape({
+								name: 'GEOMETRY',
+								strokeWidth: 0,
+								stroke: 'transparent',
+								background: colorizeLayers ? 'green' : 'transparent',
+								geometryStretch: GraphObject.None,
+							})
+								.bind('geometryString', 'symbolGeometry', (v) => `F ${v}`)
+								.bind(
+									new go.Binding('fill', 'uiTheme', ({ symbol }, obj) => {
+										const node = obj.part.findObject('NODE');
+										if (node && node.isSelected) return symbol.hover.fill;
+										return symbol.fill;
+									}).ofModel()
+								)
+								.bind(
+									new go.Binding('fill', 'uiTheme', ({ symbol }, obj) => {
+										const node = obj.part.findObject('NODE');
+										if (node && node.isSelected) return symbol.hover.text;
+										return symbol.stroke;
+									}).ofModel()
+								)
+								.bind(
+									new go.Binding('fill', 'isSelected', (v, targetObj) => {
+										const theme = targetObj.diagram.model.modelData.uiTheme;
+										return v ? theme.symbol.hover.stroke : theme.symbol.stroke;
+									}).ofObject('')
+								)
+								.trigger(new go.AnimationTrigger('fill', { duration: 150 }))
+						)
+					)
+			)
+
+			// CONNECTOR PANEL (PORT MAPPING, invisible...)
 			.add(
 				new go.Panel(go.Panel.Position, {
-					alignment: go.Spot.Center,
-				}) // SYMBOL
-					.add(
-						new go.Panel(go.Panel.Auto, { margin: 0, background: 'transparent', position: new go.Point(0, 0) })
-							// GEOMETRY (single path)
-							.add(
-								new go.Shape({
-									name: 'GEOMETRY',
-									strokeWidth: 1,
-								})
-									.bind('geometryString', 'symbolGeometry', (v) => `F ${v}`)
-									.bind(
-										new go.Binding('fill', 'uiTheme', ({ symbol }, obj) => {
-											const node = obj.part.findObject('NODE');
-											if (node && node.isSelected) return symbol.hover.fill;
-											return symbol.fill;
-										}).ofModel()
-									)
-									.bind(
-										new go.Binding('stroke', 'uiTheme', ({ symbol }, obj) => {
-											const node = obj.part.findObject('NODE');
-											if (node && node.isSelected) return symbol.hover.text;
-											return symbol.stroke;
-										}).ofModel()
-									)
-									.bind(
-										new go.Binding('stroke', 'isSelected', (v, targetObj) => {
-											const theme = targetObj.diagram.model.modelData.uiTheme;
-											return v ? theme.symbol.hover.stroke : theme.symbol.stroke;
-										}).ofObject('')
-									)
-									.trigger(new go.AnimationTrigger('stroke', { duration: 150 }))
-							)
-					)
-					// CONNECTOR PANEL (PORT MAPPING, invisible...)
-					.add(
-						new go.Panel(go.Panel.Position, {
-							position: new go.Point(-(dPort / 2 + 0.5), -(dPort / 2 + 0.5)),
-							itemTemplate: $(
-								go.Panel,
-								'Position',
-								$(
-									go.Shape,
-									'Circle',
-									{
-										name: 'CONNECTOR',
-										fill: 'red',
-										strokeWidth: 0,
-										opacity: 0,
-										fromEndSegmentLength: 50,
-										toEndSegmentLength: 50,
-										width: dPort,
-										height: dPort,
-									},
-									new go.Binding('portId'),
-									new go.Binding('position', 'relativePosition'),
-									new go.Binding('fromSpot', 'direction', portDirectionToSpot),
-									new go.Binding('toSpot', 'direction', portDirectionToSpot)
-								)
-							),
-						}).bind('itemArray', 'ports')
-					)
-					// CONNECTOR PANEL (VISUAL PORTS)
-					.add(
-						new go.Panel(go.Panel.Position, {
-							itemTemplate: $(
-								go.Panel,
-								'Position',
-								$(
-									go.Shape,
-									'Circle',
-									{
-										name: 'CONNECTOR-VISUAL',
-										//fill: 'blue',
-										strokeWidth: 0,
-										opacity: 1,
-										fromEndSegmentLength: 50,
-										toEndSegmentLength: 50,
-									},
-									new go.Binding('position', 'relativePosition'),
-									new go.Binding('height', 'portSize').ofModel(),
-									new go.Binding('width', 'portSize').ofModel(),
-									new go.Binding('fill', 'uiTheme', ({ symbol }) => symbol.stroke).ofModel(),
-									new go.Binding('opacity', 'portOpacity').ofModel()
-								)
-							),
-						})
-							.bind('itemArray', 'ports')
-							.bind(
-								new go.Binding('position', 'portSize', (size) => {
-									return new go.Point(0 - (size / 2 + 0.5), 0 - (size / 2 + 0.5));
-								}).ofModel()
-							)
-					)
+					// background: 'blue',
+					// opacity: 0.3,
+					alignment: new go.Spot(0.5, 0.5, -(dPort / 2), -(dPort / 2)),
+					itemTemplate: $(
+						go.Panel,
+						'Position',
+						$(
+							go.Shape,
+							'Circle',
+							{
+								name: 'CONNECTOR',
+								fill: 'transparent',
+								strokeWidth: 0,
+								opacity: 0,
+								fromEndSegmentLength: 50,
+								toEndSegmentLength: 50,
+								width: dPort,
+								height: dPort,
+							},
+							new go.Binding('portId'),
+							new go.Binding('position', 'relativePosition'),
+							new go.Binding('fromSpot', 'direction', portDirectionToSpot),
+							new go.Binding('toSpot', 'direction', portDirectionToSpot)
+						)
+					),
+				})
+					.bind('itemArray', 'ports')
+					.bind('width', 'symbolWidth')
+					.bind('height', 'symbolHeight')
+			)
+
+			// CONNECTOR PANEL (VISUAL PORTS)
+			.add(
+				new go.Panel(go.Panel.Position, {
+					itemTemplate: $(
+						go.Panel,
+						'Position',
+						$(
+							go.Shape,
+							'Circle',
+							{
+								name: 'CONNECTOR-VISUAL',
+								fill: 'transparent',
+								strokeWidth: 0,
+								opacity: 1,
+								fromEndSegmentLength: 50,
+								toEndSegmentLength: 50,
+							},
+							new go.Binding('position', 'relativePosition'),
+							new go.Binding('height', 'portSize').ofModel(),
+							new go.Binding('width', 'portSize').ofModel(),
+							new go.Binding('fill', 'uiTheme', ({ symbol }) => symbol.stroke).ofModel(),
+							new go.Binding('opacity', 'portOpacity').ofModel()
+						)
+					),
+				})
+					.bind('itemArray', 'ports')
+					.bind('width', 'symbolWidth')
+					.bind('height', 'symbolHeight')
+					.bind(new go.Binding('alignment', 'portSize', (size) => new go.Spot(0.5, 0.5, -(size / 2), -(size / 2))).ofModel())
 			)
 	);
 }

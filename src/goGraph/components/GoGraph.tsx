@@ -37,7 +37,7 @@ function initDiagram() {
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
-	d.model.modelData.portSize = 5;
+	d.model.modelData.portSize = 3;
 	d.model.modelData.portOpacity = 0.0;
 
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
@@ -46,6 +46,8 @@ function initDiagram() {
 		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
+
+	d.initialContentAlignment = go.Spot.Center;
 
 	d.layout = getLayout(getDefaultLayoutConfig(GoGraphLayout.ForceDirected));
 
@@ -159,6 +161,13 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		if (!theme) return;
 		setDarkMode(theme === 'dark');
 	}, [props.options?.theme]);
+
+	// Hacky solution to center diagram. Need to find other solution for this...
+	useEffect(() => {
+		setTimeout(function () {
+			diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
+		}, 10);
+	}, []);
 
 	return (
 		<>

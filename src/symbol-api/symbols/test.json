@@ -1,0 +1,15 @@
+[
+	{
+		"id": "Compressor_1",
+		"svg": "",
+		"geometry": "M111 1L1 28.4988V69.7494L111 97.253V1Z",
+		"height": 98,
+		"width": 112,
+		"connectors": [
+			{ "id": "c2", "x": 1.0, "y": 49.0, "direction": 270 },
+			{ "id": "c2", "x": 111.0, "y": 49.0, "direction": 90 },
+			{ "id": "c3", "x": 26.5, "y": 22.1, "direction": 0 },
+			{ "id": "c4", "x": 81.5, "y": 8.39999, "direction": 0 }
+		]
+	}
+]

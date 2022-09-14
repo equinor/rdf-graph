@@ -8,7 +8,7 @@ import { useRdfActionReducer } from '../../core/state/useRdfState';
 import { RdfGoGraph } from '../RdfGoGraph';
 import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
 import { GoGraphOptions } from '../types/component.types';
-import { getNodeSymbolTemplate, NodeSymbol } from '../../symbol-api';
+import { getConnectorSymbol, getNodeSymbolTemplate, NodeSymbol } from '../../symbol-api';
 import { UiNodeSymbol } from '../../core/ui/applyPatch';
 import { NodeSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 
@@ -18,12 +18,33 @@ export type SparqlWrapperProps = {
 	selectionEffect?: SelectionCallback;
 };
 
-function symbolProvider(id: string, _rotation?: number): UiNodeSymbol | undefined {
+function _symbolProvider(id: string, _rotation?: number): UiNodeSymbol | undefined {
 	console.log('Using custom symbol resolver!');
 	// IGNORE ROTATION for GoJS!
 	const symbol = getNodeSymbolTemplate(id) as NodeSymbol;
 	if (!symbol) return;
 	return NodeSymbolToUiNodeSymbol(symbol);
+}
+
+function symbolProviderJson(id: string, _rotation?: number): UiNodeSymbol | undefined {
+	console.log('Using JSON symbol resolver!');
+	// IGNORE ROTATION for GoJS!
+	const s = getConnectorSymbol(id);
+	if (!s) return;
+
+	const res: UiNodeSymbol = {
+		id: s.id,
+		width: s.width,
+		height: s.height,
+		geometry: s.geometryString,
+		connectors: s.connectors.map((c) => {
+			return { id: c.id, width: 1, height: 1, direction: c.direction, position: { x: c.x, y: c.y } };
+		}),
+	};
+
+	console.log({ res });
+
+	return res;
 }
 
 export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWrapperProps) => {
@@ -82,7 +103,7 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 				{isDarkMode ? '☀️' : '🌙'}
 			</button>
 
-			<RdfGoGraph options={options} selectionEffect={handleSelection} symbolProvider={symbolProvider} {...state} />
+			<RdfGoGraph options={options} selectionEffect={handleSelection} symbolProvider={symbolProviderJson} {...state} />
 		</div>
 	);
 };

@@ -5,6 +5,15 @@ import { NodeSymbolConnector, PortDirection } from './types/NodeSymbolConnector'
 import { SymbolOptions } from './types/SymbolOptions';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 
+import symbolLib from './symbol-library.json';
+import { ConnectorSymbol } from './types/ConnectorSymbol';
+
+export function getConnectorSymbol(id: string): ConnectorSymbol | undefined {
+	const lib = symbolLib as Record<string, ConnectorSymbol>;
+	if (id in lib) return lib[id];
+	return undefined;
+}
+
 export function getNodeSymbolTemplate(id: string): NodeSymbolTemplate {
 	return SymbolLibrary[id as keyof typeof SymbolKey];
 }
