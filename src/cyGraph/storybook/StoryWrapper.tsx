@@ -6,7 +6,9 @@ import { createPatch } from '../createPatch';
 import { GraphSelection } from '../../core/types/graphModel';
 import { RdfCyGraph } from '../RdfCyGraph';
 import { DataFactory } from 'n3';
-import { defaultSymbolProvider } from '../../core/ui/defaultSymbolProvider';
+import { ConnectorSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
+import { getConnectorSymbolAdvanced } from '../../symbol-api';
+import { UiNodeSymbol } from '../../core/ui/applyPatch';
 
 const { namedNode } = DataFactory;
 
@@ -18,6 +20,18 @@ type Property = {
 	key: string;
 	value: string;
 };
+
+export function cySymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
+	const symbol = getConnectorSymbolAdvanced(id, {
+		rotation: rotation,
+		mutateConnectorRelativePosition: 'CenterCenter',
+		mutateSvgStringOnRotation: true,
+		mutateConnectorRelativePositionOnRotation: true,
+	});
+	if (!symbol) return;
+	console.log(ConnectorSymbolToUiNodeSymbol(symbol));
+	return ConnectorSymbolToUiNodeSymbol(symbol);
+}
 
 export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	const [turtle, updateTurtle] = useState<string>(turtleString);
@@ -113,7 +127,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={connectSelection}> Connect </Button>
 			<Input onChange={(x) => handleConnectionPredicateSelect(x)} />
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<RdfCyGraph selectionEffect={handleSelection} symbolProvider={defaultSymbolProvider} {...state} />
+			<RdfCyGraph selectionEffect={handleSelection} symbolProvider={cySymbolProvider} {...state} />
 			<Table>
 				<Table.Head>
 					<Table.Row key="Details">

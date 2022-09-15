@@ -2,7 +2,6 @@ import { DataFactory } from 'n3';
 import { labelPredicate, rotationIri, rotationPredicate } from '../core/mapper/predicates';
 import { RdfAssertion, RdfPatch2 } from '../core/types';
 import { GraphElementBase, GraphNode, GraphSelection } from '../core/types/graphModel';
-import { SymbolKey } from '../symbol-api';
 
 const { namedNode, literal, quad } = DataFactory;
 
@@ -29,7 +28,7 @@ type UpdateTurtleAction = {
 
 type SwitchSvgAction = {
 	type: 'switchSvg';
-	payload: { svgKey: SymbolKey };
+	payload: { svgKey: string };
 };
 
 type RotateSelection = {

@@ -1,21 +1,23 @@
-import { getSymbol, NodeSymbol, SymbolRotation } from '../../symbol-api';
+import { getConnectorSymbolAdvanced } from '../../symbol-api';
+import { ConnectorSymbol } from '../types';
 import { UiNodeConnector, UiNodeSymbol } from './applyPatch';
 
-export function NodeSymbolToUiNodeSymbol(symbol: NodeSymbol): UiNodeSymbol {
+export function ConnectorSymbolToUiNodeSymbol(symbol: ConnectorSymbol): UiNodeSymbol {
 	return {
 		id: symbol.id,
 		width: symbol.width,
 		height: symbol.height,
-		svg: symbol.svg,
-		geometry: symbol.geometry,
+		svg: symbol.svgString,
+		geometry: symbol.geometryString,
 		connectors: symbol.connectors.map<UiNodeConnector>((c) => {
-			return { id: c.id, width: 2, height: 2, direction: c.portDirection, position: { x: c.point.x, y: c.point.y } };
+			return { id: c.id, width: 2, height: 2, direction: c.direction, position: { x: c.relativePosition.x, y: c.relativePosition.y } };
 		}, []),
 	};
 }
 
 export function defaultSymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
-	const symbol = getSymbol(id, { rotation: rotation as SymbolRotation });
+	const symbol = getConnectorSymbolAdvanced(id, { rotation: rotation });
 	if (!symbol) return;
-	return NodeSymbolToUiNodeSymbol(symbol);
+	console.log(ConnectorSymbolToUiNodeSymbol(symbol));
+	return ConnectorSymbolToUiNodeSymbol(symbol);
 }

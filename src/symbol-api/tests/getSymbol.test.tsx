@@ -1,9 +1,8 @@
-import { getSymbol } from '../getSymbol';
-import { SymbolKey } from '../symbol-library';
+import { getConnectorSymbolAdvanced } from '../getConnectorSymbol';
 
 describe('Symbol stuff', () => {
 	test('Symbol', async () => {
-		const sym = getSymbol(SymbolKey.Separator_1, { rotation: 0 });
+		const sym = getConnectorSymbolAdvanced('PP007A', { rotation: 0 });
 
 		sym && sym.connectors.forEach((_c) => {});
 	});

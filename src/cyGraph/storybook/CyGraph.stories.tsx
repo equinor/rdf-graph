@@ -31,32 +31,38 @@ const storyTurtle = `
 @prefix ui:      <http://rdf.equinor.com/ui/> .
 
 example:Separatox3000
-        ui:hasConnector   example:Separatox3000ThreePhaseInput ;
+        ui:hasConnector   example:Separatox3000ThreePhaseInput, example:Separatox3000LiquidOutput2 ;
         ui:hasConnector  example:Separatox3000LiquidOutput , example:Separatox3000GasOutput ;
-        ui:hasSvg              "Separator_1" .
+        ui:hasSvg              "PT003A" .
+
+example:Separatox3000LiquidOutput2
+        ui:hasConnectorSuffix  "4" .
 
 example:Separatox3000LiquidOutput
-        ui:hasConnectorSuffix  "c3" .
+        ui:hasConnectorSuffix  "3" .
 
 example:Separatox3000GasOutput
-        ui:hasConnectorSuffix  "c2" .
+        ui:hasConnectorSuffix  "2" .
 
 example:Separatox3000ThreePhaseInput
-        ui:hasConnectorSuffix  "c1" .
+        ui:hasConnectorSuffix  "1" .
 
 example:Separatox3001
-        ui:hasConnector   example:Separatox3001ThreePhaseInput ;
+        ui:hasConnector   example:Separatox3001ThreePhaseInput, example:Separatox3001LiquidOutput2 ;
         ui:hasConnector  example:Separatox3001LiquidOutput , example:Separatox3001GasOutput ;
-        ui:hasSvg              "Separator_1" .
+        ui:hasSvg              "PT003A" .
+
+example:Separatox3001LiquidOutput2
+        ui:hasConnectorSuffix  "4" .
 
 example:Separatox3001LiquidOutput
-        ui:hasConnectorSuffix  "c3" .
+        ui:hasConnectorSuffix  "3" .
 
 example:Separatox3001GasOutput
-        ui:hasConnectorSuffix  "c2" .
+        ui:hasConnectorSuffix  "2" .
 
 example:Separatox3001ThreePhaseInput
-        ui:hasConnectorSuffix  "c1" ;
+        ui:hasConnectorSuffix  "1" ;
 		example:connectedTo example:Separatox3000GasOutput .
 
 example:Hallais
