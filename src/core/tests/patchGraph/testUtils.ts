@@ -14,8 +14,11 @@ export type DebugElement = {
 	actual: SimplifiedAssertion;
 };
 
+export const testSymbolId = 'PT003A';
+export const testSymbolConnectorSuffix_1 = '1';
+
 export const svgWithConnectorQuads = (connectorId: string) => [
-	q(n('S'), P.hasSvgPredicate, l('Separator_1')),
+	q(n('S'), P.hasSvgPredicate, l(testSymbolId)),
 	q(n('S'), P.hasConnectorPredicate, n('C')),
 	q(n('C'), P.hasConnectorSuffixPredicate, l(connectorId)),
 ];
