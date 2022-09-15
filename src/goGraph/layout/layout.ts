@@ -40,7 +40,11 @@ export function getDefaultLayoutConfig(layout: GoGraphLayout): GoGraphLayoutConf
 			break;
 		case GoGraphLayout.ForceDirected:
 			break;
-
+		case GoGraphLayout.Grid:
+			cfg.config = {
+				wrappingColumn: 6,
+			};
+			break;
 		default:
 			break;
 	}
