@@ -8,7 +8,7 @@ import { useRdfActionReducer } from '../../core/state/useRdfState';
 import { RdfGoGraph } from '../RdfGoGraph';
 import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
 import { GoGraphOptions } from '../types/component.types';
-import { getConnectorSymbol } from '../../symbol-api';
+import { getConnectorSymbol, SymbolLibraryKey } from '../../symbol-api';
 import { UiNodeSymbol } from '../../core/ui/applyPatch';
 import { ConnectorSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 
@@ -21,7 +21,7 @@ export type SparqlWrapperProps = {
 function symbolProviderJson(id: string, _rotation?: number): UiNodeSymbol | undefined {
 	console.log('Using JSON symbol resolver!');
 	// IGNORE ROTATION for GoJS!
-	const symbol = getConnectorSymbol(id);
+	const symbol = getConnectorSymbol(id as SymbolLibraryKey);
 	if (!symbol) return;
 	return ConnectorSymbolToUiNodeSymbol(symbol);
 }

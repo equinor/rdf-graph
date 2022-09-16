@@ -7,7 +7,7 @@ import { GraphSelection } from '../../core/types/graphModel';
 import { RdfCyGraph } from '../RdfCyGraph';
 import { DataFactory } from 'n3';
 import { ConnectorSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
-import { getConnectorSymbolAdvanced } from '../../symbol-api';
+import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
 import { UiNodeSymbol } from '../../core/ui/applyPatch';
 
 const { namedNode } = DataFactory;
@@ -22,7 +22,7 @@ type Property = {
 };
 
 export function cySymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
-	const symbol = getConnectorSymbolAdvanced(id, {
+	const symbol = getConnectorSymbolAdvanced(id as SymbolLibraryKey, {
 		rotation: rotation,
 		mutateConnectorRelativePosition: 'CenterCenter',
 		mutateSvgStringOnRotation: true,

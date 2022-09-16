@@ -1,9 +1,10 @@
 import { stringToSvgElement } from './utils/svg-manipulation';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 import { ConnectorSymbol, SymbolOptions } from '../core/types';
-import symbolLibrary from './symbol-library.json';
+import symbolLib from './symbol-library/symbol-library.json';
+import { SymbolLibraryKey } from './symbol-library/symbol-library.types';
 
-export const symbolLib = symbolLibrary as Record<string, Readonly<ConnectorSymbol>>;
+export const symbolLibrary = symbolLib as Record<SymbolLibraryKey, Readonly<ConnectorSymbol>>;
 
 function cloneConnectorSymbol(symbol: ConnectorSymbol): ConnectorSymbol {
 	const clone: ConnectorSymbol = { ...symbol, connectors: [] };
@@ -14,14 +15,14 @@ function cloneConnectorSymbol(symbol: ConnectorSymbol): ConnectorSymbol {
 	return clone;
 }
 
-export function getConnectorSymbol(id: string): ConnectorSymbol | undefined {
-	return id in symbolLib ? cloneConnectorSymbol(symbolLib[id]) : undefined;
+export function getConnectorSymbol(id: SymbolLibraryKey): ConnectorSymbol | undefined {
+	return id in symbolLibrary ? cloneConnectorSymbol(symbolLibrary[id]) : undefined;
 }
 
-export function getConnectorSymbolAdvanced(id: string, options?: SymbolOptions): ConnectorSymbol | undefined {
-	if (!(id in symbolLib)) return undefined;
-
-	const symbol: ConnectorSymbol = cloneConnectorSymbol(symbolLib[id]);
+/** Get mutated Connector Symbol using mutation options */
+export function getConnectorSymbolAdvanced(id: SymbolLibraryKey, options?: SymbolOptions): ConnectorSymbol | undefined {
+	const symbol = getConnectorSymbol(id);
+	if (!symbol) return undefined;
 
 	const mutRotation = options?.mutateSvgStringOnRotation ?? false;
 	const mutRelPos = options?.mutateConnectorRelativePosition ?? 'none';
@@ -46,8 +47,11 @@ export function getConnectorSymbolAdvanced(id: string, options?: SymbolOptions):
 
 	for (let i = 0; i < symbol.connectors.length; i++) {
 		const c = symbol.connectors[i];
-		let p = pointToCenterCenter({ x: c.relativePosition.x, y: c.relativePosition.y }, width, height);
-		if (rotation > 0) {
+		let p = c.relativePosition;
+
+		if (mutRelPos === 'CenterCenter') p = pointToCenterCenter({ x: c.relativePosition.x, y: c.relativePosition.y }, width, height);
+
+		if (mutRelPosRot && rotation > 0) {
 			p = rotatePoint(p, rotation);
 		}
 
@@ -56,27 +60,4 @@ export function getConnectorSymbolAdvanced(id: string, options?: SymbolOptions):
 	}
 
 	return symbol;
-}
-
-export function getConnectorSymbolSvgDataURI(id: string, options?: SymbolOptions): string | undefined {
-	if (!(id in symbolLib)) return undefined;
-
-	// We do not need to clone the symbol because we only read the
-	// svgString
-	const symbol: ConnectorSymbol = symbolLib[id];
-
-	const fill = options?.fill ?? 'none';
-	const stroke = options?.stroke ?? 'black';
-
-	const svgEl = stringToSvgElement(symbol.svgString);
-
-	if (options?.fill) {
-		svgEl.setAttribute('fill', fill);
-	}
-
-	if (options?.stroke) {
-		svgEl.setAttribute('stroke', stroke);
-	}
-
-	return 'data:image/svg+xml;utf8,' + encodeURIComponent(svgEl.outerHTML);
 }

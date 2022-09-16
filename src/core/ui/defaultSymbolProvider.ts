@@ -1,4 +1,4 @@
-import { getConnectorSymbolAdvanced } from '../../symbol-api';
+import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
 import { ConnectorSymbol } from '../types';
 import { UiNodeConnector, UiNodeSymbol } from './applyPatch';
 
@@ -16,7 +16,7 @@ export function ConnectorSymbolToUiNodeSymbol(symbol: ConnectorSymbol): UiNodeSy
 }
 
 export function defaultSymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
-	const symbol = getConnectorSymbolAdvanced(id, { rotation: rotation });
+	const symbol = getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation });
 	if (!symbol) return;
 	console.log(ConnectorSymbolToUiNodeSymbol(symbol));
 	return ConnectorSymbolToUiNodeSymbol(symbol);

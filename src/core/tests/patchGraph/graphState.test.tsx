@@ -4,7 +4,7 @@ import { termToId } from 'n3';
 import * as P from '../../mapper/predicates';
 import { emptyGraph, svgWithConnectorQuads, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch } from './testUtils';
 import { defaultSymbolProvider } from '../../ui/defaultSymbolProvider';
-import { symbolLib } from '../../../symbol-api';
+import { symbolLibrary } from '../../../symbol-api';
 
 describe('patchGraph', () => {
 	test('normal svg', () => {
@@ -18,7 +18,7 @@ describe('patchGraph', () => {
 				case P.hasSvgIri:
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.symbolName).toBe(q.object.value);
-					if (node!.symbolName! in symbolLib) {
+					if (node!.symbolName! in symbolLibrary) {
 						expect(node!.symbol).toBeTruthy();
 					}
 					break;
