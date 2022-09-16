@@ -5,9 +5,8 @@ import { SparqlWrapperProps, StoryWrapper } from '../../goGraph/storybook/StoryW
 import { GoGraph } from '../../goGraph/components/GoGraph';
 
 import { GoGraphLayout } from '../../goGraph/layout';
-import { ConnectorSymbol } from '../types/ConnectorSymbol';
-
-import symbolLib from '../symbol-library.json';
+import { symbolLibrary } from '../getConnectorSymbol';
+import { ConnectorSymbol } from '../../core';
 
 export default {
 	title: 'Symbol API (go)',
@@ -36,7 +35,7 @@ allSymbols.args = {
 allSymbols.storyName = 'All Symbols';
 
 function getSymbolsTurtle(): string {
-	const lib = symbolLib as Record<string, ConnectorSymbol>;
+	const lib = symbolLibrary as Record<string, ConnectorSymbol>;
 
 	let turtle = `@prefix example: <http://example.com#> .
 @prefix imf:     <http://example.com/imf#> .
