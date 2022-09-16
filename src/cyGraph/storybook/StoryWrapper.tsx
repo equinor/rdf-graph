@@ -29,7 +29,7 @@ export function cySymbolProvider(id: string, rotation?: number): UiNodeSymbol | 
 		mutateConnectorRelativePositionOnRotation: true,
 	});
 	if (!symbol) return;
-	console.log(ConnectorSymbolToUiNodeSymbol(symbol));
+
 	return ConnectorSymbolToUiNodeSymbol(symbol);
 }
 
