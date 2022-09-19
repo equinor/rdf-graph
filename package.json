@@ -137,7 +137,7 @@
 		"babel-loader": "^8.2.5",
 		"eslint": "^8.23.0",
 		"eslint-config-react-app": "^7.0.1",
-		"gojs": "^2.2.14",
+		"gojs": "^2.2.15",
 		"gojs-react": "^1.1.1",
 		"husky": "^8.0.1",
 		"jsdom": "^20.0.0",
