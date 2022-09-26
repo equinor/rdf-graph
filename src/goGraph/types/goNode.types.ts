@@ -1,4 +1,4 @@
-import { NodeSymbolConnector, PortDirection } from '../../symbol-api';
+import { SymbolConnector } from '../../core';
 
 /** Categories that determine the type of node template to use */
 export enum NodeUiCategory {
@@ -29,7 +29,7 @@ export type BaseNodeData = {
 	symbolId?: string;
 	symbolHeight?: number;
 	symbolWidth?: number;
-	symbolConnectors?: NodeSymbolConnector[];
+	symbolConnectors?: SymbolConnector[];
 };
 
 export type PortData = {
@@ -41,7 +41,7 @@ export type PortData = {
 	width?: number;
 	height?: number;
 	relativePosition?: go.Point;
-	direction?: PortDirection;
+	direction?: number;
 };
 
 export type EdgeData = {
@@ -62,7 +62,7 @@ export type SymbolNodeData = BaseNodeData & {
 	height?: number;
 	width?: number;
 	angle?: number;
-	symbolConnectors?: NodeSymbolConnector[];
+	symbolConnectors?: SymbolConnector[];
 };
 
 /** A node that has connectors along the edges of a rectangular node (top / bottom / right / left) */

@@ -1,15 +1,14 @@
 import go from 'gojs';
-import { PortDirection } from '../../symbol-api';
 
-export function portDirectionToSpot(direction: PortDirection): go.Spot {
+export function portDirectionToSpot(direction: number): go.Spot {
 	switch (direction) {
-		case PortDirection.N:
+		case 0:
 			return go.Spot.TopSide;
-		case PortDirection.E:
+		case 90:
 			return go.Spot.RightSide;
-		case PortDirection.S:
+		case 180:
 			return go.Spot.BottomSide;
-		case PortDirection.W:
+		case 270:
 			return go.Spot.LeftSide;
 		default:
 			return go.Spot.Center;

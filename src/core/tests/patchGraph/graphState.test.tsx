@@ -2,13 +2,13 @@
 import { patchGraph } from '../../state/patchGraph';
 import { termToId } from 'n3';
 import * as P from '../../mapper/predicates';
-import { SymbolKey } from '../../../symbol-api';
-import { emptyGraph, svgWithConnectorQuads, toAddPatch } from './testUtils';
+import { emptyGraph, svgWithConnectorQuads, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch } from './testUtils';
 import { defaultSymbolProvider } from '../../ui/defaultSymbolProvider';
+import { symbolLibrary } from '../../../symbol-api';
 
 describe('patchGraph', () => {
 	test('normal svg', () => {
-		const quads = svgWithConnectorQuads('c1');
+		const quads = svgWithConnectorQuads(testSymbolConnectorSuffix_1);
 		const res = patchGraph(emptyGraph(), toAddPatch(quads), { symbolProvider: defaultSymbolProvider });
 		for (const _ of res.graphPatch) {
 		}
@@ -18,7 +18,7 @@ describe('patchGraph', () => {
 				case P.hasSvgIri:
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.symbolName).toBe(q.object.value);
-					if (node!.symbolName! in SymbolKey) {
+					if (node!.symbolName! in symbolLibrary) {
 						expect(node!.symbol).toBeTruthy();
 					}
 					break;
@@ -40,7 +40,7 @@ describe('patchGraph', () => {
 	});
 
 	test('Without existing connector', () => {
-		const res = patchGraph(emptyGraph(), toAddPatch(svgWithConnectorQuads("I don't exist in Seperator_1")), {
+		const res = patchGraph(emptyGraph(), toAddPatch(svgWithConnectorQuads(`I don't exist in ${testSymbolId}`)), {
 			symbolProvider: defaultSymbolProvider,
 		});
 		for (const _ of res.graphPatch) {

@@ -1,7 +1,6 @@
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { NodeType } from '../core/types/nodeType';
 import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../core/mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../core/mapper/predicates';
 import { GraphProps } from '../core/state/GraphStateProps';
@@ -9,6 +8,14 @@ import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty, Gra
 import cytoscape from 'cytoscape';
 import { layoutDagre } from './layout';
 import { UiNodeSymbol } from '../core/ui/applyPatch';
+
+enum NodeType {
+	SymbolContainer = 'SymbolContainer',
+	SymbolImage = 'SymbolImage',
+	SymbolConnector = 'SymbolConnector',
+	SymbolOrigin = 'SymbolOrigin',
+	Default = 'Default',
+}
 
 const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
 	const elem: ElementDefinition = { data: { id } };
@@ -223,11 +230,10 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 						'background-clip': 'none',
 						'background-fit': 'contain',
 						'background-image': `data(${imageKey})`,
-
 						width: `data(${imageWidthKey})`,
-						height: `data(${imageWidthKey})`,
+						height: `data(${imageHeightKey})`,
 						'background-color': 'blue',
-						'background-opacity': 0,
+						'background-opacity': 0.15,
 						'border-width': 0,
 						'padding-bottom': '0px',
 						events: 'no',

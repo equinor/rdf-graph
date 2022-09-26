@@ -1,7 +1,7 @@
 import go, { GraphLinksModel } from 'gojs';
 import { nodeTemplateKey } from '../core/mapper/predicates';
 import { GraphConnector, GraphEdge, GraphNode, GraphPatch, GraphProperty, Assertion, GraphPropertyTarget } from '../core/types/graphModel';
-import { getNodeSymbolTemplate, PortDirection } from '../symbol-api';
+import { getConnectorSymbol } from '../symbol-api';
 import { propMap, shapeMap } from './mapper/patchDataMaps';
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData, SymbolNodeData } from './types';
 
@@ -175,7 +175,7 @@ function patchConnectorProp(
 	idx: number | undefined,
 	{ action, assertion }: Assertion<GraphProperty<GraphPropertyTarget>>
 ) {
-	let portProp: keyof PortData, portValue: PortDirection;
+	let portProp: keyof PortData, portValue: number;
 	const effect = action === 'add' ? set : unset;
 
 	switch (assertion.key) {
@@ -200,16 +200,16 @@ function patchConnectorProp(
 			}
 			switch (assertion.value) {
 				case 'south':
-					portValue = PortDirection.S;
+					portValue = 180;
 					break;
 				case 'north':
-					portValue = PortDirection.N;
+					portValue = 0;
 					break;
 				case 'east':
-					portValue = PortDirection.E;
+					portValue = 90;
 					break;
 				case 'west':
-					portValue = PortDirection.W;
+					portValue = 270;
 					break;
 				default:
 					portValue = assertion.value;
@@ -252,13 +252,15 @@ function patchSymbol(model: go.GraphLinksModel, data: SymbolNodeData, { action, 
 	if (!data) return;
 
 	const effect = action === 'add' ? set : unset;
-	const sym = getNodeSymbolTemplate(assertion.value);
+	const sym = getConnectorSymbol(assertion.value);
+
+	if (!sym) return;
 
 	effect(model, data, 'category', NodeUiCategory.SvgSymbol);
 	effect(model, data, 'symbolId', assertion.value);
 	effect(model, data, 'width', sym.width);
 	effect(model, data, 'height', sym.height);
-	effect(model, data, 'svgDataURI', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(sym.svg));
+	effect(model, data, 'svgDataURI', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(sym.svgString));
 	effect(model, data, 'symbolConnectors', sym.connectors);
 
 	const ports = data.ports;
@@ -284,8 +286,8 @@ function syncSymbolPort(
 	if (c) {
 		effect(model, p, 'height', 2);
 		effect(model, p, 'width', 2);
-		effect(model, p, 'relativePosition', new go.Point(c.point.x, c.point.y));
-		effect(model, p, 'direction', c.portDirection);
+		effect(model, p, 'relativePosition', new go.Point(c.relativePosition.x, c.relativePosition.y));
+		effect(model, p, 'direction', c.direction);
 		effect(model, p, 'category', NodeUiItemCategory.PositionPort, parent.ports, idx);
 	}
 }

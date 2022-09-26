@@ -1,15 +1,15 @@
 import { DataFactory } from 'n3';
 import * as P from '../../mapper/predicates';
-import { createState, SimplifiedAssertion, testPatchOrder, toAddPatch, toRmPatch } from './testUtils';
+import { createState, SimplifiedAssertion, testPatchOrder, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch, toRmPatch } from './testUtils';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 test('Node becomes connector and node again', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
-		q(n('N1'), P.hasSvgPredicate, l('Separator_1')),
+		q(n('N1'), P.hasSvgPredicate, l(testSymbolId)),
 		q(n('N2'), P.labelPredicate, l('Node 2')),
-		q(n('N2'), P.hasConnectorSuffixPredicate, l('c1')),
+		q(n('N2'), P.hasConnectorSuffixPredicate, l(testSymbolConnectorSuffix_1)),
 		q(n('N3'), P.labelPredicate, l('Node 3')),
 		q(n('N2'), n('isConnectedTo'), n('N3')),
 	];
