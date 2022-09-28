@@ -14,7 +14,7 @@ export type DebugElement = {
 	actual: SimplifiedAssertion;
 };
 
-export const testSymbolId = 'PT003A';
+export const testSymbolId = 'PP007A';
 export const testSymbolConnectorSuffix_1 = '1';
 
 export const svgWithConnectorQuads = (connectorId: string) => [
