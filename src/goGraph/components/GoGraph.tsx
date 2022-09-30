@@ -3,7 +3,7 @@ import { ReactDiagram } from 'gojs-react';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from '../link-templates/link-template-map';
-import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
+import { createDefaultNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
 
 import { NodeUiCategory } from '../types';
 import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
@@ -27,6 +27,8 @@ function initDiagram() {
 			text: 'new node',
 			color: 'lightblue',
 		},
+		hasHorizontalScrollbar: false,
+		hasVerticalScrollbar: false,
 		model: $(go.GraphLinksModel, {
 			nodeKeyProperty: 'id',
 			linkKeyProperty: 'id',
@@ -43,7 +45,8 @@ function initDiagram() {
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
+		.add(NodeUiCategory.EdgeConnectorNode, createDefaultNodeTemplate(clickHandler));
+	//.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -82,14 +85,16 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		return {
 			height: '100vh',
 			width: '100%',
-			border: '1px solid lightgrey',
+			// border: '1px solid lightgrey',
 			overflow: 'hidden',
 			background: getUiTheme(isDarkMode).canvas.background,
-			transition: 'background 0.1s ease',
+			// transition: 'background 0.1s ease',
 		};
 	});
 
 	const diagramRef = useRef<Diagram>(initDiagram());
+	const diagramDomRef = useRef<HTMLDivElement>(null);
+
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
@@ -166,19 +171,19 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	useEffect(() => {
 		setTimeout(function () {
 			diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
-		}, 10);
+		}, 100);
 	}, []);
 
 	return (
-		<>
+		<div ref={diagramDomRef}>
 			<ReactDiagram
 				style={diagramStyle}
 				initDiagram={() => diagramRef.current}
-				divClassName="graph-links-model"
+				divClassName="reactGoContainer"
 				nodeDataArray={nodeDataArrayRef.current}
 				linkDataArray={linkDataArrayRef.current}
 				onModelChange={handleModelChange}
 			/>
-		</>
+		</div>
 	);
 };

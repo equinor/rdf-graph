@@ -35,7 +35,10 @@ export function getDefaultLayoutConfig(layout: GoGraphLayout): GoGraphLayoutConf
 				direction: 90,
 				setsPortSpots: false,
 				layeringOption: go.LayeredDigraphLayout.LayerLongestPathSink,
-				layerSpacing: 100,
+				layerSpacing: 40,
+				columnSpacing: 10,
+				packOption: go.LayeredDigraphLayout.PackAll,
+				aggressiveOption: go.LayeredDigraphLayout.AggressiveMore,
 			};
 			break;
 		case GoGraphLayout.ForceDirected:
