@@ -4,7 +4,9 @@ import { SparqlWrapperProps, StoryWrapper } from './StoryWrapper';
 
 import { GoGraph } from '../components/GoGraph';
 
-import { esd_turtle_border as esd_turtle } from './data/esd-turtle';
+// import { esd_turtle_border as esd_turtle } from './data/esd-turtle';
+
+import { esd_turtle_2 } from './data-no-vc/esd-turtle-2';
 
 import { martinsTurtle } from './data/martins_verden_turtle';
 
@@ -48,7 +50,7 @@ lorentzCorner.storyName = `Lorentz Corner`;
 
 export const esdStory = Template.bind({});
 esdStory.args = {
-	turtleString: esd_turtle, // NOTE! File not in version control...
+	turtleString: esd_turtle_2, // NOTE! File not in version control...
 	layout: GoGraphLayout.LayeredDigraph,
 	selectionEffect: selectionEffect,
 } as SparqlWrapperProps;

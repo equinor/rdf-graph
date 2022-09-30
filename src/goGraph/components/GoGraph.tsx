@@ -27,6 +27,8 @@ function initDiagram() {
 			text: 'new node',
 			color: 'lightblue',
 		},
+		hasHorizontalScrollbar: false,
+		hasVerticalScrollbar: false,
 		model: $(go.GraphLinksModel, {
 			nodeKeyProperty: 'id',
 			linkKeyProperty: 'id',
@@ -43,7 +45,8 @@ function initDiagram() {
 	d.nodeTemplateMap = new go.Map<string, go.Part>()
 		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 		.add(NodeUiCategory.SvgSymbol, createSymbolNodeTemplate(symbolNodeClickHandler))
-		.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
+		.add(NodeUiCategory.EdgeConnectorNode, createDefaultNodeTemplate(clickHandler));
+	//.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
 
@@ -82,14 +85,17 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		return {
 			height: '100vh',
 			width: '100%',
-			border: '1px solid lightgrey',
+			// border: '1px solid lightgrey',
 			overflow: 'hidden',
 			background: getUiTheme(isDarkMode).canvas.background,
-			transition: 'background 0.1s ease',
+			// transition: 'background 0.1s ease',
 		};
 	});
 
 	const diagramRef = useRef<Diagram>(initDiagram());
+	const diagramDomRef = useRef<HTMLDivElement>(null);
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
 
@@ -123,6 +129,18 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 			diagramRef.current.removeDiagramListener('ChangedSelection', handleChangedSelection);
 		};
 	}, []);
+
+	// useEffect(() => {
+	// 	const canvas = diagramDomRef.current?.getElementsByTagName('canvas')[0];
+	// 	if (!canvas) return;
+	// 	const rect = canvas.getBoundingClientRect();
+
+	// 	canvas.width = rect.width;
+	// 	canvas.height = rect.height;
+
+	// 	console.log('canvas:', canvas);
+	// 	console.log('rect:', rect);
+	// }, [diagramDomRef.current]);
 
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
@@ -163,22 +181,22 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [props.options?.theme]);
 
 	// Hacky solution to center diagram. Need to find other solution for this...
-	useEffect(() => {
-		setTimeout(function () {
-			diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
-		}, 10);
-	}, []);
+	// useEffect(() => {
+	// 	setTimeout(function () {
+	// 		diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
+	// 	}, 10);
+	// }, []);
 
 	return (
-		<>
+		<div ref={diagramDomRef}>
 			<ReactDiagram
 				style={diagramStyle}
 				initDiagram={() => diagramRef.current}
-				divClassName="graph-links-model"
+				divClassName="reactGoContainer"
 				nodeDataArray={nodeDataArrayRef.current}
 				linkDataArray={linkDataArrayRef.current}
 				onModelChange={handleModelChange}
 			/>
-		</>
+		</div>
 	);
 };

@@ -76,7 +76,7 @@ export const lightModeTheme: UiTheme = {
 
 export const darkModeTheme: UiTheme = {
 	canvas: {
-		background: '#1c1917',
+		background: '#132634',
 	},
 	menu: {
 		background: '#44403c',
@@ -84,9 +84,9 @@ export const darkModeTheme: UiTheme = {
 		text: '#f5f5f5',
 	},
 	node: {
-		fill: '#fff',
-		stroke: '#e7e5e4',
-		text: '#e7e5e4',
+		fill: '#243746',
+		stroke: '#97CACE',
+		text: '#fff',
 		highlight: '#FF9200',
 	},
 	symbol: {

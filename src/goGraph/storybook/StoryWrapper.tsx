@@ -71,7 +71,7 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 	}, [isDarkMode]);
 
 	return (
-		<div>
+		<div style={{ height: '400px', width: '100%' }}>
 			<Button onClick={loadTurtle}>Load turtle</Button>
 
 			<Button onClick={togglePortVisibility}>{options.showSymbolPorts === true ? 'Hide' : 'Show'} Ports</Button>
