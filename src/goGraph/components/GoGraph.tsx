@@ -3,7 +3,7 @@ import { ReactDiagram } from 'gojs-react';
 import React, { FC, useEffect, useRef, useState } from 'react';
 
 import { linkTemplateMap } from '../link-templates/link-template-map';
-import { createDefaultNodeTemplate, createEdgeConnectorNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
+import { createDefaultNodeTemplate, createSymbolNodeTemplate } from '../node-templates';
 
 import { NodeUiCategory } from '../types';
 import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../layout';
@@ -94,7 +94,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 
 	const diagramRef = useRef<Diagram>(initDiagram());
 	const diagramDomRef = useRef<HTMLDivElement>(null);
-	const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
@@ -129,18 +128,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 			diagramRef.current.removeDiagramListener('ChangedSelection', handleChangedSelection);
 		};
 	}, []);
-
-	// useEffect(() => {
-	// 	const canvas = diagramDomRef.current?.getElementsByTagName('canvas')[0];
-	// 	if (!canvas) return;
-	// 	const rect = canvas.getBoundingClientRect();
-
-	// 	canvas.width = rect.width;
-	// 	canvas.height = rect.height;
-
-	// 	console.log('canvas:', canvas);
-	// 	console.log('rect:', rect);
-	// }, [diagramDomRef.current]);
 
 	const handleChangedSelection = (e: go.DiagramEvent) => {
 		if (!props.selectionEffect) return;
@@ -181,11 +168,11 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	}, [props.options?.theme]);
 
 	// Hacky solution to center diagram. Need to find other solution for this...
-	// useEffect(() => {
-	// 	setTimeout(function () {
-	// 		diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
-	// 	}, 10);
-	// }, []);
+	useEffect(() => {
+		setTimeout(function () {
+			diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
+		}, 100);
+	}, []);
 
 	return (
 		<div ref={diagramDomRef}>
