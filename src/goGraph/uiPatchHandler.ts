@@ -40,6 +40,8 @@ const connectorPropMap: Record<keyof UiConnectorPatchProperties, string> = {
 };
 
 export class GoJsPatchHandler implements IUiPatchHandler {
+	#zoomToFitTimeout: NodeJS.Timeout | null = null;
+	#initialPatchBurst: 'READY' | 'RECEIVING' | 'DONE' = 'READY';
 	constructor(readonly diagram: go.Diagram) {}
 
 	addNode(id: string): void {
@@ -221,14 +223,24 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	onBeforeApplyPatch() {
+		if (this.#initialPatchBurst === 'RECEIVING') return;
 		this.transactionId = 'patch_' + Date.now();
 		this.diagram.startTransaction(this.transactionId);
 	}
 
 	onAfterApplyPatch() {
-		this.diagram.commitTransaction(this.transactionId);
-		console.info('GoJS Transaction completed:', this.transactionId);
-		this.transactionId = '';
+		if (this.#initialPatchBurst === 'DONE') {
+			this.diagram.commitTransaction(this.transactionId);
+			return;
+		} else {
+			this.#initialPatchBurst = 'RECEIVING';
+			this.#zoomToFitTimeout !== null && clearTimeout(this.#zoomToFitTimeout);
+			this.#zoomToFitTimeout = setTimeout(() => {
+				this.diagram.zoomToFit();
+				this.diagram.commitTransaction(this.transactionId);
+				this.#initialPatchBurst = 'DONE';
+			}, 200);
+		}
 
 		// Handy console logs for debug.
 		// console.log({ ...this.diagram.model.nodeDataArray });
