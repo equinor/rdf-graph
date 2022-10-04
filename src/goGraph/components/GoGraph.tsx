@@ -20,8 +20,8 @@ const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => 
 function initDiagram() {
 	const $ = go.GraphObject.make;
 	const d = $(go.Diagram, {
-		initialAutoScale: go.Diagram.Uniform,
-		initialContentAlignment: go.Spot.Center,
+		contentAlignment: go.Spot.Center,
+		padding: 30,
 		'undoManager.isEnabled': true,
 		'clickCreatingTool.archetypeNodeData': {
 			text: 'new node',
@@ -49,8 +49,6 @@ function initDiagram() {
 	//.add(NodeUiCategory.EdgeConnectorNode, createEdgeConnectorNodeTemplate(clickHandler));
 
 	d.linkTemplateMap = linkTemplateMap;
-
-	d.initialContentAlignment = go.Spot.Center;
 
 	d.layout = getLayout(getDefaultLayoutConfig(GoGraphLayout.ForceDirected));
 
@@ -166,13 +164,6 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 		if (!theme) return;
 		setDarkMode(theme === 'dark');
 	}, [props.options?.theme]);
-
-	// Hacky solution to center diagram. Need to find other solution for this...
-	useEffect(() => {
-		setTimeout(function () {
-			diagramRef.current.alignDocument(go.Spot.Center, go.Spot.Center);
-		}, 100);
-	}, []);
 
 	return (
 		<div ref={diagramDomRef}>
