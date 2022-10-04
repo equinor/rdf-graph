@@ -106,7 +106,7 @@
 		"react-dom": "^16.14.0 || ^17.0.0"
 	},
 	"dependencies": {
-		"@equinor/eds-core-react": "^0.20.4",
+		"@equinor/eds-core-react": "^0.21.0",
 		"3d-force-graph": "^1.70.13",
 		"cytoscape": "^3.22.1",
 		"cytoscape-cola": "^2.5.1",
