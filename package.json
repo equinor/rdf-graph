@@ -108,7 +108,7 @@
 	"dependencies": {
 		"@equinor/eds-core-react": "^0.20.4",
 		"3d-force-graph": "^1.70.13",
-		"cytoscape": "^3.22.1",
+		"cytoscape": "^3.23.0",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
