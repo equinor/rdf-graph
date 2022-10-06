@@ -67,32 +67,14 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		if (prop === 'symbol') {
 			const symbol = value as UiNodeSymbol;
 
-			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.SvgSymbol);
+			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.EngineeringSymbol);
 			this.diagram.model.setDataProperty(nodeData, 'symbolGeometry', symbol.geometry);
 			this.diagram.model.setDataProperty(nodeData, 'symbolHeight', symbol.height);
 			this.diagram.model.setDataProperty(nodeData, 'symbolWidth', symbol.width);
 			return;
 		}
 
-		// NOTE: Not sure if the "nodeTemplate" is needed at this point (se ESD example)
-		// Seems to work fine using the default node template.
-		if (prop === 'nodeTemplate') {
-			let cat = NodeUiCategory.Default;
-
-			switch (value) {
-				case 'BorderConnectorTemplate':
-					cat = NodeUiCategory.EdgeConnectorNode;
-					break;
-
-				default:
-					break;
-			}
-			this.diagram.model.setCategoryForNodeData(nodeData, cat);
-			return;
-		}
-
-		const nodePropKey = nodePropMap[prop];
-		this.diagram.model.setDataProperty(nodeData, nodePropKey, value);
+		this.diagram.model.setDataProperty(nodeData, nodePropMap[prop], value);
 	}
 
 	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void {
@@ -166,8 +148,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			commitValue = new go.Point(p.x, p.y);
 		}
 
-		const connectorPropKey = connectorPropMap[prop];
-		this.diagram.model.set(nodeData.ports[portIdx], connectorPropKey, commitValue);
+		this.diagram.model.set(nodeData.ports[portIdx], connectorPropMap[prop], commitValue);
 	}
 
 	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(id: string, nodeId: string, prop: P): void {

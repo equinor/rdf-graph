@@ -4,6 +4,7 @@ import { SymbolConnector } from '../../core';
 export enum NodeUiCategory {
 	Default = '',
 	SvgSymbol = 'SvgSymbol',
+	EngineeringSymbol = 'EngineeringSymbol',
 	EdgeConnectorNode = 'EdgeConnectorNode',
 }
 

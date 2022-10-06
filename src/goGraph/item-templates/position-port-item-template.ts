@@ -29,7 +29,7 @@ export function createDefaultItemTemplate(): go.Panel {
 		),
 		$(
 			go.Shape,
-			'Circle', //"Rectangle",
+			'Circle',
 			{
 				name: 'CONN',
 				fill: 'blue',
@@ -52,7 +52,7 @@ export function createPositionPortItemTemplate(): go.Panel {
 		'Position',
 		$(
 			go.Shape,
-			'Circle', //"Rectangle",
+			'Circle',
 			{
 				name: 'CONN',
 				fill: 'blue',
