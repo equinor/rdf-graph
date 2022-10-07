@@ -35,8 +35,8 @@ const edgePropMap: Record<keyof UiEdgePatchProperties, string> = {
 const connectorPropMap: Record<keyof UiConnectorPatchProperties, string> = {
 	color: 'color',
 	name: 'name',
-	connectorDirection: 'direction',
-	connectorRelativePosition: 'relativePosition',
+	connectorDirection: 'connectorDirection',
+	connectorRelativePosition: 'connectorRelativePosition',
 };
 
 export class GoJsPatchHandler implements IUiPatchHandler {

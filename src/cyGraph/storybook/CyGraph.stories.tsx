@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { StoryWrapper } from './StoryWrapper';
 
 export default {
-	title: 'CyGraph',
+	title: 'RdfCyGraph',
 	component: StoryWrapper,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
@@ -89,4 +89,4 @@ Example.args = {
 	// layoutName: 'Cose-Bilkent',
 };
 
-Example.storyName = 'CyGraph';
+Example.storyName = 'Demo';

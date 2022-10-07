@@ -18,7 +18,5 @@ export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, this
 				margin: 8,
 				wrap: go.TextBlock.OverflowEllipsis,
 			}).bind('text', 'label')
-		)
-		.bind(new go.Binding('toSpot', 'setPortDirection', (v) => (v ? go.Spot.TopSide : go.Spot.None)).ofModel())
-		.bind(new go.Binding('fromSpot', 'setPortDirection', (v) => (v ? go.Spot.BottomSide : go.Spot.None)).ofModel());
+		);
 }

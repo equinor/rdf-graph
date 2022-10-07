@@ -1,41 +1,38 @@
 import go from 'gojs';
-import { getDefaultLayoutConfig, getLayout, GoGraphLayout } from '../../layout';
-import { linkTemplateMap } from '../../link-templates/link-template-map';
-import { createDefaultNodeTemplate, createSymbolNodeTemplate } from '../../node-templates';
+import { createDefaultLinkTemplate } from '../../templates/default-link-template';
+import { createDefaultNodeTemplate } from '../../templates/default-node-template';
+import { createSymbolNodeTemplate } from '../../templates/symbol-node-template';
 import { NodeUiCategory } from '../../types';
 
-const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
+const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
+	console.log('Node clicked!');
+};
 
-const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {};
+const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
+	console.log('Engineering Symbol node clicked!');
+};
 
 export function defaultInitDiagram() {
-	const $ = go.GraphObject.make;
-	const d = $(go.Diagram, {
+	const d = new go.Diagram(undefined, {
 		contentAlignment: go.Spot.Center,
 		padding: 30,
-		'undoManager.isEnabled': true,
-		model: $(go.GraphLinksModel, {
+		model: new go.GraphLinksModel(undefined, undefined, {
 			nodeKeyProperty: 'id',
 			linkKeyProperty: 'id',
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
 		}),
+		layout: new go.ForceDirectedLayout(),
+		nodeTemplateMap: new go.Map<string, go.Part>()
+			.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
+			.add(NodeUiCategory.EngineeringSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
+		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
 	});
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 3;
 	d.model.modelData.portOpacity = 0.0;
-
-	d.nodeTemplateMap = new go.Map<string, go.Part>()
-		.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
-		.add(NodeUiCategory.EngineeringSymbol, createSymbolNodeTemplate(symbolNodeClickHandler));
-
-	d.linkTemplateMap = linkTemplateMap;
-
-	//d.layout = getLayout(getDefaultLayoutConfig(GoGraphLayout.ForceDirected));
-
-	d.layout = new go.ForceDirectedLayout();
 
 	return d;
 }

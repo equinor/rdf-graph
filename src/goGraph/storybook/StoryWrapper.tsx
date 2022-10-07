@@ -6,16 +6,14 @@ import { GraphSelection, PropertyAssertion, SelectionCallback } from '../../core
 import { useRdfActionReducer } from '../../core/state/useRdfState';
 
 import { RdfGoGraph } from '../RdfGoGraph';
-import { getDefaultLayoutConfig, GoGraphLayout } from '../layout';
-import { GoGraphOptions } from '../types/component.types';
+
 import { getConnectorSymbol, SymbolLibraryKey } from '../../symbol-api';
 import { UiNodeSymbol } from '../../core/ui/applyPatch';
 import { ConnectorSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 import { defaultInitDiagram } from '../components/goGraph/defaultInit';
 
-export type SparqlWrapperProps = {
+export type GoStoryWrapperProps = {
 	turtleString: string;
-	layout: GoGraphLayout;
 	selectionEffect?: SelectionCallback;
 };
 
@@ -26,32 +24,19 @@ function symbolProviderJson(id: string, _rotation?: number): UiNodeSymbol | unde
 	return ConnectorSymbolToUiNodeSymbol(symbol);
 }
 
-export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWrapperProps) => {
+const diagramStyle: React.CSSProperties = {
+	height: 'calc(100vh - 70px)',
+	width: '100%',
+	overflow: 'hidden',
+	background: '#fafaf9',
+};
+
+export const StoryWrapper = ({ turtleString, selectionEffect }: GoStoryWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 	const [showSymbolPorts, setShowSymbolPorts] = useState(true);
 
 	const diagramRef = useRef<go.Diagram>(defaultInitDiagram());
-
-	const [options, setOptions] = useState<GoGraphOptions>(() => {
-		return {
-			layout: getDefaultLayoutConfig(layout),
-			containerStyle: { height: 'calc(100vh - 70px)' },
-			showSymbolPorts: true,
-			diagramInitializer: defaultInitDiagram,
-		} as GoGraphOptions;
-	});
-
-	const [diagramStyle, setDiagramStyle] = useState<React.CSSProperties>(() => {
-		return {
-			height: '100vh',
-			width: '100%',
-			// border: '1px solid lightgrey',
-			overflow: 'hidden',
-			//background: getUiTheme(isDarkMode).canvas.background,
-			// transition: 'background 0.1s ease',
-		};
-	});
 
 	function handleSelection(sel: GraphSelection): PropertyAssertion[] {
 		if (!selectionEffect) return [];
@@ -68,43 +53,14 @@ export const StoryWrapper = ({ turtleString, layout, selectionEffect }: SparqlWr
 	}, [turtle]);
 
 	useEffect(() => {
-		const conf = getDefaultLayoutConfig(layout);
-		setOptions({ ...options, layout: conf });
-	}, [layout]);
-
-	useEffect(() => {
-		if (!layout) return;
-
-		switch (layout) {
-			case GoGraphLayout.ForceDirected:
-				setPortDirection(false);
-				break;
-			case GoGraphLayout.LayeredDigraph:
-				setPortDirection(true);
-				break;
-			default:
-				break;
-		}
-
-		diagramRef.current.layout = getLayout(layout);
-	}, [layout]);
-
-	useEffect(() => {
 		const { model } = diagramRef.current;
 		model.setDataProperty(model.modelData, 'portOpacity', showSymbolPorts ? 1 : 0);
 	}, [showSymbolPorts]);
 
 	return (
-		<div style={{ height: '400px', width: '100%' }}>
+		<div>
 			<Button onClick={loadTurtle}>Load turtle</Button>
-
 			<Button onClick={() => setShowSymbolPorts(!showSymbolPorts)}>{showSymbolPorts === true ? 'Hide' : 'Show'} Ports</Button>
-
-			{/* <button
-				style={{ fontSize: '18px', border: 'none', background: 'transparent', cursor: 'pointer' }}
-				onClick={() => setDarkMode(!isDarkMode)}>
-				{isDarkMode ? '☀️' : '🌙'}
-			</button> */}
 
 			<RdfGoGraph
 				{...state}

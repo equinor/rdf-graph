@@ -1,5 +1,19 @@
 import go, { GraphObject } from 'gojs';
-import { portDirectionToSpot } from '../item-templates/position-port-item-template';
+
+export function portDirectionToSpot(direction: number): go.Spot {
+	switch (direction) {
+		case 0:
+			return go.Spot.TopSide;
+		case 90:
+			return go.Spot.RightSide;
+		case 180:
+			return go.Spot.BottomSide;
+		case 270:
+			return go.Spot.LeftSide;
+		default:
+			return go.Spot.Center;
+	}
+}
 
 export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
 	const $ = go.GraphObject.make;
@@ -96,9 +110,9 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								height: dPort,
 							},
 							new go.Binding('portId'),
-							new go.Binding('position', 'relativePosition'),
-							new go.Binding('fromSpot', 'direction', portDirectionToSpot),
-							new go.Binding('toSpot', 'direction', portDirectionToSpot)
+							new go.Binding('position', 'connectorRelativePosition'),
+							new go.Binding('fromSpot', 'connectorDirection', portDirectionToSpot),
+							new go.Binding('toSpot', 'connectorDirection', portDirectionToSpot)
 						)
 					),
 				})
@@ -124,7 +138,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								fromEndSegmentLength: 50,
 								toEndSegmentLength: 50,
 							},
-							new go.Binding('position', 'relativePosition'),
+							new go.Binding('position', 'connectorRelativePosition'),
 							new go.Binding('height', 'portSize').ofModel(),
 							new go.Binding('width', 'portSize').ofModel(),
 							new go.Binding('opacity', 'portOpacity').ofModel()
