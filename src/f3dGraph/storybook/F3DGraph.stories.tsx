@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { StoryWrapper } from './StoryWrapper';
 
 export default {
-	title: '3DGraph',
+	title: 'Rdf3dGraph',
 	component: StoryWrapper,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {

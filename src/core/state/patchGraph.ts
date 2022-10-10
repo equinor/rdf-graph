@@ -32,6 +32,11 @@ import {
 	directionKey,
 	hasDirectionIri,
 	typeIri,
+	symbolNameKey,
+	symbolKey,
+	connectorNameKey,
+	connectorDirectionKey,
+	connectorRelativePositionKey,
 } from '../mapper/predicates';
 
 import { flat, flatMap, unique } from '../utils/iteratorUtils';
@@ -87,11 +92,11 @@ let symbolProvider = (id: string, rotation?: number) => {
 };
 
 const dataProps = [
-	'symbolName',
-	'symbol',
-	'connectorName',
-	'connectorDirection',
-	'connectorRelativePosition',
+	symbolNameKey,
+	symbolKey,
+	connectorNameKey,
+	connectorDirectionKey,
+	connectorRelativePositionKey,
 	labelKey,
 	colorKey,
 	rotationKey,
@@ -99,24 +104,25 @@ const dataProps = [
 	nodeTemplateKey,
 	directionKey,
 ] as const;
+
 const nodeProps = [compoundNodeKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
 type NodeProp = typeof nodeProps[number];
 type Dep = [...NodeProp[], NodeProp | ValueProp];
 
 const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
-	symbolName: [['symbol']],
-	[rotationKey]: [['symbol']],
+	symbolName: [[symbolKey]],
+	[rotationKey]: [[symbolKey]],
 	symbol: [
-		[connectorKey, 'connectorDirection'],
-		[connectorKey, 'connectorRelativePosition'],
+		[connectorKey, connectorDirectionKey],
+		[connectorKey, connectorRelativePositionKey],
 	],
-	connectorName: [['connectorDirection'], [`connectorRelativePosition`]],
+	connectorName: [[connectorDirectionKey], [connectorRelativePositionKey]],
 	connectorDirection: [],
 	connectorRelativePosition: [],
 	[connectorKey]: [
-		[connectorKey, 'connectorDirection'],
-		[connectorKey, 'connectorRelativePosition'],
+		[connectorKey, connectorDirectionKey],
+		[connectorKey, connectorRelativePositionKey],
 	],
 	[compoundNodeKey]: [],
 	[labelKey]: [],
@@ -126,9 +132,9 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 	[directionKey]: [],
 };
 const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
-	[hasSvgIri]: 'symbolName',
+	[hasSvgIri]: symbolNameKey,
 	[rotationIri]: rotationKey,
-	[hasConnectorSuffixIri]: 'connectorName',
+	[hasConnectorSuffixIri]: connectorNameKey,
 	[hasConnectorIri]: connectorKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,

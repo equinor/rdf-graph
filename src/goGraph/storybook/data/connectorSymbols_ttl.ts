@@ -1,4 +1,4 @@
-export const lorentz_turtle = `@prefix example: <http://example.com#> .
+export const connectorSymbols_ttl = `@prefix example: <http://example.com#> .
 @prefix imf:     <http://example.com/imf#> .
 @prefix owl:     <http://www.w3.org/2002/07/owl#> .
 @prefix raphael: <https://rdf.equinor.com/raphael-test-only#> .

@@ -1,25 +1,19 @@
 import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import { SparqlWrapperProps, StoryWrapper } from '../../goGraph/storybook/StoryWrapper';
+import { GoStoryWrapperProps, StoryWrapper } from '../../goGraph/storybook/StoryWrapper';
 
-import { GoGraph } from '../../goGraph/components/GoGraph';
-
-import { GoGraphLayout } from '../../goGraph/layout';
 import { symbolLibrary } from '../getConnectorSymbol';
 import { ConnectorSymbol } from '../../core';
+import { RdfGoGraph } from '../../goGraph/RdfGoGraph';
 
 export default {
 	title: 'Symbol API (go)',
-	component: GoGraph,
+	component: RdfGoGraph,
 	decorators: [(Story) => <div>{Story()}</div>],
 	argTypes: {
 		turtleString: { control: { type: 'text' } },
-		layout: {
-			control: { type: 'inline-radio' },
-			options: [GoGraphLayout.ForceDirected, GoGraphLayout.LayeredDigraph],
-		},
 	},
-} as ComponentMeta<typeof GoGraph>;
+} as ComponentMeta<typeof RdfGoGraph>;
 
 const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
 	<>
@@ -29,9 +23,8 @@ const Template: ComponentStory<typeof StoryWrapper> = ({ ...args }) => (
 
 export const allSymbols = Template.bind({});
 allSymbols.args = {
-	turtleString: getSymbolsTurtle(), //,storyTurtle
-	layout: GoGraphLayout.Grid,
-} as SparqlWrapperProps;
+	turtleString: getSymbolsTurtle(),
+} as GoStoryWrapperProps;
 allSymbols.storyName = 'All Symbols';
 
 function getSymbolsTurtle(): string {

@@ -3,8 +3,8 @@ import { SymbolConnector } from '../../core';
 /** Categories that determine the type of node template to use */
 export enum NodeUiCategory {
 	Default = '',
-	SvgSymbol = 'SvgSymbol',
-	EdgeConnectorNode = 'EdgeConnectorNode',
+	Svg = 'Svg',
+	ConnectorSymbol = 'ConnectorSymbol',
 }
 
 /** Categories that determine the type of item template to use  */

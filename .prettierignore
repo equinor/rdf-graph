@@ -1,7 +1,6 @@
 .husky
-build
+dist
 node_modules
 storybook-public
 storybook-static
-src/lib
 README.md

@@ -7,35 +7,6 @@ export const martinsTurtle = `
 @prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ui:      <http://rdf.equinor.com/ui/> .
 
-example:Separatox3000
-        ui:hasConnector   example:Separatox3000ThreePhaseInput ;
-        ui:hasConnector  example:Separatox3000LiquidOutput , example:Separatox3000GasOutput ;
-        ui:hasSvg              "Separator_1" .
-
-example:Separatox3000LiquidOutput
-        ui:hasConnectorSuffix  "c3" .
-
-example:Separatox3000GasOutput
-        ui:hasConnectorSuffix  "c2" .
-
-example:Separatox3000ThreePhaseInput
-        ui:hasConnectorSuffix  "c1" .
-
-example:Separatox3001
-        ui:hasConnector   example:Separatox3001ThreePhaseInput ;
-        ui:hasConnector  example:Separatox3001LiquidOutput , example:Separatox3001GasOutput ;
-        ui:hasSvg              "Separator_1" .
-
-example:Separatox3001LiquidOutput
-        ui:hasConnectorSuffix  "c3" .
-
-example:Separatox3001GasOutput
-        ui:hasConnectorSuffix  "c2" .
-
-example:Separatox3001ThreePhaseInput
-        ui:hasConnectorSuffix  "c1" ;
-		example:connectedTo example:Separatox3000GasOutput .
-
 example:Hallais
 	ui:color "pink";
 	rdfs:label "Mr pink" .
@@ -47,7 +18,7 @@ example:Hei
 
 example:Text
 	ui:color "purple";
-	rdfs:label "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae efficitur sem. Nullam vitae felis faucibus, blandit enim nec," .
+	rdfs:label "PURPLE Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vitae efficitur sem. Nullam vitae felis faucibus, blandit enim nec," .
 
 example:Bilde
 	rdfs:label "Mr. picture";

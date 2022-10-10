@@ -28,6 +28,12 @@ export const connectorKey = 'connector';
 export const nodeTemplateKey = 'nodeTemplate';
 export const directionKey = 'direction';
 
+export const symbolNameKey = 'symbolName';
+export const symbolKey = 'symbol';
+export const connectorNameKey = 'connectorName';
+export const connectorDirectionKey = 'connectorDirection';
+export const connectorRelativePositionKey = 'connectorRelativePosition';
+
 export const compoundNodePredicate = namedNode(compoundNodeIri);
 export const labelPredicate = namedNode(labelIri);
 export const colorPredicate = namedNode(colorIri);
