@@ -4,7 +4,7 @@ import { SymbolConnector } from '../../core';
 export enum NodeUiCategory {
 	Default = '',
 	Svg = 'Svg',
-	EngineeringSymbol = 'EngineeringSymbol',
+	ConnectorSymbol = 'ConnectorSymbol',
 }
 
 /** Categories that determine the type of item template to use  */

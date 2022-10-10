@@ -67,7 +67,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		if (prop === 'symbol') {
 			const symbol = value as UiNodeSymbol;
 
-			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.EngineeringSymbol);
+			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.ConnectorSymbol);
 			this.diagram.model.setDataProperty(nodeData, 'symbolGeometry', symbol.geometry);
 			this.diagram.model.setDataProperty(nodeData, 'symbolHeight', symbol.height);
 			this.diagram.model.setDataProperty(nodeData, 'symbolWidth', symbol.width);

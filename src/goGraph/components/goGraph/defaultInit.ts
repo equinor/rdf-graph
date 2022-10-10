@@ -25,7 +25,7 @@ export function defaultInitDiagram() {
 		layout: new go.ForceDirectedLayout(),
 		nodeTemplateMap: new go.Map<string, go.Part>()
 			.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
-			.add(NodeUiCategory.EngineeringSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
+			.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
 		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
 	});
 
