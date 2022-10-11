@@ -103,10 +103,10 @@
 	},
 	"peerDependencies": {
 		"react": "^16.14.0 || ^17.0.0",
-		"react-dom": "^16.14.0 || ^17.0.0"
+		"react-dom": "^16.14.0 || ^17.0.0",
+		"gojs": ">=2.2.16"
 	},
 	"dependencies": {
-		"@equinor/eds-core-react": "^0.20.4",
 		"3d-force-graph": "^1.70.13",
 		"cytoscape": "^3.22.1",
 		"cytoscape-cola": "^2.5.1",
@@ -134,10 +134,11 @@
 		"@types/react-dom": "^18.0.6",
 		"@types/three": "^0.144.0",
 		"@vitejs/plugin-react": "^2.1.0",
+		"@equinor/eds-core-react": "^0.20.4",
 		"babel-loader": "^8.2.5",
 		"eslint": "^8.23.0",
 		"eslint-config-react-app": "^7.0.1",
-		"gojs": "^2.2.14",
+		"gojs": "^2.2.16",
 		"gojs-react": "^1.1.1",
 		"husky": "^8.0.1",
 		"jsdom": "^20.0.0",
@@ -154,6 +155,6 @@
 		"storybook-addon-theme-playground": "^2.1.0",
 		"typescript": "^4.8.2",
 		"vite": "^3.1.0",
-		"vitest": "^0.23.2"
+		"vitest": "^0.24.1"
 	}
 }
