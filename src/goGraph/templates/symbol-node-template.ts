@@ -1,4 +1,4 @@
-import go, { GraphObject } from 'gojs';
+import * as go from 'gojs';
 
 export function portDirectionToSpot(direction: number): go.Spot {
 	switch (direction) {
@@ -81,7 +81,7 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 								name: 'GEOMETRY',
 								strokeWidth: 0,
 								stroke: 'transparent',
-								geometryStretch: GraphObject.None,
+								geometryStretch: go.GraphObject.None,
 							})
 								.bind('geometryString', 'symbolGeometry', (v) => `F ${v}`)
 								.bind('fill', 'color')

@@ -37,7 +37,7 @@ libraries.forEach(async (lib) => {
 			},
 			rollupOptions: {
 				plugins: [peerDepsExternal()],
-				external: ['react', 'react-dom'],
+				//external: ['react', 'react-dom', 'gojs'],
 				output: {
 					globals: {
 						react: 'React',

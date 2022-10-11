@@ -1,4 +1,4 @@
-import go from 'gojs';
+import * as go from 'gojs';
 
 export function createDefaultLinkTemplate(): go.Link {
 	const $ = go.GraphObject.make;

@@ -1,4 +1,4 @@
-import go from 'gojs';
+import * as go from 'gojs';
 import { createDefaultLinkTemplate } from '../../templates/default-link-template';
 import { createDefaultNodeTemplate } from '../../templates/default-node-template';
 import { createSymbolNodeTemplate } from '../../templates/symbol-node-template';
