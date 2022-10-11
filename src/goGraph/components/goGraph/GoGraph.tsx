@@ -1,4 +1,4 @@
-import go from 'gojs';
+import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import React, { FC, useEffect, useRef, useState } from 'react';
 import { GraphSelection, GraphState } from '../../../core/types';
