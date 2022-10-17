@@ -3,7 +3,10 @@ import { RdfAssertion } from '../types';
 import { Store, Quad } from 'n3';
 import { RdfAction, RdfState } from './RdfState.types';
 
-const coercePatch = function* (store: Store<Quad, Quad, Quad, Quad>, patches: Iterable<RdfAssertion>) {
+const coercePatch = function* (
+	store: Store<Quad, Quad, Quad, Quad>,
+	patches: Iterable<RdfAssertion>
+) {
 	for (const p of patches) {
 		switch (p.action) {
 			case 'add':
@@ -21,7 +24,10 @@ const coercePatch = function* (store: Store<Quad, Quad, Quad, Quad>, patches: It
 	}
 };
 
-const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action) => {
+const reducer: (state: RdfState, action: RdfAction) => RdfState = (
+	state,
+	action
+) => {
 	switch (action.type) {
 		case 'add':
 		case 'remove':
@@ -67,8 +73,15 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 			];
 
 			if (clearing.length === 0) return state;
-			return { rdfStore: new Store<Quad, Quad, Quad, Quad>(), rdfPatch: clearing };
+			return {
+				rdfStore: new Store<Quad, Quad, Quad, Quad>(),
+				rdfPatch: clearing,
+			};
 	}
 };
 
-export const useRdfActionReducer = () => useReducer(reducer, { rdfStore: new Store<Quad, Quad, Quad, Quad>(), rdfPatch: [] });
+export const useRdfActionReducer = () =>
+	useReducer(reducer, {
+		rdfStore: new Store<Quad, Quad, Quad, Quad>(),
+		rdfPatch: [],
+	});

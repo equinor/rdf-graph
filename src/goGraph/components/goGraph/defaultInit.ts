@@ -8,7 +8,10 @@ const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
 	console.log('Node clicked!');
 };
 
-const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
+const symbolNodeClickHandler = (
+	_e: go.InputEvent,
+	_thisObj: go.GraphObject
+) => {
 	console.log('Engineering Symbol node clicked!');
 };
 
@@ -25,8 +28,14 @@ export function defaultInitDiagram() {
 		layout: new go.ForceDirectedLayout(),
 		nodeTemplateMap: new go.Map<string, go.Part>()
 			.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
-			.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
-		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
+			.add(
+				NodeUiCategory.ConnectorSymbol,
+				createSymbolNodeTemplate(symbolNodeClickHandler)
+			),
+		linkTemplateMap: new go.Map<string, go.Link>().add(
+			'',
+			createDefaultLinkTemplate()
+		),
 	});
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;

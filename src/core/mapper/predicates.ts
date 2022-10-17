@@ -10,7 +10,8 @@ export const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
 export const hasSvgIri = 'http://rdf.equinor.com/ui/hasSvg';
 export const hasSimpleSvgIri = 'http://rdf.equinor.com/ui/hasSimpleSvg';
 export const hasSimpleSymbolIri = 'http://rdf.equinor.com/ui/hasSimpleSymbol';
-export const hasConnectorSuffixIri = 'http://rdf.equinor.com/ui/hasConnectorSuffix';
+export const hasConnectorSuffixIri =
+	'http://rdf.equinor.com/ui/hasConnectorSuffix';
 export const rotationIri = 'http://rdf.equinor.com/ui/rotation';
 export const hasNodeTemplateIri = 'http://rdf.equinor.com/ui/hasNodeTemplate';
 export const hasDirectionIri = 'http://rdf.equinor.com/ui/hasDirection';
@@ -73,4 +74,5 @@ export const getDataKey = (predicate: { value: string }) => {
 	return predicateMap.get(predicate.value);
 };
 
-export const isHierarchyPredicate = (predicate: string) => parentPredicates.concat(childPredicates).includes(predicate);
+export const isHierarchyPredicate = (predicate: string) =>
+	parentPredicates.concat(childPredicates).includes(predicate);

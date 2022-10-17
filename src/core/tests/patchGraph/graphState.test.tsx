@@ -2,14 +2,22 @@
 import { patchGraph } from '../../state/patchGraph';
 import { termToId } from 'n3';
 import * as P from '../../mapper/predicates';
-import { emptyGraph, svgWithConnectorQuads, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch } from './testUtils';
+import {
+	emptyGraph,
+	svgWithConnectorQuads,
+	testSymbolConnectorSuffix_1,
+	testSymbolId,
+	toAddPatch,
+} from './testUtils';
 import { defaultSymbolProvider } from '../../ui/defaultSymbolProvider';
 import { symbolLibrary } from '../../../symbol-api';
 
 describe('patchGraph', () => {
 	test('normal svg', () => {
 		const quads = svgWithConnectorQuads(testSymbolConnectorSuffix_1);
-		const res = patchGraph(emptyGraph(), toAddPatch(quads), { symbolProvider: defaultSymbolProvider });
+		const res = patchGraph(emptyGraph(), toAddPatch(quads), {
+			symbolProvider: defaultSymbolProvider,
+		});
 		for (const _ of res.graphPatch) {
 		}
 		for (const q of quads) {
@@ -32,7 +40,8 @@ describe('patchGraph', () => {
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.connectorName!).toBe(q.object.value);
 					for (const c of node!.node!.symbol!.connectors) {
-						if (c.id === q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
+						if (c.id === q.object.value)
+							expect(c.point).toMatchObject(node!.relativePosition!);
 					}
 					break;
 			}
@@ -40,11 +49,17 @@ describe('patchGraph', () => {
 	});
 
 	test('Without existing connector', () => {
-		const res = patchGraph(emptyGraph(), toAddPatch(svgWithConnectorQuads(`I don't exist in ${testSymbolId}`)), {
-			symbolProvider: defaultSymbolProvider,
-		});
+		const res = patchGraph(
+			emptyGraph(),
+			toAddPatch(svgWithConnectorQuads(`I don't exist in ${testSymbolId}`)),
+			{
+				symbolProvider: defaultSymbolProvider,
+			}
+		);
 		for (const _ of res.graphPatch) {
 		}
-		expect(res.graphState.nodeIndex.get('C')!.connectorRelativePosition!).toMatchObject({ x: 0, y: 0 });
+		expect(
+			res.graphState.nodeIndex.get('C')!.connectorRelativePosition!
+		).toMatchObject({ x: 0, y: 0 });
 	});
 });

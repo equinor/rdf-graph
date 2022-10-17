@@ -1,6 +1,8 @@
 import * as go from 'gojs';
 
-export function createDefaultNodeTemplate(clickHandler?: (e: go.InputEvent, thisObj: go.GraphObject) => void): go.Node {
+export function createDefaultNodeTemplate(
+	clickHandler?: (e: go.InputEvent, thisObj: go.GraphObject) => void
+): go.Node {
 	return new go.Node(go.Panel.Auto, {
 		resizable: false,
 		click: clickHandler,

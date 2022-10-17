@@ -1,6 +1,14 @@
 import { DataFactory } from 'n3';
 import * as P from '../../mapper/predicates';
-import { createState, SimplifiedAssertion, testPatchOrder, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch, toRmPatch } from './testUtils';
+import {
+	createState,
+	SimplifiedAssertion,
+	testPatchOrder,
+	testSymbolConnectorSuffix_1,
+	testSymbolId,
+	toAddPatch,
+	toRmPatch,
+} from './testUtils';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -44,7 +52,11 @@ test('Node becomes connector and node again', () => {
 		{ type: 'edge', action: 'add' }, // Edge to N3
 	];
 
-	const addedState = testPatchOrder(createState(originalData), addChange, expectedOrder);
+	const addedState = testPatchOrder(
+		createState(originalData),
+		addChange,
+		expectedOrder
+	);
 	testPatchOrder(addedState.graphState, rmChange, expectedRmOrder);
 });
 
@@ -57,7 +69,9 @@ test('Edges becomes colored', () => {
 		q(n('N2'), n('isConnectedTo'), n('N3')),
 	];
 
-	const change = toAddPatch([q(n('isConnectedTo'), P.colorPredicate, l('green'))]);
+	const change = toAddPatch([
+		q(n('isConnectedTo'), P.colorPredicate, l('green')),
+	]);
 
 	const expectedOrder: SimplifiedAssertion[] = [
 		{ type: 'property', action: 'add' },
@@ -76,7 +90,10 @@ test('Edge from predicate with color', () => {
 		q(n('isConnectedTo'), P.colorPredicate, l('green')),
 	];
 
-	const change = toAddPatch([q(n('N1'), n('isConnectedTo'), n('N2')), q(n('N2'), n('isConnectedTo'), n('N3'))]);
+	const change = toAddPatch([
+		q(n('N1'), n('isConnectedTo'), n('N2')),
+		q(n('N2'), n('isConnectedTo'), n('N3')),
+	]);
 
 	const expectedOrder: SimplifiedAssertion[] = [
 		{ type: 'property', action: 'remove' },
@@ -98,9 +115,13 @@ test('Edge remove color', () => {
 		q(n('isConnectedTo'), P.colorPredicate, l('green')),
 	];
 
-	const change = toRmPatch([q(n('isConnectedTo'), P.colorPredicate, l('green'))]);
+	const change = toRmPatch([
+		q(n('isConnectedTo'), P.colorPredicate, l('green')),
+	]);
 
-	const expectedOrder: SimplifiedAssertion[] = [{ type: 'property', action: 'remove' }];
+	const expectedOrder: SimplifiedAssertion[] = [
+		{ type: 'property', action: 'remove' },
+	];
 
 	testPatchOrder(createState(originalData), change, expectedOrder);
 });
