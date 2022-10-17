@@ -7,6 +7,8 @@ on:
 jobs:
   release_please:
     name: 🔖 Create PR or Release
+    # Ignore release for dependabot or Snyk
+    if: ${{ !startsWith(fromJson('["[Snyk]", "chore(deps)", "chore(deps-dev)"]'), github.event.head_commit.message) }}
     runs-on: ubuntu-latest
     steps:
       - name: Create PR or Release
