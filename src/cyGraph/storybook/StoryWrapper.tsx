@@ -58,13 +58,23 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	};
 
 	const connectSelection = () => {
-		const patch = [...createPatch({ type: 'connectSelection', predicate: connectionPredicate, selection })];
+		const patch = [
+			...createPatch({
+				type: 'connectSelection',
+				predicate: connectionPredicate,
+				selection,
+			}),
+		];
 		dispatch({ type: 'patch', data: patch });
 	};
 
 	const addNode = () => {
 		if (nodeIri) {
-			const patch = createPatch({ type: 'addNode', iri: nodeIri, label: nodeIri });
+			const patch = createPatch({
+				type: 'addNode',
+				iri: nodeIri,
+				label: nodeIri,
+			});
 			dispatch({ type: 'patch', data: patch });
 		}
 	};
@@ -74,7 +84,14 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	};
 
 	const addProperty = (): void => {
-		const patch = [...createPatch({ type: 'addProperty', key: valuePredicate, value: literalValue, selection: selection })];
+		const patch = [
+			...createPatch({
+				type: 'addProperty',
+				key: valuePredicate,
+				value: literalValue,
+				selection: selection,
+			}),
+		];
 		dispatch({ type: 'patch', data: patch });
 	};
 

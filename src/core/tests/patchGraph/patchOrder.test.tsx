@@ -1,6 +1,14 @@
 import { DataFactory } from 'n3';
 import * as P from '../../mapper/predicates';
-import { createState, SimplifiedAssertion, testPatchOrder, testSymbolConnectorSuffix_1, testSymbolId, toAddPatch, toRmPatch } from './testUtils';
+import {
+	createState,
+	SimplifiedAssertion,
+	testPatchOrder,
+	testSymbolConnectorSuffix_1,
+	testSymbolId,
+	toAddPatch,
+	toRmPatch,
+} from './testUtils';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -76,7 +84,10 @@ test('Edge from predicate with color', () => {
 		q(n('isConnectedTo'), P.colorPredicate, l('green')),
 	];
 
-	const change = toAddPatch([q(n('N1'), n('isConnectedTo'), n('N2')), q(n('N2'), n('isConnectedTo'), n('N3'))]);
+	const change = toAddPatch([
+		q(n('N1'), n('isConnectedTo'), n('N2')),
+		q(n('N2'), n('isConnectedTo'), n('N3')),
+	]);
 
 	const expectedOrder: SimplifiedAssertion[] = [
 		{ type: 'property', action: 'remove' },

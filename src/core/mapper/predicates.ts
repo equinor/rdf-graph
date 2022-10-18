@@ -73,4 +73,5 @@ export const getDataKey = (predicate: { value: string }) => {
 	return predicateMap.get(predicate.value);
 };
 
-export const isHierarchyPredicate = (predicate: string) => parentPredicates.concat(childPredicates).includes(predicate);
+export const isHierarchyPredicate = (predicate: string) =>
+	parentPredicates.concat(childPredicates).includes(predicate);

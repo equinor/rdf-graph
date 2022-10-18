@@ -6,7 +6,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 48, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 48, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 87.5, "y": 13 }, "direction": 90 }
 		]
 	},
@@ -17,7 +21,11 @@
 		"width": 96,
 		"height": 144,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 30.75, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 30.75, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 65.25, "y": 6 }, "direction": 0 }
 		]
 	},
@@ -28,8 +36,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 1.78357, "y": 24 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 45.4444, "y": 24 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 1.78357, "y": 24 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 45.4444, "y": 24 },
+				"direction": 90
+			}
 		]
 	},
 	"PV016AOption1": {
@@ -39,8 +55,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 21.5 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 21.502 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 21.5 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 21.502 },
+				"direction": 90
+			}
 		]
 	},
 	"LZ009A": {
@@ -50,9 +74,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -63,7 +99,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 4.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -74,8 +114,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 31.75 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 31.752 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 31.75 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 31.752 },
+				"direction": 90
+			}
 		]
 	},
 	"PA008A": {
@@ -94,9 +142,21 @@
 		"height": 48,
 		"connectors": [
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 }
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			}
 		]
 	},
 	"PV023A": {
@@ -106,8 +166,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 29 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 29.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 29 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 29.002 },
+				"direction": 90
+			}
 		]
 	},
 	"IM017C": {
@@ -118,9 +186,21 @@
 		"height": 48,
 		"connectors": [
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 }
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			}
 		]
 	},
 	"PV019B": {
@@ -130,7 +210,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 38.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 38.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 9.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -141,8 +225,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 19.2501, "y": 43 }, "direction": 180 },
-			{ "id": "1", "relativePosition": { "x": 38.25, "y": 24.5 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 19.2501, "y": 43 },
+				"direction": 180
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 38.25, "y": 24.5 },
+				"direction": 90
+			}
 		]
 	},
 	"PV005AOption1": {
@@ -152,8 +244,16 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"PP006A": {
@@ -163,7 +263,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 13.5, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 13.5, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -174,7 +278,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 40.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 40.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 7.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -185,8 +293,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 31.75 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 31.752 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 31.75 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 31.752 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0020Option1": {
@@ -196,8 +312,16 @@
 		"width": 48,
 		"height": 72,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 47.5 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 47.5 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 47.5 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 47.5 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0001": {
@@ -207,8 +331,16 @@
 		"width": 72,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 9.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 62.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 9.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 62.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0015": {
@@ -245,9 +377,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -266,7 +410,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 48, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 48, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -285,8 +433,16 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"PD001A": {
@@ -296,7 +452,11 @@
 		"width": 96,
 		"height": 168,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 34.75, "y": 44.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 34.75, "y": 44.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 69.25, "y": 10 }, "direction": 0 }
 		]
 	},
@@ -307,9 +467,21 @@
 		"width": 96,
 		"height": 216,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 87.5, "y": 108 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 48, "y": 207.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 8.5, "y": 108 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 87.5, "y": 108 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 48, "y": 207.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 8.5, "y": 108 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 48, "y": 8.5 }, "direction": 0 }
 		]
 	},
@@ -328,8 +500,16 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0011": {
@@ -339,8 +519,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 19.2501, "y": 43 }, "direction": 180 },
-			{ "id": "1", "relativePosition": { "x": 38.25, "y": 24.5 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 19.2501, "y": 43 },
+				"direction": 180
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 38.25, "y": 24.5 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0005": {
@@ -350,8 +538,16 @@
 		"width": 168,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 4.54047, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 44.2119, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 4.54047, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 44.2119, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0020": {
@@ -361,8 +557,16 @@
 		"width": 48,
 		"height": 72,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 47.5 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 47.5 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 47.5 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 47.5 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0005Option1": {
@@ -372,8 +576,16 @@
 		"width": 168,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 4.54047, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 44.2119, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 4.54047, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 44.2119, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0023": {
@@ -383,9 +595,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -404,7 +628,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 13.5, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 13.5, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -415,7 +643,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 4.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -426,7 +658,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 13.5, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 13.5, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -437,8 +673,16 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0025": {
@@ -448,9 +692,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -461,9 +717,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -474,8 +742,16 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 12 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 12.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 12 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 12.002 },
+				"direction": 90
+			}
 		]
 	},
 	"ND0024": {
@@ -485,9 +761,21 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 43.5, "y": 24 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 24, "y": 43.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 4.5, "y": 24 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.5, "y": 24 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 24, "y": 43.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 4.5, "y": 24 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 24, "y": 4.5 }, "direction": 0 }
 		]
 	},
@@ -498,8 +786,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 29 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 29.002 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 29 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 29.002 },
+				"direction": 90
+			}
 		]
 	},
 	"PV016A": {
@@ -509,8 +805,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 5.5, "y": 21.5 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 42.5, "y": 21.502 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 5.5, "y": 21.5 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 42.5, "y": 21.502 },
+				"direction": 90
+			}
 		]
 	},
 	"PP005A": {
@@ -520,7 +824,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 13.5, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 13.5, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -539,8 +847,16 @@
 		"width": 48,
 		"height": 48,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 4.5, "y": 26.5 }, "direction": 270 },
-			{ "id": "1", "relativePosition": { "x": 43.25, "y": 26.502 }, "direction": 90 }
+			{
+				"id": "2",
+				"relativePosition": { "x": 4.5, "y": 26.5 },
+				"direction": 270
+			},
+			{
+				"id": "1",
+				"relativePosition": { "x": 43.25, "y": 26.502 },
+				"direction": 90
+			}
 		]
 	},
 	"STPL008": {
@@ -550,7 +866,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 40.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 40.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 7.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -561,7 +881,11 @@
 		"width": 96,
 		"height": 96,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 48, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 48, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 48, "y": 6 }, "direction": 90 }
 		]
 	},
@@ -572,7 +896,11 @@
 		"width": 48,
 		"height": 24,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 38.5, "y": 12 }, "direction": 90 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 38.5, "y": 12 },
+				"direction": 90
+			},
 			{ "id": "2", "relativePosition": { "x": 9.5, "y": 12 }, "direction": 270 }
 		]
 	},
@@ -583,7 +911,11 @@
 		"width": 96,
 		"height": 144,
 		"connectors": [
-			{ "id": "2", "relativePosition": { "x": 30.75, "y": 40.5 }, "direction": 270 },
+			{
+				"id": "2",
+				"relativePosition": { "x": 30.75, "y": 40.5 },
+				"direction": 270
+			},
 			{ "id": "1", "relativePosition": { "x": 65.25, "y": 6 }, "direction": 0 }
 		]
 	},
@@ -594,9 +926,21 @@
 		"width": 96,
 		"height": 216,
 		"connectors": [
-			{ "id": "1", "relativePosition": { "x": 87.5, "y": 108 }, "direction": 90 },
-			{ "id": "2", "relativePosition": { "x": 48, "y": 207.5 }, "direction": 180 },
-			{ "id": "3", "relativePosition": { "x": 8.5, "y": 108 }, "direction": 270 },
+			{
+				"id": "1",
+				"relativePosition": { "x": 87.5, "y": 108 },
+				"direction": 90
+			},
+			{
+				"id": "2",
+				"relativePosition": { "x": 48, "y": 207.5 },
+				"direction": 180
+			},
+			{
+				"id": "3",
+				"relativePosition": { "x": 8.5, "y": 108 },
+				"direction": 270
+			},
 			{ "id": "4", "relativePosition": { "x": 48, "y": 8.5 }, "direction": 0 }
 		]
 	}

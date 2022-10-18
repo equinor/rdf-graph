@@ -68,10 +68,14 @@ type AssertionBase = { action: 'add' | 'remove' };
 export type EdgeAssertion = AssertionBase & { assertion: GraphEdge };
 // export type NodeAssertion = AssertionBase & { assertion: GraphNode };
 // export type ConnectorAssertion = AssertionBase & { assertion: GraphConnector };
-export type PropertyAssertion = AssertionBase & { assertion: GraphProperty<GraphPropertyTarget> };
+export type PropertyAssertion = AssertionBase & {
+	assertion: GraphProperty<GraphPropertyTarget>;
+};
 
 export type Assertion<T> = AssertionBase & { assertion: T };
-export type GraphAssertion = Assertion<GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty<GraphPropertyTarget>>;
+export type GraphAssertion = Assertion<
+	GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty<GraphPropertyTarget>
+>;
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {
 	nodeIndex: Map<string, AbstractNode>;
@@ -80,7 +84,9 @@ export type GraphState = {
 
 export type GraphSelection = Array<AbstractNode | GraphEdge>;
 
-export type SelectionCallback = (selection: GraphSelection) => Assertion<GraphProperty<GraphPropertyTarget>>[];
+export type SelectionCallback = (
+	selection: GraphSelection
+) => Assertion<GraphProperty<GraphPropertyTarget>>[];
 
 export interface PatchGraphOptions {
 	symbolProvider?: (id: string, rotation?: number) => UiNodeSymbol | undefined;

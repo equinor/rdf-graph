@@ -10,7 +10,10 @@ function cloneConnectorSymbol(symbol: ConnectorSymbol): ConnectorSymbol {
 	const clone: ConnectorSymbol = { ...symbol, connectors: [] };
 	for (let i = 0; i < symbol.connectors.length; i++) {
 		let c = symbol.connectors[i];
-		clone.connectors.push({ ...c, relativePosition: { x: c.relativePosition.x, y: c.relativePosition.y } });
+		clone.connectors.push({
+			...c,
+			relativePosition: { x: c.relativePosition.x, y: c.relativePosition.y },
+		});
 	}
 	return clone;
 }
@@ -20,7 +23,10 @@ export function getConnectorSymbol(id: SymbolLibraryKey): ConnectorSymbol | unde
 }
 
 /** Get mutated Connector Symbol using mutation options */
-export function getConnectorSymbolAdvanced(id: SymbolLibraryKey, options?: SymbolOptions): ConnectorSymbol | undefined {
+export function getConnectorSymbolAdvanced(
+	id: SymbolLibraryKey,
+	options?: SymbolOptions
+): ConnectorSymbol | undefined {
 	const symbol = getConnectorSymbol(id);
 	if (!symbol) return undefined;
 
@@ -49,7 +55,8 @@ export function getConnectorSymbolAdvanced(id: SymbolLibraryKey, options?: Symbo
 		const c = symbol.connectors[i];
 		let p = c.relativePosition;
 
-		if (mutRelPos === 'CenterCenter') p = pointToCenterCenter({ x: c.relativePosition.x, y: c.relativePosition.y }, width, height);
+		if (mutRelPos === 'CenterCenter')
+			p = pointToCenterCenter({ x: c.relativePosition.x, y: c.relativePosition.y }, width, height);
 
 		if (mutRelPosRot && rotation > 0) {
 			p = rotatePoint(p, rotation);

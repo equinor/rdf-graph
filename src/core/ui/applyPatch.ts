@@ -64,17 +64,34 @@ export interface UiNodeConnector {
 export interface IUiPatchHandler {
 	addNode(id: string): void;
 	removeNode(id: string): void;
-	addNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P, value: UiNodePatchProperties[P]): void;
+	addNodeProperty<P extends keyof UiNodePatchProperties>(
+		nodeId: string,
+		prop: P,
+		value: UiNodePatchProperties[P]
+	): void;
 	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void;
 
 	addConnector(id: string, nodeId: string): void;
 	removeConnector(id: string, nodeId: string): void;
-	addConnectorProperty<P extends keyof UiConnectorPatchProperties>(id: string, nodeId: string, prop: P, value: UiConnectorPatchProperties[P]): void;
-	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(id: string, nodeId: string, prop: P): void;
+	addConnectorProperty<P extends keyof UiConnectorPatchProperties>(
+		id: string,
+		nodeId: string,
+		prop: P,
+		value: UiConnectorPatchProperties[P]
+	): void;
+	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(
+		id: string,
+		nodeId: string,
+		prop: P
+	): void;
 
 	addEdge(edge: UiEdge): void;
 	removeEdge(edgeId: string): void;
-	addEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P, value: UiEdgePatchProperties[P]): void;
+	addEdgeProperty<P extends keyof UiEdgePatchProperties>(
+		edgeId: string,
+		prop: P,
+		value: UiEdgePatchProperties[P]
+	): void;
 	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void;
 
 	onBeforeApplyPatch?: () => void;
@@ -109,8 +126,17 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 			case 'property':
 				switch (assertion.target.type) {
 					case 'node':
-						if (action === 'add') ui.addNodeProperty(assertion.target.id, assertion.key as keyof UiNodePatchProperties, assertion.value);
-						else ui.removeNodeProperty(assertion.target.id, assertion.key as keyof UiNodePatchProperties);
+						if (action === 'add')
+							ui.addNodeProperty(
+								assertion.target.id,
+								assertion.key as keyof UiNodePatchProperties,
+								assertion.value
+							);
+						else
+							ui.removeNodeProperty(
+								assertion.target.id,
+								assertion.key as keyof UiNodePatchProperties
+							);
 						break;
 					case 'connector':
 						if (action === 'add')
@@ -128,8 +154,17 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 							);
 						break;
 					case 'edge':
-						if (action === 'add') ui.addEdgeProperty(assertion.target.id, assertion.key as keyof UiEdgePatchProperties, assertion.value);
-						else ui.removeEdgeProperty(assertion.target.id, assertion.key as keyof UiEdgePatchProperties);
+						if (action === 'add')
+							ui.addEdgeProperty(
+								assertion.target.id,
+								assertion.key as keyof UiEdgePatchProperties,
+								assertion.value
+							);
+						else
+							ui.removeEdgeProperty(
+								assertion.target.id,
+								assertion.key as keyof UiEdgePatchProperties
+							);
 						break;
 					default:
 						return;

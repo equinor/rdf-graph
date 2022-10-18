@@ -60,7 +60,11 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this.diagram.model.removeNodeData(nodeData);
 	}
 
-	addNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P, value: UiNodePatchProperties[P]): void {
+	addNodeProperty<P extends keyof UiNodePatchProperties>(
+		nodeId: string,
+		prop: P,
+		value: UiNodePatchProperties[P]
+	): void {
 		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
 		if (!nodeData) return;
 
@@ -151,7 +155,11 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this.diagram.model.set(nodeData.ports[portIdx], connectorPropMap[prop], commitValue);
 	}
 
-	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(id: string, nodeId: string, prop: P): void {
+	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(
+		id: string,
+		nodeId: string,
+		prop: P
+	): void {
 		console.warn('<removeConnectorProperty> not implemented.');
 		console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}`);
 	}
@@ -175,7 +183,11 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this._linkModel.removeLinkData(link);
 	}
 
-	addEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P, value: UiEdgePatchProperties[P]): void {
+	addEdgeProperty<P extends keyof UiEdgePatchProperties>(
+		edgeId: string,
+		prop: P,
+		value: UiEdgePatchProperties[P]
+	): void {
 		const linkData = this._linkModel.findLinkDataForKey(edgeId);
 		if (!linkData) return;
 

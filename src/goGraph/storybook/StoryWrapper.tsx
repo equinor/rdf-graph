@@ -60,7 +60,9 @@ export const StoryWrapper = ({ turtleString, selectionEffect }: GoStoryWrapperPr
 	return (
 		<div>
 			<Button onClick={loadTurtle}>Load turtle</Button>
-			<Button onClick={() => setShowSymbolPorts(!showSymbolPorts)}>{showSymbolPorts === true ? 'Hide' : 'Show'} Ports</Button>
+			<Button onClick={() => setShowSymbolPorts(!showSymbolPorts)}>
+				{showSymbolPorts === true ? 'Hide' : 'Show'} Ports
+			</Button>
 
 			<RdfGoGraph
 				{...state}

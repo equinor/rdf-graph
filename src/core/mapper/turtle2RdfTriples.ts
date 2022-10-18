@@ -26,7 +26,10 @@ export function turtle2RdfTriples(turtle: string) {
 		return DataFactory.namedNode((namespace + value.substring(cpos + 1)) as typeof value);
 	};
 
-	const parser = new Parser({ format: 'Turtle', factory: { ...DataFactory, namedNode } });
+	const parser = new Parser({
+		format: 'Turtle',
+		factory: { ...DataFactory, namedNode },
+	});
 
 	return parser.parse(turtle, undefined, pc);
 }

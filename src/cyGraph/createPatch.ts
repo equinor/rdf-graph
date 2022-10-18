@@ -85,25 +85,41 @@ export type ClientAction =
 export function* createPatch(action: ClientAction): RdfPatch2 {
 	switch (action.type) {
 		case 'addNode':
-			yield { action: 'add', assertion: quad(namedNode(action.iri), labelPredicate, literal(action.label)) };
+			yield {
+				action: 'add',
+				assertion: quad(namedNode(action.iri), labelPredicate, literal(action.label)),
+			};
 			return;
 		case 'deleteSelection':
 			for (const element of action.selection as GraphElementBase[]) {
 				for (const [predicate, value] of element.incoming) {
 					for (const subject of value) {
-						yield { action: 'remove', assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(element.id)) };
+						yield {
+							action: 'remove',
+							assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(element.id)),
+						};
 					}
 				}
 
 				for (const [predicate, value] of element.outgoing) {
 					for (const edgy of value) {
-						yield { action: 'remove', assertion: quad(namedNode(element.id), namedNode(predicate), namedNode(edgy.targetRef.id)) };
+						yield {
+							action: 'remove',
+							assertion: quad(
+								namedNode(element.id),
+								namedNode(predicate),
+								namedNode(edgy.targetRef.id)
+							),
+						};
 					}
 				}
 
 				for (const [key, values] of element.properties) {
 					for (const value of values) {
-						yield { action: 'remove', assertion: quad(namedNode(element.id), namedNode(key), literal(value)) };
+						yield {
+							action: 'remove',
+							assertion: quad(namedNode(element.id), namedNode(key), literal(value)),
+						};
 					}
 				}
 			}
@@ -112,18 +128,27 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			for (const node of action.selection as GraphElementBase[]) {
 				let currentRotation = node.properties.get(rotationIri);
 				if (currentRotation) {
-					yield { action: 'remove', assertion: quad(namedNode(node.id), rotationPredicate, literal(currentRotation[0])) };
+					yield {
+						action: 'remove',
+						assertion: quad(namedNode(node.id), rotationPredicate, literal(currentRotation[0])),
+					};
 				} else {
 					currentRotation = ['0'];
 				}
 				const newRotation = (parseInt(currentRotation[0]) + 90) % 360;
-				yield { action: 'add', assertion: quad(namedNode(node.id), rotationPredicate, literal(newRotation.toString())) };
+				yield {
+					action: 'add',
+					assertion: quad(namedNode(node.id), rotationPredicate, literal(newRotation.toString())),
+				};
 			}
 			break;
 
 		case 'addProperty':
 			for (const node of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
-				const assertion: RdfAssertion = { action: 'add', assertion: quad(namedNode(node.id), namedNode(action.key), literal(action.value)) };
+				const assertion: RdfAssertion = {
+					action: 'add',
+					assertion: quad(namedNode(node.id), namedNode(action.key), literal(action.value)),
+				};
 				yield assertion;
 			}
 			break;
@@ -133,7 +158,14 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 			for (const node1 of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
 				for (const node2 of nodesToConnect) {
 					if (node1 !== node2) {
-						yield { action: 'add', assertion: quad(namedNode(node1.id), namedNode(action.predicate), namedNode(node2.id)) };
+						yield {
+							action: 'add',
+							assertion: quad(
+								namedNode(node1.id),
+								namedNode(action.predicate),
+								namedNode(node2.id)
+							),
+						};
 					}
 				}
 			}

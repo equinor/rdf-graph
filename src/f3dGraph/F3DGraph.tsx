@@ -87,7 +87,10 @@ export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...r
 		// Requiered for 3DGraph rendering
 		for (const _ of graphPatch) {
 		}
-		update({ nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')], links: [...graphState.linkIndex.values()] });
+		update({
+			nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')],
+			links: [...graphState.linkIndex.values()],
+		});
 
 		console.log('whats up with', model);
 	}, [graphPatch]);

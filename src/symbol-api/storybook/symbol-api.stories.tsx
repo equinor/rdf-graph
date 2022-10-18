@@ -45,7 +45,8 @@ function getSymbolsTurtle(): string {
 		const connectorIris = symbol.connectors.map((v) => 'example:' + symbol.id + '_c' + v.id);
 
 		turtle += '\nexample:' + symbol.id + '\n';
-		if (connectorIris.length > 0) turtle += '\t\tui:hasConnector ' + connectorIris.join(', ') + ' ;\n';
+		if (connectorIris.length > 0)
+			turtle += '\t\tui:hasConnector ' + connectorIris.join(', ') + ' ;\n';
 		turtle += '\t\trdfs:label "' + symbol.id + '" ;\n';
 		turtle += '\t\tui:hasSvg "' + symbol.id + '" .\n\n';
 

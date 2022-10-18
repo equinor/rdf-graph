@@ -1,10 +1,22 @@
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { useEffect, useRef, useState } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
-import { hasConnectorIri, imageHeightKey, imageKey, imageWidthKey } from '../core/mapper/predicates';
+import {
+	hasConnectorIri,
+	imageHeightKey,
+	imageKey,
+	imageWidthKey,
+} from '../core/mapper/predicates';
 import { colorKey, labelKey, simpleSvgKey, labelIri } from '../core/mapper/predicates';
 import { GraphProps } from '../core/state/GraphStateProps';
-import { AbstractNode, GraphAssertion, GraphEdge, GraphPatch, GraphProperty, GraphPropertyTarget } from '../core/types/graphModel';
+import {
+	AbstractNode,
+	GraphAssertion,
+	GraphEdge,
+	GraphPatch,
+	GraphProperty,
+	GraphPropertyTarget,
+} from '../core/types/graphModel';
 import cytoscape from 'cytoscape';
 import { layoutDagre } from './layout';
 import { UiNodeSymbol } from '../core/ui/applyPatch';
@@ -31,7 +43,10 @@ const addNode = ({ id, type, node }: AbstractNode, cy: Cytoscape.Core) => {
 	cy.add(elem);
 };
 
-const addProperty = ({ key, target, value }: GraphProperty<GraphPropertyTarget>, cy: Cytoscape.Core) => {
+const addProperty = (
+	{ key, target, value }: GraphProperty<GraphPropertyTarget>,
+	cy: Cytoscape.Core
+) => {
 	const elementById = cy.getElementById(target.id);
 
 	switch (key) {
@@ -57,16 +72,29 @@ const addProperty = ({ key, target, value }: GraphProperty<GraphPropertyTarget>,
 	}
 };
 
-const addEdge = ({ id, source, sourceConnector, target, targetConnector, metadata }: GraphEdge, cy: Cytoscape.Core) => {
+const addEdge = (
+	{ id, source, sourceConnector, target, targetConnector, metadata }: GraphEdge,
+	cy: Cytoscape.Core
+) => {
 	const { [labelIri]: label } = metadata! || {};
-	const elem: ElementDefinition = { data: { id, source: sourceConnector || source, target: targetConnector || target, [labelKey]: label } };
+	const elem: ElementDefinition = {
+		data: {
+			id,
+			source: sourceConnector || source,
+			target: targetConnector || target,
+			[labelKey]: label,
+		},
+	};
 	cy.add(elem);
 	return [];
 };
 const removeElement = ({ id }: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
 	cy.remove(cy.getElementById(id));
 };
-const removeProperty = ({ key, target }: GraphProperty<GraphPropertyTarget>, cy: Cytoscape.Core) => {
+const removeProperty = (
+	{ key, target }: GraphProperty<GraphPropertyTarget>,
+	cy: Cytoscape.Core
+) => {
 	const element = cy.getElementById(target.id);
 	element.removeData(key);
 	if (key in ['symbol', 'relativePosition']) {
@@ -153,15 +181,25 @@ const layoutHandler = (_event: cytoscape.EventObject) => {
 			animate: false,
 			transform: (node) => {
 				const parentPosition = node.parent().first().position();
-				const relativePosition = node.data('connectorRelativePosition') || { x: 0, y: 0 };
-				const position = { x: parentPosition.x + relativePosition.x, y: parentPosition.y + relativePosition.y };
+				const relativePosition = node.data('connectorRelativePosition') || {
+					x: 0,
+					y: 0,
+				};
+				const position = {
+					x: parentPosition.x + relativePosition.x,
+					y: parentPosition.y + relativePosition.y,
+				};
 				return position;
 			},
 		})
 		.run();
 };
 
-export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSelected }: GraphProps) => {
+export const CyGraph = ({
+	graphState,
+	graphPatch,
+	selectionEffect: onElementsSelected,
+}: GraphProps) => {
 	const selectedLayout = layoutDagre;
 
 	const [nullableCy, setCy] = useState<Cytoscape.Core>();
@@ -191,7 +229,9 @@ export const CyGraph = ({ graphState, graphPatch, selectionEffect: onElementsSel
 			const cy = nullableCy!;
 
 			cy.on('select', () => {
-				const selection = cy.$('node:selected').map((n) => graphState.nodeIndex.get(n.data().id) as AbstractNode);
+				const selection = cy
+					.$('node:selected')
+					.map((n) => graphState.nodeIndex.get(n.data().id) as AbstractNode);
 				onElementsSelected(selection);
 			});
 

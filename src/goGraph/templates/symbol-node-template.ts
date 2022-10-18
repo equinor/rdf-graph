@@ -15,7 +15,9 @@ export function portDirectionToSpot(direction: number): go.Spot {
 	}
 }
 
-export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null): go.Node {
+export function createSymbolNodeTemplate(
+	clickHandler?: ((e: go.InputEvent, thisObj: go.GraphObject) => void) | null
+): go.Node {
 	const $ = go.GraphObject.make;
 	const nodePadding = 24;
 	// Port diameter
@@ -148,7 +150,13 @@ export function createSymbolNodeTemplate(clickHandler?: ((e: go.InputEvent, this
 					.bind('itemArray', 'ports')
 					.bind('width', 'symbolWidth')
 					.bind('height', 'symbolHeight')
-					.bind(new go.Binding('alignment', 'portSize', (size) => new go.Spot(0.5, 0.5, -(size / 2), -(size / 2))).ofModel())
+					.bind(
+						new go.Binding(
+							'alignment',
+							'portSize',
+							(size) => new go.Spot(0.5, 0.5, -(size / 2), -(size / 2))
+						).ofModel()
+					)
 			)
 	);
 }
