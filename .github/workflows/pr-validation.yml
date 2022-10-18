@@ -1,4 +1,4 @@
-name: 🔍 Validate PR
+name: 🍌 Validate PR
 
 on:
   pull_request:
@@ -6,9 +6,6 @@ on:
       - opened
       - edited
       - reopened
-      - synchronize
-      - labeled
-      - unlabeled
     paths:
       - 'src/**'
 

@@ -1,4 +1,4 @@
-name: ✅ Validate Bot PR
+name: 🤖 Validate Bot PR
 
 on:
   pull_request:

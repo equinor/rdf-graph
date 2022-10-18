@@ -2,7 +2,7 @@ name: 🔖 Release Please
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   release_please:
