@@ -1,3 +1,0 @@
-{
-	"**/*.{js,jsx,json,html,ts,tsx,md,yml}": ["npm run prettier:write"]
-}

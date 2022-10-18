@@ -47,7 +47,6 @@ The core of this project is open source, but it also ships with an UI implementa
 Don't update major version for the following:
 
 - @storybook/preset-create-react-app
-- react-scripts
 - chalk
 
 ### PR's & releases version 🦆
@@ -56,7 +55,7 @@ Consistent title names help maintainers organize their projects better 📚
 
 Prefixes:
 
-- `patch: patch,fixes,fix,chore,Bump`
+- `patch: patch,fixes,fix,chore`
 - `minor: feat`
 - `major: major`
 
@@ -81,6 +80,10 @@ npm i
 # Run a local dev version of Storybook
 npm run dev
 ```
+
+### Lefthook - Git hooks manager
+
+Hooks are defined in `lefthook.yml`. You may need to run `git config --unset core.hooksPath` locally (once) to clear the previously used husky path.
 
 ### Code quality
 

@@ -45,11 +45,7 @@
 		"prettier:check": "prettier --check .",
 		"prettier:write": "prettier --write .",
 		"prepublishOnly": "npm run build:lib",
-		"checkcode": "npm run lint && npm run ts:testcompile && npm run prettier:check",
-		"bump:patch": "npm --no-git-tag-version version patch",
-		"bump:minor": "npm --no-git-tag-version version minor",
-		"bump:major": "npm --no-git-tag-version version major",
-		"prepare": "husky install"
+		"checkcode": "npm run lint && npm run ts:testcompile && npm run prettier:check"
 	},
 	"engines": {
 		"npm": ">= 8.3.1",
@@ -102,9 +98,9 @@
 		]
 	},
 	"peerDependencies": {
+		"gojs": ">=2.2.16",
 		"react": "^16.14.0 || ^17.0.0",
-		"react-dom": "^16.14.0 || ^17.0.0",
-		"gojs": ">=2.2.16"
+		"react-dom": "^16.14.0 || ^17.0.0"
 	},
 	"dependencies": {
 		"3d-force-graph": "^1.70.13",
@@ -118,6 +114,8 @@
 		"three": "^0.144.0"
 	},
 	"devDependencies": {
+		"@equinor/eds-core-react": "^0.20.4",
+		"@evilmartians/lefthook": "^1.1.3",
 		"@rdfjs/types": "^1.1.0",
 		"@rollup/plugin-commonjs": "^22.0.0",
 		"@rollup/plugin-node-resolve": "^14.0.1",
@@ -134,15 +132,12 @@
 		"@types/react-dom": "^18.0.6",
 		"@types/three": "^0.144.0",
 		"@vitejs/plugin-react": "^2.1.0",
-		"@equinor/eds-core-react": "^0.20.4",
 		"babel-loader": "^8.2.5",
 		"eslint": "^8.23.0",
 		"eslint-config-react-app": "^7.0.1",
 		"gojs": "^2.2.16",
 		"gojs-react": "^1.1.1",
-		"husky": "^8.0.1",
 		"jsdom": "^20.0.0",
-		"lint-staged": "^13.0.3",
 		"prettier": "^2.6.2",
 		"react": "^17.0.2",
 		"react-dom": "^17.0.2",
