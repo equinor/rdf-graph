@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.1](https://github.com/equinor/rdf-graph/compare/v0.12.0...v0.12.1) (2022-10-18)
+
+
+### For Developers
+
+* debug print ([e501d6e](https://github.com/equinor/rdf-graph/commit/e501d6ef3b688ca366d8145efeac7e793c2ab673))
+* ignore bots for release ([#270](https://github.com/equinor/rdf-graph/issues/270)) [skip ci] ([239588f](https://github.com/equinor/rdf-graph/commit/239588fb2fd25b89058b0afd5c82534c369bcc93))
+
 ## [0.12.0](https://github.com/equinor/rdf-graph/compare/v1.0.0...v0.12.0) (2022-10-17)
 
 
