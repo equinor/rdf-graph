@@ -16,6 +16,10 @@ The following UI implementations (React components) are shipped with the library
 
 ## Examples
 
+```bash
+npm i @equinor/rdf-graph
+```
+
 Please refer to the Storybook stories for the respective UI implementations:
 
 - [RdfGoGraph - /src/goGraph/storybook/StoryWrapper.tsx](/src/goGraph/storybook/StoryWrapper.tsx)
