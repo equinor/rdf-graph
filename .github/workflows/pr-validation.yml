@@ -15,7 +15,7 @@ on:
 jobs:
   validate_name:
     name: Validate PR Name
-    if: ${{ github.actor != 'dependabot[bot]' && github.actor != 'snyk-bot' }}
+    if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.actor) }}
     runs-on: ubuntu-latest
     steps:
       - name: Validate

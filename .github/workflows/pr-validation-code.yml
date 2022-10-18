@@ -23,7 +23,7 @@ jobs:
       - name: Build library
         run: npm run build:lib
       - name: Find code style issues
-        run: npm run checkcode
+        run: npm run validateCode
 
   unit_test:
     name: 🧪 Unit test
