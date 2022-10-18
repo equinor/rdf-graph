@@ -109,7 +109,7 @@
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
 		"n3": "^1.16.2",
-		"react-cytoscapejs": "^1.2.1",
+		"react-cytoscapejs": "^2.0.0",
 		"react-force-graph": "^1.41.14",
 		"three": "^0.145.0"
 	},
