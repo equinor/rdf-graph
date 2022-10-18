@@ -21,10 +21,7 @@ type Property = {
 	value: string;
 };
 
-export function cySymbolProvider(
-	id: string,
-	rotation?: number
-): UiNodeSymbol | undefined {
+export function cySymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
 	const symbol = getConnectorSymbolAdvanced(id as SymbolLibraryKey, {
 		rotation: rotation,
 		mutateConnectorRelativePosition: 'CenterCenter',
@@ -45,9 +42,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 	const [nodeIri, setNodeIri] = useState<string>('');
 	const [connectionPredicate, setConnectionPredicate] = useState<string>('');
 
-	const [valuePredicate, setValuePredicate] = useState<string>(
-		'http://rdf.equinor.com/ui/'
-	);
+	const [valuePredicate, setValuePredicate] = useState<string>('http://rdf.equinor.com/ui/');
 	const [literalValue, setLiteralValue] = useState<string>('');
 	const [properties, setProperties] = useState<Property[]>([]);
 
@@ -124,27 +119,19 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 		dispatch({ type: 'replace', data: quads });
 	}, [turtle]);
 
-	const handleConnectionPredicateSelect = (
-		e: React.SyntheticEvent<HTMLInputElement, Event>
-	) => {
+	const handleConnectionPredicateSelect = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
 		setConnectionPredicate(e.currentTarget.value);
 	};
 
-	const handleNodeIdSelect = (
-		e: React.SyntheticEvent<HTMLInputElement, Event>
-	) => {
+	const handleNodeIdSelect = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
 		setNodeIri(e.currentTarget.value);
 	};
 
-	const handleValuePredicateSelect = (
-		e: React.SyntheticEvent<HTMLInputElement, Event>
-	) => {
+	const handleValuePredicateSelect = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
 		setValuePredicate(e.currentTarget.value);
 	};
 
-	const handleValueSelect = (
-		e: React.SyntheticEvent<HTMLInputElement, Event>
-	) => {
+	const handleValueSelect = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
 		setLiteralValue(e.currentTarget.value);
 	};
 
@@ -157,11 +144,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 			<Button onClick={connectSelection}> Connect </Button>
 			<Input onChange={(x) => handleConnectionPredicateSelect(x)} />
 			<Button onClick={loadTurtle}> Load turtle </Button>
-			<RdfCyGraph
-				selectionEffect={handleSelection}
-				symbolProvider={cySymbolProvider}
-				{...state}
-			/>
+			<RdfCyGraph selectionEffect={handleSelection} symbolProvider={cySymbolProvider} {...state} />
 			<Table>
 				<Table.Head>
 					<Table.Row key="Details">
@@ -174,18 +157,9 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 					{properties.map(({ key, value }, row_index) => (
 						<Table.Row key={`result_row${row_index}`}>
 							{' '}
-							<Table.Cell key={`result_cell${row_index}_subject`}>
-								{' '}
-								{selection[0]?.id}{' '}
-							</Table.Cell>
-							<Table.Cell key={`result_cell${row_index}_predicate`}>
-								{' '}
-								{key}{' '}
-							</Table.Cell>
-							<Table.Cell key={`result_cell${row_index}_object`}>
-								{' '}
-								{value}{' '}
-							</Table.Cell>
+							<Table.Cell key={`result_cell${row_index}_subject`}> {selection[0]?.id} </Table.Cell>
+							<Table.Cell key={`result_cell${row_index}_predicate`}> {key} </Table.Cell>
+							<Table.Cell key={`result_cell${row_index}_object`}> {value} </Table.Cell>
 						</Table.Row>
 					))}
 					<Table.Row key={`add`}>
@@ -195,10 +169,7 @@ export const StoryWrapper = ({ turtleString }: SparqlWrapperProps) => {
 							<Button onClick={addProperty} />
 						</Table.Cell>
 						<Table.Cell key={`result_cell_add_predicate`}>
-							<Input
-								onChange={(x) => handleValuePredicateSelect(x)}
-								value={valuePredicate}
-							/>
+							<Input onChange={(x) => handleValuePredicateSelect(x)} value={valuePredicate} />
 						</Table.Cell>
 						<Table.Cell key={`result_cell_add_object`}>
 							<Input onChange={(x) => handleValueSelect(x)} />

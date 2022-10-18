@@ -1,11 +1,7 @@
 import { Button } from '@equinor/eds-core-react';
 import { useEffect, useRef, useState } from 'react';
 import { turtle2RdfTriples } from '../../core/mapper';
-import {
-	GraphSelection,
-	PropertyAssertion,
-	SelectionCallback,
-} from '../../core/types';
+import { GraphSelection, PropertyAssertion, SelectionCallback } from '../../core/types';
 
 import { useRdfActionReducer } from '../../core/state/useRdfState';
 
@@ -21,10 +17,7 @@ export type GoStoryWrapperProps = {
 	selectionEffect?: SelectionCallback;
 };
 
-function symbolProviderJson(
-	id: string,
-	_rotation?: number
-): UiNodeSymbol | undefined {
+function symbolProviderJson(id: string, _rotation?: number): UiNodeSymbol | undefined {
 	// IGNORE ROTATION for GoJS!
 	const symbol = getConnectorSymbol(id as SymbolLibraryKey);
 	if (!symbol) return;
@@ -38,10 +31,7 @@ const diagramStyle: React.CSSProperties = {
 	background: '#fafaf9',
 };
 
-export const StoryWrapper = ({
-	turtleString,
-	selectionEffect,
-}: GoStoryWrapperProps) => {
+export const StoryWrapper = ({ turtleString, selectionEffect }: GoStoryWrapperProps) => {
 	const [state, dispatch] = useRdfActionReducer();
 	const [turtle, updateTurtle] = useState<string>(turtleString);
 	const [showSymbolPorts, setShowSymbolPorts] = useState(true);
@@ -64,11 +54,7 @@ export const StoryWrapper = ({
 
 	useEffect(() => {
 		const { model } = diagramRef.current;
-		model.setDataProperty(
-			model.modelData,
-			'portOpacity',
-			showSymbolPorts ? 1 : 0
-		);
+		model.setDataProperty(model.modelData, 'portOpacity', showSymbolPorts ? 1 : 0);
 	}, [showSymbolPorts]);
 
 	return (

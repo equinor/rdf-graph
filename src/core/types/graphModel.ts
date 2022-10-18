@@ -74,11 +74,7 @@ export type PropertyAssertion = AssertionBase & {
 
 export type Assertion<T> = AssertionBase & { assertion: T };
 export type GraphAssertion = Assertion<
-	| GraphEdge
-	| GraphNode
-	| GraphConnector
-	| GraphMetadata
-	| GraphProperty<GraphPropertyTarget>
+	GraphEdge | GraphNode | GraphConnector | GraphMetadata | GraphProperty<GraphPropertyTarget>
 >;
 export type GraphPatch = Iterable<GraphAssertion>;
 export type GraphState = {

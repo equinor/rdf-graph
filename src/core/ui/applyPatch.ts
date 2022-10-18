@@ -69,10 +69,7 @@ export interface IUiPatchHandler {
 		prop: P,
 		value: UiNodePatchProperties[P]
 	): void;
-	removeNodeProperty<P extends keyof UiNodePatchProperties>(
-		nodeId: string,
-		prop: P
-	): void;
+	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void;
 
 	addConnector(id: string, nodeId: string): void;
 	removeConnector(id: string, nodeId: string): void;
@@ -95,10 +92,7 @@ export interface IUiPatchHandler {
 		prop: P,
 		value: UiEdgePatchProperties[P]
 	): void;
-	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(
-		edgeId: string,
-		prop: P
-	): void;
+	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void;
 
 	onBeforeApplyPatch?: () => void;
 	onAfterApplyPatch?: () => void;

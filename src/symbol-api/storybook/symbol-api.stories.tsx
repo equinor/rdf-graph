@@ -1,9 +1,6 @@
 import React from 'react';
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import {
-	GoStoryWrapperProps,
-	StoryWrapper,
-} from '../../goGraph/storybook/StoryWrapper';
+import { GoStoryWrapperProps, StoryWrapper } from '../../goGraph/storybook/StoryWrapper';
 
 import { symbolLibrary } from '../getConnectorSymbol';
 import { ConnectorSymbol } from '../../core';
@@ -45,9 +42,7 @@ function getSymbolsTurtle(): string {
 	for (const key in lib) {
 		const symbol = lib[key];
 
-		const connectorIris = symbol.connectors.map(
-			(v) => 'example:' + symbol.id + '_c' + v.id
-		);
+		const connectorIris = symbol.connectors.map((v) => 'example:' + symbol.id + '_c' + v.id);
 
 		turtle += '\nexample:' + symbol.id + '\n';
 		if (connectorIris.length > 0)
@@ -58,8 +53,7 @@ function getSymbolsTurtle(): string {
 		for (let i = 0; i < connectorIris.length; i++) {
 			const iri = connectorIris[i];
 			turtle += iri + '\n';
-			turtle +=
-				'\t\tui:hasConnectorSuffix "' + symbol.connectors[i].id + '" .\n\n';
+			turtle += '\t\tui:hasConnectorSuffix "' + symbol.connectors[i].id + '" .\n\n';
 		}
 	}
 

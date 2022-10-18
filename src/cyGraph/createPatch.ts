@@ -1,15 +1,7 @@
 import { DataFactory } from 'n3';
-import {
-	labelPredicate,
-	rotationIri,
-	rotationPredicate,
-} from '../core/mapper/predicates';
+import { labelPredicate, rotationIri, rotationPredicate } from '../core/mapper/predicates';
 import { RdfAssertion, RdfPatch2 } from '../core/types';
-import {
-	GraphElementBase,
-	GraphNode,
-	GraphSelection,
-} from '../core/types/graphModel';
+import { GraphElementBase, GraphNode, GraphSelection } from '../core/types/graphModel';
 
 const { namedNode, literal, quad } = DataFactory;
 
@@ -95,11 +87,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 		case 'addNode':
 			yield {
 				action: 'add',
-				assertion: quad(
-					namedNode(action.iri),
-					labelPredicate,
-					literal(action.label)
-				),
+				assertion: quad(namedNode(action.iri), labelPredicate, literal(action.label)),
 			};
 			return;
 		case 'deleteSelection':
@@ -108,11 +96,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 					for (const subject of value) {
 						yield {
 							action: 'remove',
-							assertion: quad(
-								namedNode(subject.id),
-								namedNode(predicate),
-								namedNode(element.id)
-							),
+							assertion: quad(namedNode(subject.id), namedNode(predicate), namedNode(element.id)),
 						};
 					}
 				}
@@ -134,11 +118,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 					for (const value of values) {
 						yield {
 							action: 'remove',
-							assertion: quad(
-								namedNode(element.id),
-								namedNode(key),
-								literal(value)
-							),
+							assertion: quad(namedNode(element.id), namedNode(key), literal(value)),
 						};
 					}
 				}
@@ -150,11 +130,7 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 				if (currentRotation) {
 					yield {
 						action: 'remove',
-						assertion: quad(
-							namedNode(node.id),
-							rotationPredicate,
-							literal(currentRotation[0])
-						),
+						assertion: quad(namedNode(node.id), rotationPredicate, literal(currentRotation[0])),
 					};
 				} else {
 					currentRotation = ['0'];
@@ -162,38 +138,24 @@ export function* createPatch(action: ClientAction): RdfPatch2 {
 				const newRotation = (parseInt(currentRotation[0]) + 90) % 360;
 				yield {
 					action: 'add',
-					assertion: quad(
-						namedNode(node.id),
-						rotationPredicate,
-						literal(newRotation.toString())
-					),
+					assertion: quad(namedNode(node.id), rotationPredicate, literal(newRotation.toString())),
 				};
 			}
 			break;
 
 		case 'addProperty':
-			for (const node of action.selection.filter(
-				(s) => s.type === 'node'
-			) as GraphNode[]) {
+			for (const node of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
 				const assertion: RdfAssertion = {
 					action: 'add',
-					assertion: quad(
-						namedNode(node.id),
-						namedNode(action.key),
-						literal(action.value)
-					),
+					assertion: quad(namedNode(node.id), namedNode(action.key), literal(action.value)),
 				};
 				yield assertion;
 			}
 			break;
 
 		case 'connectSelection':
-			const nodesToConnect = action.selection.filter(
-				(s) => s.type === 'node'
-			) as GraphNode[];
-			for (const node1 of action.selection.filter(
-				(s) => s.type === 'node'
-			) as GraphNode[]) {
+			const nodesToConnect = action.selection.filter((s) => s.type === 'node') as GraphNode[];
+			for (const node1 of action.selection.filter((s) => s.type === 'node') as GraphNode[]) {
 				for (const node2 of nodesToConnect) {
 					if (node1 !== node2) {
 						yield {

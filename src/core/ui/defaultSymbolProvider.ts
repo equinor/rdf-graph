@@ -2,9 +2,7 @@ import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
 import { ConnectorSymbol } from '../types';
 import { UiNodeConnector, UiNodeSymbol } from './applyPatch';
 
-export function ConnectorSymbolToUiNodeSymbol(
-	symbol: ConnectorSymbol
-): UiNodeSymbol {
+export function ConnectorSymbolToUiNodeSymbol(symbol: ConnectorSymbol): UiNodeSymbol {
 	return {
 		id: symbol.id,
 		width: symbol.width,
@@ -23,10 +21,7 @@ export function ConnectorSymbolToUiNodeSymbol(
 	};
 }
 
-export function defaultSymbolProvider(
-	id: string,
-	rotation?: number
-): UiNodeSymbol | undefined {
+export function defaultSymbolProvider(id: string, rotation?: number): UiNodeSymbol | undefined {
 	const symbol = getConnectorSymbolAdvanced(id as SymbolLibraryKey, {
 		rotation: rotation,
 	});

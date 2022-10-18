@@ -10,8 +10,7 @@ import { defaultInitDiagram } from './defaultInit';
 export const GoGraph: FC<GoGraphProps> = (props) => {
 	const nodeDataArrayRef = useRef<go.ObjectData[]>([]);
 	const linkDataArrayRef = useRef<go.ObjectData[]>([]);
-	const [diagramStyle, setDiagramStyle] =
-		useState<React.CSSProperties>(getDefaultStyle);
+	const [diagramStyle, setDiagramStyle] = useState<React.CSSProperties>(getDefaultStyle);
 
 	const initDiagram = () => {
 		if (props.diagramInitializer) return props.diagramInitializer();
@@ -20,9 +19,7 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 
 	const diagramRef = useRef<go.Diagram>(initDiagram());
 
-	const patchHandlerRef = useRef<IUiPatchHandler>(
-		new GoJsPatchHandler(diagramRef.current)
-	);
+	const patchHandlerRef = useRef<IUiPatchHandler>(new GoJsPatchHandler(diagramRef.current));
 
 	useEffect(() => {
 		applyPatch(props.graphPatch, patchHandlerRef.current);
@@ -41,15 +38,9 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 	};
 
 	useEffect(() => {
-		diagramRef.current.addDiagramListener(
-			'ChangedSelection',
-			changedSelectionHandler
-		);
+		diagramRef.current.addDiagramListener('ChangedSelection', changedSelectionHandler);
 		return () => {
-			diagramRef.current.removeDiagramListener(
-				'ChangedSelection',
-				changedSelectionHandler
-			);
+			diagramRef.current.removeDiagramListener('ChangedSelection', changedSelectionHandler);
 		};
 	}, []);
 
@@ -73,10 +64,7 @@ function getDefaultStyle(): React.CSSProperties {
 	};
 }
 
-function getGraphSelection(
-	e: go.DiagramEvent,
-	graphState: GraphState
-): GraphSelection {
+function getGraphSelection(e: go.DiagramEvent, graphState: GraphState): GraphSelection {
 	const selectionSet = e.subject as go.Set<go.Part>;
 	const selectedPayload: GraphSelection = [];
 	const selIt = selectionSet.iterator;

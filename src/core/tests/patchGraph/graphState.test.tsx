@@ -40,8 +40,7 @@ describe('patchGraph', () => {
 					node = res.graphState.nodeIndex.get(termToId(q.subject));
 					expect(node!.connectorName!).toBe(q.object.value);
 					for (const c of node!.node!.symbol!.connectors) {
-						if (c.id === q.object.value)
-							expect(c.point).toMatchObject(node!.relativePosition!);
+						if (c.id === q.object.value) expect(c.point).toMatchObject(node!.relativePosition!);
 					}
 					break;
 			}
@@ -58,8 +57,9 @@ describe('patchGraph', () => {
 		);
 		for (const _ of res.graphPatch) {
 		}
-		expect(
-			res.graphState.nodeIndex.get('C')!.connectorRelativePosition!
-		).toMatchObject({ x: 0, y: 0 });
+		expect(res.graphState.nodeIndex.get('C')!.connectorRelativePosition!).toMatchObject({
+			x: 0,
+			y: 0,
+		});
 	});
 });

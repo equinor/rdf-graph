@@ -8,13 +8,7 @@ import {
 	UiNodePatchProperties,
 	UiNodeSymbol,
 } from '../core/ui/applyPatch';
-import {
-	BaseNodeData,
-	EdgeData,
-	NodeUiCategory,
-	NodeUiItemCategory,
-	PortData,
-} from './types';
+import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } from './types';
 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	backgroundColor: 'fill',
@@ -77,20 +71,9 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		if (prop === 'symbol') {
 			const symbol = value as UiNodeSymbol;
 
-			this.diagram.model.setCategoryForNodeData(
-				nodeData,
-				NodeUiCategory.ConnectorSymbol
-			);
-			this.diagram.model.setDataProperty(
-				nodeData,
-				'symbolGeometry',
-				symbol.geometry
-			);
-			this.diagram.model.setDataProperty(
-				nodeData,
-				'symbolHeight',
-				symbol.height
-			);
+			this.diagram.model.setCategoryForNodeData(nodeData, NodeUiCategory.ConnectorSymbol);
+			this.diagram.model.setDataProperty(nodeData, 'symbolGeometry', symbol.geometry);
+			this.diagram.model.setDataProperty(nodeData, 'symbolHeight', symbol.height);
 			this.diagram.model.setDataProperty(nodeData, 'symbolWidth', symbol.width);
 			return;
 		}
@@ -98,10 +81,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this.diagram.model.setDataProperty(nodeData, nodePropMap[prop], value);
 	}
 
-	removeNodeProperty<P extends keyof UiNodePatchProperties>(
-		nodeId: string,
-		prop: P
-	): void {
+	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void {
 		const nodeData = this._getNodeData(nodeId);
 		if (!nodeData) return;
 
@@ -172,11 +152,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			commitValue = new go.Point(p.x, p.y);
 		}
 
-		this.diagram.model.set(
-			nodeData.ports[portIdx],
-			connectorPropMap[prop],
-			commitValue
-		);
+		this.diagram.model.set(nodeData.ports[portIdx], connectorPropMap[prop], commitValue);
 	}
 
 	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(
@@ -219,10 +195,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		this.diagram.model.setDataProperty(linkData, edgePropKey, value);
 	}
 
-	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(
-		edgeId: string,
-		prop: P
-	): void {
+	removeEdgeProperty<P extends keyof UiEdgePatchProperties>(edgeId: string, prop: P): void {
 		const linkData = this._linkModel.findLinkDataForKey(edgeId);
 		if (!linkData) return;
 

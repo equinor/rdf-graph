@@ -23,9 +23,7 @@ export function turtle2RdfTriples(turtle: string) {
 				break;
 		}
 		if (!namespace) return DataFactory.namedNode(value);
-		return DataFactory.namedNode(
-			(namespace + value.substring(cpos + 1)) as typeof value
-		);
+		return DataFactory.namedNode((namespace + value.substring(cpos + 1)) as typeof value);
 	};
 
 	const parser = new Parser({

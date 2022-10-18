@@ -113,16 +113,8 @@ export function createSymbolNodeTemplate(
 							},
 							new go.Binding('portId'),
 							new go.Binding('position', 'connectorRelativePosition'),
-							new go.Binding(
-								'fromSpot',
-								'connectorDirection',
-								portDirectionToSpot
-							),
-							new go.Binding(
-								'toSpot',
-								'connectorDirection',
-								portDirectionToSpot
-							)
+							new go.Binding('fromSpot', 'connectorDirection', portDirectionToSpot),
+							new go.Binding('toSpot', 'connectorDirection', portDirectionToSpot)
 						)
 					),
 				})

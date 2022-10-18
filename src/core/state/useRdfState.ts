@@ -24,10 +24,7 @@ const coercePatch = function* (
 	}
 };
 
-const reducer: (state: RdfState, action: RdfAction) => RdfState = (
-	state,
-	action
-) => {
+const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action) => {
 	switch (action.type) {
 		case 'add':
 		case 'remove':

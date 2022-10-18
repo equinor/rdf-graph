@@ -92,14 +92,8 @@ export const testPatchOrder = (
 	return changeRes;
 };
 
-export const printDebugArray = (
-	expected: SimplifiedAssertion[],
-	actual: SimplifiedAssertion[]
-) => {
-	const filledExpected = addFillElements(
-		expected,
-		actual.length - expected.length
-	);
+export const printDebugArray = (expected: SimplifiedAssertion[], actual: SimplifiedAssertion[]) => {
+	const filledExpected = addFillElements(expected, actual.length - expected.length);
 	const filledActual = addFillElements(actual, expected.length - actual.length);
 
 	const debugArray: DebugElement[] = [];

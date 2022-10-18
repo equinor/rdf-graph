@@ -85,12 +85,7 @@ function remove<T>(index: Map<string, T[]>, key: string, value: T) {
 	removeElement(arr, value);
 	if (arr.length === 0) index.delete(key);
 }
-function removeId<T, K extends keyof T>(
-	index: Map<string, T[]>,
-	key: string,
-	prop: K,
-	id: T[K]
-) {
+function removeId<T, K extends keyof T>(index: Map<string, T[]>, key: string, prop: K, id: T[K]) {
 	const arr = index.get(key)!;
 
 	removeElementId(arr, prop, id);
@@ -182,15 +177,10 @@ function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 	}
 }
 
-function invalidator(
-	prop: NodeProp | ValueProp,
-	accessor: string | ((g: AbstractNode) => any)
-) {
+function invalidator(prop: NodeProp | ValueProp, accessor: string | ((g: AbstractNode) => any)) {
 	return function* (a: AbstractNode): Iterable<PropertyAssertion> {
 		const declared =
-			typeof accessor === 'string'
-				? (a.properties.get(accessor) || [undefined])[0]
-				: accessor(a);
+			typeof accessor === 'string' ? (a.properties.get(accessor) || [undefined])[0] : accessor(a);
 		const prev = a[prop];
 		if (declared === prev) return;
 		if (prev !== undefined)
@@ -208,38 +198,27 @@ function invalidator(
 	};
 }
 const propInvalidations: {
-	[index in NodeProp | ValueProp]: (
-		node: AbstractNode
-	) => Iterable<PropertyAssertion>;
+	[index in NodeProp | ValueProp]: (node: AbstractNode) => Iterable<PropertyAssertion>;
 } = {
 	[labelKey]: invalidator(labelKey, labelIri),
 	[colorKey]: invalidator(colorKey, colorIri),
 	symbolName: invalidator('symbolName', hasSvgIri),
 	[rotationKey]: invalidator(rotationKey, ({ properties }) =>
-		properties.has(rotationIri)
-			? parseInt(properties.get(rotationIri)![0])
-			: undefined
+		properties.has(rotationIri) ? parseInt(properties.get(rotationIri)![0]) : undefined
 	),
 	symbol: invalidator('symbol', (g) =>
-		g['symbolName']
-			? symbolProvider(g['symbolName'], g[rotationKey])
-			: undefined
+		g['symbolName'] ? symbolProvider(g['symbolName'], g[rotationKey]) : undefined
 	),
 	connectorName: invalidator('connectorName', hasConnectorSuffixIri),
-	connectorDirection: invalidator(
-		'connectorDirection',
-		({ type, node, connectorName }) => {
-			if (type !== 'connector' || !node || !connectorName || !node.symbol)
-				return undefined;
-			const c = node.symbol.connectors.find(({ id }) => id === connectorName);
-			return c?.direction ?? 0;
-		}
-	),
+	connectorDirection: invalidator('connectorDirection', ({ type, node, connectorName }) => {
+		if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
+		const c = node.symbol.connectors.find(({ id }) => id === connectorName);
+		return c?.direction ?? 0;
+	}),
 	connectorRelativePosition: invalidator(
 		'connectorRelativePosition',
 		({ type, node, connectorName }) => {
-			if (type !== 'connector' || !node || !connectorName || !node.symbol)
-				return undefined;
+			if (type !== 'connector' || !node || !connectorName || !node.symbol) return undefined;
 			const c = node.symbol.connectors.find(({ id }) => id === connectorName);
 			return c?.position ?? { x: 0, y: 0 };
 		}
@@ -249,9 +228,7 @@ const propInvalidations: {
 	[nodeTemplateKey]: invalidator(nodeTemplateKey, hasNodeTemplateIri),
 	[connectorKey]: (g: AbstractNode) => propagator(g, connectorKey),
 	[compoundNodeKey]: function* (g: AbstractNode) {
-		const declared = (g.outgoing.get(compoundNodeIri) || [undefined])[0] as
-			| GraphNode
-			| undefined;
+		const declared = (g.outgoing.get(compoundNodeIri) || [undefined])[0] as GraphNode | undefined;
 		const prev = g.parent;
 
 		if (declared === prev) return;
@@ -303,11 +280,7 @@ const dependentQuads = (n: AbstractNode) =>
 		})(n)
 	);
 
-function* changeNodeType(
-	s: GraphState,
-	n: AbstractNode,
-	type: AbstractNode['type']
-) {
+function* changeNodeType(s: GraphState, n: AbstractNode, type: AbstractNode['type']) {
 	// re-entrancy check, dont change type on other nodes or it could become turtles all the way down
 	if (n.type === type) return;
 	if ((s as any).__changingNodeType__) return;
@@ -320,11 +293,7 @@ function* changeNodeType(
 	const nodeCache = new Map<string, AbstractNode>();
 	// disconnect the node completely (remove properties, incoming/outgoing edges and lastly the node itself)
 	yield* flatMap(quads, (q) =>
-		graphAssertion(
-			s,
-			{ action: 'remove', assertion: q } as RdfAssertion,
-			nodeCache
-		)
+		graphAssertion(s, { action: 'remove', assertion: q } as RdfAssertion, nodeCache)
 	);
 
 	// the ol' switcharoo
@@ -345,11 +314,7 @@ function* changeNodeType(
 
 	// re-insert node and all dependent edges/properties
 	yield* flatMap(quads, (q) =>
-		graphAssertion(
-			s,
-			{ action: 'add', assertion: q } as RdfAssertion,
-			nodeCache
-		)
+		graphAssertion(s, { action: 'add', assertion: q } as RdfAssertion, nodeCache)
 	);
 
 	delete (s as any).__changingNodeType__;
@@ -433,8 +398,7 @@ function* graphAssertion<M extends GraphState>(
 						break;
 					default:
 						oNode =
-							nodeCache?.get(oTerm) ||
-							({ id: oTerm, type: 'node', ...initAN() } as GraphNode);
+							nodeCache?.get(oTerm) || ({ id: oTerm, type: 'node', ...initAN() } as GraphNode);
 						yield { action: 'add', assertion: oNode };
 						break;
 				}
@@ -601,10 +565,7 @@ function* graphAssertion<M extends GraphState>(
 					yield* propInvalidations[predicate2prop[pTerm] as ValueProp](sNode);
 				}
 
-				if (
-					edgePredicate2prop.hasOwnProperty(pTerm) &&
-					sNode.type === 'metadata'
-				) {
+				if (edgePredicate2prop.hasOwnProperty(pTerm) && sNode.type === 'metadata') {
 					const edges = flat(sNode.edges.values());
 					for (const edge of edges) {
 						yield {

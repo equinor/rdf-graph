@@ -52,11 +52,7 @@ test('Node becomes connector and node again', () => {
 		{ type: 'edge', action: 'add' }, // Edge to N3
 	];
 
-	const addedState = testPatchOrder(
-		createState(originalData),
-		addChange,
-		expectedOrder
-	);
+	const addedState = testPatchOrder(createState(originalData), addChange, expectedOrder);
 	testPatchOrder(addedState.graphState, rmChange, expectedRmOrder);
 });
 
@@ -69,9 +65,7 @@ test('Edges becomes colored', () => {
 		q(n('N2'), n('isConnectedTo'), n('N3')),
 	];
 
-	const change = toAddPatch([
-		q(n('isConnectedTo'), P.colorPredicate, l('green')),
-	]);
+	const change = toAddPatch([q(n('isConnectedTo'), P.colorPredicate, l('green'))]);
 
 	const expectedOrder: SimplifiedAssertion[] = [
 		{ type: 'property', action: 'add' },
@@ -115,13 +109,9 @@ test('Edge remove color', () => {
 		q(n('isConnectedTo'), P.colorPredicate, l('green')),
 	];
 
-	const change = toRmPatch([
-		q(n('isConnectedTo'), P.colorPredicate, l('green')),
-	]);
+	const change = toRmPatch([q(n('isConnectedTo'), P.colorPredicate, l('green'))]);
 
-	const expectedOrder: SimplifiedAssertion[] = [
-		{ type: 'property', action: 'remove' },
-	];
+	const expectedOrder: SimplifiedAssertion[] = [{ type: 'property', action: 'remove' }];
 
 	testPatchOrder(createState(originalData), change, expectedOrder);
 });

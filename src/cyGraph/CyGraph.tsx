@@ -7,12 +7,7 @@ import {
 	imageKey,
 	imageWidthKey,
 } from '../core/mapper/predicates';
-import {
-	colorKey,
-	labelKey,
-	simpleSvgKey,
-	labelIri,
-} from '../core/mapper/predicates';
+import { colorKey, labelKey, simpleSvgKey, labelIri } from '../core/mapper/predicates';
 import { GraphProps } from '../core/state/GraphStateProps';
 import {
 	AbstractNode,
@@ -93,10 +88,7 @@ const addEdge = (
 	cy.add(elem);
 	return [];
 };
-const removeElement = (
-	{ id }: GraphEdge | AbstractNode,
-	cy: Cytoscape.Core
-) => {
+const removeElement = ({ id }: GraphEdge | AbstractNode, cy: Cytoscape.Core) => {
 	cy.remove(cy.getElementById(id));
 };
 const removeProperty = (
@@ -110,14 +102,9 @@ const removeProperty = (
 	}
 };
 
-const getImageNodeId = (compoundNodeId: string) =>
-	`${compoundNodeId.replace('#', 'HASH')}_svg`;
+const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId.replace('#', 'HASH')}_svg`;
 
-const createImageNode = (
-	nodeId: string,
-	symbol: UiNodeSymbol,
-	cy: Cytoscape.Core
-) => {
+const createImageNode = (nodeId: string, symbol: UiNodeSymbol, cy: Cytoscape.Core) => {
 	const imageElement: ElementDefinition = {
 		data: {
 			id: getImageNodeId(nodeId),
@@ -154,11 +141,7 @@ const applyPatch = (graphPatch: GraphPatch, cy: Cytoscape.Core) => {
 					case 'property':
 						addProperty(assertion, cy);
 						if (assertion.key === 'symbol') {
-							createImageNode(
-								assertion.target.id,
-								(assertion.target as any).symbol!,
-								cy
-							);
+							createImageNode(assertion.target.id, (assertion.target as any).symbol!, cy);
 						}
 						break;
 					case 'edge':

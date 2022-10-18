@@ -72,18 +72,11 @@ type f3DState = {
 	links: GraphEdge[];
 };
 
-const filterable = function* <T>(
-	source: Iterable<T>,
-	filter: (e: T) => boolean
-) {
+const filterable = function* <T>(source: Iterable<T>, filter: (e: T) => boolean) {
 	for (const e of source) if (filter(e)) yield e;
 };
 
-export const F3DGraph: FC<GraphProps & object> = ({
-	graphState,
-	graphPatch,
-	...rest
-}) => {
+export const F3DGraph: FC<GraphProps & object> = ({ graphState, graphPatch, ...rest }) => {
 	const renderer = useRef(new CSS3DRenderer());
 	const [model, update] = useState<f3DState>({
 		nodes: [],
@@ -95,9 +88,7 @@ export const F3DGraph: FC<GraphProps & object> = ({
 		for (const _ of graphPatch) {
 		}
 		update({
-			nodes: [
-				...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node'),
-			],
+			nodes: [...filterable(graphState.nodeIndex.values(), (n) => n.type === 'node')],
 			links: [...graphState.linkIndex.values()],
 		});
 
@@ -115,11 +106,7 @@ export const F3DGraph: FC<GraphProps & object> = ({
 			nodeThreeObjectExtend={true}
 			extraRenderers={[renderer.current as any as Renderer]}
 			nodeThreeObject={(node: any) => {
-				if (
-					node.properties.get(
-						'http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType'
-					) === 'VG'
-				) {
+				if (node.properties.get('http://rdf.equinor.com/raw/stid/JSON_PIPELINE#tagType') === 'VG') {
 					return loader.parse(obj);
 				}
 				return new Group();

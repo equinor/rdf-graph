@@ -4,10 +4,7 @@ import { ConnectorSymbol, SymbolOptions } from '../core/types';
 import symbolLib from './symbol-library/symbol-library.json';
 import { SymbolLibraryKey } from './symbol-library/symbol-library.types';
 
-export const symbolLibrary = symbolLib as Record<
-	SymbolLibraryKey,
-	Readonly<ConnectorSymbol>
->;
+export const symbolLibrary = symbolLib as Record<SymbolLibraryKey, Readonly<ConnectorSymbol>>;
 
 function cloneConnectorSymbol(symbol: ConnectorSymbol): ConnectorSymbol {
 	const clone: ConnectorSymbol = { ...symbol, connectors: [] };
@@ -21,12 +18,8 @@ function cloneConnectorSymbol(symbol: ConnectorSymbol): ConnectorSymbol {
 	return clone;
 }
 
-export function getConnectorSymbol(
-	id: SymbolLibraryKey
-): ConnectorSymbol | undefined {
-	return id in symbolLibrary
-		? cloneConnectorSymbol(symbolLibrary[id])
-		: undefined;
+export function getConnectorSymbol(id: SymbolLibraryKey): ConnectorSymbol | undefined {
+	return id in symbolLibrary ? cloneConnectorSymbol(symbolLibrary[id]) : undefined;
 }
 
 /** Get mutated Connector Symbol using mutation options */
@@ -39,11 +32,9 @@ export function getConnectorSymbolAdvanced(
 
 	const mutRotation = options?.mutateSvgStringOnRotation ?? false;
 	const mutRelPos = options?.mutateConnectorRelativePosition ?? 'none';
-	const mutRelPosRot =
-		options?.mutateConnectorRelativePositionOnRotation ?? false;
+	const mutRelPosRot = options?.mutateConnectorRelativePositionOnRotation ?? false;
 
-	if (mutRelPos === 'none' && mutRotation === false && mutRelPosRot === false)
-		return symbol;
+	if (mutRelPos === 'none' && mutRotation === false && mutRelPosRot === false) return symbol;
 
 	const rotation = options?.rotation ?? 0;
 	const height = options?.height ?? symbol.height;
@@ -65,11 +56,7 @@ export function getConnectorSymbolAdvanced(
 		let p = c.relativePosition;
 
 		if (mutRelPos === 'CenterCenter')
-			p = pointToCenterCenter(
-				{ x: c.relativePosition.x, y: c.relativePosition.y },
-				width,
-				height
-			);
+			p = pointToCenterCenter({ x: c.relativePosition.x, y: c.relativePosition.y }, width, height);
 
 		if (mutRelPosRot && rotation > 0) {
 			p = rotatePoint(p, rotation);

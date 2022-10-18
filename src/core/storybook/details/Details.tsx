@@ -16,10 +16,7 @@ export const SparqlValue = ({ sparqlBinding }: SparqlValueProps) => {
 	return type2jsx[sparqlBinding.type];
 };
 
-export const Details: FC<DetailsProps> = ({
-	resultAsString,
-	isAlphabetised,
-}: DetailsProps) => {
+export const Details: FC<DetailsProps> = ({ resultAsString, isAlphabetised }: DetailsProps) => {
 	const SparqlValue = ({ sparqlBinding }: SparqlValueProps) => {
 		const type2jsx: { [key in SparqlType]: JSX.Element } = {
 			uri: <div>{sparqlBinding.value}</div>,
@@ -34,8 +31,7 @@ export const Details: FC<DetailsProps> = ({
 
 	if (isAlphabetised) {
 		const filterValueByKey = ({ bindings }: Result) =>
-			bindings.filter(({ variableName }: Binding) => variableName === 'key')[0]
-				.value;
+			bindings.filter(({ variableName }: Binding) => variableName === 'key')[0].value;
 
 		sparqlResult.results.sort((a, b) =>
 			filterValueByKey(a) !== filterValueByKey(b)
