@@ -11,8 +11,6 @@ jobs:
     if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) }}
     runs-on: ubuntu-latest
     steps:
-      - name: Debug context
-        run: echo '${{ toJSON(github) }}'
       - name: Create PR or Release
         id: release
         uses: google-github-actions/release-please-action@v3
