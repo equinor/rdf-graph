@@ -19,16 +19,16 @@ jobs:
           package-name: '@equinor/rdf-graph'
           changelog-types: >
             [{"type":"feat","section":"Features","hidden":false},
-            {"type":"chore","section":"For Developers","hidden":false},
             {"type":"fix","section":"Bug Fixes","hidden":false},
+            {"type":"style","section":"Cosmetic Changes","hidden":false},
+            {"type":"perf", "section":"Performance Optimization","hidden":false},
             {"type":"docs","section":"Documentation","hidden":false},
             {"type":"test","section":"Tests","hidden":false},
             {"type":"build","section":"For Developers","hidden":false},
             {"type":"refactor","section":"For Developers","hidden":false},
-            {"type":"style","section":"Cosmetic Changes","hidden":false},
             {"type":"ci", "section":"For Developers","hidden":false},
             {"type":"revert", "section":"For Developers","hidden":false},
-            {"type":"perf", "section":"Performance Optimization","hidden":false}]
+            {"type":"chore","section":"For Developers","hidden":false}]
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
 
