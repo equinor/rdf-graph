@@ -1,0 +1,87 @@
+# @equinor/rdf-graph - For developers 🥷
+
+## Setup of development environment
+
+[Node.js LTS](https://nodejs.org) version is required.
+
+```sh
+# Make sure you are on version 8 of the npm CLI
+$ node -v && npm -v
+v16.14.0
+8.31.0
+
+#  Install npm if not already installed
+npm install --global npm
+
+# Install project dependencies
+npm i
+
+# Run a local dev version of Storybook
+npm run dev
+```
+
+## Lefthook - Git hooks manager
+
+Hooks are defined in `lefthook.yml`. You may need to run `git config --unset core.hooksPath` locally (once) to clear the previously used husky path.
+
+## Code quality
+
+The project is set up with TypeScript, Eslint, Prettier, and the following is run when validating each pull request:
+
+```sh
+npm run validateCode
+```
+
+## Testing
+
+We write unit tests on critical functionality. Test files should suffixed by `*.test.tsx`.
+
+```sh
+npm run test
+```
+
+## Construction
+
+```sh
+ # Build Storybook static files, and deploy for Vercel for pull requests and merging for main
+npm run build:storybook
+
+# Build library (excluding Storybook) - This step is executed before `npm publish`
+npm run build:lib
+```
+
+## PR's & Package Release
+
+This repo uses [Release Please](https://github.com/googleapis/release-please) for automating CHANGELOG generation, the creation of GitHub releases, and version bumping. Release Please assumes you are using [Conventional Commit messages](https://www.conventionalcommits.org).
+
+To bump version and release the package to [npmjs.com/package/@equinor/rdf-graph](https://www.npmjs.com/package/@equinor/rdf-graph), squash merge a pull request to "main". Make sure the commit message follows the Conventional Commit specification. A new release PR will be created automatically, and when this PR is merged, a github release will created and the CHANGELOG.md will be updated. A successful github release triggers the deployment of the package.
+
+The most important commit message prefixes you should have in mind are:
+
+- **fix:** which represents bug fixes, and correlates to a **SemVer PATCH**.
+- **feat:** which represents a new feature, and correlates to a **SemVer MINOR**.
+- **feat!:, or fix!:, refactor!:, etc.,** which represent a breaking change (indicated by the !) and will result in a **SemVer MAJOR**.
+
+For any prefix besides **feat**, **SemVer PATCH** version is used for bumps unless there is a breaking change.
+
+### Commit Message Prefixes
+
+- **feat:** A new feature
+- **fix:** A bug fix
+- **docs:** Documentation only changes
+- **style:** Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)
+- **refactor:** A code change that neither fixes a bug nor adds a feature
+- **perf:** A code change that improves performance
+- **test:** Adding missing tests or correcting existing tests
+- **build:** Changes that affect the build system or external dependencies (example scopes: vite, npm)
+- **ci:** Changes to our CI configuration files and scripts (example scopes: Travis, Circle, BrowserStack, SauceLabs)
+- **chore:** Other changes that don't modify src or test files
+- **revert:** Reverts a previous commit
+
+### Commit Message Examples
+
+- feat(grpc): add new endpoint
+- refactor: combine class A and class B
+- ci: update pull request linter
+- style: change format of strings
+- feat!: rename core react component prop
