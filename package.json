@@ -130,7 +130,7 @@
 		"@types/react-dom": "^18.0.6",
 		"@types/three": "^0.144.0",
 		"@vitejs/plugin-react": "^2.1.0",
-		"eslint": "^8.23.0",
+		"eslint": "^8.26.0",
 		"eslint-config-react-app": "^7.0.1",
 		"gojs": "^2.2.16",
 		"gojs-react": "^1.1.1",
