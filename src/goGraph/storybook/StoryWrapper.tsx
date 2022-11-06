@@ -11,6 +11,7 @@ import { getConnectorSymbol, SymbolLibraryKey } from '../../symbol-api';
 import { UiNodeSymbol } from '../../core/ui/applyPatch';
 import { ConnectorSymbolToUiNodeSymbol } from '../../core/ui/defaultSymbolProvider';
 import { defaultInitDiagram } from '../components/goGraph/defaultInit';
+import { RdfGraphError } from '../../core';
 
 export type GoStoryWrapperProps = {
 	turtleString: string;
@@ -57,6 +58,12 @@ export const StoryWrapper = ({ turtleString, selectionEffect }: GoStoryWrapperPr
 		model.setDataProperty(model.modelData, 'portOpacity', showSymbolPorts ? 1 : 0);
 	}, [showSymbolPorts]);
 
+	const rdfGraphErrorHandler = (error: RdfGraphError) => {
+		console.log('RdfGraphError: ', error);
+		diagramRef.current.clear();
+		dispatch({ type: 'reset' });
+	};
+
 	return (
 		<div>
 			<Button onClick={loadTurtle}>Load turtle</Button>
@@ -70,6 +77,7 @@ export const StoryWrapper = ({ turtleString, selectionEffect }: GoStoryWrapperPr
 				containerStyle={diagramStyle}
 				symbolProvider={symbolProviderJson}
 				selectionEffect={handleSelection}
+				onErrorCallback={rdfGraphErrorHandler}
 			/>
 		</div>
 	);

@@ -19,7 +19,9 @@ export const GoGraph: FC<GoGraphProps> = (props) => {
 
 	const diagramRef = useRef<go.Diagram>(initDiagram());
 
-	const patchHandlerRef = useRef<IUiPatchHandler>(new GoJsPatchHandler(diagramRef.current));
+	const patchHandlerRef = useRef<IUiPatchHandler>(
+		new GoJsPatchHandler(diagramRef.current, props.onErrorCallback)
+	);
 
 	useEffect(() => {
 		applyPatch(props.graphPatch, patchHandlerRef.current);

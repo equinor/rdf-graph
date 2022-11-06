@@ -74,6 +74,11 @@ const reducer: (state: RdfState, action: RdfAction) => RdfState = (state, action
 				rdfStore: new Store<Quad, Quad, Quad, Quad>(),
 				rdfPatch: clearing,
 			};
+		case 'reset':
+			return {
+				rdfStore: new Store<Quad, Quad, Quad, Quad>(),
+				rdfPatch: [],
+			};
 	}
 };
 
