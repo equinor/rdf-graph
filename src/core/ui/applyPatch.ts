@@ -1,4 +1,5 @@
 import { GraphAssertion, GraphPatch } from '../types';
+import { applyAssertion } from './applyAssertion';
 
 export type Point = { x: number; y: number };
 
@@ -114,78 +115,9 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	let currentAssertion: GraphAssertion | undefined;
 
 	try {
-		for (const { action, assertion } of graphPatch) {
-			currentAssertion = { action, assertion };
-			switch (assertion.type) {
-				case 'node':
-					if (action === 'add') ui.addNode(assertion.id);
-					else ui.removeNode(assertion.id);
-					break;
-				case 'edge':
-					if (action === 'add')
-						ui.addEdge({
-							edgeId: assertion.id,
-							fromNode: assertion.source,
-							fromConnector: assertion.sourceConnector,
-							toNode: assertion.target,
-							toConnector: assertion.targetConnector,
-						});
-					else ui.removeEdge(assertion.id);
-					break;
-				case 'connector':
-					if (action === 'add') ui.addConnector(assertion.id, assertion.node.id);
-					else ui.removeNode(assertion.id);
-					break;
-				case 'property':
-					switch (assertion.target.type) {
-						case 'node':
-							if (action === 'add')
-								ui.addNodeProperty(
-									assertion.target.id,
-									assertion.key as keyof UiNodePatchProperties,
-									assertion.value
-								);
-							else
-								ui.removeNodeProperty(
-									assertion.target.id,
-									assertion.key as keyof UiNodePatchProperties
-								);
-							break;
-						case 'connector':
-							if (action === 'add')
-								ui.addConnectorProperty(
-									assertion.target.id,
-									assertion.target.node.id,
-									assertion.key as keyof UiConnectorPatchProperties,
-									assertion.value
-								);
-							else
-								ui.removeConnectorProperty(
-									assertion.target.id,
-									assertion.target.node.id,
-									assertion.key as keyof UiConnectorPatchProperties
-								);
-							break;
-						case 'edge':
-							if (action === 'add')
-								ui.addEdgeProperty(
-									assertion.target.id,
-									assertion.key as keyof UiEdgePatchProperties,
-									assertion.value
-								);
-							else
-								ui.removeEdgeProperty(
-									assertion.target.id,
-									assertion.key as keyof UiEdgePatchProperties
-								);
-							break;
-						default:
-							break;
-					}
-					break;
-				default:
-					break;
-			}
+		for (const assertion of graphPatch) {
+			currentAssertion = assertion;
+			applyAssertion(ui, assertion);
 		}
 	} catch (error) {
 		let message;
@@ -204,7 +136,8 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	}
 
 	if (patchError) {
-		ui.onPatchError.call(ui, patchError);
+		//ui.onPatchError.call(ui, patchError);
+		ui.onPatchError(patchError);
 	}
 
 	ui.onAfterApplyPatch?.call(ui);
