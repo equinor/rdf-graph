@@ -162,12 +162,13 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(
-		id: string,
-		nodeId: string,
-		prop: P
+		_id: string,
+		_nodeId: string,
+		_prop: P
 	): void {
-		console.warn('<removeConnectorProperty> not implemented.');
-		console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}`);
+		// May log this stuff to future logger
+		// console.warn('<removeConnectorProperty> not implemented.');
+		// console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}`);
 	}
 
 	addEdge(edge: UiEdge): void {
