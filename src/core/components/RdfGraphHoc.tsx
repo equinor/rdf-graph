@@ -8,7 +8,13 @@ import { RdfStateProps } from '../state/RdfState.types';
 export function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphProps>>(
 	Component: FC<P>
 ): FC<R & RdfStateProps> {
-	return ({ rdfStore: _rdfStore, rdfPatch, selectionEffect, ...props }: RdfStateProps) => {
+	return ({
+		rdfStore: _rdfStore,
+		rdfPatch,
+		selectionEffect,
+		onErrorCallback,
+		...props
+	}: RdfStateProps) => {
 		const prevSelectionEffect = useRef<PropertyAssertion[]>([]);
 		const forwardSelection = (selection: GraphSelection) => {
 			if (!selectionEffect) return [];
@@ -38,7 +44,11 @@ export function createRdfGraphHoc<P extends GraphProps, R = Omit<P, keyof GraphP
 			update(newGraphState);
 		}, [rdfPatch]);
 
-		return <Component {...({ ...state, ...props, selectionEffect: forwardSelection } as P)} />;
+		return (
+			<Component
+				{...({ ...state, ...props, onErrorCallback, selectionEffect: forwardSelection } as P)}
+			/>
+		);
 	};
 }
 
