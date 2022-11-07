@@ -136,7 +136,6 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	}
 
 	if (patchError) {
-		//ui.onPatchError.call(ui, patchError);
 		ui.onPatchError(patchError);
 	}
 
