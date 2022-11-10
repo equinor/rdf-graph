@@ -1,6 +1,10 @@
+import { Quad, Store } from 'n3';
+export { Quad, Store };
 export { turtle2RdfTriples } from './mapper/turtle2RdfTriples';
 export * from './components/RdfGraphHoc';
 export { useRdfActionReducer } from './state/useRdfState';
-export * from './types';
+export { patchGraph } from './state/patchGraph';
+export type { GraphStateProps } from './state/GraphStateProps';
 export * from './state/RdfState.types';
+export * from './types';
 export * from './ui';

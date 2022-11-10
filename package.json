@@ -40,9 +40,7 @@
 		"storybook": "start-storybook -p 3000",
 		"clean:dist": "rimraf dist/",
 		"build:storybook": "build-storybook",
-		"build:files": "tsc --noEmit && node build-lib.mjs",
-		"build:definitions": "tsc --project tsconfig.build.json",
-		"build:lib": "npm run clean:dist && npm run build:files && npm run build:definitions",
+		"build:lib": "npm run clean:dist && tsc --project tsconfig.build.json",
 		"prettier:check": "prettier --check .",
 		"prettier:write": "prettier --write .",
 		"prepublishOnly": "npm run build:lib",
@@ -52,36 +50,12 @@
 		"npm": ">= 8.3.1",
 		"node": ">= 16.14.0"
 	},
-	"type": "module",
-	"types": "./core.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/types/core/index.d.ts",
-			"import": "./dist/es/core.es.js",
-			"require": "./dist/umd/core.umd.js"
-		},
-		"./goGraph": {
-			"types": "./dist/types/goGraph/index.d.ts",
-			"import": "./dist/es/goGraph.es.js",
-			"require": "./dist/umd/goGraph.umd.js"
-		},
-		"./cyGraph": {
-			"types": "./dist/types/cyGraph/index.d.ts",
-			"import": "./dist/es/cyGraph.es.js",
-			"require": "./dist/umd/cyGraph.umd.js"
-		},
-		"./f3dGraph": {
-			"types": "./dist/types/f3dGraph/index.d.ts",
-			"import": "./dist/es/f3dGraph.es.js",
-			"require": "./dist/umd/f3dGraph.umd.js"
-		}
-	},
+	"main": "dist/main.js",
+	"module": "dist/main.js",
 	"files": [
 		"dist",
-		"core.d.ts",
-		"goGraph.d.ts",
-		"cyGraph.d.ts",
-		"f3dGraph.d.ts"
+		"src",
+		"CHANGELOG.md"
 	],
 	"browser": {
 		"fs": false
