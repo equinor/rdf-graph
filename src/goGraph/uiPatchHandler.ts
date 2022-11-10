@@ -1,6 +1,9 @@
 import * as go from 'gojs';
+import { RdfGraphError } from '../core';
+
 import {
 	IUiPatchHandler,
+	PatchError,
 	Point,
 	UiConnectorPatchProperties,
 	UiEdge,
@@ -42,7 +45,10 @@ const connectorPropMap: Record<keyof UiConnectorPatchProperties, string> = {
 export class GoJsPatchHandler implements IUiPatchHandler {
 	#zoomToFitTimeout: NodeJS.Timeout | null = null;
 	#initialPatchBurst: 'READY' | 'RECEIVING' | 'DONE' = 'READY';
-	constructor(readonly diagram: go.Diagram) {}
+	constructor(
+		readonly diagram: go.Diagram,
+		readonly onErrorCallback?: (error: RdfGraphError) => void
+	) {}
 
 	addNode(id: string): void {
 		const n: BaseNodeData = {
@@ -156,12 +162,13 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	}
 
 	removeConnectorProperty<P extends keyof UiConnectorPatchProperties>(
-		id: string,
-		nodeId: string,
-		prop: P
+		_id: string,
+		_nodeId: string,
+		_prop: P
 	): void {
-		console.warn('<removeConnectorProperty> not implemented.');
-		console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}`);
+		// May log this stuff to future logger
+		// console.warn('<removeConnectorProperty> not implemented.');
+		// console.warn(`id: ${id}, nodeId: ${nodeId}, prop: ${prop}`);
 	}
 
 	addEdge(edge: UiEdge): void {
@@ -213,6 +220,19 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		}
 
 		this.diagram.model.setDataProperty(linkData, edgePropKey, newValue);
+	}
+
+	onPatchError(error: PatchError) {
+		if (this.onErrorCallback !== undefined) {
+			this.onErrorCallback.call(undefined, {
+				type: 'ASSERTION',
+				message: error.message,
+				assertion: error.assertion,
+				origin: error.error,
+			});
+		} else {
+			console.error('RdfGraph Assertion Error:', error);
+		}
 	}
 
 	onBeforeApplyPatch() {

@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.13.0](https://github.com/equinor/rdf-graph/compare/v0.12.0...v0.13.0) (2022-11-07)
+
+
+### Features
+
+* add error handling system/callback ([#288](https://github.com/equinor/rdf-graph/issues/288)) ([7de4d4d](https://github.com/equinor/rdf-graph/commit/7de4d4dd08c086154afc871ca63609a7ef6a544b))
+
+
+### Documentation
+
+* add note ([2d50437](https://github.com/equinor/rdf-graph/commit/2d5043752c86671d1fe5b14b766d0e1723fca9a8))
+* update dev doc ([764a963](https://github.com/equinor/rdf-graph/commit/764a9630f273ec0c1fbe381902df445175ab7745))
+
+
+### For Developers
+
+* add bot pr validation action ([20ee969](https://github.com/equinor/rdf-graph/commit/20ee969e03edd8481701be5b81094d4cb1909d81))
+* add lefthook and remove husky [skip ci] ([ea34d64](https://github.com/equinor/rdf-graph/commit/ea34d64b14c597dec1c1e55adbaaf5d39d298b32))
+* add missing prefixes to release please action ([3851e98](https://github.com/equinor/rdf-graph/commit/3851e98c27ab0c230fabc4a516d28291f2158e10))
+* apply prettier rules globally ([#271](https://github.com/equinor/rdf-graph/issues/271)) [skip ci] ([ae71fb3](https://github.com/equinor/rdf-graph/commit/ae71fb3d9b0243d85a55183a18e6ff4c3be22595))
+* change default branch [skip ci] ([f10918b](https://github.com/equinor/rdf-graph/commit/f10918bbbf9fe6b940521d99a231e128f0a1be3b))
+* debug print ([e501d6e](https://github.com/equinor/rdf-graph/commit/e501d6ef3b688ca366d8145efeac7e793c2ab673))
+* **deps-dev:** bump @equinor/eds-core-react from 0.20.4 to 0.24.0 ([#273](https://github.com/equinor/rdf-graph/issues/273)) ([3210efd](https://github.com/equinor/rdf-graph/commit/3210efd2654af9f5f488a6cf087d0c2e742f6fd7))
+* **deps-dev:** bump @rollup/plugin-commonjs from 22.0.2 to 23.0.0 ([#259](https://github.com/equinor/rdf-graph/issues/259)) ([72a0537](https://github.com/equinor/rdf-graph/commit/72a05371168761d8f37b8400365ccacc44351c90))
+* **deps-dev:** bump @rollup/plugin-node-resolve from 14.1.0 to 15.0.0 ([#275](https://github.com/equinor/rdf-graph/issues/275)) ([6c61532](https://github.com/equinor/rdf-graph/commit/6c615327879bb03ce6faba9b74578ad142e69e38))
+* **deps-dev:** bump @rollup/plugin-typescript from 8.5.0 to 9.0.1 ([#274](https://github.com/equinor/rdf-graph/issues/274)) ([4704647](https://github.com/equinor/rdf-graph/commit/4704647e4de56584e5092a615b0d48fbd0523d1d))
+* **deps:** bump react-cytoscapejs from 1.2.1 to 2.0.0 ([#262](https://github.com/equinor/rdf-graph/issues/262)) ([c8817ae](https://github.com/equinor/rdf-graph/commit/c8817aef7433c74f14db3eb75da0ea3734623800))
+* **deps:** bump three from 0.144.0 to 0.145.0 ([#263](https://github.com/equinor/rdf-graph/issues/263)) ([910280f](https://github.com/equinor/rdf-graph/commit/910280fd3bfef59ea23144bc935df1101fa1dc1f))
+* **docs:** update readme and create dev docs ([87afd22](https://github.com/equinor/rdf-graph/commit/87afd224c0e52b761865a1c7af8ea7ebbd6ce8b4))
+* ignore bots for release ([#270](https://github.com/equinor/rdf-graph/issues/270)) [skip ci] ([239588f](https://github.com/equinor/rdf-graph/commit/239588fb2fd25b89058b0afd5c82534c369bcc93))
+* peerDependencies react 18 ([#286](https://github.com/equinor/rdf-graph/issues/286)) ([145db41](https://github.com/equinor/rdf-graph/commit/145db4125dbde68d4e846c2feb861e49d7685f4b))
+* **prettier:** add docs folder to ignore list ([93c51e9](https://github.com/equinor/rdf-graph/commit/93c51e92fcf4686387db051771fcb27360d82132))
+* **releaseplease:** reorder categories in auto PR ([eb761fa](https://github.com/equinor/rdf-graph/commit/eb761faa2b98f6e09bceceb33c722e8567c3d7fe))
+* remove debug print [skip ci] ([780b268](https://github.com/equinor/rdf-graph/commit/780b268835e6f29bb6c2e2c1d219aca43e0b7733))
+* remove unused deps [skip ci] ([31d7e65](https://github.com/equinor/rdf-graph/commit/31d7e6524978a30a69ac9e072687c0005fcba677))
+* Revert peerDependencies react 18 ([6336402](https://github.com/equinor/rdf-graph/commit/633640287c43767b161a3387acd4a35d52071479))
+* update changelog ([92834c0](https://github.com/equinor/rdf-graph/commit/92834c0cf294ac482ff74c5809d869abcca4e1e6))
+* update debug print [skip ci] ([0de068a](https://github.com/equinor/rdf-graph/commit/0de068aa1a12a35cf08d4bd0f48869c2b8a8858f))
+* update package.json [skip ci] ([3ab662b](https://github.com/equinor/rdf-graph/commit/3ab662be13541312806128dd1580a2f049964756))
+* update readme [skip ci] ([53d2d9f](https://github.com/equinor/rdf-graph/commit/53d2d9f005af80b2ef0ebea9c16ddf304a64ffd4))
+* update release action ([96fab7c](https://github.com/equinor/rdf-graph/commit/96fab7c6c60e125358c7520ac0d2d6d5ea6eed15))
+
 ## [0.12.0](https://github.com/equinor/rdf-graph/compare/v1.0.0...v0.12.0) (2022-10-17)
 
 
