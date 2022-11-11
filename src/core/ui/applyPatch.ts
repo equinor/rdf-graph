@@ -113,11 +113,12 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 
 	let patchError: PatchError | null = null;
 	let currentAssertion: GraphAssertion | undefined;
-
+	let n = 0;
 	try {
 		for (const assertion of graphPatch) {
 			currentAssertion = assertion;
 			applyAssertion(ui, assertion);
+			n++;
 		}
 	} catch (error) {
 		let message;
@@ -138,6 +139,8 @@ export function applyPatch(graphPatch: GraphPatch, ui: IUiPatchHandler): void {
 	if (patchError) {
 		ui.onPatchError(patchError);
 	}
+
+	console.log(`${n} assertions applied`);
 
 	ui.onAfterApplyPatch?.call(ui);
 }

@@ -1,10 +1,10 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"outDir": "dist/types",
+		"outDir": "dist",
 		"noEmit": false,
 		"declaration": true,
-		"emitDeclarationOnly": true,
+		"emitDeclarationOnly": false,
 		"sourceMap": true
 	},
 	"exclude": ["**/storybook", "**/test", "**/tests", "vite.config.ts"]
