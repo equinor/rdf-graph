@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/equinor/rdf-graph/compare/v0.13.0...v0.14.0) (2022-11-11)
+
+
+### Features
+
+* simplify package build output ([#292](https://github.com/equinor/rdf-graph/issues/292)) ([1d34278](https://github.com/equinor/rdf-graph/commit/1d34278ba248c356d87bf22c44fb44c1b28ff71d))
+
 ## [0.13.0](https://github.com/equinor/rdf-graph/compare/v0.12.0...v0.13.0) (2022-11-07)
 
 
