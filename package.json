@@ -75,7 +75,8 @@
 	"peerDependencies": {
 		"gojs": ">=2.2.16",
 		"react": "^16.14.0 || ^17.0.0",
-		"react-dom": "^16.14.0 || ^17.0.0"
+		"react-dom": "^16.14.0 || ^17.0.0",
+		"gojs-react": "^1.1.1"
 	},
 	"dependencies": {
 		"3d-force-graph": "^1.70.13",
