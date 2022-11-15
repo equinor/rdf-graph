@@ -243,7 +243,6 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 	onAfterApplyPatch() {
 		this.diagram.commitTransaction(this.transactionId);
 		console.log(`${this.transactionId}: FINISHED`);
-		this.diagram.zoomToFit();
 
 		// Handy console logs for debug.
 		// console.log({ ...this.diagram.model.nodeDataArray });
