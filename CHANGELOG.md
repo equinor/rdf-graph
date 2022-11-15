@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.1](https://github.com/equinor/rdf-graph/compare/v0.14.0...v0.14.1) (2022-11-15)
+
+
+### Bug Fixes
+
+* remove zoomToFit after patch ([ca3be02](https://github.com/equinor/rdf-graph/commit/ca3be020ae49e95a97c186a49bfcd38429ef6192))
+
 ## [0.14.0](https://github.com/equinor/rdf-graph/compare/v0.13.0...v0.14.0) (2022-11-11)
 
 
