@@ -15,7 +15,7 @@ import { GraphStateProps } from './GraphStateProps';
 import {
 	colorKey,
 	labelKey,
-	compoundNodeKey,
+	parentKey,
 	connectorKey,
 	rotationKey,
 	hasSvgIri,
@@ -24,7 +24,7 @@ import {
 	hasConnectorSuffixIri,
 	labelIri,
 	colorIri,
-	compoundNodeIri,
+	hasParentIri,
 	simpleSymbolKey,
 	hasSimpleSymbolIri,
 	nodeTemplateKey,
@@ -111,7 +111,7 @@ const dataProps = [
 	directionKey,
 ] as const;
 
-const nodeProps = [compoundNodeKey, connectorKey] as const;
+const nodeProps = [parentKey, connectorKey] as const;
 type ValueProp = typeof dataProps[number];
 type NodeProp = typeof nodeProps[number];
 type Dep = [...NodeProp[], NodeProp | ValueProp];
@@ -130,7 +130,7 @@ const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
 		[connectorKey, connectorDirectionKey],
 		[connectorKey, connectorRelativePositionKey],
 	],
-	[compoundNodeKey]: [],
+	[parentKey]: [],
 	[labelKey]: [],
 	[colorKey]: [],
 	[simpleSymbolKey]: [],
@@ -147,6 +147,7 @@ const predicate2prop: { [index: string]: NodeProp | ValueProp } = {
 	[hasSimpleSymbolIri]: simpleSymbolKey,
 	[hasNodeTemplateIri]: nodeTemplateKey,
 	[hasDirectionIri]: directionKey,
+	[hasParentIri]: parentKey,
 };
 
 const edgePredicate2prop: { [index: string]: ValueProp } = {
@@ -161,7 +162,6 @@ function* propagator(a: AbstractNode, prop: NodeProp | ValueProp) {
 		let currDep = queue.shift()!;
 		while (queue.length > 0) {
 			if (Array.isArray(currNode)) {
-				// eslint-disable-next-line no-loop-func
 				currNode = currNode.map((n) => n[currDep]).filter((n) => n);
 			} else {
 				currNode = currNode[currDep] as AbstractNode;
@@ -227,10 +227,9 @@ const propInvalidations: {
 	[simpleSymbolKey]: invalidator(simpleSymbolKey, hasSimpleSymbolIri),
 	[nodeTemplateKey]: invalidator(nodeTemplateKey, hasNodeTemplateIri),
 	[connectorKey]: (g: AbstractNode) => propagator(g, connectorKey),
-	[compoundNodeKey]: function* (g: AbstractNode) {
-		const declared = (g.outgoing.get(compoundNodeIri) || [undefined])[0] as GraphNode | undefined;
+	[parentKey]: function* (g: AbstractNode) {
+		const declared = (g.outgoing.get(hasParentIri) || [undefined])[0] as GraphNode | undefined;
 		const prev = g.parent;
-
 		if (declared === prev) return;
 		if (prev)
 			yield {
@@ -238,7 +237,7 @@ const propInvalidations: {
 				assertion: {
 					type: 'property',
 					target: g,
-					key: compoundNodeKey,
+					key: parentKey,
 					value: prev,
 				},
 			};
@@ -251,11 +250,11 @@ const propInvalidations: {
 				assertion: {
 					type: 'property',
 					target: g,
-					key: compoundNodeKey,
+					key: parentKey,
 					value: g.parent,
 				},
 			};
-		yield* propagator(g, compoundNodeKey);
+		yield* propagator(g, parentKey);
 	},
 };
 
@@ -474,6 +473,17 @@ function* graphAssertion<M extends GraphState>(
 				// not part of visual edges, populate connector-array in lieu of yielding a GraphEdge
 				sNode[connectorKey] = sNode[connectorKey] || [];
 				sNode[connectorKey]!.push(oNode as GraphConnector);
+			} else if (pTerm === hasParentIri) {
+				// Mark object node as a group instead of yielding edge
+				yield {
+					action: 'add',
+					assertion: {
+						type: 'property',
+						key: 'isGroup',
+						value: true,
+						target: oNode,
+					},
+				};
 			} else if (pTerm === typeIri) {
 				// not part of visual edges, for now do nothing more than keep in property-graph
 			} else if (sNode.type === 'metadata') {

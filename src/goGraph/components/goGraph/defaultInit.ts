@@ -1,4 +1,5 @@
 import * as go from 'gojs';
+import { createDefaultGroupTemplate } from '../../templates/default-group-template';
 import { createDefaultLinkTemplate } from '../../templates/default-link-template';
 import { createDefaultNodeTemplate } from '../../templates/default-node-template';
 import { createSymbolNodeTemplate } from '../../templates/symbol-node-template';
@@ -27,6 +28,7 @@ export function defaultInitDiagram() {
 			.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
 			.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
 		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
+		groupTemplate: createDefaultGroupTemplate(),
 	});
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;

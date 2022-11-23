@@ -1,4 +1,4 @@
-import { GraphAssertion, GraphPatch } from '../types';
+import { GraphAssertion, GraphNode, GraphPatch } from '../types';
 import { applyAssertion } from './applyAssertion';
 
 export type Point = { x: number; y: number };
@@ -6,6 +6,7 @@ export type Point = { x: number; y: number };
 export type UiNodeShape = 'Circle' | 'Square';
 
 export interface UiNodePatchProperties {
+	parent: GraphNode;
 	backgroundColor: string;
 	borderColor: string;
 	highlightBorderColor: string;
@@ -18,6 +19,7 @@ export interface UiNodePatchProperties {
 	symbolWidth: number;
 	symbolHeight: number;
 	symbolGeometry: string;
+	isGroup: boolean;
 }
 
 export interface UiEdge {

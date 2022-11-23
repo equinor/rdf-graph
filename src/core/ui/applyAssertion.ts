@@ -25,7 +25,7 @@ export function applyAssertion(ui: IUiPatchHandler, { action, assertion }: Graph
 			break;
 		case 'connector':
 			if (action === 'add') ui.addConnector(assertion.id, assertion.node.id);
-			else ui.removeNode(assertion.id);
+			else ui.removeConnector(assertion.id, assertion.node.id);
 			break;
 		case 'property':
 			switch (assertion.target.type) {

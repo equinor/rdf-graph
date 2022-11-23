@@ -1,5 +1,5 @@
 import * as go from 'gojs';
-import { RdfGraphError } from '../core';
+import { GraphNode, RdfGraphError } from '../core';
 
 import {
 	IUiPatchHandler,
@@ -14,6 +14,7 @@ import {
 import { BaseNodeData, EdgeData, NodeUiCategory, NodeUiItemCategory, PortData } from './types';
 
 const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
+	parent: 'parent',
 	backgroundColor: 'fill',
 	borderColor: 'stroke',
 	highlight: 'highlight',
@@ -26,6 +27,7 @@ const nodePropMap: Record<keyof UiNodePatchProperties, string> = {
 	nodeTemplate: 'nodeTemplate',
 	symbolHeight: 'symbolHeight',
 	symbolWidth: 'symbolWidth',
+	isGroup: 'isGroup',
 };
 
 const edgePropMap: Record<keyof UiEdgePatchProperties, string> = {
@@ -69,7 +71,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 		prop: P,
 		value: UiNodePatchProperties[P]
 	): void {
-		const nodeData = this._getNodeData(nodeId) as BaseNodeData;
+		const nodeData = this._getNodeData(nodeId) as BaseNodeData | null;
 		if (!nodeData) return;
 
 		if (prop === 'symbol') {
@@ -82,12 +84,33 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			return;
 		}
 
+		if (prop === 'parent') {
+			const p = value as GraphNode;
+			this.diagram.model.setDataProperty(nodeData, 'group', p.target);
+			return;
+		}
+
+		if (prop === 'isGroup') {
+			if (nodeData === undefined) {
+				this.diagram.model.addNodeData({ id: nodeId, isGroup: true });
+			} else if (nodeData.isGroup === undefined) {
+				this.diagram.model.removeNodeData(nodeData);
+				this.diagram.model.addNodeData({ ...nodeData, isGroup: true });
+			}
+			return;
+		}
+
 		this.diagram.model.setDataProperty(nodeData, nodePropMap[prop], value);
 	}
 
 	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void {
 		const nodeData = this._getNodeData(nodeId);
 		if (!nodeData) return;
+
+		if (prop === 'parent') {
+			this.diagram.model.setDataProperty(nodeData, 'group', undefined);
+			return;
+		}
 
 		const nodePropKey = nodePropMap[prop];
 		const currentValue = nodeData[nodePropKey];

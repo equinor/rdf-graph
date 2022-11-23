@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import { GoStoryWrapperProps, StoryWrapper } from './StoryWrapper';
 
 import { martinsTurtle } from './data/martins_verden_turtle';
+import { systems_ttl } from './data/systems_ttl';
 import { connectorSymbols_ttl } from './data/connectorSymbols_ttl';
 import { GoGraph } from '../components/goGraph/GoGraph';
 
@@ -33,3 +34,9 @@ connectorSymbols.args = {
 	turtleString: connectorSymbols_ttl,
 } as GoStoryWrapperProps;
 connectorSymbols.storyName = `Connector symbols`;
+
+export const systems = Template.bind({});
+systems.args = {
+	turtleString: systems_ttl,
+} as GoStoryWrapperProps;
+systems.storyName = `Grouping`;

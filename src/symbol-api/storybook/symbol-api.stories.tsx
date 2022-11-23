@@ -57,7 +57,7 @@ function getSymbolsTurtle(): string {
 		}
 	}
 
-	console.log(turtle);
+	//console.log(turtle);
 
 	return turtle;
 }
