@@ -30,6 +30,7 @@ export type BaseNodeData = {
 	symbolHeight?: number;
 	symbolWidth?: number;
 	symbolConnectors?: SymbolConnector[];
+	isGroup?: boolean;
 };
 
 export type PortData = {

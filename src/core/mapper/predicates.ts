@@ -3,7 +3,7 @@ import { TwoWayMap } from '../utils';
 
 const { namedNode } = DataFactory;
 
-export const compoundNodeIri = 'http://rdf.equinor.com/ui/parent';
+export const hasParentIri = 'http://rdf.equinor.com/ui/hasParent';
 export const labelIri = 'http://www.w3.org/2000/01/rdf-schema#label';
 export const colorIri = 'http://rdf.equinor.com/ui/color';
 export const hasConnectorIri = 'http://rdf.equinor.com/ui/hasConnector';
@@ -17,7 +17,7 @@ export const hasDirectionIri = 'http://rdf.equinor.com/ui/hasDirection';
 export const typeIri = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 
 // keys linked to predicates
-export const compoundNodeKey = 'parent';
+export const parentKey = 'parent';
 export const labelKey = 'label';
 export const colorKey = 'color';
 export const svgKey = 'svgId';
@@ -34,7 +34,7 @@ export const connectorNameKey = 'connectorName';
 export const connectorDirectionKey = 'connectorDirection';
 export const connectorRelativePositionKey = 'connectorRelativePosition';
 
-export const compoundNodePredicate = namedNode(compoundNodeIri);
+export const hasParentPredicate = namedNode(hasParentIri);
 export const labelPredicate = namedNode(labelIri);
 export const colorPredicate = namedNode(colorIri);
 export const hasConnectorPredicate = namedNode(hasConnectorIri);
@@ -44,7 +44,7 @@ export const hasConnectorSuffixPredicate = namedNode(hasConnectorSuffixIri);
 export const rotationPredicate = namedNode(rotationIri);
 
 const dict: { [key: string]: string } = {
-	[compoundNodeIri]: compoundNodeKey,
+	[hasParentIri]: parentKey,
 	[labelIri]: labelKey,
 	[colorIri]: colorKey,
 	[hasSimpleSvgIri]: simpleSvgKey,
@@ -60,7 +60,7 @@ export const imageHeightKey = 'imageHeight';
 export const relativePositionXKey = 'relativePositionX';
 export const relativePositionYKey = 'relativePositionY';
 
-export const parentPredicates = [compoundNodeIri];
+export const parentPredicates = [hasParentIri];
 export const childPredicates = [hasConnectorIri];
 
 export const predicateMap = new TwoWayMap(dict);
