@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/equinor/rdf-graph/compare/v0.14.1...v0.15.0) (2022-11-24)
+
+
+### Features
+
+* hasParent predicate and gojs groups ([#299](https://github.com/equinor/rdf-graph/issues/299)) ([e9c5faa](https://github.com/equinor/rdf-graph/commit/e9c5faa6dcde426ffb1e4f03de3d35c87aad03ba))
+
 ## [0.14.1](https://github.com/equinor/rdf-graph/compare/v0.14.0...v0.14.1) (2022-11-15)
 
 
