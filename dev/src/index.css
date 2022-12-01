@@ -1,5 +1,6 @@
 :root {
-	font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+	/* font-family: Inter, Avenir, Helvetica, Arial, sans-serif; */
+	font-family: Equinor;
 	font-size: 16px;
 	line-height: 24px;
 	font-weight: 400;
@@ -13,6 +14,8 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
+
+	--menu-height: 80px;
 }
 
 a {
@@ -26,10 +29,10 @@ a:hover {
 
 body {
 	margin: 0;
-	display: flex;
+	/* display: flex;
 	place-items: center;
 	min-width: 320px;
-	min-height: 100vh;
+	min-height: 100vh; */
 }
 
 h1 {

@@ -1,0 +1,30 @@
+#root {
+	/* max-width: 1280px;
+	margin: 0 auto;
+	padding: 2rem;
+	text-align: center; */
+}
+
+.wrapper {
+	padding: 0;
+	margin: 0;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+	/* align-content: stretch; */
+}
+
+.menu {
+	height: var(--menu-height);
+	/* width: 100%; */
+	background: white;
+}
+
+.uiContainer {
+	height: calc(100vh - var(--menu-height));
+}
+
+.overlayContent {
+	position: absolute;
+}

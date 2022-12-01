@@ -1,20 +1,28 @@
 import { useParams, Outlet } from 'react-router-dom';
-import './App.css';
+import appCss from './App.module.css';
+import { Menu } from './components/menu/Menu';
 import { UiKey } from './setup';
 
 function App() {
 	const { ui } = useParams<{ ui: UiKey }>();
 
 	return (
-		<div className="App">
-			{ui !== undefined
-				? {
-						fg3d: <h1>f3d</h1>,
-						go: <h1>GO</h1>,
-						cy: <h1>CY</h1>,
-				  }[ui]
-				: null}
-			<Outlet />
+		<div className={appCss.wrapper}>
+			<div className={appCss.menu}>
+				<Menu ui={ui ?? 'go'} />
+			</div>
+			<div className={appCss.uiContainer}>
+				{ui !== undefined
+					? {
+							fg3d: <h1>f3d</h1>,
+							go: <h1>GO</h1>,
+							cy: <h1>CY</h1>,
+					  }[ui]
+					: null}
+			</div>
+			<div className={appCss.overlayContent}>
+				<Outlet />
+			</div>
 		</div>
 	);
 }
