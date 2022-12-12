@@ -11,7 +11,7 @@ export type GraphElementBase<TNode extends ElementType> = {
 	data: Map<string, string>;
 };
 
-type NodeVariant = 'default' | 'connector' | 'group';
+type NodeVariant = 'default' | 'connector' | 'group' | 'engsym';
 
 export type BasicProps = Partial<{
 	label: string;
@@ -27,11 +27,38 @@ type BaseNode<TVariant extends NodeVariant> = GraphElementBase<'node'> & {
 	};
 };
 
-export type DefaultNode = BaseNode<'default'> & {
+export type DefaultNode = BaseNode<'default'>
+
+export type Symbol = {
+	width: number;
+	height: number;
+	angle: number;
+	svg: string;
+	/** Symbol as single svg <path> element value */
+	geometry: string;
+	connectors: UiNodeConnector[];
+}
+
+export interface UiNodeConnector {
+	id: string;
+	width: number;
+	height: number;
+	direction: number;
+	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
+}
+
+export type Point = { x: number; y: number };
+
+
+export type EngineeringSymbolNode = BaseNode<'engsym'> & {
 	props: {
 		connectors: [];
-		connectorSymbol: string;
+		symbolId?: string;
+		rotation: number;
+
 	};
+
+
 };
 
 export type ConnectorNode = BaseNode<'connector'> & {
@@ -58,19 +85,6 @@ export type GraphProperty<TTarget extends GraphElement> = {
 	value: unknown;
 };
 
-//1
-<somesubject> rdfs:label "hei", "hei" .
-
-//2
-<somesubject> rdfs:label "hei" .
-<somesubject> rdfs:label "hallo" .
-
-//3
-<somesubject> rdfs:label "hei" .
-<somesubject> rdfs:label "hei" .
-
-//4
-<somesubject> rdfs:label "hei" .
 
 // GraphData property can hold any key - value pairs
 export type GraphDataProperty = {

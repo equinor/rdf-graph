@@ -333,7 +333,7 @@ function* graphAssertion<M extends GraphState>(
 
 	switch (action) {
 		case 'add':
-			// Subject
+			// Handle node additions
 			if (!state.nodeIndex.has(sTerm)) {
 				sNode = nodeCache?.get(sTerm) || {
 					type: 'node',

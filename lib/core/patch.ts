@@ -11,23 +11,51 @@ export function createGraphPatch(state: GraphState, rdfPatches: RdfPatch[]): Gra
 	return result;
 }
 
+// key => (inputKey[], (subject, graphState) => graphState, graphPatch[])
+
+// svgId => 
+// rotation =>
+// svgImage => (svgId, rotation), (someSvgNode, graphState) => getSymbol(svgId, rotaiton) /*update node with output (and yield prop)
+
+//
+ 
+// a hasColor "green"
+
 export function rdfToGraphPatch(state: GraphState, { action, data }: RdfPatch): GraphPatch[] {
 	
 	// add
 
-		// Subject and object handling
+		// Potential new node handling
+			// Add subject to state if not exist
+			// Add object to state if not exist and not iri
 			// Yield subject if not exist
-			// Yield object if not exist and iri-node
+			// Yield object if not exist and iri
 
-		// Predicate handling when object is an iri node
+		// Edge handling when object is an iri
 			// Add edge as predicate node if not exist
-			// Yield edge (if not exist) and add edgeRef to predicate node
+			// Add edgeRef to predicate node
+			// Yield edge (if not exist)
 			// Yield edge properties for all edges predicate node knows about
+			// apply prop rules recursively
 
-		// Predicate handling when object is a literal
-			// Yield prop to 
+
+		// Prop handling when object is a literal
+			// if subject is a predicate node:
+				// add prop to predicate node state:
+				// yield prop on all related edges
+			// else
+				// add prop P to subject's state
+				// Yield prop P
+				// apply prop rules recursively from P
 
 	// delete
+		// predicate handling when object is a literal
+			// if subject is a predicate node:
+				// remove prop P from predicate node
+				// yield rm P
+			// else:
+				//apply prop rules recursively from P
+
 
 
 	let sNode: GraphElement, pNode: GraphElement, oNode: GraphElement;

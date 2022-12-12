@@ -13,33 +13,24 @@ export type PredicateIri = typeof predicates[number];
 
 export type PredicateRule = (subject: GraphElement) => [GraphPatch[], GraphState];
 
-const predicate2Rule = {
-    'http://www.w3.org/2000/01/rdf-schema#label': CreateTrivialRule('label')
-}
-
-export const CreateTrivialRule = (elementProp: NodeProp) => {
-    const rule = (subject: GraphElement, state: GraphState) => {
-        const patch: GraphProperty<GraphElement> = {
-            type: "property",
-            target: subject,
-            key: elementProp,
-            value: rdfObject
-        }
-
-        const newProp = { key: elementProp, value: rdfObject };
-        const newProps = { ...subject.props, newProp };
-
-
-        let node = state.nodeStore.get(subject.id);
-        if (!node) throw new Error(`Unable to get node from node store using id ${subject.id}`);
-
-        node.props[elementProp] = rdfObject;
-
-        return [
-            [patch],
-            state
-        ]
-    }
-
-    return rule;
-}
+const propertyDependents: { [index in NodeProp | ValueProp]: Dep[] } = {
+	symbolName: [[symbolKey]],
+	[rotationKey]: [[symbolKey]],
+	symbol: [
+		[connectorKey, connectorDirectionKey],
+		[connectorKey, connectorRelativePositionKey],
+	],
+	connectorName: [[connectorDirectionKey], [connectorRelativePositionKey]],
+	connectorDirection: [],
+	connectorRelativePosition: [],
+	[connectorKey]: [
+		[connectorKey, connectorDirectionKey],
+		[connectorKey, connectorRelativePositionKey],
+	],
+	[parentKey]: [],
+	[labelKey]: [],
+	[colorKey]: [],
+	[simpleSymbolKey]: [],
+	[nodeTemplateKey]: [],
+	[directionKey]: [],
+};
