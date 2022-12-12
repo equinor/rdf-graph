@@ -12,6 +12,24 @@ export function createGraphPatch(state: GraphState, rdfPatches: RdfPatch[]): Gra
 }
 
 export function rdfToGraphPatch(state: GraphState, { action, data }: RdfPatch): GraphPatch[] {
+	
+	// add
+
+		// Subject and object handling
+			// Yield subject if not exist
+			// Yield object if not exist and iri-node
+
+		// Predicate handling when object is an iri node
+			// Add edge as predicate node if not exist
+			// Yield edge (if not exist) and add edgeRef to predicate node
+			// Yield edge properties for all edges predicate node knows about
+
+		// Predicate handling when object is a literal
+			// Yield prop to 
+
+	// delete
+
+
 	let sNode: GraphElement, pNode: GraphElement, oNode: GraphElement;
 	const q = data;
 	const sTerm = termToId(q.subject);
@@ -46,7 +64,7 @@ function applyPatch(patches: GraphPatch[]) {
 						switch (patch.element.target.variant) {
 							case 'connector':
 								let a = patch.element.target.props.engSymbolConnectorName;
-
+ 
 								break;
 							case 'default':
 								//let b = patch.element.target.name;

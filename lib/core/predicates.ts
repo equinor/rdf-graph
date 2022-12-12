@@ -78,6 +78,8 @@ type ValueProp = typeof PROPERTIES[number]['key'];
 
 type Predicate = typeof PROPERTIES[number]['predicate'];
 
+type Iris = typeof PROPERTIES[number]['iri'];
+
 const COMMON_PROPS = [
 	{
 		key: 'label',
