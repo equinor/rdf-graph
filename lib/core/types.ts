@@ -2,7 +2,7 @@ import { Quad } from 'n3';
 
 export type Point = { x: number; y: number };
 
-export interface UiNodeSymbol {
+export interface Symbol {
 	id: string;
 	width: number;
 	height: number;
@@ -10,10 +10,10 @@ export interface UiNodeSymbol {
 	svg?: string;
 	/** Symbol as single svg <path> element value */
 	geometry?: string;
-	connectors: UiNodeConnector[];
+	connectors: Connector[];
 }
 
-export interface UiNodeConnector {
+export interface Connector {
 	id: string;
 	width: number;
 	height: number;
@@ -26,13 +26,11 @@ export type ElementType = 'node' | 'edge';
 export type GraphElementBase<TNode extends ElementType> = {
 	id: string;
 	type: TNode;
-	/** No explicit types for properties in internal state */
-	//props: { [key: string]: unknown };
-	/** Should this be stored ??? Maybe just forward */
-	data: Map<string, string>;
 };
 
 type NodeVariant = 'default' | 'connector' | 'engsym' | 'group';
+
+type NodeVariantInternal = NodeVariant | 'predicate';
 
 export type BasicProps = Partial<{
 	label: string;
@@ -41,10 +39,11 @@ export type BasicProps = Partial<{
 	stroke: string;
 }>;
 
-type BaseNode<TVariant extends NodeVariant> = GraphElementBase<'node'> & {
+type BaseNode<TVariant extends NodeVariantInternal> = GraphElementBase<'node'> & {
 	variant: TVariant;
+	data: Map<string, string>;
 	props: BasicProps & {
-		parent?: GraphNode;
+		group?: GraphNode;
 	};
 };
 
@@ -54,15 +53,24 @@ export type EngSymbolNode = BaseNode<'engsym'> & {
 	props: {
 		engsymConnectors: string[];
 		engsymId: string;
-		engsym: UiNodeSymbol;
+		engsym: Symbol;
+		rotation: number;
 	};
 };
 
 export type ConnectorNode = BaseNode<'connector'> & {
 	props: {
-		/** The name of the connector */
-		engsymConnectorName: string;
+		/** The id of the connector (from predicate) */
+		connectorName: string;
+		connectorDirection: number;
+		connectorRelativePosition: Point;
 	};
+};
+
+export type PredicateNode = BaseNode<'predicate'> & {
+	/** NOTE: the 'id' the predicate */
+	edgeIds: string[];
+	props: {};
 };
 
 export type GraphEdge = GraphElementBase<'edge'> & {
@@ -95,12 +103,6 @@ export interface GraphPatch {
 	element: GraphNode | GraphEdge | GraphProperty<GraphNode> | GraphDataProperty;
 }
 
-export type PredicateNode = {
-	predicate: string;
-	edgeIds: string[];
-	props: BasicProps;
-};
-
 /*
 element1 hasColor green . // add node, add prop green
 node1 element1 node2
@@ -116,6 +118,7 @@ node1 element1 node2
 node2 element1 node3
 element1 hasColor red .
 */
+
 export type GraphState = {
 	predicateNodeStore: Record<string, PredicateNode>;
 	nodeStore: Record<string, GraphNode>;
@@ -135,44 +138,74 @@ export type KnownProp =
 
 type KnownPropConfig = {
 	iri: string | null;
+	invalidates: KnownProp[][];
+	//default: unknown[] | string | number;
 	rule: (deps: KnownProp[]) => void;
 };
 
 const PROP_CONFIG: Record<KnownProp, KnownPropConfig> = {
 	engsymId: {
 		iri: 'http://rdf.equinor.com/ui/hasEngineeringSymbol',
+		invalidates: [['engsym']],
 		rule: () => {},
 	},
 	engsym: {
 		iri: null,
+		invalidates: [
+			['engsymConnectors', 'connectorDirection'],
+			['engsymConnectors', 'connectorRelativePosition'],
+		],
 		rule: () => {},
 	},
+
 	engsymConnectors: {
 		iri: 'http://rdf.equinor.com/ui/hasConnector',
+		invalidates: [['engsym']],
 		rule: (d) => {},
 	},
-	engsymConnectorName: {
+	connectorName: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
+		invalidates: [['engsym']],
+		rule: () => {},
+	},
+	connectorDirection: {
+		iri: 'http://rdf.equinor.com/ui/hasConnectorDirection',
+		invalidates: [['engsym']],
+		rule: () => {},
+	},
+	connectorRelativePosition: {
+		iri: 'http://rdf.equinor.com/ui/hasConnectorRelPosition',
+		invalidates: [['engsym']],
+		rule: () => {},
+	},
+	rotation: {
+		iri: 'http://rdf.equinor.com/ui/hasRotation',
+		invalidates: [['engsym']],
 		rule: () => {},
 	},
 	fill: {
 		iri: 'http://rdf.equinor.com/ui/fill',
+		invalidates: [],
 		rule: () => {},
 	},
 	stroke: {
 		iri: 'http://rdf.equinor.com/ui/stroke',
+		invalidates: [],
 		rule: () => {},
 	},
 	label: {
 		iri: 'http://www.w3.org/2000/01/rdf-schema#label',
+		invalidates: [],
 		rule: () => {},
 	},
 	description: {
 		iri: 'http://rdf.equinor.com/ui/description',
+		invalidates: [],
 		rule: () => {},
 	},
-	parent: {
-		iri: 'http://rdf.equinor.com/ui/hasParent',
+	group: {
+		iri: 'http://rdf.equinor.com/ui/partOfGroup',
+		invalidates: [],
 		rule: () => {},
 	},
 };
