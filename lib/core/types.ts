@@ -1,17 +1,38 @@
 import { Quad } from 'n3';
 
+export type Point = { x: number; y: number };
+
+export interface UiNodeSymbol {
+	id: string;
+	width: number;
+	height: number;
+	angle?: number;
+	svg?: string;
+	/** Symbol as single svg <path> element value */
+	geometry?: string;
+	connectors: UiNodeConnector[];
+}
+
+export interface UiNodeConnector {
+	id: string;
+	width: number;
+	height: number;
+	direction: number;
+	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
+}
+
 export type ElementType = 'node' | 'edge';
 
 export type GraphElementBase<TNode extends ElementType> = {
 	id: string;
 	type: TNode;
 	/** No explicit types for properties in internal state */
-	props: { [key: string]: unknown };
+	//props: { [key: string]: unknown };
 	/** Should this be stored ??? Maybe just forward */
 	data: Map<string, string>;
 };
 
-type NodeVariant = 'default' | 'connector' | 'group' | 'engsym';
+type NodeVariant = 'default' | 'connector' | 'engsym' | 'group';
 
 export type BasicProps = Partial<{
 	label: string;
@@ -27,44 +48,20 @@ type BaseNode<TVariant extends NodeVariant> = GraphElementBase<'node'> & {
 	};
 };
 
-export type DefaultNode = BaseNode<'default'>
+export type DefaultNode = BaseNode<'default'>;
 
-export type Symbol = {
-	width: number;
-	height: number;
-	angle: number;
-	svg: string;
-	/** Symbol as single svg <path> element value */
-	geometry: string;
-	connectors: UiNodeConnector[];
-}
-
-export interface UiNodeConnector {
-	id: string;
-	width: number;
-	height: number;
-	direction: number;
-	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
-}
-
-export type Point = { x: number; y: number };
-
-
-export type EngineeringSymbolNode = BaseNode<'engsym'> & {
+export type EngSymbolNode = BaseNode<'engsym'> & {
 	props: {
-		connectors: [];
-		symbolId?: string;
-		rotation: number;
-
+		engsymConnectors: string[];
+		engsymId: string;
+		engsym: UiNodeSymbol;
 	};
-
-
 };
 
 export type ConnectorNode = BaseNode<'connector'> & {
 	props: {
 		/** The name of the connector */
-		engSymbolConnectorName: string;
+		engsymConnectorName: string;
 	};
 };
 
@@ -73,18 +70,17 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 	targetId: string;
 };
 
-export type GraphNode = DefaultNode | ConnectorNode;
+export type GraphNode = DefaultNode | EngSymbolNode | ConnectorNode;
 
 export type GraphElement = GraphNode | GraphEdge;
 
 // Include a type parameter to limit allowed values for the key parameter
-export type GraphProperty<TTarget extends GraphElement> = {
+export type GraphProperty<TTarget extends GraphNode> = {
 	type: 'property';
 	target: TTarget;
 	key: keyof TTarget['props'];
 	value: unknown;
 };
-
 
 // GraphData property can hold any key - value pairs
 export type GraphDataProperty = {
@@ -96,14 +92,14 @@ export type GraphDataProperty = {
 
 export interface GraphPatch {
 	action: 'add' | 'remove';
-	element: GraphNode | GraphEdge | GraphProperty<GraphElement> | GraphDataProperty;
+	element: GraphNode | GraphEdge | GraphProperty<GraphNode> | GraphDataProperty;
 }
 
 export type PredicateNode = {
-	predicate: string,
-	edgeIds: string[]
-	properties: BasicProps
-}
+	predicate: string;
+	edgeIds: string[];
+	props: BasicProps;
+};
 
 /*
 element1 hasColor green . // add node, add prop green
@@ -121,7 +117,7 @@ node2 element1 node3
 element1 hasColor red .
 */
 export type GraphState = {
-	predicateNodeStore: Record<string, PredicateNode>,
+	predicateNodeStore: Record<string, PredicateNode>;
 	nodeStore: Record<string, GraphNode>;
 	edgeStore: Record<string, GraphEdge>;
 };
@@ -131,4 +127,52 @@ export type RdfPatch = {
 	data: Quad;
 };
 
-export type NodeProp = keyof BasicProps | keyof DefaultNode['props'] | keyof ConnectorNode['props'];
+export type KnownProp =
+	| keyof BasicProps
+	| keyof DefaultNode['props']
+	| keyof ConnectorNode['props']
+	| keyof EngSymbolNode['props'];
+
+type KnownPropConfig = {
+	iri: string | null;
+	rule: (deps: KnownProp[]) => void;
+};
+
+const PROP_CONFIG: Record<KnownProp, KnownPropConfig> = {
+	engsymId: {
+		iri: 'http://rdf.equinor.com/ui/hasEngineeringSymbol',
+		rule: () => {},
+	},
+	engsym: {
+		iri: null,
+		rule: () => {},
+	},
+	engsymConnectors: {
+		iri: 'http://rdf.equinor.com/ui/hasConnector',
+		rule: (d) => {},
+	},
+	engsymConnectorName: {
+		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
+		rule: () => {},
+	},
+	fill: {
+		iri: 'http://rdf.equinor.com/ui/fill',
+		rule: () => {},
+	},
+	stroke: {
+		iri: 'http://rdf.equinor.com/ui/stroke',
+		rule: () => {},
+	},
+	label: {
+		iri: 'http://www.w3.org/2000/01/rdf-schema#label',
+		rule: () => {},
+	},
+	description: {
+		iri: 'http://rdf.equinor.com/ui/description',
+		rule: () => {},
+	},
+	parent: {
+		iri: 'http://rdf.equinor.com/ui/hasParent',
+		rule: () => {},
+	},
+};
