@@ -1,7 +1,9 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as go from 'gojs';
-
-//import { Quad, Store } from 'n3';
+import { GraphState, RdfPatch, SymbolProvider } from 'core/types/types';
+import { patchGraphState } from 'core/patch';
+import { applyPatch } from './applyPatch';
+import { RdfGraphError } from 'core/types/RdfGraphError';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -9,16 +11,13 @@ const defaultDiagramStyle: React.CSSProperties = {
 	overflow: 'hidden',
 };
 
-//export type RdfGraphSymbolProvider = (id: string, rotation?: number) => UiNodeSymbol | undefined;
-
 export type RdfGraphDiagramProps = {
 	initDiagram: () => go.Diagram;
 	style?: React.CSSProperties;
-	// rdfStore: Store<Quad, Quad, Quad, Quad>;
-	// rdfPatch: RdfPatch2;
+	rdfPatch: RdfPatch[];
+	symbolProvider?: SymbolProvider;
 	// selectionEffect?: SelectionCallback;
-	// onErrorCallback?: ((error: RdfGraphError) => void) | undefined;
-	//symbolProvider?: RdfGraphSymbolProvider;
+	onErrorCallback?: (error: RdfGraphError) => void;
 };
 
 export type RdfGraphDiagramRef = {
@@ -27,28 +26,12 @@ export type RdfGraphDiagramRef = {
 
 const RdfGraphDiagram = forwardRef(
 	(
-		{
-			initDiagram,
-			style,
-		}: // rdfPatch,
-		// selectionEffect,
-		// onErrorCallback,
-		// symbolProvider,
-		RdfGraphDiagramProps,
+		{ initDiagram, style, rdfPatch, symbolProvider }: RdfGraphDiagramProps,
 		ref: React.ForwardedRef<RdfGraphDiagramRef>
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
-		// const patchHandlerRef = useRef<IUiPatchHandler>();
-		// const prevSelectionEffect = useRef<PropertyAssertion[]>([]);
 		const [initialized, setInitialized] = useState(false);
-
-		// const [graphState, setGraphState] = useState<GraphStateProps>({
-		// 	graphState: {
-		// 		nodeIndex: new Map<string, GraphNode>(),
-		// 		linkIndex: new Map<string, GraphEdge>(),
-		// 	},
-		// 	graphPatch: [],
-		// });
+		const [graphState, setGraphState] = useState<GraphState>();
 
 		useImperativeHandle(
 			ref,
@@ -86,7 +69,6 @@ const RdfGraphDiagram = forwardRef(
 			const diagram = initDiagram();
 			diagram.div = divElRef.current;
 			// diagram.addDiagramListener('ChangedSelection', changedSelectionHandler);
-			// patchHandlerRef.current = new GoJsPatchHandler(diagram, onErrorCallback);
 			setInitialized(true);
 			return () => {
 				diagram.div = null;
@@ -94,15 +76,17 @@ const RdfGraphDiagram = forwardRef(
 			};
 		}, []);
 
-		// useEffect(() => {
-		// 	if (!initialized) return;
-		// 	const patchedGraphState = patchGraph(graphState.graphState, rdfPatch, {
-		// 		symbolProvider,
-		// 	});
-		// 	setGraphState(patchedGraphState);
-		// 	if (!patchHandlerRef.current) return;
-		// 	applyPatch(patchedGraphState.graphPatch, patchHandlerRef.current);
-		// }, [rdfPatch]);
+		useEffect(() => {
+			if (!initialized || !graphState) return;
+
+			const patchGraphResult = patchGraphState(graphState, rdfPatch, { symbolProvider });
+
+			setGraphState(patchGraphResult.graphState);
+
+			const diagram = getDiagram();
+			if (!diagram) return;
+			applyPatch(patchGraphResult.graphPatches, diagram);
+		}, [rdfPatch]);
 
 		return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;
 	}

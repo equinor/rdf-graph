@@ -10,16 +10,18 @@ export interface Symbol {
 	svg?: string;
 	/** Symbol as single svg <path> element value */
 	geometry?: string;
-	connectors: Connector[];
+	connectors: SymbolConnector[];
 }
 
-export interface Connector {
+export interface SymbolConnector {
 	id: string;
 	width: number;
 	height: number;
 	direction: number;
 	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
 }
+
+export type SymbolProvider = (id: string, rotation?: number) => Symbol | undefined;
 
 export type ElementType = 'node' | 'edge';
 
@@ -30,7 +32,7 @@ export type GraphElementBase<TNode extends ElementType> = {
 
 type NodeVariant = 'default' | 'connector' | 'engsym' | 'group';
 
-type NodeVariantInternal = NodeVariant | 'predicate';
+export type NodeVariantInternal = NodeVariant | 'predicate';
 
 export type BasicProps = Partial<{
 	label: string;
@@ -81,6 +83,8 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 export type GraphNode = DefaultNode | EngSymbolNode | ConnectorNode;
 
 export type GraphElement = GraphNode | GraphEdge;
+
+export type GraphElementInternal = GraphNode | PredicateNode | GraphEdge;
 
 // Include a type parameter to limit allowed values for the key parameter
 export type GraphProperty<TTarget extends GraphNode> = {
@@ -143,7 +147,7 @@ type KnownPropConfig = {
 	rule: (deps: KnownProp[]) => void;
 };
 
-const PROP_CONFIG: Record<KnownProp, KnownPropConfig> = {
+export const PROPS: Record<KnownProp, KnownPropConfig> = {
 	engsymId: {
 		iri: 'http://rdf.equinor.com/ui/hasEngineeringSymbol',
 		invalidates: [['engsym']],
@@ -157,7 +161,6 @@ const PROP_CONFIG: Record<KnownProp, KnownPropConfig> = {
 		],
 		rule: () => {},
 	},
-
 	engsymConnectors: {
 		iri: 'http://rdf.equinor.com/ui/hasConnector',
 		invalidates: [['engsym']],
