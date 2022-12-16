@@ -29,37 +29,25 @@ export function patchGraphState(
 	rdfPatches: RdfPatch[],
 	options?: Partial<PatchGraphOptions>
 ): PatchGraphResult {
-	const p: PatchGraphResult = rdfPatches.reduce<PatchGraphResult>(
-		(acc, rdfPatch) => {
-			const kvern = new GraphKvern({
-				graphState: acc.graphState,
-				rdfPatch,
-				graphPatches: acc.graphPatches,
-			}).bind(rdfToGraphPatch(options));
 
-			return {
-				graphState: kvern.getState().graphState,
-				graphPatches: kvern.getState().graphPatches,
-			};
-		},
-		{ graphState: state, graphPatches: [] }
-	);
-
-	return {
-		graphState: p.graphState,
-		graphPatches: p.graphPatches,
-	};
+	return new GraphKvern({
+		graphState: state,
+		graphPatches: [],
+	})
+	.bind(rdfToGraphPatch(rdfPatches, options))
+	.getState();
 }
 
 // function rdfToGraphPatch(): GraphKvern {
 // 	new GraphKvern({ graphState: state, rdfPatch, graphPatches: [] }).bind(addSubjectNode);
 // }
 
-export function rdfToGraphPatch(options?: Partial<PatchGraphOptions>): BindFunction {
-	const f: BindFunction = (state: MonadState) => {
-		return new GraphKvern(state).bind(addSubjectNode);
-	};
-
+export function rdfToGraphPatch(rdfPatches: RdfPatch[], _options?: Partial<PatchGraphOptions>): BindFunction {
+	const f = (state: PatchGraphResult) => {
+		const kvern = new GraphKvern(state);
+		rdfPatches.forEach(rdfPatch => kvern.bind(addSubjectNode(rdfPatch)));
+		return kvern;
+	}
 	return f;
 }
 
@@ -73,17 +61,11 @@ export function rdfToGraphPatch(options?: Partial<PatchGraphOptions>): BindFunct
 
 // a hasColor "green"
 
-type MonadState = {
-	graphState: GraphState;
-	rdfPatch: RdfPatch;
-	graphPatches: GraphPatch[];
-};
-
-type BindFunction = (state: MonadState) => GraphKvern;
+type BindFunction = (state: PatchGraphResult) => GraphKvern;
 
 class GraphKvern {
 	constructor(
-		private readonly state: MonadState // readonly rdfPatch: RdfPatch, // readonly graphPatches: GraphPatch[]
+		private readonly state: PatchGraphResult // readonly rdfPatch: RdfPatch, // readonly graphPatches: GraphPatch[]
 	) {}
 
 	bind(f: BindFunction): GraphKvern {
@@ -95,7 +77,7 @@ class GraphKvern {
 	}
 }
 
-function addNode(state: MonadState, iri: string): GraphKvern {
+function addNode(state: PatchGraphResult, iri: string): GraphKvern {
 	const newNode: GraphNode = {
 		id: iri,
 		type: 'node',
@@ -114,13 +96,16 @@ function addNode(state: MonadState, iri: string): GraphKvern {
 	});
 }
 
-function addSubjectNode(state: MonadState): GraphKvern {
-	const subjectIri = termToId(state.rdfPatch.data.subject);
-	const nodeExists = subjectIri in state.graphState.nodeStore;
-	if (state.rdfPatch.action === 'add' && !nodeExists) {
-		return addNode(state, subjectIri);
+function addSubjectNode(rdfPatch: RdfPatch): BindFunction {
+	const f = (state: PatchGraphResult) => {
+		const subjectIri = termToId(rdfPatch.data.subject);
+		const nodeExists = subjectIri in state.graphState.nodeStore;
+		if (rdfPatch.action === 'add' && !nodeExists) {
+			return addNode(state, subjectIri);
+		}
+		return new GraphKvern(state);
 	}
-	return new GraphKvern(state);
+	return f;
 }
 
 export function rdfToGraphPatch_OLD(
