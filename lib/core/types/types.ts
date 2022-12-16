@@ -141,7 +141,7 @@ export type KnownProp =
 	| keyof EngSymbolNode['props'];
 
 type KnownPropConfig = {
-	iri: string | null;
+	iri: string;
 	invalidates: KnownProp[][];
 	//default: unknown[] | string | number;
 	rule: (deps: KnownProp[]) => void;
@@ -154,7 +154,7 @@ export const PROPS: Record<KnownProp, KnownPropConfig> = {
 		rule: () => {},
 	},
 	engsym: {
-		iri: null,
+		iri: 'null',
 		invalidates: [
 			['engsymConnectors', 'connectorDirection'],
 			['engsymConnectors', 'connectorRelativePosition'],

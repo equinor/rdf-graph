@@ -1,5 +1,6 @@
 import { useParams, Outlet } from 'react-router-dom';
 import appCss from './App.module.css';
+import { GoUi } from './components/go/GoUi';
 import { Menu } from './components/menu/Menu';
 import { UiKey } from './setup';
 
@@ -15,7 +16,7 @@ function App() {
 				{ui !== undefined
 					? {
 							fg3d: <h1>f3d</h1>,
-							go: <h1>GO</h1>,
+							go: <GoUi />,
 							cy: <h1>CY</h1>,
 					  }[ui]
 					: null}

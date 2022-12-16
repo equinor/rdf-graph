@@ -6,6 +6,14 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 			case 'node':
 				switch (patch.element.variant) {
 					case 'default':
+						const n = {
+							type: 'node',
+							id: patch.element.id,
+							label: patch.element.id,
+							category: '',
+							ports: [],
+						};
+						diagram.model.addNodeData(n);
 						break;
 					case 'connector':
 						break;

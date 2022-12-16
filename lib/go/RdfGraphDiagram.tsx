@@ -14,7 +14,7 @@ const defaultDiagramStyle: React.CSSProperties = {
 export type RdfGraphDiagramProps = {
 	initDiagram: () => go.Diagram;
 	style?: React.CSSProperties;
-	rdfPatch: RdfPatch[];
+	rdfPatches: RdfPatch[];
 	symbolProvider?: SymbolProvider;
 	// selectionEffect?: SelectionCallback;
 	onErrorCallback?: (error: RdfGraphError) => void;
@@ -26,7 +26,7 @@ export type RdfGraphDiagramRef = {
 
 const RdfGraphDiagram = forwardRef(
 	(
-		{ initDiagram, style, rdfPatch, symbolProvider }: RdfGraphDiagramProps,
+		{ initDiagram, style, rdfPatches, symbolProvider }: RdfGraphDiagramProps,
 		ref: React.ForwardedRef<RdfGraphDiagramRef>
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
@@ -79,14 +79,14 @@ const RdfGraphDiagram = forwardRef(
 		useEffect(() => {
 			if (!initialized || !graphState) return;
 
-			const patchGraphResult = patchGraphState(graphState, rdfPatch, { symbolProvider });
+			const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
 
 			setGraphState(patchGraphResult.graphState);
 
 			const diagram = getDiagram();
 			if (!diagram) return;
 			applyPatch(patchGraphResult.graphPatches, diagram);
-		}, [rdfPatch]);
+		}, [rdfPatches]);
 
 		return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;
 	}

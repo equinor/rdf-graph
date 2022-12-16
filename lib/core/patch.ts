@@ -1,5 +1,6 @@
 import { Quad, termFromId, termToId, Writer, DataFactory } from 'n3';
 import {
+	DefaultNode,
 	GraphElement,
 	GraphElementInternal,
 	GraphNode,
@@ -28,10 +29,38 @@ export function patchGraphState(
 	rdfPatches: RdfPatch[],
 	options?: Partial<PatchGraphOptions>
 ): PatchGraphResult {
+	const p: PatchGraphResult = rdfPatches.reduce<PatchGraphResult>(
+		(acc, rdfPatch) => {
+			const kvern = new GraphKvern({
+				graphState: acc.graphState,
+				rdfPatch,
+				graphPatches: acc.graphPatches,
+			}).bind(rdfToGraphPatch(options));
+
+			return {
+				graphState: kvern.getState().graphState,
+				graphPatches: kvern.getState().graphPatches,
+			};
+		},
+		{ graphState: state, graphPatches: [] }
+	);
+
 	return {
-		graphState: state,
-		graphPatches: rdfPatches.flatMap((rdfPatch) => rdfToGraphPatch(state, rdfPatch, options)),
+		graphState: p.graphState,
+		graphPatches: p.graphPatches,
 	};
+}
+
+// function rdfToGraphPatch(): GraphKvern {
+// 	new GraphKvern({ graphState: state, rdfPatch, graphPatches: [] }).bind(addSubjectNode);
+// }
+
+export function rdfToGraphPatch(options?: Partial<PatchGraphOptions>): BindFunction {
+	const f: BindFunction = (state: MonadState) => {
+		return new GraphKvern(state).bind(addSubjectNode);
+	};
+
+	return f;
 }
 
 // key => (inputKey[], (subject, graphState) => graphState, graphPatch[])
@@ -44,7 +73,57 @@ export function patchGraphState(
 
 // a hasColor "green"
 
-export function rdfToGraphPatch(
+type MonadState = {
+	graphState: GraphState;
+	rdfPatch: RdfPatch;
+	graphPatches: GraphPatch[];
+};
+
+type BindFunction = (state: MonadState) => GraphKvern;
+
+class GraphKvern {
+	constructor(
+		private readonly state: MonadState // readonly rdfPatch: RdfPatch, // readonly graphPatches: GraphPatch[]
+	) {}
+
+	bind(f: BindFunction): GraphKvern {
+		return f(this.state);
+	}
+
+	getState() {
+		return this.state;
+	}
+}
+
+function addNode(state: MonadState, iri: string): GraphKvern {
+	const newNode: GraphNode = {
+		id: iri,
+		type: 'node',
+		variant: 'default',
+		data: new Map(),
+		props: {},
+	};
+
+	return new GraphKvern({
+		...state,
+		graphState: {
+			...state.graphState,
+			nodeStore: { ...state.graphState.nodeStore, [iri]: newNode },
+		},
+		graphPatches: [...state.graphPatches, { action: 'add', element: newNode }],
+	});
+}
+
+function addSubjectNode(state: MonadState): GraphKvern {
+	const subjectIri = termToId(state.rdfPatch.data.subject);
+	const nodeExists = subjectIri in state.graphState.nodeStore;
+	if (state.rdfPatch.action === 'add' && !nodeExists) {
+		return addNode(state, subjectIri);
+	}
+	return new GraphKvern(state);
+}
+
+export function rdfToGraphPatch_OLD(
 	state: GraphState,
 	{ action, data }: RdfPatch,
 	options?: Partial<PatchGraphOptions>
@@ -53,7 +132,7 @@ export function rdfToGraphPatch(
 
 	// Potential new node handling
 	// --- Add subject to state if not exist
-	// --- Add object to state if not exist and not iri
+	// --- Add object to state if not exist and iri
 	// --- Yield subject if not exist
 	// --- Yield object if not exist and iri
 
@@ -84,8 +163,8 @@ export function rdfToGraphPatch(
 
 	let sNode: GraphElementInternal, pNode: GraphElementInternal, oNode: GraphElementInternal;
 	const q = data;
-	const sTerm = termToId(q.subject);
-	const pTerm = termToId(q.predicate);
+	const sIri = termToId(q.subject);
+	const pIri = termToId(q.predicate);
 	const oTerm = termToId(q.object);
 
 	const result: GraphPatch[] = [];
@@ -94,11 +173,12 @@ export function rdfToGraphPatch(
 
 	if (action === 'add') {
 		// Add subject and yield if not exists
-		if (sTerm in state.nodeStore) {
-			sNode = state.nodeStore[sTerm];
+
+		if (sIri in state.nodeStore) {
+			sNode = state.nodeStore[sIri];
 		} else {
-			sNode = { id: sTerm, type: 'node', variant: 'default' } as GraphNode;
-			state.nodeStore[sTerm] = sNode;
+			sNode = { id: sIri, type: 'node', variant: 'default' } as GraphNode;
+			state.nodeStore[sIri] = sNode;
 			result.push({ action: 'add', element: sNode });
 		}
 
