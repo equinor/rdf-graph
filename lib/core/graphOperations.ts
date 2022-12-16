@@ -1,6 +1,8 @@
 import { PatchGraphMonad } from "./PatchGraphMonad";
 import { GraphNode, PatchGraphResult } from "./types/types";
 
+
+
 export function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
 	const newNode: GraphNode = {
 		id: iri,

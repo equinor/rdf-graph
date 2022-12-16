@@ -1,7 +1,7 @@
 import { termToId } from 'n3';
+import { addNode } from './graphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import {
-	GraphNode,
 	GraphState,
 	PatchGraphResult,
 	RdfPatch,
@@ -36,14 +36,14 @@ export function patchGraphState(
 
 export function rdfToGraphPatch(rdfPatches: RdfPatch[], _options?: Partial<PatchGraphOptions>): BindFunction {
 	const f = (state: PatchGraphResult) => {
-		const kvern = new PatchGraphMonad(state);
+		const monad = new PatchGraphMonad(state);
 		rdfPatches.forEach(rdfPatch => {
 
 			// ADD ----------------
 
 			// Potential new node handling
 			// --- Add subject to state if not exist
-			kvern.bind(addSubjectNode(rdfPatch))
+			monad.bind(addSubjectNode(rdfPatch))
 			// --- Add object to state if not exist and iri
 			// --- Yield subject if not exist
 			// --- Yield object if not exist and iri
@@ -75,29 +75,9 @@ export function rdfToGraphPatch(rdfPatches: RdfPatch[], _options?: Partial<Patch
 
 
 		});
-		return kvern;
+		return monad;
 	}
 	return f;
-}
-
-
-function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
-	const newNode: GraphNode = {
-		id: iri,
-		type: 'node',
-		variant: 'default',
-		data: new Map(),
-		props: {},
-	};
-
-	return new PatchGraphMonad({
-		...state,
-		graphState: {
-			...state.graphState,
-			nodeStore: { ...state.graphState.nodeStore, [iri]: newNode },
-		},
-		graphPatches: [...state.graphPatches, { action: 'add', element: newNode }],
-	});
 }
 
 function addSubjectNode(rdfPatch: RdfPatch): BindFunction {
