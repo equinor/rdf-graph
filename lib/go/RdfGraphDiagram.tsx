@@ -1,9 +1,10 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as go from 'gojs';
 import { GraphState, RdfPatch, SymbolProvider } from 'core/types/types';
-import { patchGraphState } from 'core/patch';
+
 import { applyPatch } from './applyPatch';
-import { RdfGraphError } from 'core/types/RdfGraphError';
+import { RdfGraphError } from '../core/types/RdfGraphError';
+import { patchGraphState } from '../core/patch';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -31,7 +32,11 @@ const RdfGraphDiagram = forwardRef(
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
 		const [initialized, setInitialized] = useState(false);
-		const [graphState, setGraphState] = useState<GraphState>();
+		const [graphState, setGraphState] = useState<GraphState>({
+			nodeStore: {},
+			predicateNodeStore: {},
+			edgeStore: {},
+		});
 
 		useImperativeHandle(
 			ref,
@@ -77,14 +82,16 @@ const RdfGraphDiagram = forwardRef(
 		}, []);
 
 		useEffect(() => {
-			if (!initialized || !graphState) return;
+			if (!initialized) return;
 
+			console.log(rdfPatches);
 			const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
 
 			setGraphState(patchGraphResult.graphState);
 
 			const diagram = getDiagram();
 			if (!diagram) return;
+			console.log(patchGraphResult.graphPatches);
 			applyPatch(patchGraphResult.graphPatches, diagram);
 		}, [rdfPatches]);
 

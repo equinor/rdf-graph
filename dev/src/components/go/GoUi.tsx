@@ -1,20 +1,24 @@
-import { EdsProvider, Radio } from '@equinor/eds-core-react';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import { RdfGraphDiagram } from '../../../../lib/go/RdfGraphDiagram';
 
 import { RdfPatch } from '../../../../lib/core/types/types';
 
-// import appCss from './App.module.css';
-import { getUis, UiKey } from '../../setup';
+import { DataFactory } from 'n3';
+import { defaultInitDiagram } from './init';
+
+const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 export const GoUi = () => {
 	const [patches, setPatches] = useState<RdfPatch[]>([]);
 
+	useEffect(() => {
+		setPatches([{ action: 'add', data: q(n('S'), n('label'), l('Hello')) }]);
+	}, []);
+
 	return (
 		<div>
-			<RdfGraphDiagram initDiagram={} rdfPatches={patches} />
+			<RdfGraphDiagram initDiagram={defaultInitDiagram} rdfPatches={patches} />
 		</div>
 	);
 };

@@ -21,6 +21,7 @@ const router = createBrowserRouter([
 			if (params.ui === undefined || !uiSlugs.includes(params.ui)) {
 				throw redirect('/' + uiSlugs[0]);
 			}
+			return null;
 		},
 		element: <App />,
 		children: [{ path: 'turtle', element: <h1>Turtle</h1> }],
