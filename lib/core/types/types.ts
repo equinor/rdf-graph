@@ -107,22 +107,6 @@ export interface GraphPatch {
 	element: GraphNode | GraphEdge | GraphProperty<GraphNode> | GraphDataProperty;
 }
 
-/*
-element1 hasColor green . // add node, add prop green
-node1 element1 node2
-   add node1,
-   add node2,
-   delete prop green,
-   delete node "element1",   
-   add internal predicateNode element1,
-   add edge from node1 to node2
-   add interanle predicateNodeProp hasColor 'green'
-   add prop hasColor 'green' for all edges having reference to predicateNode 'element1'
-   
-node2 element1 node3
-element1 hasColor red .
-*/
-
 export type GraphState = {
 	predicateNodeStore: Record<string, PredicateNode>;
 	nodeStore: Record<string, GraphNode>;
@@ -143,8 +127,12 @@ export type KnownProp =
 type KnownPropConfig = {
 	iri: string;
 	invalidates: KnownProp[][];
-	//default: unknown[] | string | number;
 	rule: (deps: KnownProp[]) => void;
+};
+
+export type PatchGraphResult = {
+	graphState: GraphState;
+	graphPatches: GraphPatch[];
 };
 
 export const PROPS: Record<KnownProp, KnownPropConfig> = {
@@ -164,7 +152,7 @@ export const PROPS: Record<KnownProp, KnownPropConfig> = {
 	engsymConnectors: {
 		iri: 'http://rdf.equinor.com/ui/hasConnector',
 		invalidates: [['engsym']],
-		rule: (d) => {},
+		rule: () => {},
 	},
 	connectorName: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
