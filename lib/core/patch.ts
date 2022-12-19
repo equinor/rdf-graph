@@ -29,7 +29,6 @@ export function patchGraphState(
 
 // Potential new node handling
 // --- Add subject to state if not exist
-
 // --- Add object to state if not exist and iri
 // --- Yield subject if not exist
 // --- Yield object if not exist and iri
@@ -66,7 +65,7 @@ export function rdfToGraphPatch(
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {
 			if (rdfPatch.action === 'add') {
-				return acc.bind(addSubjectNode(rdfPatch));
+				return acc.bind(addSubjectNode(rdfPatch)).bind(addObjectNode(rdfPatch));
 			} else {
 				return acc;
 			}
@@ -81,6 +80,19 @@ function addSubjectNode(rdfPatch: RdfPatch): BindFunction {
 		const nodeExists = subjectIri in state.graphState.nodeStore;
 		if (rdfPatch.action === 'add' && !nodeExists) {
 			return addNode(state, subjectIri);
+		}
+		return new PatchGraphMonad(state);
+	};
+	return f;
+}
+
+function addObjectNode(rdfPatch: RdfPatch): BindFunction {
+	const f = (state: PatchGraphResult) => {
+		const objectIri = termToId(rdfPatch.data.object);
+		const nodeExists = objectIri in state.graphState.nodeStore;
+		const isIri = rdfPatch.data.object.termType !== 'Literal';
+		if (rdfPatch.action === 'add' && !nodeExists && isIri) {
+			return addNode(state, objectIri);
 		}
 		return new PatchGraphMonad(state);
 	};
