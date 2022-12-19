@@ -14,7 +14,8 @@
 		"n3": "^1.16.3",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
-		"react-router-dom": "^6.4.3"
+		"react-router-dom": "^6.4.3",
+		"unique-names-generator": "^4.7.1"
 	},
 	"devDependencies": {
 		"@types/n3": "^1.10.4",

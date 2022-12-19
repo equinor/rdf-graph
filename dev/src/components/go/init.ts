@@ -1,4 +1,5 @@
 import * as go from 'gojs';
+import { createDefaultNodeTemplate } from './templates/default-node-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
 	console.log('Node clicked!');
@@ -19,8 +20,7 @@ export function defaultInitDiagram() {
 			linkToPortIdProperty: 'toPort',
 		}),
 		layout: new go.ForceDirectedLayout(),
-		// nodeTemplateMap: new go.Map<string, go.Part>()
-		// 	.add(NodeUiCategory.Default, createDefaultNodeTemplate(clickHandler))
+		nodeTemplateMap: new go.Map<string, go.Part>().add('', createDefaultNodeTemplate(clickHandler)),
 		// 	.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
 		// linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
 		// groupTemplate: createDefaultGroupTemplate(),

@@ -58,8 +58,8 @@ function updateNodeInStore(
 	}
 	if (id in store) {
 		const node = store[id];
-		return { ...store, id: { ...node, ...toBeUpdated } };
+		return { ...store, [id]: { ...node, ...toBeUpdated } as GraphNode };
 	} else {
-		return { ...store, id: toBeUpdated as GraphNode };
+		return { ...store, [id]: toBeUpdated as GraphNode };
 	}
 }

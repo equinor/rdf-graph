@@ -6,16 +6,17 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 			case 'node':
 				switch (patch.element.variant) {
 					case 'default':
-						const n = {
-							type: 'node',
+						diagram.model.addNodeData({
 							id: patch.element.id,
-							label: patch.element.id,
+							type: patch.element.type,
+							variant: patch.element.variant,
+							label: patch.element.props.label ?? patch.element.id,
 							category: '',
 							ports: [],
-						};
-						diagram.model.addNodeData(n);
+						});
 						break;
 					case 'connector':
+						//patch.element.
 						break;
 					default:
 						break;
@@ -28,11 +29,14 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 					case 'node':
 						switch (patch.element.target.variant) {
 							case 'connector':
-								const el = patch.element as GraphProperty<ConnectorNode>;
+								const el = patch.element.target;
 
 								let a = patch.element.target.props.connectorRelativePosition;
 								const c = patch.element.key;
-								const b = (patch.element as GraphProperty<ConnectorNode>).key;
+								const b = patch.element.key;
+
+								if (patch.element.key === 'connectors') {
+								}
 
 								break;
 							case 'default':

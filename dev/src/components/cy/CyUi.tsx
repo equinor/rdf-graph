@@ -1,13 +1,8 @@
-import { useContext, useEffect, useRef, useState } from 'react';
-
-import { RdfGraphDiagram, RdfGraphDiagramRef } from '@rdf-graph-go/RdfGraphDiagram';
+import { useContext, useEffect, useState } from 'react';
 import { RdfPatch } from '@rdf-graph/types/types';
-
-import { defaultInitDiagram } from './init';
 import { GraphContext } from '../../context/GraphContext';
 
-export const GoUi = () => {
-	const diagramRef = useRef<RdfGraphDiagramRef>(null);
+export const CyUi = () => {
 	const [patches, setPatches] = useState<RdfPatch[]>([]);
 	const [hasInit, setHasInit] = useState<boolean>(false);
 
@@ -27,12 +22,8 @@ export const GoUi = () => {
 
 	return (
 		<div>
-			<RdfGraphDiagram
-				ref={diagramRef}
-				initDiagram={defaultInitDiagram}
-				rdfPatches={patches}
-				style={{ height: 'calc(100vh - var(--menu-height))' }}
-			/>
+			<h1>TODO: Cytoscape</h1>
+			<p>Patch count (history): {graphCtx.rdfPatchesHistory.length}</p>
 		</div>
 	);
 };

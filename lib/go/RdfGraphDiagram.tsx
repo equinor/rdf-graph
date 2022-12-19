@@ -23,6 +23,7 @@ export type RdfGraphDiagramProps = {
 
 export type RdfGraphDiagramRef = {
 	getDiagram(): go.Diagram | null;
+	getGraphState(): GraphState;
 };
 
 const RdfGraphDiagram = forwardRef(
@@ -44,6 +45,9 @@ const RdfGraphDiagram = forwardRef(
 				return {
 					getDiagram() {
 						return divElRef.current ? go.Diagram.fromDiv(divElRef.current) : null;
+					},
+					getGraphState() {
+						return graphState;
 					},
 				} as RdfGraphDiagramRef;
 			},
@@ -83,16 +87,16 @@ const RdfGraphDiagram = forwardRef(
 
 		useEffect(() => {
 			if (!initialized) return;
-
-			console.log(rdfPatches);
+			console.log('RdfPatches:', rdfPatches);
 			const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
 
 			setGraphState(patchGraphResult.graphState);
 
 			const diagram = getDiagram();
 			if (!diagram) return;
-			console.log(patchGraphResult.graphPatches);
 			applyPatch(patchGraphResult.graphPatches, diagram);
+
+			console.log('GraphPatches:', patchGraphResult.graphPatches);
 		}, [rdfPatches]);
 
 		return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;

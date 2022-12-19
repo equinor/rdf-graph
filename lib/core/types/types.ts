@@ -30,7 +30,7 @@ export type GraphElementBase<TNode extends ElementType> = {
 	type: TNode;
 };
 
-type NodeVariant = 'default' | 'connector' | 'engsym' | 'group';
+export type NodeVariant = 'default' | 'connector' | 'symbol' | 'group';
 
 export type NodeVariantInternal = NodeVariant | 'predicate';
 
@@ -56,18 +56,22 @@ export type KnownProps = Partial<{
 	group: GraphNode;
 }>;
 
-export type GraphNode = GraphElementBase<'node'> & {
+export type GraphNodeBase<TNodeVariant extends NodeVariantInternal> = GraphElementBase<'node'> & {
 	//iri of subject or object
-	variant: NodeVariant;
+	variant: TNodeVariant;
 	data: Map<string, string>;
 	props: KnownProps;
 };
 
-export type ConnectorNode = GraphNode & {
-	symbolNodeRef: GraphNode;
+export type DefaultNode = GraphNodeBase<'default'> & {};
+
+export type SymbolNode = GraphNodeBase<'symbol'> & {};
+
+export type ConnectorNode = GraphNodeBase<'connector'> & {
+	symbolNodeRef: SymbolNode;
 };
 
-export type PredicateNode = GraphNode & {
+export type PredicateNode = GraphNodeBase<'predicate'> & {
 	/** NOTE: the 'id' the predicate */
 	edgeIds: string[];
 	props: {};
@@ -77,6 +81,8 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 	sourceId: string;
 	targetId: string;
 };
+
+export type GraphNode = DefaultNode | SymbolNode | ConnectorNode;
 
 export type GraphElement = GraphNode | GraphEdge;
 
