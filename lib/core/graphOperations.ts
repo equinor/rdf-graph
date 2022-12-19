@@ -1,5 +1,5 @@
 import { PatchGraphMonad } from './PatchGraphMonad';
-import { GraphNode, PatchGraphResult } from './types/types';
+import { GraphNode, KnownProps, PatchGraphResult } from './types/types';
 
 export function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
 	const newNode: GraphNode = {
@@ -20,11 +20,11 @@ export function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
 	});
 }
 
-export function putKnownProp(
+export function putKnownProp<P extends keyof KnownProps>(
 	monad: PatchGraphMonad,
 	nodeIri: string,
-	prop: KnownPropKey,
-	propValue: unknown
+	prop: P,
+	propValue: KnownProps[P]
 ): PatchGraphMonad {
 	const state = monad.getState();
 	const store = state.graphState.nodeStore;
