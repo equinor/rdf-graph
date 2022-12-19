@@ -1,11 +1,9 @@
-import { PatchGraphResult } from "./types/types";
+import { PatchGraphResult } from './types/types';
 
 export type BindFunction = (state: PatchGraphResult) => PatchGraphMonad;
 
 export class PatchGraphMonad {
-	constructor(
-		private readonly state: PatchGraphResult
-	) {}
+	constructor(private readonly state: PatchGraphResult) {}
 
 	bind(f: BindFunction): PatchGraphMonad {
 		return f(this.state);

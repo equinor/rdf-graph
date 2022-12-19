@@ -34,42 +34,40 @@ type NodeVariant = 'default' | 'connector' | 'engsym' | 'group';
 
 export type NodeVariantInternal = NodeVariant | 'predicate';
 
-export type BasicProps = Partial<{
+export type KnownProps = Partial<{
+	// Basic visualization props
 	label: string;
 	description: string;
 	fill: string;
 	stroke: string;
+	rotation: number;
+
+	// Props intended for symbol nodes
+	connectors: string[];
+	symbolId: string;
+	symbol: Symbol;
+
+	// Props intended for connectors
+	connectorName: string;
+	connectorDirection: number;
+	connectorRelativePosition: Point;
+
+	// Ref to the group it is part of
+	group: GraphNode;
 }>;
 
-type BaseNode<TVariant extends NodeVariantInternal> = GraphElementBase<'node'> & {
-	variant: TVariant;
+export type GraphNode = GraphElementBase<'node'> & {
+	//iri of subject or object
+	variant: NodeVariant;
 	data: Map<string, string>;
-	props: BasicProps & {
-		group?: GraphNode;
-	};
+	props: KnownProps;
 };
 
-export type DefaultNode = BaseNode<'default'>;
-
-export type EngSymbolNode = BaseNode<'engsym'> & {
-	props: {
-		engsymConnectors: string[];
-		engsymId: string;
-		engsym: Symbol;
-		rotation: number;
-	};
+export type ConnectorNode = GraphNode & {
+	symbolNodeRef: GraphNode;
 };
 
-export type ConnectorNode = BaseNode<'connector'> & {
-	props: {
-		/** The id of the connector (from predicate) */
-		connectorName: string;
-		connectorDirection: number;
-		connectorRelativePosition: Point;
-	};
-};
-
-export type PredicateNode = BaseNode<'predicate'> & {
+export type PredicateNode = GraphNode & {
 	/** NOTE: the 'id' the predicate */
 	edgeIds: string[];
 	props: {};
@@ -79,8 +77,6 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 	sourceId: string;
 	targetId: string;
 };
-
-export type GraphNode = DefaultNode | EngSymbolNode | ConnectorNode;
 
 export type GraphElement = GraphNode | GraphEdge;
 
@@ -118,16 +114,12 @@ export type RdfPatch = {
 	data: Quad;
 };
 
-export type KnownProp =
-	| keyof BasicProps
-	| keyof DefaultNode['props']
-	| keyof ConnectorNode['props']
-	| keyof EngSymbolNode['props'];
+export type KnownPropKey = keyof KnownProps;
 
 type KnownPropConfig = {
 	iri: string;
-	invalidates: KnownProp[][];
-	rule: (deps: KnownProp[]) => void;
+	invalidates: KnownPropKey[][];
+	rule: (deps: KnownPropKey[]) => void;
 };
 
 export type PatchGraphResult = {
@@ -135,43 +127,43 @@ export type PatchGraphResult = {
 	graphPatches: GraphPatch[];
 };
 
-export const PROPS: Record<KnownProp, KnownPropConfig> = {
-	engsymId: {
+export const PROPS: Record<KnownPropKey, KnownPropConfig> = {
+	symbolId: {
 		iri: 'http://rdf.equinor.com/ui/hasEngineeringSymbol',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
-	engsym: {
+	symbol: {
 		iri: 'null',
 		invalidates: [
-			['engsymConnectors', 'connectorDirection'],
-			['engsymConnectors', 'connectorRelativePosition'],
+			['connectors', 'connectorDirection'],
+			['connectors', 'connectorRelativePosition'],
 		],
 		rule: () => {},
 	},
-	engsymConnectors: {
+	connectors: {
 		iri: 'http://rdf.equinor.com/ui/hasConnector',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
 	connectorName: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
 	connectorDirection: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorDirection',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
 	connectorRelativePosition: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorRelPosition',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
 	rotation: {
 		iri: 'http://rdf.equinor.com/ui/hasRotation',
-		invalidates: [['engsym']],
+		invalidates: [['symbol']],
 		rule: () => {},
 	},
 	fill: {

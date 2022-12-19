@@ -64,7 +64,6 @@ export interface UiNodeConnector {
 	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
 }
 
-
 export type PatchError = Readonly<{
 	message: string;
 	error: unknown;
