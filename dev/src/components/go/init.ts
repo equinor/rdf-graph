@@ -15,13 +15,20 @@ const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => 
 const selectionChangedHandler = (_e: go.DiagramEvent) => {
 	console.log('Selection changed!');
 
-	const selection = _e.diagram.selection.toArray().map((p) => {
-		console.log(p.data.id);
-	});
+	const selection = _e.diagram.selection.toArray();
 
-	// if (_thisObj instanceof go.Node) {
-	// 	console.log(_thisObj.data.id);
-	// }
+	const a = selection.reduce<{ nodes: string[]; edges: string[] }>(
+		(acc, curr) => {
+			if (curr.data.type === 'node') {
+				acc.nodes.push(curr.data.id);
+			} else if (curr.data.type === 'edge') {
+				acc.edges.push(curr.data.id);
+			}
+			return acc;
+		},
+		{ nodes: [], edges: [] }
+	);
+	console.log('Selection:', a);
 };
 
 export function defaultInitDiagram() {

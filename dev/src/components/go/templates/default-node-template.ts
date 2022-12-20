@@ -13,7 +13,8 @@ export function createDefaultNodeTemplate(
 				figure: 'RoundedRectangle',
 			})
 				.bind('figure', 'shape', (v) => (v ? v : 'RoundedRectangle'))
-				.bind('fill', 'color')
+				.bind('fill')
+				.bind('stroke')
 		)
 		.add(
 			new go.TextBlock('<NoLabel>', {

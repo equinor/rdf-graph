@@ -1,7 +1,7 @@
 import { Button, EdsProvider, Radio } from '@equinor/eds-core-react';
 import { useNavigate } from 'react-router-dom';
 import { DataFactory } from 'n3';
-import { uniqueNamesGenerator, Config, adjectives, colors, animals } from 'unique-names-generator';
+import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 
 // import appCss from './App.module.css';
 import { getUis, UiKey } from '../../setup';
@@ -43,6 +43,22 @@ export const Menu = ({ ui }: { ui: UiKey }) => {
 					n('connectedTo'),
 					n('http://example.com/animals/' + shortName2)
 				),
+			},
+			{
+				action: 'add',
+				data: q(n('http://example.com/animals/' + shortName2), n(PROPS.label.iri), l(shortName2)),
+			},
+			{
+				action: 'add',
+				data: q(n('http://example.com/animals/' + shortName2), n(PROPS.fill.iri), l('red')),
+			},
+			{
+				action: 'add',
+				data: q(n('http://example.com/animals/' + 'martin'), n('hasNo'), l('muscles')),
+			},
+			{
+				action: 'add',
+				data: q(n('http://example.com/animals/' + 'martin'), n('hasNo'), l('money')),
 			},
 		]);
 	};
