@@ -78,6 +78,7 @@ export type PredicateNode = GraphNodeBase<'predicate'> & {
 };
 
 export type GraphEdge = GraphElementBase<'edge'> & {
+	predicateIri: string;
 	sourceId: string;
 	targetId: string;
 };

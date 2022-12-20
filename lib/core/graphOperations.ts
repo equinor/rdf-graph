@@ -1,5 +1,5 @@
 import { PatchGraphMonad } from './PatchGraphMonad';
-import { GraphNode, KnownProps, PatchGraphResult } from './types/types';
+import { GraphEdge, GraphNode, KnownProps, PatchGraphResult, PredicateNode } from './types/types';
 
 export function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
 	const newNode: GraphNode = {
@@ -17,6 +17,63 @@ export function addNode(state: PatchGraphResult, iri: string): PatchGraphMonad {
 			nodeStore: { ...state.graphState.nodeStore, [iri]: newNode },
 		},
 		graphPatches: [...state.graphPatches, { action: 'add', element: newNode }],
+	});
+}
+
+export function addPredicateNode(
+	state: PatchGraphResult,
+	predicateIri: string,
+	edgeId: string
+): PatchGraphMonad {
+	let predicateNode: PredicateNode;
+	if (predicateIri in state.graphState.predicateNodeStore) {
+		const pNode = state.graphState.predicateNodeStore[predicateIri];
+		predicateNode = {
+			...pNode,
+			edgeIds: [...pNode.edgeIds, edgeId],
+		};
+	} else {
+		predicateNode = {
+			id: predicateIri,
+			type: 'node',
+			edgeIds: [edgeId],
+			variant: 'predicate',
+			data: new Map(),
+			props: {},
+		};
+	}
+
+	return new PatchGraphMonad({
+		...state,
+		graphState: {
+			...state.graphState,
+			predicateNodeStore: { ...state.graphState.predicateNodeStore, [predicateIri]: predicateNode },
+		},
+	});
+}
+
+export function addEdge(
+	state: PatchGraphResult,
+	edgeId: string,
+	predicateIri: string,
+	sourceId: string,
+	targetId: string
+): PatchGraphMonad {
+	const newEdge: GraphEdge = {
+		id: edgeId,
+		predicateIri: predicateIri,
+		type: 'edge',
+		sourceId: sourceId,
+		targetId: targetId,
+	};
+
+	return new PatchGraphMonad({
+		...state,
+		graphState: {
+			...state.graphState,
+			edgeStore: { ...state.graphState.edgeStore, [edgeId]: newEdge },
+		},
+		graphPatches: [...state.graphPatches, { action: 'add', element: newEdge }],
 	});
 }
 

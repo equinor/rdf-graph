@@ -27,10 +27,22 @@ export const Menu = ({ ui }: { ui: UiKey }) => {
 			dictionaries: [adjectives, animals, colors], // colors can be omitted here as not used
 			length: 2,
 		});
+		const shortName2 = uniqueNamesGenerator({
+			dictionaries: [adjectives, animals, colors], // colors can be omitted here as not used
+			length: 2,
+		});
 		graphCtx.setRdfPatches([
 			{
 				action: 'add',
 				data: q(n('http://example.com/animals/' + shortName), n(PROPS.label.iri), l(shortName)),
+			},
+			{
+				action: 'add',
+				data: q(
+					n('http://example.com/animals/' + shortName),
+					n('connectedTo'),
+					n('http://example.com/animals/' + shortName2)
+				),
 			},
 		]);
 	};
@@ -49,7 +61,7 @@ export const Menu = ({ ui }: { ui: UiKey }) => {
 					/>
 				))}
 			</div>
-			<Button onClick={() => addNewNode()}>Add</Button>
+			<Button onClick={() => addNewNode()}>Add Node</Button>
 		</EdsProvider>
 	);
 };

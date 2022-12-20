@@ -1,5 +1,6 @@
 import { termToId } from 'n3';
-import { addNode } from './graphOperations';
+import { nanoid } from 'nanoid';
+import { addEdge, addNode, addPredicateNode } from './graphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import { GraphState, PatchGraphResult, RdfPatch, SymbolProvider } from './types/types';
 
@@ -65,7 +66,10 @@ export function rdfToGraphPatch(
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {
 			if (rdfPatch.action === 'add') {
-				return acc.bind(addSubjectNode(rdfPatch)).bind(addObjectNode(rdfPatch));
+				return acc
+					.bind(addSubjectNode(rdfPatch))
+					.bind(addObjectNode(rdfPatch))
+					.bind(ensurePredicateNodeWithEdge(rdfPatch));
 			} else {
 				return acc;
 			}
@@ -86,15 +90,32 @@ function addSubjectNode(rdfPatch: RdfPatch): BindFunction {
 	return f;
 }
 
+function objectIsIri(rdfPatch: RdfPatch) {
+	return rdfPatch.data.object.termType !== 'Literal';
+}
+
 function addObjectNode(rdfPatch: RdfPatch): BindFunction {
 	const f = (state: PatchGraphResult) => {
 		const objectIri = termToId(rdfPatch.data.object);
 		const nodeExists = objectIri in state.graphState.nodeStore;
-		const isIri = rdfPatch.data.object.termType !== 'Literal';
-		if (rdfPatch.action === 'add' && !nodeExists && isIri) {
+		if (rdfPatch.action === 'add' && !nodeExists && objectIsIri(rdfPatch)) {
 			return addNode(state, objectIri);
 		}
 		return new PatchGraphMonad(state);
+	};
+	return f;
+}
+
+function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
+	const f = (state: PatchGraphResult) => {
+		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
+		const edgeId = nanoid();
+		const subjectIri = termToId(rdfPatch.data.subject);
+		const predicateIri = termToId(rdfPatch.data.predicate);
+		const objectIri = termToId(rdfPatch.data.object);
+		const next = addEdge(state, edgeId, predicateIri, subjectIri, objectIri).getState();
+		// TODO: Handle node exists in nodeStore (ie. currently used as subject or object)
+		return addPredicateNode(next, predicateIri, edgeId);
 	};
 	return f;
 }

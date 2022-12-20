@@ -2,11 +2,26 @@ import * as go from 'gojs';
 import { createDefaultNodeTemplate } from './templates/default-node-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
-	console.log('Node clicked!');
+	// console.log('Node clicked!');
+	// if (_thisObj instanceof go.Node) {
+	// 	console.log(_thisObj.data.id);
+	// }
 };
 
 const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
 	console.log('Engineering Symbol node clicked!');
+};
+
+const selectionChangedHandler = (_e: go.DiagramEvent) => {
+	console.log('Selection changed!');
+
+	const selection = _e.diagram.selection.toArray().map((p) => {
+		console.log(p.data.id);
+	});
+
+	// if (_thisObj instanceof go.Node) {
+	// 	console.log(_thisObj.data.id);
+	// }
 };
 
 export function defaultInitDiagram() {
@@ -26,6 +41,7 @@ export function defaultInitDiagram() {
 		// groupTemplate: createDefaultGroupTemplate(),
 	});
 
+	d.addDiagramListener('ChangedSelection', selectionChangedHandler);
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 3;
