@@ -78,6 +78,7 @@
 		"react-dom": "^16.14.0 || ^17.0.0"
 	},
 	"dependencies": {
+		"@sniptt/monads": "^0.5.10",
 		"3d-force-graph": "^1.70.13",
 		"cytoscape": "^3.22.1",
 		"cytoscape-cola": "^2.5.1",

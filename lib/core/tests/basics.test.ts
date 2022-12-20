@@ -13,7 +13,7 @@ describe('Basics', () => {
 
 		const patchGraphResult = patchGraphState(state, rdfPatch);
 
-		expect(patchGraphResult.graphPatches.length).toBe(1);
+		expect(patchGraphResult.graphPatches.length).toBe(2);
 		expect(patchGraphResult.graphPatches[0].action).toBe('add');
 		expect(patchGraphResult.graphPatches[0].element.type).toBe('node');
 	});
