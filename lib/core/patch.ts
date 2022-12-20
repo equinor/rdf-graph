@@ -133,11 +133,13 @@ function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
+		const objectLiteral = objectTerm.slice(1, -1);
+
 		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
 		if (key) {
-			return putKnownProp(monad, subjectIri, key, objectTerm);
+			return putKnownProp(monad, subjectIri, key, objectLiteral);
 		} else {
-			return putDataProp(monad, subjectIri, predicateIri, objectTerm);
+			return putDataProp(monad, subjectIri, predicateIri, objectLiteral);
 		}
 	};
 	return f;
