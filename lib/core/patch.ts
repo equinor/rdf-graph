@@ -1,11 +1,11 @@
-import { ensureObjectNode, ensurePredicateNodeWithEdge, ensurePredicateProp, ensureSubjectNode } from './complexGraphOperations';
-import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import {
-	GraphState,
-	PatchGraphResult,
-	RdfPatch,
-	SymbolProvider,
-} from './types/types';
+	ensureObjectNode,
+	ensurePredicateNodeWithEdge,
+	ensurePredicateProp,
+	ensureSubjectNode,
+} from './complexGraphOperations';
+import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
+import { GraphState, PatchGraphResult, RdfPatch, SymbolProvider } from './types/types';
 
 type PatchGraphOptions = {
 	symbolProvider: SymbolProvider;

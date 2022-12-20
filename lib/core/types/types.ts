@@ -59,13 +59,15 @@ export type KnownProps = Partial<{
 export type GraphNodeBase<TNodeVariant extends NodeVariantInternal> = GraphElementBase<'node'> & {
 	//iri of subject or object
 	variant: TNodeVariant;
-	data: Map<string, string>;
+	data: Record<string, string>;
 	props: KnownProps;
 };
 
 export type DefaultNode = GraphNodeBase<'default'> & {};
 
 export type SymbolNode = GraphNodeBase<'symbol'> & {};
+
+export type GroupNode = GraphNodeBase<'group'> & {};
 
 export type ConnectorNode = GraphNodeBase<'connector'> & {
 	symbolNodeRef: SymbolNode;
@@ -83,7 +85,7 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 	targetId: string;
 };
 
-export type GraphNode = DefaultNode | SymbolNode | ConnectorNode;
+export type GraphNode = DefaultNode | SymbolNode | ConnectorNode | GroupNode;
 
 export type GraphElement = GraphNode | GraphEdge;
 

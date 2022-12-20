@@ -9,6 +9,10 @@ export class PatchGraphMonad {
 		return f(this.state);
 	}
 
+	bindMany(fs: BindFunction[]): PatchGraphMonad {
+		return fs.reduce((acc, f) => acc.bind(f), new PatchGraphMonad(this.state));
+	}
+
 	getState() {
 		return this.state;
 	}
