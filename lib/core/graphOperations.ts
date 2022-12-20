@@ -92,7 +92,9 @@ export function putKnownProp<P extends keyof KnownProps>(
 			...state,
 			graphState: {
 				...state.graphState,
-				nodeStore: updateNodeInStore(store, { props: { ...node.props, [prop]: propValue } }),
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					props: { ...node.props, [prop]: propValue },
+				}),
 			},
 			// TODO handle different value types (for example string[] for hasConnector)
 			graphPatches: [
@@ -119,7 +121,9 @@ export function putDataProp(
 			...state,
 			graphState: {
 				...state.graphState,
-				nodeStore: updateNodeInStore(store, { data: { ...node.data, [dataKey]: dataValue } }),
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					data: { ...node.data, [dataKey]: dataValue },
+				}),
 			},
 			graphPatches: [
 				...state.graphPatches,
@@ -137,17 +141,18 @@ export function putDataProp(
 
 function updateNodeInStore(
 	store: Record<string, GraphNode>,
+	nodeId: string,
 	toBeUpdated: Partial<GraphNode>
 ): Record<string, GraphNode> {
-	const id = toBeUpdated.id;
-	if (!id) {
-		console.warn('Missing id in graphOperation update node');
+	if (!nodeId) {
+		console.warn(`Missing id='${nodeId}' in graphOperation update node`);
 		return store;
 	}
-	if (id in store) {
-		const node = store[id];
-		return { ...store, [id]: { ...node, ...toBeUpdated } as GraphNode };
+	if (nodeId in store) {
+		const node = store[nodeId];
+		return { ...store, [nodeId]: { ...node, ...toBeUpdated } as GraphNode };
 	} else {
-		return { ...store, [id]: toBeUpdated as GraphNode };
+		console.warn(`Missing id='${nodeId}' in graphOperation update node`);
+		return store;
 	}
 }
