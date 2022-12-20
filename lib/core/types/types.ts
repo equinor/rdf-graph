@@ -199,3 +199,5 @@ export const PROPS: Record<KnownPropKey, KnownPropConfig> = {
 		rule: () => {},
 	},
 };
+
+export const knownPropKeys = Object.keys(PROPS) as KnownPropKey[];

@@ -94,10 +94,41 @@ export function putKnownProp<P extends keyof KnownProps>(
 				...state.graphState,
 				nodeStore: updateNodeInStore(store, { props: { ...node.props, [prop]: propValue } }),
 			},
-			// TODO handle different value types (for example string[] for has connector)
+			// TODO handle different value types (for example string[] for hasConnector)
 			graphPatches: [
 				...state.graphPatches,
 				{ action: 'add', element: { type: 'property', target: node, key: prop, value: propValue } },
+			],
+		});
+	}
+	return monad;
+}
+
+export function putDataProp(
+	monad: PatchGraphMonad,
+	nodeIri: string,
+	dataKey: string,
+	dataValue: string
+): PatchGraphMonad {
+	const state = monad.getState();
+	const store = state.graphState.nodeStore;
+
+	if (nodeIri in store) {
+		const node = store[nodeIri];
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, { data: { ...node.data, [dataKey]: dataValue } }),
+			},
+			graphPatches: [
+				...state.graphPatches,
+
+				// TODO handle multiple object for each (subject, predicate)-pair
+				{
+					action: 'add',
+					element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
+				},
 			],
 		});
 	}
