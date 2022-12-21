@@ -24,31 +24,29 @@ import {
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		const monad = new PatchGraphMonad(state);
 		const subjectIri = termToId(rdfPatch.data.subject);
 		const nodeExists = subjectIri in state.graphState.nodeStore;
 		if (rdfPatch.action === 'add' && !nodeExists) {
-			return monad.bind(addNewNode(subjectIri, 'default'));
+			return new PatchGraphMonad(state).bind(addNewNode(subjectIri, 'default'));
 		}
-		return monad;
+		return new PatchGraphMonad(state);
 	};
 }
 
 export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		const monad = new PatchGraphMonad(state);
 		const objectIri = termToId(rdfPatch.data.object);
 		const nodeExists = objectIri in state.graphState.nodeStore;
 		if (rdfPatch.action === 'add' && !nodeExists && objectIsIri(rdfPatch)) {
-			return monad.bind(addNewNode(objectIri, 'default'));
+			return new PatchGraphMonad(state).bind(addNewNode(objectIri, 'default'));
 		}
-		return monad;
+		return new PatchGraphMonad(state);
 	};
 }
 
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		if (!objectIsIri(rdfPatch)) new PatchGraphMonad(state);
+		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
 		const edgeId = nanoid();
@@ -70,8 +68,7 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 
 export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		const monad = new PatchGraphMonad(state);
-		if (objectIsIri(rdfPatch)) return monad;
+		if (objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
@@ -80,9 +77,9 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 
 		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
 		if (key) {
-			return monad.bind(putKnownProp(subjectIri, key, objectLiteral));
+			return new PatchGraphMonad(state).bind(putKnownProp(subjectIri, key, objectLiteral));
 		} else {
-			return monad.bind(putDataProp(subjectIri, predicateIri, objectLiteral));
+			return new PatchGraphMonad(state).bind(putDataProp(subjectIri, predicateIri, objectLiteral));
 		}
 	};
 }
@@ -93,7 +90,6 @@ function convertNode(
 	symbolNodeRef?: SymbolNode
 ): BindFunction {
 	return (state: PatchGraphResult) => {
-		const monad = new PatchGraphMonad(state);
 		const graphState = state.graphState;
 
 		//edge stuff
@@ -122,7 +118,7 @@ function convertNode(
 			.concat(outgoing)
 			.map((e) => addEdge(e.id, e.predicateIri, e.sourceId, e.targetId));
 
-		return monad
+		return new PatchGraphMonad(state)
 			.bindMany(deleteAllKnownProps)
 			.bind(deleteAllDataProps(nodeIri))
 			.bind(deleteEdges(edgeKeys))
