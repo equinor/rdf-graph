@@ -15,7 +15,8 @@
 	-moz-osx-font-smoothing: grayscale;
 	-webkit-text-size-adjust: 100%;
 
-	--menu-height: 80px;
+	--menu-height: 60px;
+	--side-menu-width: 500px;
 }
 
 a {

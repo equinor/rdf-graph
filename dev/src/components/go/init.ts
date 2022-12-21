@@ -1,4 +1,5 @@
 import * as go from 'gojs';
+import { GraphSelection } from '../../context/GraphContext';
 import { createDefaultNodeTemplate } from './templates/default-node-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
@@ -17,7 +18,7 @@ const selectionChangedHandler = (_e: go.DiagramEvent) => {
 
 	const selection = _e.diagram.selection.toArray();
 
-	const a = selection.reduce<{ nodes: string[]; edges: string[] }>(
+	const graphSelection = selection.reduce<GraphSelection>(
 		(acc, curr) => {
 			if (curr.data.type === 'node') {
 				acc.nodes.push(curr.data.id);
@@ -28,10 +29,9 @@ const selectionChangedHandler = (_e: go.DiagramEvent) => {
 		},
 		{ nodes: [], edges: [] }
 	);
-	console.log('Selection:', a);
 };
 
-export function defaultInitDiagram() {
+export function defaultInitDiagram(selectionHandler?: (e: go.DiagramEvent) => void) {
 	const d = new go.Diagram(undefined, {
 		contentAlignment: go.Spot.Center,
 		padding: 30,
@@ -48,7 +48,10 @@ export function defaultInitDiagram() {
 		// groupTemplate: createDefaultGroupTemplate(),
 	});
 
-	d.addDiagramListener('ChangedSelection', selectionChangedHandler);
+	if (selectionHandler) {
+		d.addDiagramListener('ChangedSelection', selectionHandler);
+	}
+
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 3;

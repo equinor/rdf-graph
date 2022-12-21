@@ -19,10 +19,25 @@
 	height: var(--menu-height);
 	/* width: 100%; */
 	background: white;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.main {
+	display: flex;
+	height: calc(100vh - var(--menu-height));
+	flex-direction: row;
 }
 
 .uiContainer {
 	height: calc(100vh - var(--menu-height));
+	width: calc(100vw - var(--side-menu-width));
+}
+
+.sideMenu {
+	width: var(--side-menu-width);
+	background-color: white;
 }
 
 .overlayContent {
