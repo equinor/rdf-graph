@@ -47,23 +47,25 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 }
 
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
-	const f = (state: PatchGraphResult) => {
-		let bindings: BindFunction[] = [];
-		if (objectIsIri(rdfPatch)) {
-			const edgeId = nanoid();
-			const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
-			bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
+	return (state: PatchGraphResult) => {
+		if (!objectIsIri(rdfPatch)) new PatchGraphMonad(state);
 
-			if (predicateIri in state.graphState.nodeStore) {
-				bindings.push(convertNode(predicateIri, 'predicate'));
-			} else {
-				bindings.push(addNewNode(predicateIri, 'predicate'));
-			}
-			bindings.push(addEdgeToPredicateNode(edgeId, predicateIri));
+		let bindings: BindFunction[] = [];
+		const edgeId = nanoid();
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+
+		bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
+
+		if (predicateIri in state.graphState.nodeStore) {
+			bindings.push(convertNode(predicateIri, 'predicate'));
+		} else {
+			bindings.push(addNewNode(predicateIri, 'predicate'));
 		}
-		return bindings.reduce((acc, b) => acc.bind(b), new PatchGraphMonad(state));
+
+		bindings.push(addEdgeToPredicateNode(edgeId, predicateIri));
+
+		return new PatchGraphMonad(state).bindMany(bindings);
 	};
-	return f;
 }
 
 export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
@@ -97,8 +99,13 @@ function convertNode(
 		//edge stuff
 		const edgeStore = graphState.edgeStore;
 		const edgeKeys = Object.keys(edgeStore);
-		const incoming = edgeKeys.filter((key) => edgeStore[key].targetId).map((key) => edgeStore[key]);
-		const outgoing = edgeKeys.filter((key) => edgeStore[key].sourceId).map((key) => edgeStore[key]);
+
+		const outgoing = edgeKeys
+			.filter((key) => edgeStore[key].sourceId === nodeIri)
+			.map((key) => edgeStore[key]);
+		const incoming = edgeKeys
+			.filter((key) => edgeStore[key].targetId === nodeIri)
+			.map((key) => edgeStore[key]);
 
 		//node stuff
 		const nodeStore = graphState.nodeStore;

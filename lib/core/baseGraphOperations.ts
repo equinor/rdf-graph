@@ -106,6 +106,7 @@ export function deleteEdges(edgeIds: string[]): BindFunction {
 				const p: GraphPatch = { action: 'remove', element: edgeStore[key] };
 				return p;
 			});
+
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
@@ -124,28 +125,26 @@ export function putKnownProp<P extends keyof KnownProps>(
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
+		if (!(nodeIri in store)) return new PatchGraphMonad(state);
+		const node = store[nodeIri];
 
-		if (nodeIri in store) {
-			const node = store[nodeIri];
-			return new PatchGraphMonad({
-				...state,
-				graphState: {
-					...state.graphState,
-					nodeStore: updateNodeInStore(store, nodeIri, {
-						props: { ...node.props, [prop]: propValue },
-					}),
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					props: { ...node.props, [prop]: propValue },
+				}),
+			},
+			// TODO handle different value types (for example string[] for hasConnector)
+			graphPatches: [
+				...state.graphPatches,
+				{
+					action: 'add',
+					element: { type: 'property', target: node, key: prop, value: propValue },
 				},
-				// TODO handle different value types (for example string[] for hasConnector)
-				graphPatches: [
-					...state.graphPatches,
-					{
-						action: 'add',
-						element: { type: 'property', target: node, key: prop, value: propValue },
-					},
-				],
-			});
-		}
-		return new PatchGraphMonad(state);
+			],
+		});
 	};
 }
 
@@ -155,112 +154,109 @@ export function deleteKnownProp<P extends keyof KnownProps>(
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
+		if (!(nodeIri in store)) return new PatchGraphMonad(state);
 
-		if (nodeIri in store) {
-			const node = store[nodeIri];
-			return new PatchGraphMonad({
-				...state,
-				graphState: {
-					...state.graphState,
-					nodeStore: updateNodeInStore(store, nodeIri, {
-						props: { ...node.props, [prop]: undefined },
-					}),
+		const node = store[nodeIri];
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					props: { ...node.props, [prop]: undefined },
+				}),
+			},
+			// TODO handle different value types (for example string[] for hasConnector)
+			graphPatches: [
+				...state.graphPatches,
+				{
+					action: 'remove',
+					element: { type: 'property', target: node, key: prop, value: undefined },
 				},
-				// TODO handle different value types (for example string[] for hasConnector)
-				graphPatches: [
-					...state.graphPatches,
-					{
-						action: 'remove',
-						element: { type: 'property', target: node, key: prop, value: undefined },
-					},
-				],
-			});
-		}
-		return new PatchGraphMonad(state);
+			],
+		});
 	};
 }
 
 export function putDataProp(nodeIri: string, dataKey: string, dataValue: string): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
-		if (nodeIri in store) {
-			const node = store[nodeIri];
-			return new PatchGraphMonad({
-				...state,
-				graphState: {
-					...state.graphState,
-					nodeStore: updateNodeInStore(store, nodeIri, {
-						data: { ...node.data, [dataKey]: dataValue },
-					}),
-				},
-				graphPatches: [
-					...state.graphPatches,
+		if (!(nodeIri in store)) return new PatchGraphMonad(state);
 
-					// TODO handle multiple object for a (subject, predicate)-pair
-					{
-						action: 'add',
-						element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
-					},
-				],
-			});
-		}
-		return new PatchGraphMonad(state);
+		const node = store[nodeIri];
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					data: { ...node.data, [dataKey]: dataValue },
+				}),
+			},
+			graphPatches: [
+				...state.graphPatches,
+
+				// TODO handle multiple object for a (subject, predicate)-pair
+				{
+					action: 'add',
+					element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
+				},
+			],
+		});
 	};
 }
 
 export function deleteDataProp(nodeIri: string, dataKey: string): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
-		if (nodeIri in store) {
-			const node = store[nodeIri];
-			const newData = deleteEntriesFromRecord(node.data, [dataKey]);
-			return new PatchGraphMonad({
-				...state,
-				graphState: {
-					...state.graphState,
-					nodeStore: updateNodeInStore(store, nodeIri, {
-						data: newData,
-					}),
-				},
-				graphPatches: [
-					...state.graphPatches,
+		if (!(nodeIri in store)) return new PatchGraphMonad(state);
+		const node = store[nodeIri];
+		const newData = deleteEntriesFromRecord(node.data, [dataKey]);
 
-					// TODO handle multiple object for a (subject, predicate)-pair
-					{
-						action: 'remove',
-						element: { type: 'data', target: node, key: dataKey, values: [] },
-					},
-				],
-			});
-		}
-		return new PatchGraphMonad(state);
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					data: newData,
+				}),
+			},
+			graphPatches: [
+				...state.graphPatches,
+
+				// TODO handle multiple object for a (subject, predicate)-pair
+				{
+					action: 'remove',
+					element: { type: 'data', target: node, key: dataKey, values: [] },
+				},
+			],
+		});
 	};
 }
 
 export function deleteAllDataProps(nodeIri: string): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
-		if (nodeIri in store) {
-			const node = store[nodeIri];
+		if (!(nodeIri in store)) return new PatchGraphMonad(state);
+		const node = store[nodeIri];
 
-			const removePatches: GraphPatch[] = Object.keys(node.data).map((k) => {
-				return {
-					action: 'remove',
-					element: { type: 'data', target: node, key: k, values: [] },
-				};
-			});
-			return new PatchGraphMonad({
-				...state,
-				graphState: {
-					...state.graphState,
-					nodeStore: updateNodeInStore(store, nodeIri, {
-						data: {},
-					}),
-				},
-				graphPatches: [...state.graphPatches, ...removePatches],
-			});
-		}
-		return new PatchGraphMonad(state);
+		const removePatches: GraphPatch[] = Object.keys(node.data).map((k) => {
+			return {
+				action: 'remove',
+				element: { type: 'data', target: node, key: k, values: [] },
+			};
+		});
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, nodeIri, {
+					data: {},
+				}),
+			},
+			graphPatches: [...state.graphPatches, ...removePatches],
+		});
 	};
 }
 
@@ -282,8 +278,7 @@ function updateNodeInStore(
 	if (nodeId in store) {
 		const node = store[nodeId];
 		return { ...store, [nodeId]: { ...node, ...toBeUpdated } as GraphNode };
-	} else {
-		console.warn(`Missing id='${nodeId}' in graphOperation update node`);
-		return store;
 	}
+	console.warn(`Missing id='${nodeId}' in graphOperation update node`);
+	return store;
 }
