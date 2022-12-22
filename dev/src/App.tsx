@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useParams, Outlet } from 'react-router-dom';
+import { EdsProvider } from '@equinor/eds-core-react';
+import { useParams } from 'react-router-dom';
 import appCss from './App.module.css';
 import { CyUi } from './components/cy/CyUi';
 import { GoUi } from './components/go/GoUi';
@@ -10,7 +10,6 @@ import { UiKey } from './setup';
 
 function App() {
 	const { ui } = useParams<{ ui: UiKey }>();
-
 	return (
 		<GraphContextProvider>
 			<div className={appCss.wrapper}>
@@ -28,12 +27,11 @@ function App() {
 							: null}
 					</div>
 					<div className={appCss.sideMenu}>
-						<MenuSide />
+						<EdsProvider density="compact">
+							<MenuSide />
+						</EdsProvider>
 					</div>
 				</div>
-				{/* <div className={appCss.overlayContent}>
-					<Outlet />
-				</div> */}
 			</div>
 		</GraphContextProvider>
 	);

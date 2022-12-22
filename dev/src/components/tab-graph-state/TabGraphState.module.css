@@ -8,6 +8,11 @@
 	/* align-content: stretch; */
 }
 
+.json {
+	font-size: medium;
+	line-height: 13px;
+}
+
 .section {
 	padding: 0;
 	margin: 10px;
@@ -16,10 +21,4 @@
 	flex-direction: column;
 	/* background-color: aqua; */
 	/* align-content: stretch; */
-}
-
-.sectionTitle {
-	display: flex;
-	flex-direction: row;
-	gap: 10px;
 }

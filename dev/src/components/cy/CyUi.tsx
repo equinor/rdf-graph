@@ -1,29 +1,29 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RdfPatch } from '@rdf-graph/types/types';
-import { GraphContext } from '../../context/GraphContext';
+import { useGraphContext } from '../../context/GraphContext';
 
 export const CyUi = () => {
 	const [patches, setPatches] = useState<RdfPatch[]>([]);
 	const [hasInit, setHasInit] = useState<boolean>(false);
 
-	const graphCtx = useContext(GraphContext);
+	const { graphContext } = useGraphContext();
 
 	useEffect(() => {
-		if (graphCtx.rdfPatchesHistory.length > 0) {
-			setPatches(graphCtx.rdfPatchesHistory);
+		if (graphContext.rdfPatchesHistory.length > 0) {
+			setPatches(graphContext.rdfPatchesHistory);
 		}
 		setHasInit(true);
 	}, []);
 
 	useEffect(() => {
 		if (!hasInit) return;
-		setPatches(graphCtx.rdfPatches);
-	}, [graphCtx.rdfPatches]);
+		setPatches(graphContext.rdfPatches);
+	}, [graphContext.rdfPatches]);
 
 	return (
 		<div>
 			<h1>TODO: Cytoscape</h1>
-			<p>Patch count (history): {graphCtx.rdfPatchesHistory.length}</p>
+			<p>Patch count (history): {graphContext.rdfPatchesHistory.length}</p>
 		</div>
 	);
 };

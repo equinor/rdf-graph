@@ -1,16 +1,14 @@
-import { Button, Chip, Divider, EdsProvider, Typography } from '@equinor/eds-core-react';
+import { Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
 import { DataFactory } from 'n3';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
 
-import { useContext, useEffect, useState } from 'react';
-import { GraphContext } from '../../context/GraphContext';
+import { useEffect, useState } from 'react';
+import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
 
-import { PROPS } from '@rdf-graph/types/types';
-
-import { pages } from '../../main';
+import { PROPS, RdfPatch } from '@rdf-graph/types/types';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -22,100 +20,165 @@ function generateNodeName() {
 }
 
 export const TabEdit = () => {
-	const graphCtx = useContext(GraphContext);
+	const { graphContext, dispatch } = useGraphContext();
 
 	const [canAddEdge, setCanAddEdge] = useState(false);
 
-	const addNewNode = (id?: string) => {
-		const shortName = generateNodeName();
-		const shortName2 = generateNodeName();
+	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
 
-		graphCtx.dispatchRdfPatches([
-			{
-				action: 'add',
-				data: q(n('http://example.com/animals/' + shortName), n(PROPS.label.iri), l(shortName)),
-			},
-			// {
-			// 	action: 'add',
-			// 	data: q(
-			// 		n('http://example.com/animals/' + shortName),
-			// 		n('connectedTo'),
-			// 		n('http://example.com/animals/' + shortName2)
-			// 	),
-			// },
-			// {
-			// 	action: 'add',
-			// 	data: q(n('http://example.com/animals/' + shortName2), n(PROPS.label.iri), l(shortName2)),
-			// },
-			// {
-			// 	action: 'add',
-			// 	data: q(n('http://example.com/animals/' + shortName2), n(PROPS.fill.iri), l('red')),
-			// },
-		]);
+	const addNewNode = (id?: string) => {
+		const name = generateNodeName();
+		const name_pretty = name
+			.split('_')
+			.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+			.join(' ');
+
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: [
+				{
+					action: 'add',
+					data: q(n('http://example.com/animals/' + name), n(PROPS.label.iri), l(name_pretty)),
+				},
+			],
+		});
+	};
+
+	const addCluster = () => {
+		const nodes = [0, 1, 2]
+			.map((_i) => generateNodeName())
+			.map((n) => {
+				return {
+					id: n,
+					label: n
+						.split('_')
+						.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+						.join(' '),
+				};
+			});
+
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: [
+				...nodes.map<RdfPatch>((node) => {
+					return {
+						action: 'add',
+						data: q(n('http://example.com/animals/' + node.id), n(PROPS.label.iri), l(node.label)),
+					};
+				}),
+				{
+					action: 'add',
+					data: q(
+						n('http://example.com/animals/' + nodes[0].id),
+						n('connectedTo'),
+						n('http://example.com/animals/' + nodes[1].id)
+					),
+				},
+				{
+					action: 'add',
+					data: q(
+						n('http://example.com/animals/' + nodes[1].id),
+						n('connectedTo'),
+						n('http://example.com/animals/' + nodes[2].id)
+					),
+				},
+				{
+					action: 'add',
+					data: q(
+						n('http://example.com/animals/' + nodes[2].id),
+						n('connectedTo'),
+						n('http://example.com/animals/' + nodes[0].id)
+					),
+				},
+			],
+		});
 	};
 
 	const addEdge = () => {
 		if (!canAddEdge) return;
-		addEdgeFromIris(graphCtx.graphSelection.nodes[0], graphCtx.graphSelection.nodes[1]);
+		addEdgeFromIris(graphContext.graphSelection.nodes[0], graphContext.graphSelection.nodes[1]);
 	};
 
 	const addEdgeFromIris = (sourceIri: string, targetIri: string) => {
-		graphCtx.dispatchRdfPatches([
-			{
-				action: 'add',
-				data: q(n(sourceIri), n('connectedTo'), n(targetIri)),
-			},
-		]);
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: [
+				{
+					action: 'add',
+					data: q(n(sourceIri), n('connectedTo'), n(targetIri)),
+				},
+			],
+		});
 	};
 
 	useEffect(() => {
-		const s = graphCtx.graphSelection;
+		// const s = graphContext.graphSelection;
 
-		setCanAddEdge(s.nodes.length === 2 && s.edges.length === 0);
-	}, [graphCtx.graphSelection]);
+		// setCanAddEdge(s.nodes.length === 2 && s.edges.length === 0);
+
+		const n = graphContext.graphSelection.nodes;
+
+		if (n.length === 1) {
+			setEdgeNodes([n[0]]);
+		} else if (n.length === 2) {
+			const n1 = edgeNodes[0];
+			const n2 = n1 === n[0] ? n[1] : n[0];
+			setEdgeNodes([n1, n2]);
+		} else {
+			setEdgeNodes([]);
+		}
+	}, [graphContext.graphSelection]);
+
+	useEffect(() => {
+		setCanAddEdge(edgeNodes.length === 2);
+	}, [edgeNodes]);
 
 	return (
-		<EdsProvider density="compact">
-			<div className={css.wrapper}>
-				<MenuSection title="Selection">
-					<div style={{ display: 'flex', flexDirection: 'row', gap: '10px' }}>
-						<Chip>{graphCtx.graphSelection.nodes.length} nodes </Chip>
-						<Chip>{graphCtx.graphSelection.edges.length} edges </Chip>
-					</div>
-				</MenuSection>
-				<Divider variant="small" style={{ width: '100%' }} />
-				<MenuSection title="Node">
-					<Button onClick={() => addNewNode()}>Add Node</Button>
-				</MenuSection>
-				<Divider variant="small" style={{ width: '100%' }} />
-				<MenuSection title="Edge">
-					{canAddEdge ? (
-						<Typography variant="h5" style={{ marginBottom: '10px' }}>
-							CAN
-						</Typography>
-					) : (
-						<Typography variant="h5" style={{ marginBottom: '10px' }}>
-							Select exactly two nodes
-						</Typography>
-					)}
-					<Button onClick={() => addEdge()} disabled={!canAddEdge}>
-						Add Edge
-					</Button>
-				</MenuSection>
-			</div>
-		</EdsProvider>
+		<div className={css.wrapper}>
+			<MenuSection title="Node">
+				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
+
+				<Button onClick={() => addCluster()}>Add Cluster</Button>
+			</MenuSection>
+			<Divider variant="small" style={{ width: '100%' }} />
+			<MenuSection title="Edge">
+				{canAddEdge ? (
+					<>
+						<Typography variant="h6">{edgeNodes[0]}</Typography>
+						<Typography variant="h6">connectedTo</Typography>
+						<Typography variant="h6">{edgeNodes[1]}</Typography>
+					</>
+				) : (
+					<Typography variant="h5" style={{ marginBottom: '10px' }}>
+						Select exactly two nodes
+					</Typography>
+				)}
+				<Button onClick={() => addEdge()} disabled={!canAddEdge}>
+					Add Edge
+				</Button>
+			</MenuSection>
+			<Divider variant="small" style={{ width: '100%' }} />
+			<MenuSection
+				title="Selection"
+				chips={[
+					`${graphContext.graphSelection.nodes.length} nodes`,
+					`${graphContext.graphSelection.edges.length} edges`,
+				]}></MenuSection>
+		</div>
 	);
 };
 
-const MenuSection: React.FunctionComponent<React.PropsWithChildren<{ title: string }>> = ({
-	title,
-	children,
-}) => {
+const MenuSection: React.FunctionComponent<
+	React.PropsWithChildren<{ title: string; chips?: string[] }>
+> = ({ title, chips, children }) => {
 	return (
 		<div className={css.section}>
-			<Typography variant="h5" style={{ marginBottom: '10px' }}>
-				{title}
-			</Typography>
+			<div className={css.sectionTitle}>
+				<Typography variant="h5" style={{ marginBottom: '10px' }}>
+					{title}
+				</Typography>
+				{chips ? chips.map((c, i) => <Chip key={i}>{c}</Chip>) : null}
+			</div>
 			{children}
 		</div>
 	);

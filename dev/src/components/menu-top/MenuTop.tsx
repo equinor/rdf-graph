@@ -3,16 +3,12 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 // import appCss from './App.module.css';
 import { getUis, UiKey } from '../../setup';
-import { useContext } from 'react';
-import { GraphContext } from '../../context/GraphContext';
 
 const uis = getUis();
 
 export const MenuTop = ({ ui }: { ui: UiKey }) => {
 	const navigate = useNavigate();
 	const loc = useLocation();
-
-	const graphCtx = useContext(GraphContext);
 
 	const onChange = (uiKey: UiKey) => {
 		const paths = loc.pathname.split('/');
@@ -29,6 +25,8 @@ export const MenuTop = ({ ui }: { ui: UiKey }) => {
 		navigate('/' + uiKey + subPath);
 	};
 
+	const resetState = () => {};
+
 	return (
 		<EdsProvider density="compact">
 			<Typography variant="h1">RDF-GRAPH</Typography>
@@ -44,6 +42,7 @@ export const MenuTop = ({ ui }: { ui: UiKey }) => {
 					/>
 				))}
 			</div>
+			<Button onClick={resetState}>Reset</Button>
 		</EdsProvider>
 	);
 };

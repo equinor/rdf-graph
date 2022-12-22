@@ -1,5 +1,7 @@
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { RdfPatch } from '@rdf-graph/types/types';
+import React, { createContext, useContext, useEffect, useReducer } from 'react';
+import { GraphState, RdfPatch } from '@rdf-graph/types/types';
+import { useParams } from 'react-router-dom';
+import { UiKey } from '../setup';
 
 export type GraphSelection = {
 	nodes: string[];
@@ -9,57 +11,84 @@ export type GraphSelection = {
 export type GraphContextData = {
 	rdfPatchesHistory: RdfPatch[];
 	rdfPatches: RdfPatch[];
-	dispatchRdfPatches: (rdfPatches: RdfPatch[]) => void;
 	graphSelection: GraphSelection;
-	updateGraphSelection: (selection: GraphSelection) => void;
+	graphState: GraphState;
 };
 
-const defaultContext: GraphContextData = {
-	rdfPatches: [],
-	dispatchRdfPatches: () => {},
-	rdfPatchesHistory: [],
-	graphSelection: { nodes: [], edges: [] },
-	updateGraphSelection: () => {},
+const getDefaultContext: () => GraphContextData = () => {
+	return {
+		rdfPatches: [],
+		rdfPatchesHistory: [],
+		graphSelection: { nodes: [], edges: [] },
+		graphState: { nodeStore: {}, edgeStore: {}, predicateNodeStore: {} },
+	};
 };
 
-export const GraphContext = createContext<GraphContextData>(defaultContext);
+type SetGraphSelectionAction = { type: 'SetGraphSelection'; selection: GraphSelection };
+
+type DispatchRdfPatchesAction = { type: 'DispatchRdfPatches'; rdfPatches: RdfPatch[] };
+
+type SetGraphStateAction = { type: 'SetGraphState'; graphState: GraphState };
+
+type ResetAction = { type: 'Reset' };
+
+type GraphContextAction =
+	| SetGraphSelectionAction
+	| DispatchRdfPatchesAction
+	| SetGraphStateAction
+	| ResetAction;
+
+function graphContextReducer(
+	state: GraphContextData,
+	action: GraphContextAction
+): GraphContextData {
+	switch (action.type) {
+		case 'DispatchRdfPatches':
+			return {
+				...state,
+				rdfPatches: action.rdfPatches,
+				rdfPatchesHistory: [...state.rdfPatchesHistory, ...action.rdfPatches],
+			};
+		case 'SetGraphSelection':
+			return { ...state, graphSelection: action.selection };
+		case 'SetGraphState':
+			return { ...state, graphState: action.graphState };
+		case 'Reset':
+			return getDefaultContext();
+		default:
+			return state;
+	}
+}
+
+const GraphContext = createContext<GraphContextValue>(null!);
+
+type GraphContextValue = {
+	graphContext: GraphContextData;
+	dispatch: React.Dispatch<GraphContextAction>;
+};
 
 export const GraphContextProvider: React.FunctionComponent<React.PropsWithChildren> = ({
 	children,
 }) => {
-	const [rdfPatches, setRdfPatches] = useState<RdfPatch[]>(() => defaultContext.rdfPatches);
-	const [rdfPatchesHistory, setRdfPatchesHistory] = useState<RdfPatch[]>(
-		() => defaultContext.rdfPatches
-	);
+	const [graphContext, dispatch] = useReducer(graphContextReducer, getDefaultContext());
 
-	const [graphSelection, setGraphSelection] = useState<GraphSelection>(
-		() => defaultContext.graphSelection
-	);
+	const { ui } = useParams<{ ui: UiKey }>();
 
-	const dispatchRdfPatches = useCallback((rdfPatches: RdfPatch[]) => {
-		setRdfPatches(rdfPatches);
-	}, []);
-
-	const updateGraphSelection = useCallback((selection: GraphSelection) => {
-		setGraphSelection(selection);
-	}, []);
+	const contextValue: GraphContextValue = {
+		graphContext,
+		dispatch,
+	};
 
 	useEffect(() => {
-		if (rdfPatches.length > 0) {
-			setRdfPatchesHistory(rdfPatchesHistory.concat(rdfPatches));
-		}
-	}, [rdfPatches]);
-
-	const contextValue: GraphContextData = useMemo(
-		() => ({
-			rdfPatches,
-			dispatchRdfPatches,
-			rdfPatchesHistory,
-			graphSelection,
-			updateGraphSelection,
-		}),
-		[rdfPatches, dispatchRdfPatches, rdfPatchesHistory, graphSelection, updateGraphSelection]
-	);
+		if (graphContext.rdfPatchesHistory.length === 0) return;
+		const history = [...graphContext.rdfPatchesHistory];
+		dispatch({ type: 'Reset' });
+		dispatch({ type: 'DispatchRdfPatches', rdfPatches: history });
+	}, [ui]);
 
 	return <GraphContext.Provider value={contextValue}>{children}</GraphContext.Provider>;
 };
+
+export function useGraphContext() {
+	return useContext(GraphContext);
+}

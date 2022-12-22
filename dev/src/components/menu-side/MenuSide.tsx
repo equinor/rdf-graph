@@ -1,6 +1,8 @@
-import { EdsProvider, Tabs } from '@equinor/eds-core-react';
+import { Tabs } from '@equinor/eds-core-react';
 import { useState } from 'react';
 import { Link, Outlet, useLocation, Location } from 'react-router-dom';
+
+import css from './MenuSide.module.css';
 
 import { pages } from '../../main';
 
@@ -19,17 +21,17 @@ export const MenuSide = () => {
 	};
 
 	return (
-		<EdsProvider density="compact">
-			<Tabs activeTab={activeTab} onChange={handleChange}>
-				<Tabs.List>
-					{pages.map((p) => (
-						<Tabs.Tab as={Link} to={p.path!} key={p.path}>
-							{p.title}
-						</Tabs.Tab>
-					))}
-				</Tabs.List>
+		<Tabs activeTab={activeTab} onChange={handleChange} variant="fullWidth">
+			<Tabs.List>
+				{pages.map((p) => (
+					<Tabs.Tab as={Link} to={p.path!} key={p.path}>
+						{p.title}
+					</Tabs.Tab>
+				))}
+			</Tabs.List>
+			<div className={css.tabContent}>
 				<Outlet />
-			</Tabs>
-		</EdsProvider>
+			</div>
+		</Tabs>
 	);
 };

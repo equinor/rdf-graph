@@ -1,5 +1,6 @@
 import * as go from 'gojs';
 import { GraphSelection } from '../../context/GraphContext';
+import { createDefaultLinkTemplate } from './templates/default-link-template';
 import { createDefaultNodeTemplate } from './templates/default-node-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
@@ -13,25 +14,7 @@ const symbolNodeClickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => 
 	console.log('Engineering Symbol node clicked!');
 };
 
-const selectionChangedHandler = (_e: go.DiagramEvent) => {
-	console.log('Selection changed!');
-
-	const selection = _e.diagram.selection.toArray();
-
-	const graphSelection = selection.reduce<GraphSelection>(
-		(acc, curr) => {
-			if (curr.data.type === 'node') {
-				acc.nodes.push(curr.data.id);
-			} else if (curr.data.type === 'edge') {
-				acc.edges.push(curr.data.id);
-			}
-			return acc;
-		},
-		{ nodes: [], edges: [] }
-	);
-};
-
-export function defaultInitDiagram(selectionHandler?: (e: go.DiagramEvent) => void) {
+export function defaultInitDiagram() {
 	const d = new go.Diagram(undefined, {
 		contentAlignment: go.Spot.Center,
 		padding: 30,
@@ -44,13 +27,9 @@ export function defaultInitDiagram(selectionHandler?: (e: go.DiagramEvent) => vo
 		layout: new go.ForceDirectedLayout(),
 		nodeTemplateMap: new go.Map<string, go.Part>().add('', createDefaultNodeTemplate(clickHandler)),
 		// 	.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
-		// linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
+		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
 		// groupTemplate: createDefaultGroupTemplate(),
 	});
-
-	if (selectionHandler) {
-		d.addDiagramListener('ChangedSelection', selectionHandler);
-	}
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;

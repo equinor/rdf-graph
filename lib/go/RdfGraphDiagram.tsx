@@ -12,6 +12,11 @@ const defaultDiagramStyle: React.CSSProperties = {
 	overflow: 'hidden',
 };
 
+export type GraphSelection = {
+	nodes: string[];
+	edges: string[];
+};
+
 export type RdfGraphDiagramProps = {
 	initDiagram: () => go.Diagram;
 	style?: React.CSSProperties;
@@ -19,6 +24,9 @@ export type RdfGraphDiagramProps = {
 	symbolProvider?: SymbolProvider;
 	// selectionEffect?: SelectionCallback;
 	onErrorCallback?: (error: RdfGraphError) => void;
+	onGraphStateChanged?: (state: GraphState) => void;
+	onGraphSelectionChanged?: (selection: GraphSelection) => void;
+	onSelectionChanged?: (e: go.DiagramEvent) => void;
 };
 
 export type RdfGraphDiagramRef = {
@@ -28,7 +36,15 @@ export type RdfGraphDiagramRef = {
 
 const RdfGraphDiagram = forwardRef(
 	(
-		{ initDiagram, style, rdfPatches, symbolProvider }: RdfGraphDiagramProps,
+		{
+			initDiagram,
+			style,
+			rdfPatches,
+			symbolProvider,
+			onGraphStateChanged,
+			onGraphSelectionChanged,
+			onSelectionChanged,
+		}: RdfGraphDiagramProps,
 		ref: React.ForwardedRef<RdfGraphDiagramRef>
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
@@ -58,30 +74,37 @@ const RdfGraphDiagram = forwardRef(
 			return divElRef.current ? go.Diagram.fromDiv(divElRef.current) : null;
 		};
 
-		// const changedSelectionHandler = (e: go.DiagramEvent) => {
-		// 	if (!selectionEffect || !patchHandlerRef.current) return;
-		// 	const undo: PropertyAssertion[] = prevSelectionEffect.current.map(
-		// 		({ action, assertion }) => ({
-		// 			action: action === 'add' ? 'remove' : 'add',
-		// 			assertion,
-		// 		})
-		// 	);
+		const selectionChangedHandler = (e: go.DiagramEvent) => {
+			// Forward diagram selection event
+			if (onSelectionChanged) onSelectionChanged(e);
 
-		// 	const selection = getGraphSelection(e, graphState.graphState);
-		// 	const selectionPatch = selectionEffect(selection);
-		// 	prevSelectionEffect.current = selectionPatch;
-		// 	applyPatch(undo.concat(selectionPatch), patchHandlerRef.current);
-		// };
+			// Generate graph selection and notify
+			if (!onGraphSelectionChanged) return;
+			const selection = e.diagram.selection.toArray();
+			const graphSelection = selection.reduce<GraphSelection>(
+				(acc, curr) => {
+					if (curr.data.type === 'node') {
+						acc.nodes.push(curr.data.id);
+					} else if (curr.data.type === 'edge') {
+						acc.edges.push(curr.data.id);
+					}
+					return acc;
+				},
+				{ nodes: [], edges: [] }
+			);
+
+			onGraphSelectionChanged(graphSelection);
+		};
 
 		useEffect(() => {
 			console.info('INIT RdfGraphDiagram');
 			const diagram = initDiagram();
 			diagram.div = divElRef.current;
-			// diagram.addDiagramListener('ChangedSelection', changedSelectionHandler);
+			diagram.addDiagramListener('ChangedSelection', selectionChangedHandler);
 			setInitialized(true);
 			return () => {
 				diagram.div = null;
-				// diagram.removeDiagramListener('ChangedSelection', changedSelectionHandler);
+				diagram.removeDiagramListener('ChangedSelection', selectionChangedHandler);
 			};
 		}, []);
 
@@ -91,6 +114,10 @@ const RdfGraphDiagram = forwardRef(
 			const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
 
 			setGraphState(patchGraphResult.graphState);
+
+			if (onGraphStateChanged) {
+				onGraphStateChanged({ ...patchGraphResult.graphState });
+			}
 
 			const diagram = getDiagram();
 			if (!diagram) return;
