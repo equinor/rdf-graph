@@ -6,11 +6,15 @@ export function createDefaultNodeTemplate(
 	return new go.Node(go.Panel.Auto, {
 		resizable: false,
 		click: clickHandler,
-		toolTip:  // define a tooltip for each node that displays the color as text
-        $("ToolTip",
-          $(go.TextBlock, { margin: 4 },
-            new go.Binding("text", "http://www.w3.org/2000/01/rdf-schema#description"))
-        )  // end of Adornment
+		// define a tooltip for each node that displays the color as text
+		toolTip: $(
+			'ToolTip',
+			$(
+				go.TextBlock,
+				{ margin: 4 },
+				new go.Binding('text', 'http://www.w3.org/2000/01/rdf-schema#description')
+			)
+		), // end of Adornment
 	})
 		.add(
 			new go.Shape({
@@ -25,5 +29,5 @@ export function createDefaultNodeTemplate(
 				margin: 8,
 				wrap: go.TextBlock.OverflowEllipsis,
 			}).bind('text', 'label')
-		); 
+		);
 }

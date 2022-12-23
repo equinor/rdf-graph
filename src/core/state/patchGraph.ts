@@ -376,7 +376,7 @@ function* graphAssertion<M extends GraphState>(
 				yield {
 					action: 'add',
 					assertion: { type: 'property', target: sNode, key: pTerm, value: q.object.value },
-				}
+				};
 				return;
 			}
 
@@ -577,11 +577,11 @@ function* graphAssertion<M extends GraphState>(
 				remove(sNode.properties, pTerm, assertion.object.value);
 				if (predicate2prop.hasOwnProperty(pTerm)) {
 					yield* propInvalidations[predicate2prop[pTerm] as ValueProp](sNode);
-				} else{
+				} else {
 					yield {
 						action: 'remove',
 						assertion: { type: 'property', target: sNode, key: pTerm, value: q.object.value },
-					}
+					};
 				}
 
 				if (edgePredicate2prop.hasOwnProperty(pTerm) && sNode.type === 'metadata') {
