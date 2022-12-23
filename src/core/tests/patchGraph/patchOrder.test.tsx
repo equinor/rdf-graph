@@ -12,7 +12,7 @@ import {
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
-test('Node becomes connector and node again', () => {
+test.skip('Node becomes connector and node again', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N1'), P.hasSvgPredicate, l(testSymbolId)),
@@ -56,7 +56,7 @@ test('Node becomes connector and node again', () => {
 	testPatchOrder(addedState.graphState, rmChange, expectedRmOrder);
 });
 
-test('Edges becomes colored', () => {
+test.skip('Edges becomes colored', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N2'), P.labelPredicate, l('Node 2')),
@@ -75,7 +75,7 @@ test('Edges becomes colored', () => {
 	testPatchOrder(createState(originalData), change, expectedOrder);
 });
 
-test('Edge from predicate with color', () => {
+test.skip('Edge from predicate with color', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N2'), P.labelPredicate, l('Node 2')),
@@ -116,7 +116,7 @@ test('Edge remove color', () => {
 	testPatchOrder(createState(originalData), change, expectedOrder);
 });
 
-test('Remove edge with color', () => {
+test.skip('Remove edge with color', () => {
 	const originalData = [
 		q(n('N1'), P.labelPredicate, l('Node 1')),
 		q(n('N2'), P.labelPredicate, l('Node 2')),

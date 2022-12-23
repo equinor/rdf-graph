@@ -1,11 +1,20 @@
 import * as go from 'gojs';
-
+const $ = go.GraphObject.make;
 export function createDefaultNodeTemplate(
 	clickHandler?: (e: go.InputEvent, thisObj: go.GraphObject) => void
 ): go.Node {
 	return new go.Node(go.Panel.Auto, {
 		resizable: false,
 		click: clickHandler,
+		// define a tooltip for each node that displays the color as text
+		toolTip: $(
+			'ToolTip',
+			$(
+				go.TextBlock,
+				{ margin: 4 },
+				new go.Binding('text', 'http://www.w3.org/2000/01/rdf-schema#description')
+			)
+		), // end of Adornment
 	})
 		.add(
 			new go.Shape({

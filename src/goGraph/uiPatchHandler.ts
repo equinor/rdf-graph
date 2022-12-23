@@ -100,7 +100,7 @@ export class GoJsPatchHandler implements IUiPatchHandler {
 			return;
 		}
 
-		this.diagram.model.setDataProperty(nodeData, nodePropMap[prop], value);
+		this.diagram.model.setDataProperty(nodeData, nodePropMap[prop] || prop, value);
 	}
 
 	removeNodeProperty<P extends keyof UiNodePatchProperties>(nodeId: string, prop: P): void {
