@@ -9,6 +9,7 @@ export const connectorSymbols_ttl = `@prefix example: <http://example.com#> .
 example:CompA
         ui:hasConnector   example:CompA_C1 , example:CompA_C2 ;
         rdfs:label "Compressor A" ;
+        rdfs:description "Details abt. what we need to display";
         ui:hasSvg              "PP007A" .
 
 example:CompA_C1
@@ -28,6 +29,7 @@ example:CompB_C1
         example:connectedTo example:CompA_C2 .
 
 example:CompB_C2
+        rdfs:description "Connector not connected from here";
         ui:hasConnectorSuffix  "2" .
         
    
@@ -47,9 +49,11 @@ example:Valve1_C2
 
 example:MrPink
 	ui:color "pink";
+        rdfs:description "Details abt. what we need to display";
 	rdfs:label "Mr. pink" .
 
 example:MrWhite
+        rdfs:description "Details abt. what we need to display";
 	ui:color "white";
 	rdfs:label "Mr. white";
 	example:connectedTo example:MrPink .
