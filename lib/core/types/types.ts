@@ -104,7 +104,7 @@ export type GraphEdgeProperty = {
 	target: string;
 	key: KnownPropKey;
 	value: unknown;
-}
+};
 
 // GraphData property can hold any key - value pairs
 export type GraphDataProperty = {

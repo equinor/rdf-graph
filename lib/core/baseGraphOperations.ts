@@ -76,7 +76,7 @@ export function addEdge(
 	predicateIri: string,
 	sourceId: string,
 	targetId: string,
-	stateOnly: boolean = false,
+	stateOnly: boolean = false
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const newEdge: GraphEdge = {
@@ -93,7 +93,9 @@ export function addEdge(
 				...state.graphState,
 				edgeStore: { ...state.graphState.edgeStore, [edgeId]: newEdge },
 			},
-			graphPatches: stateOnly ? state.graphPatches : [...state.graphPatches, { action: 'add', element: newEdge }],
+			graphPatches: stateOnly
+				? state.graphPatches
+				: [...state.graphPatches, { action: 'add', element: newEdge }],
 		});
 	};
 }
@@ -132,31 +134,36 @@ export function putKnownProp<P extends keyof KnownProps>(
 		const node = nodeStore[nodeIri];
 		const predicateNode = predicateNodeStore[nodeIri];
 
-		const newNodeStore = node ? updateNodeInStore(nodeStore, nodeIri, {
-			props: { ...node.props, [prop]: propValue },
-		}) : nodeStore;
+		const newNodeStore = node
+			? updateNodeInStore(nodeStore, nodeIri, {
+					props: { ...node.props, [prop]: propValue },
+			  })
+			: nodeStore;
 
-		const newPredicateStore = predicateNode ? updateNodeInStore(predicateNodeStore, nodeIri, {
-			props: { ...predicateNode.props, [prop]: propValue },
-		}) : predicateNodeStore;
+		const newPredicateStore = predicateNode
+			? updateNodeInStore(predicateNodeStore, nodeIri, {
+					props: { ...predicateNode.props, [prop]: propValue },
+			  })
+			: predicateNodeStore;
 
-		const newPatches: GraphPatch[] = node ? [{
-			action: 'add',
-			element: { type: 'property', target: node, key: prop, value: propValue },
-		}] : [];
+		const newPatches: GraphPatch[] = node
+			? [
+					{
+						action: 'add',
+						element: { type: 'property', target: node, key: prop, value: propValue },
+					},
+			  ]
+			: [];
 
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
 				...state.graphState,
 				nodeStore: newNodeStore,
-				predicateNodeStore: newPredicateStore
+				predicateNodeStore: newPredicateStore,
 			},
 			// TODO handle different value types (for example string[] for hasConnector)
-			graphPatches: stateOnly ? state.graphPatches : [
-				...state.graphPatches,
-				...newPatches
-			],
+			graphPatches: stateOnly ? state.graphPatches : [...state.graphPatches, ...newPatches],
 		});
 	};
 }
@@ -191,7 +198,11 @@ export function deleteKnownProp<P extends keyof KnownProps>(
 	};
 }
 
-export function putDataProp(nodeIri: string, dataKey: string, dataValue: string, stateOnly: boolean = false
+export function putDataProp(
+	nodeIri: string,
+	dataKey: string,
+	dataValue: string,
+	stateOnly: boolean = false
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
@@ -207,14 +218,16 @@ export function putDataProp(nodeIri: string, dataKey: string, dataValue: string,
 					data: { ...node.data, [dataKey]: dataValue },
 				}),
 			},
-			graphPatches: stateOnly ? state.graphPatches : [
-				...state.graphPatches,
-				{
-					action: 'add',
-					// TODO handle multiple object for a (subject, predicate)-pair
-					element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
-				},
-			]
+			graphPatches: stateOnly
+				? state.graphPatches
+				: [
+						...state.graphPatches,
+						{
+							action: 'add',
+							// TODO handle multiple object for a (subject, predicate)-pair
+							element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
+						},
+				  ],
 		});
 	};
 }
@@ -241,7 +254,7 @@ export function deleteDataProp(nodeIri: string, dataKey: string): BindFunction {
 				{
 					action: 'remove',
 					element: { type: 'data', target: node, key: dataKey, values: [] },
-				}
+				},
 			],
 		});
 	};
@@ -276,7 +289,7 @@ export function deleteAllDataProps(nodeIri: string): BindFunction {
 export function addEdgeProp<P extends keyof KnownProps>(
 	edgeId: string,
 	prop: P,
-	propValue: KnownProps[P],
+	propValue: KnownProps[P]
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		return new PatchGraphMonad({
@@ -286,9 +299,9 @@ export function addEdgeProp<P extends keyof KnownProps>(
 				...state.graphPatches,
 				{
 					action: 'add',
-					element: { type: 'edgeProperty', target: edgeId, key: prop, value: propValue }
-				}
-			]
+					element: { type: 'edgeProperty', target: edgeId, key: prop, value: propValue },
+				},
+			],
 		});
 	};
 }
