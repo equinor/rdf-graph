@@ -99,6 +99,13 @@ export type GraphProperty<TTarget extends GraphNode> = {
 	value: unknown;
 };
 
+export type GraphEdgeProperty = {
+	type: 'edgeProperty';
+	target: string;
+	key: KnownPropKey;
+	value: unknown;
+}
+
 // GraphData property can hold any key - value pairs
 export type GraphDataProperty = {
 	type: 'data';
@@ -109,7 +116,7 @@ export type GraphDataProperty = {
 
 export interface GraphPatch {
 	action: 'add' | 'remove';
-	element: GraphNode | GraphEdge | GraphProperty<GraphNode> | GraphDataProperty;
+	element: GraphNode | GraphEdge | GraphProperty<GraphNode> | GraphEdgeProperty | GraphDataProperty;
 }
 
 export type GraphState = {

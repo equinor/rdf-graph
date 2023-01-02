@@ -75,7 +75,8 @@ export function addEdge(
 	edgeId: string,
 	predicateIri: string,
 	sourceId: string,
-	targetId: string
+	targetId: string,
+	stateOnly: boolean = false,
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const newEdge: GraphEdge = {
@@ -92,7 +93,7 @@ export function addEdge(
 				...state.graphState,
 				edgeStore: { ...state.graphState.edgeStore, [edgeId]: newEdge },
 			},
-			graphPatches: [...state.graphPatches, { action: 'add', element: newEdge }],
+			graphPatches: stateOnly ? state.graphPatches : [...state.graphPatches, { action: 'add', element: newEdge }],
 		});
 	};
 }
@@ -121,28 +122,40 @@ export function deleteEdges(edgeIds: string[]): BindFunction {
 export function putKnownProp<P extends keyof KnownProps>(
 	nodeIri: string,
 	prop: P,
-	propValue: KnownProps[P]
+	propValue: KnownProps[P],
+	stateOnly: boolean = false
 ): BindFunction {
 	return (state: PatchGraphResult) => {
-		const store = state.graphState.nodeStore;
-		if (!(nodeIri in store)) return new PatchGraphMonad(state);
-		const node = store[nodeIri];
+		const nodeStore = state.graphState.nodeStore;
+		const predicateNodeStore = state.graphState.predicateNodeStore;
+
+		const node = nodeStore[nodeIri];
+		const predicateNode = predicateNodeStore[nodeIri];
+
+		const newNodeStore = node ? updateNodeInStore(nodeStore, nodeIri, {
+			props: { ...node.props, [prop]: propValue },
+		}) : nodeStore;
+
+		const newPredicateStore = predicateNode ? updateNodeInStore(predicateNodeStore, nodeIri, {
+			props: { ...predicateNode.props, [prop]: propValue },
+		}) : predicateNodeStore;
+
+		const newPatches: GraphPatch[] = node ? [{
+			action: 'add',
+			element: { type: 'property', target: node, key: prop, value: propValue },
+		}] : [];
 
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
 				...state.graphState,
-				nodeStore: updateNodeInStore(store, nodeIri, {
-					props: { ...node.props, [prop]: propValue },
-				}),
+				nodeStore: newNodeStore,
+				predicateNodeStore: newPredicateStore
 			},
 			// TODO handle different value types (for example string[] for hasConnector)
-			graphPatches: [
+			graphPatches: stateOnly ? state.graphPatches : [
 				...state.graphPatches,
-				{
-					action: 'add',
-					element: { type: 'property', target: node, key: prop, value: propValue },
-				},
+				...newPatches
 			],
 		});
 	};
@@ -178,7 +191,8 @@ export function deleteKnownProp<P extends keyof KnownProps>(
 	};
 }
 
-export function putDataProp(nodeIri: string, dataKey: string, dataValue: string): BindFunction {
+export function putDataProp(nodeIri: string, dataKey: string, dataValue: string, stateOnly: boolean = false
+): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
 		if (!(nodeIri in store)) return new PatchGraphMonad(state);
@@ -193,15 +207,14 @@ export function putDataProp(nodeIri: string, dataKey: string, dataValue: string)
 					data: { ...node.data, [dataKey]: dataValue },
 				}),
 			},
-			graphPatches: [
+			graphPatches: stateOnly ? state.graphPatches : [
 				...state.graphPatches,
-
-				// TODO handle multiple object for a (subject, predicate)-pair
 				{
 					action: 'add',
+					// TODO handle multiple object for a (subject, predicate)-pair
 					element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
 				},
-			],
+			]
 		});
 	};
 }
@@ -228,7 +241,7 @@ export function deleteDataProp(nodeIri: string, dataKey: string): BindFunction {
 				{
 					action: 'remove',
 					element: { type: 'data', target: node, key: dataKey, values: [] },
-				},
+				}
 			],
 		});
 	};
@@ -260,6 +273,26 @@ export function deleteAllDataProps(nodeIri: string): BindFunction {
 	};
 }
 
+export function addEdgeProp<P extends keyof KnownProps>(
+	edgeId: string,
+	prop: P,
+	propValue: KnownProps[P],
+): BindFunction {
+	return (state: PatchGraphResult) => {
+		return new PatchGraphMonad({
+			...state,
+			graphState: state.graphState,
+			graphPatches: [
+				...state.graphPatches,
+				{
+					action: 'add',
+					element: { type: 'edgeProperty', target: edgeId, key: prop, value: propValue }
+				}
+			]
+		});
+	};
+}
+
 function deleteEntriesFromRecord<T>(record: Record<string, T>, ids: string[]) {
 	const newRecord: Record<string, T> = {};
 	for (let key in record) {
@@ -270,14 +303,14 @@ function deleteEntriesFromRecord<T>(record: Record<string, T>, ids: string[]) {
 	return newRecord;
 }
 
-function updateNodeInStore(
-	store: Record<string, GraphNode>,
+function updateNodeInStore<T>(
+	store: Record<string, T>,
 	nodeId: string,
-	toBeUpdated: Partial<GraphNode>
-): Record<string, GraphNode> {
+	toBeUpdated: Partial<T>
+): Record<string, T> {
 	if (nodeId in store) {
 		const node = store[nodeId];
-		return { ...store, [nodeId]: { ...node, ...toBeUpdated } as GraphNode };
+		return { ...store, [nodeId]: { ...node, ...toBeUpdated } as T };
 	}
 	console.warn(`Missing id='${nodeId}' in graphOperation update node`);
 	return store;

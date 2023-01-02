@@ -137,7 +137,6 @@ export const TabEdit = () => {
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
 				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
-
 				<Button onClick={() => addCluster()}>Add Cluster</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
