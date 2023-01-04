@@ -10,7 +10,9 @@ export function createDefaultLinkTemplate(): go.Link {
 			curve: go.Link.Default,
 			corner: 0,
 		},
-		$(go.Shape, { stroke: fill }), // the link shape
+		$(go.Shape)
+			.bind('stroke', 'stroke', (v) => (v ? v : fill))
+			.bind('label'), // the link shape
 		$(
 			go.Shape, // the arrowhead
 			{ toArrow: 'Triangle', stroke: fill, fill: fill }

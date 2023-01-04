@@ -22,7 +22,6 @@ export type RdfGraphDiagramProps = {
 	style?: React.CSSProperties;
 	rdfPatches: RdfPatch[];
 	symbolProvider?: SymbolProvider;
-	// selectionEffect?: SelectionCallback;
 	onErrorCallback?: (error: RdfGraphError) => void;
 	onGraphStateChanged?: (state: GraphState) => void;
 	onGraphSelectionChanged?: (selection: GraphSelection) => void;
