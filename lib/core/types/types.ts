@@ -1,4 +1,5 @@
-import { BindFunction } from 'core/PatchGraphMonad';
+import { putKnownProp } from 'core/baseGraphOperations';
+import { BindFunction, PatchGraphMonad } from 'core/PatchGraphMonad';
 import { Quad, Quad_Object, Quad_Subject } from 'n3';
 
 export type Point = { x: number; y: number };
@@ -236,33 +237,19 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 	symbol: {
 		rule: ({nodeIri, symbolProvider}: RuleInputs) => {	
 				return (state: PatchGraphResult) => {
-					const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
-					let bindings: BindFunction[] = [];
 			
-					// Remove quot
-					const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
-					const config = knownPropConfig[key!];
-			
-					if (!config.rule) {
-						return new PatchGraphMonad(state);
-					}
 			
 					const store = state.graphState.nodeStore;
-					const node = store[subjectIri];
+					const node = store[nodeIri];
 					const symbolId = findSingleKnownProp(node, 'symbolId');
-					const rotation = findSingleKnownProp(node, 'rotation')
+					const rotationString = findSingleKnownProp(node, 'rotation')
+					let symbol = undefined;
 					if (symbolId) {
-						symbolProvider(symbolId, rotation);
+						const rotation = rotationString ? parseInt(rotationString) : undefined
+						symbol = symbolProvider(symbolId, rotation);
 					}
-
-≈			
-					const target: RuleInputs = {
-						node: node,
-						propKey: key!,
-						symbolProvider: symbolProvider
-					};
 			
-					return new PatchGraphMonad(state).bind(config.rule(target));
+					return new PatchGraphMonad(state).bind(putKnownProp(nodeIri, 'symbol', symbol));
 				};
 			}
 		}
