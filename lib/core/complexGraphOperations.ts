@@ -15,12 +15,15 @@ import {
 } from './baseGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import {
+	knownPropConfig,
 	knownPropKeys,
 	NodeVariantInternal,
 	PatchGraphResult,
 	PROPS,
 	RdfPatch,
+	RuleInputs,
 	SymbolNode,
+	SymbolProvider,
 } from './types/types';
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
@@ -87,6 +90,32 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 		} else {
 			return new PatchGraphMonad(state).bind(putDataProp(subjectIri, predicateIri, objectLiteral));
 		}
+	};
+}
+
+export function applyRules(symbolProvider: SymbolProvider, rdfPatch: RdfPatch): BindFunction {
+	return (state: PatchGraphResult) => {
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+		let bindings: BindFunction[] = [];
+
+		// Remove quot
+		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
+		const config = knownPropConfig[key!];
+
+		if (!config.rule) {
+			return new PatchGraphMonad(state);
+		}
+
+		const store = state.graphState.nodeStore;
+		const node = store[subjectIri];
+
+		const target: RuleInputs = {
+			node: node,
+			propKey: key!,
+			symbolProvider: symbolProvider,
+		};
+
+		return new PatchGraphMonad(state).bind(config.rule(target));
 	};
 }
 

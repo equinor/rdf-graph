@@ -292,6 +292,7 @@ export function addEdgeProp<P extends keyof KnownProps>(
 	propValue: KnownProps[P]
 ): BindFunction {
 	return (state: PatchGraphResult) => {
+		const edge = state.graphState.edgeStore[edgeId];
 		return new PatchGraphMonad({
 			...state,
 			graphState: state.graphState,
@@ -299,7 +300,7 @@ export function addEdgeProp<P extends keyof KnownProps>(
 				...state.graphPatches,
 				{
 					action: 'add',
-					element: { type: 'edgeProperty', target: edgeId, key: prop, value: propValue },
+					element: { type: 'property', target: edge, key: prop, value: propValue },
 				},
 			],
 		});

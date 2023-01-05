@@ -260,7 +260,7 @@ const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ node })
 
 				<Table.Body>
 					{props.map((p) => (
-						<Table.Row>
+						<Table.Row key={p.key}>
 							<Table.Cell>{p.key}</Table.Cell>
 							<Table.Cell>{p.value}</Table.Cell>
 						</Table.Row>

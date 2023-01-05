@@ -62,10 +62,7 @@ export function patchGraphState(
 // --- else:
 // --- --- apply prop rules recursively from P
 
-function rdfToGraphPatch(
-	rdfPatches: RdfPatch[],
-	_options?: Partial<PatchGraphOptions>
-): BindFunction {
+function rdfToGraphPatch(rdfPatches: RdfPatch[], options: PatchGraphOptions): BindFunction {
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {
 			if (rdfPatch.action === 'add') {
@@ -73,7 +70,8 @@ function rdfToGraphPatch(
 					.bind(ensureSubjectNode(rdfPatch))
 					.bind(ensureObjectNode(rdfPatch))
 					.bind(ensurePredicateNodeWithEdge(rdfPatch))
-					.bind(ensurePredicateProp(rdfPatch));
+					.bind(ensurePredicateProp(rdfPatch))
+					.bind(applyRules(options.symbolProvider, rdfPatch));
 			} else {
 				return acc;
 			}

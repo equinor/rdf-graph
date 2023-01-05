@@ -7,6 +7,7 @@ import { createBrowserRouter, redirect, RouteObject, RouterProvider } from 'reac
 import { rdfGraphUis } from './setup';
 import { TabEdit } from './components/tab-edit/TabEdit';
 import { TabGraphState } from './components/tab-graph-state/TabGraphState';
+import { TabHistory } from './components/tab-history/TabHistory';
 
 const uiSlugs = Object.keys(rdfGraphUis);
 
@@ -17,7 +18,7 @@ type RouteObjectExtended = RouteObject & { title: string };
 export const pages: RouteObjectExtended[] = [
 	{ path: 'edit', element: <TabEdit />, title: 'Edit' },
 	{ path: 'cases', element: <h1>Cases</h1>, title: 'Cases' },
-	{ path: 'history', element: <h1>Hist</h1>, title: 'RDF History' },
+	{ path: 'history', element: <TabHistory />, title: 'RDF History' },
 	{ path: 'graph-state', element: <TabGraphState />, title: 'Graph State' },
 ];
 

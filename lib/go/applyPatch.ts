@@ -1,7 +1,7 @@
 import {
 	GraphDataProperty,
 	GraphEdge,
-	GraphEdgeProperty,
+	GraphElement,
 	GraphNode,
 	GraphPatch,
 	GraphProperty,
@@ -43,7 +43,12 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 								break;
 						}
 						break;
-
+					case 'edge':
+						if (patch.action === 'add') {
+							addEdgeProp(diagram, patch.element);
+						} else {
+						}
+						break;
 					default:
 						break;
 				}
@@ -70,13 +75,6 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 				}
 				break;
 
-			case 'edgeProperty':
-				if (patch.action === 'add') {
-					addEdgeProp(diagram, patch.element);
-				} else {
-				}
-				break;
-
 			default:
 				break;
 		}
@@ -99,7 +97,7 @@ function addNode(diagram: go.Diagram, node: GraphNode) {
 	});
 }
 
-function addNodeProp(diagram: go.Diagram, prop: GraphProperty<GraphNode>) {
+function addNodeProp(diagram: go.Diagram, prop: GraphProperty<GraphElement>) {
 	const nodeData = diagram.model.findNodeDataForKey(prop.target.id);
 	if (!nodeData) return;
 	diagram.model.setDataProperty(nodeData, prop.key, prop.value);
@@ -120,8 +118,8 @@ function addEdge(diagram: go.Diagram, edge: GraphEdge) {
 	});
 }
 
-function addEdgeProp(diagram: go.Diagram, prop: GraphEdgeProperty) {
-	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(prop.target);
+function addEdgeProp(diagram: go.Diagram, prop: GraphProperty<GraphElement>) {
+	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(prop.target.id);
 
 	if (!linkData) return;
 	diagram.model.setDataProperty(linkData, prop.key, prop.value);
