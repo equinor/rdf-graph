@@ -5,7 +5,7 @@ import {
 	GraphNode,
 	GraphPatch,
 	GraphProperty,
-} from 'core/types/types';
+} from 'core/types/core';
 
 export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 	for (const patch of patches) {

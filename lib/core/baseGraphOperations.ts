@@ -1,12 +1,25 @@
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
+import { derivedPropKeys, directPropKeys } from './propConfig';
 import {
+	CustomProp,
+	DerivedProp,
+	DerivedPropKey,
+	DirectProp,
+	DirectPropKey,
 	GraphEdge,
 	GraphNode,
+	GraphNodePatch,
 	GraphPatch,
-	KnownProps,
+	GraphPropertyPatch,
+	PatchDirectProp,
 	PatchGraphResult,
 	PredicateNode,
-} from './types/types';
+	Prop,
+} from './types/core';
+
+function toGraphPatch(node: GraphNode): GraphNodePatch {
+	return { id: node.id, type: 'node', variant: node.variant } as GraphNodePatch;
+}
 
 export function addNode(node: GraphNode): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -16,7 +29,7 @@ export function addNode(node: GraphNode): BindFunction {
 				...state.graphState,
 				nodeStore: { ...state.graphState.nodeStore, [node.id]: node },
 			},
-			graphPatches: [...state.graphPatches, { action: 'add', element: node }],
+			graphPatches: [...state.graphPatches, { action: 'add', content: toGraphPatch(node) }],
 		});
 	};
 }
@@ -31,7 +44,7 @@ export function deleteNode(iri: string): BindFunction {
 				...state.graphState,
 				nodeStore: deleteEntriesFromRecord(store, [iri]),
 			},
-			graphPatches: [...state.graphPatches, { action: 'remove', element: node }],
+			graphPatches: [...state.graphPatches, { action: 'remove', content: toGraphPatch(node) }],
 		});
 	};
 }
@@ -95,7 +108,7 @@ export function addEdge(
 			},
 			graphPatches: stateOnly
 				? state.graphPatches
-				: [...state.graphPatches, { action: 'add', element: newEdge }],
+				: [...state.graphPatches, { action: 'add', content: newEdge }],
 		});
 	};
 }
@@ -106,7 +119,7 @@ export function deleteEdges(edgeIds: string[]): BindFunction {
 		const edgePatches = Object.keys(edgeStore)
 			.filter((key) => edgeIds.includes(key))
 			.map((key) => {
-				const p: GraphPatch = { action: 'remove', element: edgeStore[key] };
+				const p: GraphPatch = { action: 'remove', content: edgeStore[key] };
 				return p;
 			});
 
@@ -121,77 +134,200 @@ export function deleteEdges(edgeIds: string[]): BindFunction {
 	};
 }
 
-export function putKnownProp<P extends keyof KnownProps>(
-	nodeIri: string,
-	prop: P,
-	propValue: KnownProps[P],
-	stateOnly: boolean = false
+// Direct
+// Derived
+// Custom
+
+// add
+// remove
+
+// Predicate
+// Normal
+export function addDerivedProp(
+	node: GraphNode,
+	key: DerivedPropKey,
+	value: DerivedProp['value']
 ): BindFunction {
 	return (state: PatchGraphResult) => {
-		const nodeStore = state.graphState.nodeStore;
-		const predicateNodeStore = state.graphState.predicateNodeStore;
+		const store = state.graphState.nodeStore;
 
-		const node = nodeStore[nodeIri];
-		const predicateNode = predicateNodeStore[nodeIri];
+		const index = node.props.findIndex((p) => p.key === key);
+		const newProp = { type: 'derived', key: key, value: value } as DerivedProp;
+		const newPropArray = [...node.props.slice(0, index), newProp, ...node.props.slice(index + 1)];
 
-		const newNodeStore = node
-			? updateNodeInStore(nodeStore, nodeIri, {
-					props: { ...node.props, [prop]: propValue },
-			  })
-			: nodeStore;
-
-		const newPredicateStore = predicateNode
-			? updateNodeInStore(predicateNodeStore, nodeIri, {
-					props: { ...predicateNode.props, [prop]: propValue },
-			  })
-			: predicateNodeStore;
-
-		const newPatches: GraphPatch[] = node
-			? [
-					{
-						action: 'add',
-						element: { type: 'property', target: node, key: prop, value: propValue },
-					},
-			  ]
-			: [];
+		const newPatches: GraphPatch[] = [
+			{
+				action: 'add',
+				content: {
+					id: node.id,
+					type: 'property',
+					prop: newProp,
+				} as GraphPropertyPatch,
+			},
+		];
 
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
 				...state.graphState,
-				nodeStore: newNodeStore,
-				predicateNodeStore: newPredicateStore,
+				nodeStore: updateNodeInStore(store, node.id, {
+					props: newPropArray,
+				}),
 			},
-			// TODO handle different value types (for example string[] for hasConnector)
-			graphPatches: stateOnly ? state.graphPatches : [...state.graphPatches, ...newPatches],
+			graphPatches: [...state.graphPatches, ...newPatches],
 		});
 	};
 }
 
-export function deleteKnownProp<P extends keyof KnownProps>(
-	nodeIri: string,
-	prop: P
+export function addProp(
+	node: GraphNode,
+	key: string,
+	value: string | DerivedProp['value']
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
-		if (!(nodeIri in store)) return new PatchGraphMonad(state);
 
-		const node = store[nodeIri];
+		const index = node.props.findIndex((p) => p.key === key);
+
+		let newProp: Prop;
+
+		if (derivedPropKeys.includes(key as DerivedPropKey)) {
+			newProp = {
+				type: 'derived',
+				key: key as DerivedPropKey,
+				value: value as DerivedProp['value'],
+			} as DerivedProp;
+		} else {
+			newProp = createNewStringProp(store, node.id, key, value as string);
+		}
+
+		const newPropArray = [...node.props.slice(0, index), newProp, ...node.props.slice(index + 1)];
+
+		const newPatches: GraphPatch[] = [
+			{
+				action: 'add',
+				content: {
+					id: node.id,
+					type: 'property',
+					prop: {
+						...newProp,
+						value: Array.isArray(newProp.value) ? newProp.value[0] : newProp.value,
+					},
+				} as GraphPropertyPatch,
+			},
+		];
 
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
 				...state.graphState,
-				nodeStore: updateNodeInStore(store, nodeIri, {
-					props: { ...node.props, [prop]: undefined },
+				nodeStore: updateNodeInStore(store, node.id, {
+					props: newPropArray,
 				}),
 			},
-			// TODO handle different value types (for example string[] for hasConnector)
+			graphPatches: [...state.graphPatches, ...newPatches],
+		});
+	};
+}
+
+export function addDirectProp(
+	node: GraphNode,
+	key: DirectProp['key'],
+	value: string
+): BindFunction {
+	return (state: PatchGraphResult) => {
+		const store = state.graphState.nodeStore;
+
+		const index = node.props.findIndex((p) => p.key === key);
+
+		const newProp = createNewStringProp(store, node.id, key, value);
+
+		const newPropArray = [...node.props.slice(0, index), newProp, ...node.props.slice(index + 1)];
+
+		const newPatches: GraphPatch[] = [
+			{
+				action: 'add',
+				content: {
+					id: node.id,
+					type: 'property',
+					prop: { ...newProp, value: newProp.value[0] },
+				} as GraphPropertyPatch,
+			},
+		];
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, node.id, {
+					props: newPropArray,
+				}),
+			},
+			graphPatches: [...state.graphPatches, ...newPatches],
+		});
+	};
+}
+
+export function addDirectPropToPredicateNode(
+	node: PredicateNode,
+	key: DirectProp['key'],
+	value: string
+): BindFunction {
+	return (state: PatchGraphResult) => {
+		const store = state.graphState.predicateNodeStore;
+		const index = node.props.findIndex((p) => p.key === key);
+
+		const newPropArray = [
+			...node.props.slice(0, index),
+			createNewStringProp(store, node.id, key, value),
+			...node.props.slice(index + 1),
+		];
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				predicateNodeStore: updateNodeInStore(store, node.id, {
+					props: newPropArray,
+				}),
+			},
+		});
+	};
+}
+
+export function deleteDirectProp(
+	node: GraphNode,
+	key: DirectProp['key'],
+	value: string
+): BindFunction {
+	return (state: PatchGraphResult) => {
+		const store = state.graphState.nodeStore;
+
+		const index = node.props.findIndex((p) => p.key === key);
+
+		const newPropArray = [
+			...node.props.slice(0, index),
+			...deleteProp(store, node.id, key, value),
+			...node.props.slice(index + 1),
+		];
+
+		return new PatchGraphMonad({
+			...state,
+			graphState: {
+				...state.graphState,
+				nodeStore: updateNodeInStore(store, node.id, {
+					props: newPropArray,
+				}),
+			},
 			graphPatches: [
 				...state.graphPatches,
 				{
 					action: 'remove',
-					element: { type: 'property', target: node, key: prop, value: undefined },
+					content: {
+						id: node.id,
+						type: 'property',
+						prop: { key: key, type: 'direct', value: value } as PatchDirectProp,
+					} as GraphPropertyPatch,
 				},
 			],
 		});
@@ -225,7 +361,7 @@ export function putDataProp(
 						{
 							action: 'add',
 							// TODO handle multiple object for a (subject, predicate)-pair
-							element: { type: 'data', target: node, key: dataKey, values: [dataValue] },
+							content: { type: 'data', target: node, key: dataKey, values: [dataValue] },
 						},
 				  ],
 		});
@@ -253,7 +389,7 @@ export function deleteDataProp(nodeIri: string, dataKey: string): BindFunction {
 				// TODO handle multiple object for a (subject, predicate)-pair
 				{
 					action: 'remove',
-					element: { type: 'data', target: node, key: dataKey, values: [] },
+					content: { type: 'data', target: node, key: dataKey, values: [] },
 				},
 			],
 		});
@@ -269,7 +405,7 @@ export function deleteAllDataProps(nodeIri: string): BindFunction {
 		const removePatches: GraphPatch[] = Object.keys(node.data).map((k) => {
 			return {
 				action: 'remove',
-				element: { type: 'data', target: node, key: k, values: [] },
+				content: { type: 'data', target: node, key: k, values: [] },
 			};
 		});
 
@@ -300,7 +436,7 @@ export function addEdgeProp<P extends keyof KnownProps>(
 				...state.graphPatches,
 				{
 					action: 'add',
-					element: { type: 'property', target: edge, key: prop, value: propValue },
+					content: { type: 'property', target: edge, key: prop, value: propValue },
 				},
 			],
 		});
@@ -328,4 +464,59 @@ function updateNodeInStore<T>(
 	}
 	console.warn(`Missing id='${nodeId}' in graphOperation update node`);
 	return store;
+}
+
+function createNewStringProp<T extends GraphNode | PredicateNode>(
+	store: Record<string, T>,
+	nodeId: string,
+	key: DirectPropKey | string,
+	value: string
+): DirectProp | CustomProp {
+	if (nodeId in store) {
+		const node = store[nodeId];
+		const index = node.props.findIndex((p) => p.key === key);
+
+		if (index === -1) {
+			if (directPropKeys.includes(key as DirectPropKey)) {
+				return { key: key as DirectPropKey, type: 'direct', value: [value] };
+			}
+			return { key: key, type: 'custom', value: [value] };
+		} else {
+			return {
+				...node.props[index],
+				value: [...(node.props[index].value as string[]), value],
+			} as DirectProp;
+		}
+	}
+	throw 'please dont';
+}
+
+function deleteProp<T extends GraphNode | PredicateNode>(
+	store: Record<string, T>,
+	nodeId: string,
+	key: DirectPropKey,
+	value: string
+): DirectProp[] {
+	if (nodeId in store) {
+		const node = store[nodeId];
+		const index = node.props.findIndex((p) => p.key === key);
+
+		if (index === -1) {
+			throw 'Pleeese dont';
+		} else {
+			const oldValue = (node.props[index] as DirectProp).value;
+			const valueIndex = oldValue.findIndex((v) => v === value);
+			const newValue =
+				valueIndex === -1
+					? oldValue
+					: [...oldValue.splice(0, valueIndex), ...oldValue.splice(valueIndex + 1)];
+
+			if (newValue.length > 0) {
+				return [{ type: 'direct', key: key, value: newValue }];
+			} else {
+				return [];
+			}
+		}
+	}
+	throw 'please dont';
 }

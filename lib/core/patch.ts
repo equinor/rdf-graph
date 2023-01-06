@@ -1,17 +1,19 @@
 import {
+	applyRules,
 	ensureObjectNode,
 	ensurePredicateNodeWithEdge,
 	ensurePredicateProp,
 	ensureSubjectNode,
 } from './complexGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
-import { GraphState, PatchGraphResult, RdfPatch, SymbolProvider } from './types/types';
+import { UiSymbolProvider } from './types/UiSymbol';
+import { GraphState, PatchGraphResult, RdfPatch } from './types/core';
 
-type PatchGraphOptions = {
-	symbolProvider: SymbolProvider;
+export type PatchGraphOptions = {
+	symbolProvider: UiSymbolProvider;
 };
 
-const _defaultSymbolProvider: SymbolProvider = (_id, _rotation) => {
+const _defaultSymbolProvider: UiSymbolProvider = (_id, _rotation) => {
 	// TODO: implement
 	return undefined;
 };
@@ -19,7 +21,7 @@ const _defaultSymbolProvider: SymbolProvider = (_id, _rotation) => {
 export function patchGraphState(
 	state: GraphState,
 	rdfPatches: RdfPatch[],
-	options?: Partial<PatchGraphOptions>
+	options: Partial<PatchGraphOptions>
 ): PatchGraphResult {
 	return new PatchGraphMonad({
 		graphState: state,
@@ -27,6 +29,27 @@ export function patchGraphState(
 	})
 		.bind(rdfToGraphPatch(rdfPatches, options))
 		.getState();
+}
+
+function rdfToGraphPatch(
+	rdfPatches: RdfPatch[],
+	options: Partial<PatchGraphOptions>
+): BindFunction {
+	const f = (state: PatchGraphResult) => {
+		return rdfPatches.reduce((acc, rdfPatch) => {
+			if (rdfPatch.action === 'add') {
+				return acc
+					.bind(ensureSubjectNode(rdfPatch))
+					.bind(ensureObjectNode(rdfPatch))
+					.bind(ensurePredicateNodeWithEdge(rdfPatch))
+					.bind(ensurePredicateProp(rdfPatch))
+					.bind(applyRules(rdfPatch, options));
+			} else {
+				return acc;
+			}
+		}, new PatchGraphMonad(state));
+	};
+	return f;
 }
 
 // ADD ----------------
@@ -61,21 +84,3 @@ export function patchGraphState(
 // --- --- yield rm P
 // --- else:
 // --- --- apply prop rules recursively from P
-
-function rdfToGraphPatch(rdfPatches: RdfPatch[], options: PatchGraphOptions): BindFunction {
-	const f = (state: PatchGraphResult) => {
-		return rdfPatches.reduce((acc, rdfPatch) => {
-			if (rdfPatch.action === 'add') {
-				return acc
-					.bind(ensureSubjectNode(rdfPatch))
-					.bind(ensureObjectNode(rdfPatch))
-					.bind(ensurePredicateNodeWithEdge(rdfPatch))
-					.bind(ensurePredicateProp(rdfPatch))
-					.bind(applyRules(options.symbolProvider, rdfPatch));
-			} else {
-				return acc;
-			}
-		}, new PatchGraphMonad(state));
-	};
-	return f;
-}

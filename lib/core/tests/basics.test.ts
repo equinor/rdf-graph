@@ -1,7 +1,7 @@
 import { DataFactory } from 'n3';
 import { patchGraphState } from 'core/patch';
 import { newGraphState, toAddPatch } from './test-utils';
-import { PROPS as P } from '../types/types';
+import { PROPS as P } from '../types/core';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 

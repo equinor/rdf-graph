@@ -1,4 +1,4 @@
-import { GraphState, RdfPatch } from 'core/types/types';
+import { GraphState, RdfPatch } from 'core/types/core';
 import { DataFactory, Quad } from 'n3';
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 

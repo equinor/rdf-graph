@@ -1,6 +1,6 @@
 import { DataFactory } from 'n3';
 import { newGraphState, toAddPatch } from './test-utils';
-import { GraphEdge, GraphEdgeProperty, PROPS as P } from '../types/types';
+import { GraphEdge, GraphEdgeProperty, PROPS as P } from '../types/core';
 import { patchGraphState } from 'core/patch';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;

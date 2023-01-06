@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { GraphState, RdfPatch } from '@rdf-graph/types/types';
+import { GraphState, RdfPatch } from '@rdf-graph/types/core';
 import { useParams } from 'react-router-dom';
 import { UiKey } from '../setup';
 

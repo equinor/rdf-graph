@@ -1,4 +1,4 @@
-import { PatchGraphResult } from './types/types';
+import { PatchGraphResult } from './types/core';
 
 export type BindFunction = (state: PatchGraphResult) => PatchGraphMonad;
 

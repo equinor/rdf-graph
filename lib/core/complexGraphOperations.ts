@@ -13,18 +13,10 @@ import {
 	putDataProp,
 	putKnownProp,
 } from './baseGraphOperations';
+import { PatchGraphOptions } from './patch';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
-import {
-	knownPropConfig,
-	knownPropKeys,
-	NodeVariantInternal,
-	PatchGraphResult,
-	PROPS,
-	RdfPatch,
-	RuleInputs,
-	SymbolNode,
-	SymbolProvider,
-} from './types/types';
+import { directPropConfig, directPropKeys } from './propConfig';
+import { NodeVariantInternal, PatchGraphResult, RdfPatch, SymbolNode } from './types/core';
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -78,29 +70,39 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 		if (objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+		const node = state.graphState.nodeStore[subjectIri];
 
 		// Remove quotes
 		const objectLiteral = objectTerm.slice(1, -1);
 
-		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
-		if (key) {
+		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
+		// NOTE: Derived props are ONLY added via prop rules!
+
+		let prop: Prop;
+		if (directKey) {
 			return new PatchGraphMonad(state)
-				.bind(putKnownProp(subjectIri, key, objectLiteral))
+				.bind(addDirectProp(subjectIri, key, objectLiteral))
 				.bind(yieldEdgeProps(subjectIri));
 		} else {
-			return new PatchGraphMonad(state).bind(putDataProp(subjectIri, predicateIri, objectLiteral));
+			return new PatchGraphMonad(state).bind(addData);
 		}
 	};
 }
 
-export function applyRules(symbolProvider: SymbolProvider, rdfPatch: RdfPatch): BindFunction {
+export function applyRules(
+	rdfPatch: RdfPatch,
+	{ symbolProvider }: Partial<PatchGraphOptions>
+): BindFunction {
 	return (state: PatchGraphResult) => {
-		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
-		let bindings: BindFunction[] = [];
+		const { subjectIri, predicateIri } = getTripleAsString(rdfPatch);
 
-		// Remove quot
 		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
-		const config = knownPropConfig[key!];
+
+		if (!key) {
+			return new PatchGraphMonad(state);
+		}
+
+		const config = knownPropConfig[key];
 
 		if (!config.rule) {
 			return new PatchGraphMonad(state);
@@ -110,8 +112,7 @@ export function applyRules(symbolProvider: SymbolProvider, rdfPatch: RdfPatch): 
 		const node = store[subjectIri];
 
 		const target: RuleInputs = {
-			node: node,
-			propKey: key!,
+			nodeIri: node.id,
 			symbolProvider: symbolProvider,
 		};
 

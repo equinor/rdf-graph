@@ -1,8 +1,8 @@
-import { KnownPropKey, PROPS as P } from '../types/types';
+import { DirectPropKey, PROPS as P } from '../types/core';
 
 describe('Known Properties', () => {
 	it('Iris are unique', () => {
-		const keys = Object.keys(P) as KnownPropKey[];
+		const keys = Object.keys(P) as DirectPropKey[];
 
 		const iris = keys.map((k) => P[k].iri);
 

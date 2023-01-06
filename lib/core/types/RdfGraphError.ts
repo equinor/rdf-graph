@@ -1,6 +1,6 @@
-import { GraphPatch } from './types';
+import { GraphPatch } from './core';
 
-export type RdfGraphErrorBase = {
+type RdfGraphErrorBase = {
 	message: string;
 	/** 'error' from a try/catch block */
 	origin?: unknown;

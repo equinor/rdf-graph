@@ -1,6 +1,6 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as go from 'gojs';
-import { GraphState, RdfPatch, SymbolProvider } from 'core/types/types';
+import { GraphState, RdfPatch, SymbolProvider } from 'core/types/core';
 
 import { applyPatch } from './applyPatch';
 import { RdfGraphError } from '../core/types/RdfGraphError';
