@@ -6,17 +6,15 @@ import {
 	addEdgeToPredicateNode,
 	addNode,
 	addPredicateNode,
-	deleteAllDataProps,
+	addProp,
 	deleteEdges,
-	deleteKnownProp,
 	deleteNode,
-	putDataProp,
-	putKnownProp,
+	deletePredicateProp,
 } from './baseGraphOperations';
 import { PatchGraphOptions } from './patch';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
-import { directPropConfig, directPropKeys } from './propConfig';
-import { NodeVariantInternal, PatchGraphResult, RdfPatch, SymbolNode } from './types/core';
+import { directPropConfig, directPropKeys, RuleInputs } from './propConfig';
+import { CustomProp, DirectProp, DirectPropKey, GraphNode, NodeVariantInternal, PatchGraphResult, PredicateNode, Prop, RdfPatch, SymbolNode } from './types/core';
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -44,6 +42,8 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
+		
+		
 		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
@@ -74,18 +74,17 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 
 		// Remove quotes
 		const objectLiteral = objectTerm.slice(1, -1);
-
 		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 		// NOTE: Derived props are ONLY added via prop rules!
 
-		let prop: Prop;
-		if (directKey) {
-			return new PatchGraphMonad(state)
-				.bind(addDirectProp(subjectIri, key, objectLiteral))
-				.bind(yieldEdgeProps(subjectIri));
-		} else {
-			return new PatchGraphMonad(state).bind(addData);
-		}
+		const key = directKey ? directKey : predicateIri;
+		const index = node.props.findIndex((p) => p.key === key);
+		const oldValue = node.props[index].value as string[];
+
+		const value = index === -1 ? [objectLiteral] : [...oldValue, objectLiteral];
+		const prop: Prop = directKey ? { key: directKey, type: 'direct', value} : { key: objectLiteral, type: 'custom', value}
+
+		return new PatchGraphMonad(state).bind(addProp(node, prop)) 
 	};
 }
 
@@ -96,13 +95,13 @@ export function applyRules(
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri } = getTripleAsString(rdfPatch);
 
-		const key = knownPropKeys.find((k) => PROPS[k].iri === predicateIri);
+		const key = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
 		if (!key) {
 			return new PatchGraphMonad(state);
 		}
 
-		const config = knownPropConfig[key];
+		const config = directPropConfig[key];
 
 		if (!config.rule) {
 			return new PatchGraphMonad(state);
@@ -128,12 +127,12 @@ function yieldEdgeProps(predicateIri: string): BindFunction {
 		const bindings: BindFunction[] = [];
 		if (predicateIri in predicateStore) {
 			const predicateNode = predicateStore[predicateIri];
-			const existingProps = knownPropKeys.filter((key) => predicateNode.props[key]);
 
 			bindings.push(
-				...existingProps.flatMap((p) =>
+				...predicateNode.props.flatMap((p) =>
 					predicateNode.edgeIds.map((edgeId) => {
-						return addEdgeProp(edgeId, p, predicateNode.props[p]);
+						const direct = p as DirectProp;
+						return addEdgeProp(edgeId, direct.key, direct.value[0]);
 					})
 				)
 			);
@@ -167,16 +166,15 @@ function convertNode(
 		const predicateStore = graphState.predicateNodeStore;
 		const oldNode = nodeIri in nodeStore ? nodeStore[nodeIri] : predicateStore[nodeIri];
 
-		// remember props
-		const props = oldNode.props;
-		const existingProps = knownPropKeys.filter((key) => props[key]);
-
-		// remember data
-		const data = oldNode.data;
-
 		const bindings: BindFunction[] = [];
 		// create bindings to delete old stuff
-		bindings.push(...existingProps.map((key) => deleteKnownProp(nodeIri, key)));
+		bindings.push(...oldNode.props.flatMap((prop) => {
+			if (prop.type === 'derived') {
+				return [] // pass
+			} else {
+				return prop.value.map(v => deletePredicateProp(oldNode, prop, v));
+			}
+		}));
 		bindings.push(deleteAllDataProps(nodeIri));
 		bindings.push(deleteEdges(oldEdges.map((e) => e.id)));
 		bindings.push(deleteNode(nodeIri));
