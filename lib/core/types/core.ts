@@ -82,6 +82,8 @@ export type GraphEdge = GraphElementBase<'edge'> & {
 
 export type GraphNode = DefaultNode | SymbolNode | ConnectorNode | GroupNode;
 
+export type GraphNodeInternal = GraphNode | PredicateNode;
+
 export type GraphElement = GraphNode | GraphEdge;
 
 export type GraphElementInternal = GraphElement | PredicateNode;
@@ -114,8 +116,10 @@ export type GraphEdgePatch = GraphPatchBase<'edge'> & {
 	targetId: string;
 };
 
+export type PatchProp = PatchDirectProp | DerivedProp | PatchCustomProp;
+
 export type GraphPropertyPatch = GraphPatchBase<'property'> & {
-	prop: PatchDirectProp | DerivedProp | PatchCustomProp;
+	prop: PatchProp;
 };
 
 export interface GraphPatch {

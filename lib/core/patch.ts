@@ -21,7 +21,7 @@ const _defaultSymbolProvider: UiSymbolProvider = (_id, _rotation) => {
 export function patchGraphState(
 	state: GraphState,
 	rdfPatches: RdfPatch[],
-	options: Partial<PatchGraphOptions>
+	options?: Partial<PatchGraphOptions>
 ): PatchGraphResult {
 	return new PatchGraphMonad({
 		graphState: state,
@@ -33,7 +33,7 @@ export function patchGraphState(
 
 function rdfToGraphPatch(
 	rdfPatches: RdfPatch[],
-	options: Partial<PatchGraphOptions>
+	options?: Partial<PatchGraphOptions>
 ): BindFunction {
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {

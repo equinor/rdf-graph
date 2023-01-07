@@ -1,10 +1,8 @@
-import { DirectPropKey, PROPS as P } from '../types/core';
+import { directPropConfig, directPropKeys } from 'core/propConfig';
 
 describe('Known Properties', () => {
 	it('Iris are unique', () => {
-		const keys = Object.keys(P) as DirectPropKey[];
-
-		const iris = keys.map((k) => P[k].iri);
+		const iris = directPropKeys.map((k) => directPropConfig[k].iri);
 
 		const hasDuplicates = new Set(iris).size !== iris.length;
 

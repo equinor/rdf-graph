@@ -2,19 +2,28 @@ import { termToId } from 'n3';
 import { nanoid } from 'nanoid';
 import {
 	addEdge,
-	addEdgeProp,
 	addEdgeToPredicateNode,
 	addNode,
 	addPredicateNode,
 	addProp,
+	addPropToPredicateNode,
+	burninatePropFromNode,
+	createEdgePropPatches,
 	deleteEdges,
 	deleteNode,
-	deletePredicateProp,
 } from './baseGraphOperations';
 import { PatchGraphOptions } from './patch';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import { directPropConfig, directPropKeys, RuleInputs } from './propConfig';
-import { CustomProp, DirectProp, DirectPropKey, GraphNode, NodeVariantInternal, PatchGraphResult, PredicateNode, Prop, RdfPatch, SymbolNode } from './types/core';
+import {
+	GraphNode,
+	NodeVariantInternal,
+	PatchGraphResult,
+	PredicateNode,
+	Prop,
+	RdfPatch,
+	SymbolNode,
+} from './types/core';
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -22,7 +31,8 @@ export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
 		const nodeExists =
 			subjectIri in state.graphState.nodeStore || subjectIri in state.graphState.predicateNodeStore;
 		if (rdfPatch.action === 'add' && !nodeExists) {
-			return new PatchGraphMonad(state).bind(addNewNode(subjectIri, 'default'));
+			const newNode = createNewNode(subjectIri, 'default') as GraphNode;
+			return new PatchGraphMonad(state).bind(addNode(newNode));
 		}
 		return new PatchGraphMonad(state);
 	};
@@ -34,7 +44,8 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 		const nodeExists =
 			objectIri in state.graphState.nodeStore || objectIri in state.graphState.predicateNodeStore;
 		if (rdfPatch.action === 'add' && !nodeExists && objectIsIri(rdfPatch)) {
-			return new PatchGraphMonad(state).bind(addNewNode(objectIri, 'default'));
+			const newNode = createNewNode(objectIri, 'default') as GraphNode;
+			return new PatchGraphMonad(state).bind(addNode(newNode));
 		}
 		return new PatchGraphMonad(state);
 	};
@@ -42,8 +53,6 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		
-		
 		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
@@ -55,11 +64,10 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 		if (predicateIri in state.graphState.nodeStore) {
 			bindings.push(convertNode(predicateIri, 'predicate'));
 		} else if (!(predicateIri in state.graphState.predicateNodeStore)) {
-			bindings.push(addNewNode(predicateIri, 'predicate'));
+			bindings.push(addPredicateNode(createNewNode(predicateIri, 'predicate') as PredicateNode));
 		}
-
 		bindings.push(addEdgeToPredicateNode(edgeId, predicateIri));
-		bindings.push(yieldEdgeProps(predicateIri));
+		bindings.push(createEdgePropPatches(predicateIri));
 
 		return new PatchGraphMonad(state).bindMany(bindings);
 	};
@@ -71,6 +79,8 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 		const node = state.graphState.nodeStore[subjectIri];
+		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
+		const activeNode = node === undefined ? predicateNode : node;
 
 		// Remove quotes
 		const objectLiteral = objectTerm.slice(1, -1);
@@ -78,20 +88,30 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 		// NOTE: Derived props are ONLY added via prop rules!
 
 		const key = directKey ? directKey : predicateIri;
-		const index = node.props.findIndex((p) => p.key === key);
-		const oldValue = node.props[index].value as string[];
 
-		const value = index === -1 ? [objectLiteral] : [...oldValue, objectLiteral];
-		const prop: Prop = directKey ? { key: directKey, type: 'direct', value} : { key: objectLiteral, type: 'custom', value}
+		const index = activeNode.props.findIndex((p) => p.key === key);
+		const value =
+			index === -1
+				? [objectLiteral]
+				: [...(activeNode.props[index].value as string[]), objectLiteral];
+		const prop: Prop = directKey
+			? { key: directKey, type: 'direct', value }
+			: { key: objectLiteral, type: 'custom', value };
 
-		return new PatchGraphMonad(state).bind(addProp(node, prop)) 
+		if (node) {
+			return new PatchGraphMonad(state).bind(addProp(node, prop));
+		} else if (predicateNode) {
+			return new PatchGraphMonad(state).bind(addPropToPredicateNode(predicateNode.id, prop));
+		} else {
+			console.warn(
+				`Expected subject node with iri ${subjectIri} to be in a node store at this point.`
+			);
+			return new PatchGraphMonad(state);
+		}
 	};
 }
 
-export function applyRules(
-	rdfPatch: RdfPatch,
-	{ symbolProvider }: Partial<PatchGraphOptions>
-): BindFunction {
+export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptions>): BindFunction {
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri } = getTripleAsString(rdfPatch);
 
@@ -112,32 +132,10 @@ export function applyRules(
 
 		const target: RuleInputs = {
 			nodeIri: node.id,
-			symbolProvider: symbolProvider,
+			symbolProvider: options?.symbolProvider,
 		};
 
 		return new PatchGraphMonad(state).bind(config.rule(target));
-	};
-}
-
-function yieldEdgeProps(predicateIri: string): BindFunction {
-	return (state: PatchGraphResult) => {
-		const graphState = state.graphState;
-		const predicateStore = graphState.predicateNodeStore;
-
-		const bindings: BindFunction[] = [];
-		if (predicateIri in predicateStore) {
-			const predicateNode = predicateStore[predicateIri];
-
-			bindings.push(
-				...predicateNode.props.flatMap((p) =>
-					predicateNode.edgeIds.map((edgeId) => {
-						const direct = p as DirectProp;
-						return addEdgeProp(edgeId, direct.key, direct.value[0]);
-					})
-				)
-			);
-		}
-		return new PatchGraphMonad(state).bindMany(bindings);
 	};
 }
 
@@ -163,78 +161,58 @@ function convertNode(
 
 		// remember node
 		const nodeStore = graphState.nodeStore;
-		const predicateStore = graphState.predicateNodeStore;
-		const oldNode = nodeIri in nodeStore ? nodeStore[nodeIri] : predicateStore[nodeIri];
+		const oldNode = nodeStore[nodeIri];
 
 		const bindings: BindFunction[] = [];
 		// create bindings to delete old stuff
-		bindings.push(...oldNode.props.flatMap((prop) => {
-			if (prop.type === 'derived') {
-				return [] // pass
-			} else {
-				return prop.value.map(v => deletePredicateProp(oldNode, prop, v));
-			}
-		}));
-		bindings.push(deleteAllDataProps(nodeIri));
+		bindings.push(...oldNode.props.map((prop) => burninatePropFromNode(oldNode, prop)));
 		bindings.push(deleteEdges(oldEdges.map((e) => e.id)));
 		bindings.push(deleteNode(nodeIri));
-		bindings.push(addNewNode(nodeIri, variant, symbolNodeRef));
+		const newNode = createNewNode(nodeIri, variant, symbolNodeRef);
 
 		// create bindings to readd stuff. For predicates, props are handled elsewhere
-		const stateOnly = variant === 'predicate';
-		bindings.push(...existingProps.map((key) => putKnownProp(nodeIri, key, props[key], stateOnly)));
-		bindings.push(
-			...Object.keys(data).map((key) => putDataProp(nodeIri, key, data[key], stateOnly))
-		);
-		bindings.push(
-			...oldEdges.map((e) => addEdge(e.id, e.predicateIri, e.sourceId, e.targetId, stateOnly))
-		);
+		if (variant === 'predicate') {
+			bindings.push(addPredicateNode(newNode as PredicateNode));
+			bindings.push(...oldNode.props.map((prop) => addPropToPredicateNode(newNode.id, prop)));
+		} else {
+			bindings.push(addNode(newNode as GraphNode));
+			bindings.push(...oldNode.props.map((prop) => addProp(oldNode, prop)));
+			bindings.push(...oldEdges.map((e) => addEdge(e.id, e.predicateIri, e.sourceId, e.targetId)));
+		}
 
 		return new PatchGraphMonad(state).bindMany(bindings);
 	};
 }
 
-function addNewNode(
+function createNewNode(
 	nodeIri: string,
 	variant: NodeVariantInternal,
 	symbolNodeRef?: SymbolNode
-): BindFunction {
-	return (state: PatchGraphResult) => {
-		const monad = new PatchGraphMonad(state);
-		if (variant === 'predicate') {
-			return monad.bind(
-				addPredicateNode({
-					id: nodeIri,
-					type: 'node',
-					variant: 'predicate',
-					data: {},
-					edgeIds: [],
-					props: {},
-				})
-			);
-		} else if (variant === 'connector') {
-			return monad.bind(
-				addNode({
-					id: nodeIri,
-					type: 'node',
-					variant: 'connector',
-					data: {},
-					props: {},
-					symbolNodeRef: symbolNodeRef as SymbolNode,
-				})
-			);
-		} else {
-			return monad.bind(
-				addNode({
-					id: nodeIri,
-					type: 'node',
-					variant: variant,
-					data: {},
-					props: {},
-				})
-			);
-		}
-	};
+): GraphNode | PredicateNode {
+	if (variant === 'predicate') {
+		return {
+			id: nodeIri,
+			type: 'node',
+			variant: 'predicate',
+			edgeIds: [],
+			props: [],
+		};
+	} else if (variant === 'connector') {
+		return {
+			id: nodeIri,
+			type: 'node',
+			variant: 'connector',
+			props: [],
+			symbolNodeRef: symbolNodeRef as SymbolNode,
+		};
+	} else {
+		return {
+			id: nodeIri,
+			type: 'node',
+			variant: variant,
+			props: [],
+		};
+	}
 }
 
 function objectIsIri(rdfPatch: RdfPatch) {
