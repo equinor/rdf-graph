@@ -7,8 +7,8 @@ import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
-
-import { GraphEdge, GraphNode, KnownPropKey, PROPS, RdfPatch } from '@rdf-graph/types/types';
+import { GraphEdge, GraphNode, RdfPatch } from '@rdf-graph/types/core';
+import { directPropConfig } from '@rdf-graph/propConfig';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -28,7 +28,7 @@ export const TabEdit = () => {
 
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 
-	const addNewNode = (id?: string) => {
+	const addNewNode = (_id?: string) => {
 		const name = generateNodeName();
 		const name_pretty = name
 			.split('_')
@@ -40,7 +40,11 @@ export const TabEdit = () => {
 			rdfPatches: [
 				{
 					action: 'add',
-					data: q(n('http://example.com/animals/' + name), n(PROPS.label.iri), l(name_pretty)),
+					data: q(
+						n('http://example.com/animals/' + name),
+						n(directPropConfig.label.iri),
+						l(name_pretty)
+					),
 				},
 			],
 		});
@@ -65,7 +69,11 @@ export const TabEdit = () => {
 				...nodes.map<RdfPatch>((node) => {
 					return {
 						action: 'add',
-						data: q(n('http://example.com/animals/' + node.id), n(PROPS.label.iri), l(node.label)),
+						data: q(
+							n('http://example.com/animals/' + node.id),
+							n(directPropConfig.label.iri),
+							l(node.label)
+						),
 					};
 				}),
 				{
@@ -94,11 +102,11 @@ export const TabEdit = () => {
 				},
 				{
 					action: 'add',
-					data: q(n('connectedTo'), n(PROPS.label.iri), l('Test!')),
+					data: q(n('connectedTo'), n(directPropConfig.label.iri), l('Test!')),
 				},
 				{
 					action: 'add',
-					data: q(n('connectedTo'), n(PROPS.stroke.iri), l('green')),
+					data: q(n('connectedTo'), n(directPropConfig.stroke.iri), l('green')),
 				},
 			],
 		});
@@ -214,14 +222,15 @@ const MenuSection: React.FunctionComponent<
 };
 
 const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ node }) => {
-	const props: { key: string; value: string }[] = Object.keys(node.props).map((p) => {
-		let val = node.props[p as KnownPropKey];
-
-		if (typeof val !== 'string') {
-			val = JSON.stringify(val);
+	const props: { key: string; value: string }[] = node.props.map((p) => {
+		let val = '';
+		if (p.type === 'derived') {
+			val = JSON.stringify(p.value);
+		} else {
+			val = p.value[0];
 		}
 
-		return { key: p, value: val };
+		return { key: p.key, value: val };
 	});
 
 	return (

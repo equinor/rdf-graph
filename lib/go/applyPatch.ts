@@ -1,22 +1,15 @@
-import {
-	GraphDataProperty,
-	GraphEdge,
-	GraphElement,
-	GraphNode,
-	GraphPatch,
-	GraphProperty,
-} from 'core/types/core';
+import { GraphEdge, GraphNodePatch, GraphPatch, GraphPropertyPatch } from 'core/types/core';
 
 export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 	for (const patch of patches) {
-		switch (patch.element.type) {
+		switch (patch.content.type) {
 			case 'node':
-				switch (patch.element.variant) {
+				switch (patch.content.variant) {
 					case 'default':
 					case 'symbol':
 					case 'connector':
 						if (patch.action === 'add') {
-							addNode(diagram, patch.element);
+							addNode(diagram, patch.content);
 						}
 						break;
 					default:
@@ -25,55 +18,12 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 				break;
 			case 'edge':
 				if (patch.action === 'add') {
-					addEdge(diagram, patch.element);
+					addEdge(diagram, patch.content);
 				}
 				break;
 			case 'property':
-				switch (patch.element.target.type) {
-					case 'node':
-						switch (patch.element.target.variant) {
-							case 'symbol':
-							case 'connector':
-							case 'default':
-								if (patch.action === 'add') {
-									addNodeProp(diagram, patch.element);
-								}
-								break;
-							default:
-								break;
-						}
-						break;
-					case 'edge':
-						if (patch.action === 'add') {
-							addEdgeProp(diagram, patch.element);
-						} else {
-						}
-						break;
-					default:
-						break;
-				}
-
-				break;
-			case 'data':
-				switch (patch.element.target.type) {
-					case 'node':
-						switch (patch.element.target.variant) {
-							case 'symbol':
-							case 'connector':
-							case 'default':
-								if (patch.action === 'add') {
-									addNodeDataProp(diagram, patch.element);
-								}
-								break;
-							default:
-								break;
-						}
-						break;
-
-					default:
-						break;
-				}
-				break;
+				addEdgeProp(diagram, patch.content);
+				addNodeProp(diagram, patch.content);
 
 			default:
 				break;
@@ -85,31 +35,37 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 	});
 }
 
-function addNode(diagram: go.Diagram, node: GraphNode) {
+function addNode(diagram: go.Diagram, node: GraphNodePatch) {
 	diagram.model.addNodeData({
 		id: node.id,
 		type: node.type,
 		variant: node.variant,
-		label: node.props.label ?? node.id,
+		label: node.id,
 		category: '',
 		ports: [],
 		data: {},
 	});
 }
 
-function addNodeProp(diagram: go.Diagram, prop: GraphProperty<GraphElement>) {
-	const nodeData = diagram.model.findNodeDataForKey(prop.target.id);
+function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
 	if (!nodeData) return;
-	diagram.model.setDataProperty(nodeData, prop.key, prop.value);
-}
-
-function addNodeDataProp(diagram: go.Diagram, prop: GraphDataProperty) {
-	const nodeData = diagram.model.findNodeDataForKey(prop.target.id);
-	if (!nodeData) return;
-	diagram.model.setDataProperty(nodeData, 'data', { ...nodeData.data, [prop.key]: prop.values });
+	if (propPatch.prop.type === 'custom') {
+		diagram.model.setDataProperty(nodeData, 'data', {
+			...nodeData.data,
+			[propPatch.prop.key]: propPatch.prop.value,
+		});
+	} else {
+		diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
+	}
 }
 
 function addEdge(diagram: go.Diagram, edge: GraphEdge) {
+	const edgeModel = diagram.model as go.GraphLinksModel;
+	const linkData = edgeModel.findLinkDataForKey(edge.id);
+	if (!linkData) {
+		return;
+	}
 	(diagram.model as go.GraphLinksModel).addLinkData({
 		id: edge.id,
 		type: edge.type,
@@ -118,9 +74,9 @@ function addEdge(diagram: go.Diagram, edge: GraphEdge) {
 	});
 }
 
-function addEdgeProp(diagram: go.Diagram, prop: GraphProperty<GraphElement>) {
-	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(prop.target.id);
+function addEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
 
 	if (!linkData) return;
-	diagram.model.setDataProperty(linkData, prop.key, prop.value);
+	diagram.model.setDataProperty(linkData, propPatch.prop.key, propPatch.prop.value);
 }

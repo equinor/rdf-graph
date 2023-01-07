@@ -1,5 +1,5 @@
+import { RdfPatch } from '@rdf-graph/types/core';
 import { useEffect, useState } from 'react';
-import { RdfPatch } from '@rdf-graph/types/types';
 import { useGraphContext } from '../../context/GraphContext';
 
 export const CyUi = () => {

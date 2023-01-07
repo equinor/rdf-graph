@@ -1,10 +1,10 @@
 import { useRef } from 'react';
 
 import { RdfGraphDiagram, RdfGraphDiagramRef } from '@rdf-graph-go/RdfGraphDiagram';
-import { GraphState } from '@rdf-graph/types/types';
 
 import { defaultInitDiagram } from './init';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
+import { GraphState } from '@rdf-graph/types/core';
 
 export const GoUi = () => {
 	const diagramRef = useRef<RdfGraphDiagramRef>(null);
