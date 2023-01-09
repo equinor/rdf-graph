@@ -24,12 +24,12 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 			case 'property':
 				addEdgeProp(diagram, patch.content);
 				addNodeProp(diagram, patch.content);
-
+				break;
 			default:
 				break;
 		}
 	}
-	console.log();
+
 	diagram.nodes.each((n) => {
 		console.log(n.data);
 	});
@@ -61,11 +61,6 @@ function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 }
 
 function addEdge(diagram: go.Diagram, edge: GraphEdge) {
-	const edgeModel = diagram.model as go.GraphLinksModel;
-	const linkData = edgeModel.findLinkDataForKey(edge.id);
-	if (!linkData) {
-		return;
-	}
 	(diagram.model as go.GraphLinksModel).addLinkData({
 		id: edge.id,
 		type: edge.type,
