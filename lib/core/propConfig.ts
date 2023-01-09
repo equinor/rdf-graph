@@ -1,7 +1,14 @@
 // PROPERTY CONFIGURATION
 
+import { addProp } from './baseGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
-import { DerivedPropKey, GraphNode, DirectPropKey, PatchGraphResult } from './types/core';
+import {
+	DerivedPropKey,
+	GraphNode,
+	DirectPropKey,
+	PatchGraphResult,
+	DerivedProp,
+} from './types/core';
 import { UiSymbolProvider, UiSymbol } from './types/UiSymbol';
 
 export type RuleInputs = { nodeIri: string; symbolProvider?: UiSymbolProvider };
@@ -64,6 +71,13 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 					symbol = symbolProvider ? symbolProvider(symbolId, rotation) : undefined;
 				}
 
+				if (!symbol) {
+					console.warn(`Symbol with id=${symbolId} not found!`);
+					return new PatchGraphMonad(state);
+				}
+
+				const newProp: DerivedProp = { key: 'symbol', type: 'derived', value: symbol };
+
 				const connectorIds = findManyDirectProp(node, 'connectorIds');
 				const downstreamRules = connectorIds.flatMap((ci) => [
 					derivedPropConfig['connectorDirection'].rule({ nodeIri: ci }),
@@ -71,22 +85,31 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 				]);
 
 				return new PatchGraphMonad(state).bindMany(
-					[putKnownProp(nodeIri, 'symbol', symbol)].concat(downstreamRules)
+					[addProp(node, newProp)].concat(downstreamRules)
 				);
 			};
 		},
 	},
+
 	connectorDirection: {
 		rule: ({ nodeIri }: RuleInputs) => {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
-
 				const connectorInfo = getConnectorInfo(connectorNode);
 
-				return new PatchGraphMonad(state).bind(
-					putKnownProp(nodeIri, 'direction', connectorInfo?.direction)
-				);
+				if (!connectorInfo?.direction) {
+					console.warn(`Expected UiSymbol instance on node`, nodeIri);
+					return new PatchGraphMonad(state);
+				}
+
+				const newProp: DerivedProp = {
+					key: 'connectorDirection',
+					type: 'derived',
+					value: connectorInfo.direction,
+				};
+
+				return new PatchGraphMonad(state).bind(addProp(connectorNode, newProp));
 			};
 		},
 	},
@@ -96,12 +119,20 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
-
 				const connectorInfo = getConnectorInfo(connectorNode);
 
-				return new PatchGraphMonad(state).bind(
-					putKnownProp(nodeIri, 'relativePosition', connectorInfo?.position)
-				);
+				if (!connectorInfo?.position) {
+					console.warn(`Expected UiSymbol instance on node`, nodeIri);
+					return new PatchGraphMonad(state);
+				}
+
+				const newProp: DerivedProp = {
+					key: 'connectorRelativePosition',
+					type: 'derived',
+					value: connectorInfo.position,
+				};
+
+				return new PatchGraphMonad(state).bind(addProp(connectorNode, newProp));
 			};
 		},
 	},

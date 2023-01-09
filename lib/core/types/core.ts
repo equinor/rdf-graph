@@ -29,7 +29,9 @@ export type CustomProp = BaseProp<'custom', string[]> & {};
 export type DerivedProp =
 	| (BaseProp<'derived', UiSymbol> & { key: 'symbol' })
 	| (BaseProp<'derived', number> & { key: 'connectorDirection' })
-	| (BaseProp<'derived', Point> & { key: 'connectorRelativePosition' });
+	| (BaseProp<'derived', Point | 'Left' | 'Right' | 'Top' | 'Bottom'> & {
+			key: 'connectorRelativePosition';
+	  });
 
 export type KnownProp = DirectProp | DerivedProp;
 
