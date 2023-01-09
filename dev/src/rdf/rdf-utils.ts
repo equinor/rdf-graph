@@ -1,4 +1,5 @@
-import { KnownPropKey, PROPS } from '@rdf-graph/types/types';
+import { directPropConfig } from '@rdf-graph/propConfig';
+import { DirectPropKey } from '@rdf-graph/types/core';
 
 export type RdfNamespaceKey = 'ui' | 'io' | 'animals' | 'rdfs';
 
@@ -18,10 +19,9 @@ const iris: string[] = [];
 export function getKnownIris() {
 	if (iris.length === 0) {
 		iris.push(
-			...(Object.keys(PROPS) as KnownPropKey[])
-				.map((k) => PROPS[k].iri)
+			...(Object.keys(directPropConfig) as DirectPropKey[])
+				.map((k) => directPropConfig[k].iri)
 				.concat(Object.values(predicateIri))
-				.filter((iri) => iri !== 'null')
 		);
 	}
 	return iris;

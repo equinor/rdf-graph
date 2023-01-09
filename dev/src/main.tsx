@@ -17,7 +17,7 @@ type RouteObjectExtended = RouteObject & { title: string };
 
 export const pages: RouteObjectExtended[] = [
 	{ path: 'edit', element: <TabEdit />, title: 'Edit' },
-	{ path: 'cases', element: <h1>Cases</h1>, title: 'Cases' },
+	//{ path: 'cases', element: <h1>Cases</h1>, title: 'Cases' },
 	{ path: 'history', element: <TabHistory />, title: 'RDF History' },
 	{ path: 'graph-state', element: <TabGraphState />, title: 'Graph State' },
 ];
