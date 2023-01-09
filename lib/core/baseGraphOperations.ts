@@ -14,7 +14,15 @@ import {
 	Prop,
 } from './types/core';
 
-function toGraphPatch(node: GraphNode): GraphNodePatch {
+function nodeToGraphPatch(node: GraphNode): GraphNodePatch {
+	if (node.variant === 'connector') {
+		return {
+			id: node.id,
+			type: 'node',
+			variant: node.variant,
+			symbolNodeId: node.symbolNodeRef.id,
+		} as GraphNodePatch;
+	}
 	return { id: node.id, type: 'node', variant: node.variant } as GraphNodePatch;
 }
 
@@ -26,7 +34,7 @@ export function addNode(node: GraphNode): BindFunction {
 				...state.graphState,
 				nodeStore: { ...state.graphState.nodeStore, [node.id]: node },
 			},
-			graphPatches: [...state.graphPatches, { action: 'add', content: toGraphPatch(node) }],
+			graphPatches: [...state.graphPatches, { action: 'add', content: nodeToGraphPatch(node) }],
 		});
 	};
 }
@@ -41,7 +49,7 @@ export function deleteNode(iri: string): BindFunction {
 				...state.graphState,
 				nodeStore: deleteEntriesFromRecord(store, [iri]),
 			},
-			graphPatches: [...state.graphPatches, { action: 'remove', content: toGraphPatch(node) }],
+			graphPatches: [...state.graphPatches, { action: 'remove', content: nodeToGraphPatch(node) }],
 		});
 	};
 }
@@ -275,7 +283,7 @@ export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown):
 }
 
 /**
- * Delete all values from a tag and send equally many graph patches with prop key + value deletion to
+ * Delete all values from a prop and send equally many graph patches with prop key + value deletion to
  * client
  */
 export function burninatePropFromNode(node: GraphNode, prop: Prop): BindFunction {
