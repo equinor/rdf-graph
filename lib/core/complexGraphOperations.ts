@@ -1,5 +1,5 @@
 import { termToId } from 'n3';
-import { nanoid } from 'nanoid';
+
 import {
 	addEdge,
 	addEdgeToPredicateNode,
@@ -56,7 +56,7 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
-		const edgeId = nanoid();
+		const edgeId = window.crypto.randomUUID();
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
 		bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
