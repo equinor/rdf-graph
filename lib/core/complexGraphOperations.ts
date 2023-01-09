@@ -22,7 +22,6 @@ import {
 	PredicateNode,
 	Prop,
 	RdfPatch,
-	SymbolNode,
 } from './types/core';
 
 export function ensureSubjectNode(rdfPatch: RdfPatch): BindFunction {
@@ -53,11 +52,14 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		if (!objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
+
+		// Direct keys should be handled elsewhere, only unknown predicates should be normal edges
+		if (!objectIsIri(rdfPatch) || directKey) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
 		const edgeId = nanoid();
-		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
 		bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
 
@@ -75,16 +77,20 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 
 export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
-		if (objectIsIri(rdfPatch)) return new PatchGraphMonad(state);
-
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+
+		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
+
+		// Ignoring IRI objects when adding props except for connectorId which should be treated as a property
+		// before applying custom rule
+		if (objectIsIri(rdfPatch) || !directKey) return new PatchGraphMonad(state);
+
 		const node = state.graphState.nodeStore[subjectIri];
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
 		const activeNode = node === undefined ? predicateNode : node;
 
 		// Remove quotes
 		const objectLiteral = objectTerm.slice(1, -1);
-		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 		// NOTE: Derived props are ONLY added via prop rules!
 
 		const key = directKey ? directKey : predicateIri;
@@ -113,7 +119,7 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 
 export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptions>): BindFunction {
 	return (state: PatchGraphResult) => {
-		const { subjectIri, predicateIri } = getTripleAsString(rdfPatch);
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
 		const key = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
@@ -127,11 +133,9 @@ export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptio
 			return new PatchGraphMonad(state);
 		}
 
-		const store = state.graphState.nodeStore;
-		const node = store[subjectIri];
-
 		const target: RuleInputs = {
-			nodeIri: node.id,
+			subjectIri: subjectIri,
+			objectIri: objectTerm,
 			symbolProvider: options?.symbolProvider,
 		};
 
@@ -139,10 +143,10 @@ export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptio
 	};
 }
 
-function convertNode(
+export function convertNode(
 	nodeIri: string,
 	variant: NodeVariantInternal,
-	symbolNodeRef?: SymbolNode
+	symbolNodeIri?: string
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const graphState = state.graphState;
@@ -165,10 +169,15 @@ function convertNode(
 
 		const bindings: BindFunction[] = [];
 		// create bindings to delete old stuff
+
 		bindings.push(...oldNode.props.map((prop) => burninatePropFromNode(oldNode, prop)));
 		bindings.push(deleteEdges(oldEdges.map((e) => e.id)));
 		bindings.push(deleteNode(nodeIri));
-		const newNode = createNewNode(nodeIri, variant, symbolNodeRef);
+		let symbolNode = undefined;
+		if (variant === 'connector' && symbolNodeIri) {
+			symbolNode = state.graphState.nodeStore[symbolNodeIri];
+		}
+		const newNode = createNewNode(nodeIri, variant, symbolNode);
 
 		// create bindings to readd stuff. For predicates, props are handled elsewhere
 		if (variant === 'predicate') {
@@ -187,7 +196,7 @@ function convertNode(
 function createNewNode(
 	nodeIri: string,
 	variant: NodeVariantInternal,
-	symbolNodeRef?: SymbolNode
+	symbolNodeRef?: GraphNode
 ): GraphNode | PredicateNode {
 	if (variant === 'predicate') {
 		return {
@@ -198,12 +207,15 @@ function createNewNode(
 			props: [],
 		};
 	} else if (variant === 'connector') {
+		if (!symbolNodeRef) {
+			console.error('Connector node added without symbolnoderef, entering bad state');
+		}
 		return {
 			id: nodeIri,
 			type: 'node',
 			variant: 'connector',
 			props: [],
-			symbolNodeRef: symbolNodeRef as SymbolNode,
+			symbolNodeRef: symbolNodeRef as GraphNode,
 		};
 	} else {
 		return {

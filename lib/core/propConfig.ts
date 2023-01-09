@@ -1,6 +1,7 @@
 // PROPERTY CONFIGURATION
 
-import { addProp } from './baseGraphOperations';
+import { addProp, burninatePropFromNode } from './baseGraphOperations';
+import { convertNode } from './complexGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import {
 	DerivedPropKey,
@@ -11,7 +12,11 @@ import {
 } from './types/core';
 import { UiSymbolProvider, UiSymbol } from './types/UiSymbol';
 
-export type RuleInputs = { nodeIri: string; symbolProvider?: UiSymbolProvider };
+export type RuleInputs = {
+	subjectIri: string;
+	objectIri?: string;
+	symbolProvider?: UiSymbolProvider;
+};
 
 export type PropRule = (target: RuleInputs) => BindFunction;
 
@@ -31,9 +36,27 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 	},
 	connectorIds: {
 		iri: 'http://rdf.equinor.com/ui/hasConnector',
+		rule: ({ subjectIri, objectIri }: RuleInputs) => {
+			const o = objectIri as string;
+			return (state: PatchGraphResult) => {
+				return new PatchGraphMonad(state).bindMany([
+					convertNode(o, 'connector', subjectIri),
+					derivedPropConfig['connectorRelativePosition'].rule({ subjectIri: o }),
+					derivedPropConfig['connectorDirection'].rule({ subjectIri: o }),
+				]);
+			};
+		},
 	},
 	connectorName: {
 		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
+		rule: (ruleInputs: RuleInputs) => {
+			return (state: PatchGraphResult) => {
+				return new PatchGraphMonad(state).bindMany([
+					derivedPropConfig['connectorRelativePosition'].rule(ruleInputs),
+					derivedPropConfig['connectorDirection'].rule(ruleInputs),
+				]);
+			};
+		},
 	},
 	rotation: {
 		iri: 'http://rdf.equinor.com/ui/hasRotation',
@@ -59,7 +82,7 @@ export const directPropKeys = Object.keys(directPropConfig) as DirectPropKey[];
 
 export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 	symbol: {
-		rule: ({ nodeIri, symbolProvider }: RuleInputs) => {
+		rule: ({ subjectIri: nodeIri, symbolProvider }: RuleInputs) => {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const node = store[nodeIri];
@@ -80,8 +103,8 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 
 				const connectorIds = findManyDirectProp(node, 'connectorIds');
 				const downstreamRules = connectorIds.flatMap((ci) => [
-					derivedPropConfig['connectorDirection'].rule({ nodeIri: ci }),
-					derivedPropConfig['connectorRelativePosition'].rule({ nodeIri: ci }),
+					derivedPropConfig['connectorDirection'].rule({ subjectIri: ci }),
+					derivedPropConfig['connectorRelativePosition'].rule({ subjectIri: ci }),
 				]);
 
 				return new PatchGraphMonad(state).bindMany(
@@ -92,14 +115,19 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 	},
 
 	connectorDirection: {
-		rule: ({ nodeIri }: RuleInputs) => {
+		rule: ({ subjectIri: nodeIri }: RuleInputs) => {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
 				const connectorInfo = getConnectorInfo(connectorNode);
 
-				if (!connectorInfo?.direction) {
-					console.warn(`Expected UiSymbol instance on node`, nodeIri);
+				const oldProp = connectorNode.props.find(
+					(p) => p.type === 'derived' && p.key === 'connectorDirection'
+				);
+
+				if (!connectorInfo && oldProp) {
+					return new PatchGraphMonad(state).bind(burninatePropFromNode(connectorNode, oldProp));
+				} else if (!connectorInfo) {
 					return new PatchGraphMonad(state);
 				}
 
@@ -115,14 +143,18 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 	},
 
 	connectorRelativePosition: {
-		rule: ({ nodeIri }: RuleInputs) => {
+		rule: ({ subjectIri: nodeIri }: RuleInputs) => {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
 				const connectorInfo = getConnectorInfo(connectorNode);
 
-				if (!connectorInfo?.position) {
-					console.warn(`Expected UiSymbol instance on node`, nodeIri);
+				const oldProp = connectorNode.props.find(
+					(p) => p.type === 'derived' && p.key === 'connectorRelativePosition'
+				);
+				if (!connectorInfo && oldProp) {
+					return new PatchGraphMonad(state).bind(burninatePropFromNode(connectorNode, oldProp));
+				} else if (!connectorInfo) {
 					return new PatchGraphMonad(state);
 				}
 
@@ -165,7 +197,6 @@ function findDerivedProp<T>(node: GraphNode, key: DerivedPropKey): T | undefined
 /**  */
 function getConnectorInfo(connectorNode: GraphNode) {
 	if (connectorNode.variant !== 'connector') {
-		console.warn(`Expected node with id ${connectorNode.id} to be a connector`);
 		return undefined;
 	}
 

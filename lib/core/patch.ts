@@ -8,15 +8,14 @@ import {
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import { UiSymbolProvider } from './types/UiSymbol';
 import { GraphState, PatchGraphResult, RdfPatch } from './types/core';
+import { getConnectorSymbolAdvanced, SymbolLibraryKey } from './symbol-api';
 
 export type PatchGraphOptions = {
 	symbolProvider: UiSymbolProvider;
 };
 
-const _defaultSymbolProvider: UiSymbolProvider = (_id, _rotation) => {
-	// TODO: implement
-	return undefined;
-};
+const _defaultSymbolProvider: UiSymbolProvider = (id: string, rotation?: number) =>
+	getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation });
 
 export function patchGraphState(
 	state: GraphState,
@@ -33,7 +32,7 @@ export function patchGraphState(
 
 function rdfToGraphPatch(
 	rdfPatches: RdfPatch[],
-	options?: Partial<PatchGraphOptions>
+	_options?: Partial<PatchGraphOptions>
 ): BindFunction {
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {
@@ -43,7 +42,7 @@ function rdfToGraphPatch(
 					.bind(ensureObjectNode(rdfPatch))
 					.bind(ensurePredicateNodeWithEdge(rdfPatch))
 					.bind(ensurePredicateProp(rdfPatch))
-					.bind(applyRules(rdfPatch, options));
+					.bind(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }));
 			} else {
 				return acc;
 			}

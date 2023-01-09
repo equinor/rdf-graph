@@ -29,7 +29,7 @@ export type CustomProp = BaseProp<'custom', string[]> & {};
 export type DerivedProp =
 	| (BaseProp<'derived', UiSymbol> & { key: 'symbol' })
 	| (BaseProp<'derived', number> & { key: 'connectorDirection' })
-	| (BaseProp<'derived', Point | 'Left' | 'Right' | 'Top' | 'Bottom'> & {
+	| (BaseProp<'derived', Point> & {
 			key: 'connectorRelativePosition';
 	  });
 
@@ -68,9 +68,8 @@ export type SymbolNode = GraphNodeBase<'symbol'> & {};
 export type GroupNode = GraphNodeBase<'group'> & {};
 
 export type ConnectorNode = GraphNodeBase<'connector'> & {
-	symbolNodeRef: SymbolNode;
+	symbolNodeRef: GraphNode;
 };
-
 export type PredicateNode = GraphNodeBase<'predicate'> & {
 	/** NOTE: the 'id' is the predicate */
 	edgeIds: string[];
@@ -110,6 +109,7 @@ type GraphPatchBase<TType extends GraphPatchType> = {
 
 export type GraphNodePatch = GraphPatchBase<'node'> & {
 	variant: NodeVariant;
+	symbolNodeId?: string;
 };
 
 export type GraphEdgePatch = GraphPatchBase<'edge'> & {

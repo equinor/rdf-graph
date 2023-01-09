@@ -5,18 +5,29 @@ export interface UiSymbol {
 	width: number;
 	height: number;
 	angle?: number;
-	svg?: string;
+	svg: string;
 	/** Symbol as single svg <path> element value */
-	geometry?: string;
+	geometry: string;
 	connectors: UiSymbolConnector[];
 }
 
 export interface UiSymbolConnector {
 	id: string;
-	width: number;
-	height: number;
 	direction: number;
-	position: Point | 'Left' | 'Right' | 'Top' | 'Bottom';
+	height?: number;
+	width?: number;
+	position: Point;
+}
+
+export interface SymbolOptions {
+	rotation?: number;
+	fill?: string;
+	stroke?: string;
+	height?: number;
+	width?: number;
+	mutateSvgStringOnRotation?: boolean;
+	mutateConnectorRelativePosition?: 'none' | 'CenterCenter';
+	mutateConnectorRelativePositionOnRotation?: boolean;
 }
 
 export type UiSymbolProvider = (id: string, rotation?: number) => UiSymbol | undefined;
