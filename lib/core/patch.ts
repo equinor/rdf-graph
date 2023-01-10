@@ -2,7 +2,8 @@ import {
 	applyRules,
 	ensureObjectNode,
 	ensurePredicateNodeWithEdge,
-	ensurePredicateProp,
+	ensurePredicatePropAdded,
+	ensurePredicatePropRemoved,
 	ensureSubjectNode,
 } from './complexGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
@@ -36,16 +37,20 @@ function rdfToGraphPatch(
 ): BindFunction {
 	const f = (state: PatchGraphResult) => {
 		return rdfPatches.reduce((acc, rdfPatch) => {
+			const bindings: BindFunction[] = [];
 			if (rdfPatch.action === 'add') {
-				return acc
-					.bind(ensureSubjectNode(rdfPatch))
-					.bind(ensureObjectNode(rdfPatch))
-					.bind(ensurePredicateNodeWithEdge(rdfPatch))
-					.bind(ensurePredicateProp(rdfPatch))
-					.bind(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }));
+				bindings.push(
+					ensureSubjectNode(rdfPatch),
+					ensureObjectNode(rdfPatch),
+					ensurePredicateNodeWithEdge(rdfPatch),
+					ensurePredicatePropAdded(rdfPatch)
+				)
+
 			} else {
-				return acc;
+				bindings.push(ensurePredicatePropRemoved(rdfPatch));
 			}
+			bindings.push(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }))
+			return acc.bindMany(bindings)
 		}, new PatchGraphMonad(state));
 	};
 	return f;

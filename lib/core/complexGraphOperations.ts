@@ -1,4 +1,5 @@
 import { termToId } from 'n3';
+import crypto from 'crypto';
 
 import {
 	addEdge,
@@ -8,9 +9,10 @@ import {
 	addProp,
 	addPropToPredicateNode,
 	burninatePropFromNode,
-	createEdgePropPatches,
 	deleteEdges,
 	deleteNode,
+	deletePropFromNode,
+	deletePropFromPredicateNode,
 } from './baseGraphOperations';
 import { PatchGraphOptions } from './patch';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
@@ -59,7 +61,9 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 		if (!objectIsIri(rdfPatch) || directKey) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
-		const edgeId = window.crypto.randomUUID();
+		
+		// For library to be used with or without window (unittest vs normal client)
+		const edgeId = window.crypto.randomUUID ? window.crypto.randomUUID() : crypto.randomUUID();
 
 		bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
 
@@ -69,13 +73,12 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 			bindings.push(addPredicateNode(createNewNode(predicateIri, 'predicate') as PredicateNode));
 		}
 		bindings.push(addEdgeToPredicateNode(edgeId, predicateIri));
-		bindings.push(createEdgePropPatches(predicateIri));
 
 		return new PatchGraphMonad(state).bindMany(bindings);
 	};
 }
 
-export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
+export function ensurePredicatePropAdded(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
@@ -89,7 +92,7 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
 		const activeNode = node === undefined ? predicateNode : node;
 
-		// Remove quotes
+		// Remove quotes or `<>`
 		const objectLiteral = objectTerm.slice(1, -1);
 		// NOTE: Derived props are ONLY added via prop rules!
 
@@ -108,6 +111,47 @@ export function ensurePredicateProp(rdfPatch: RdfPatch): BindFunction {
 			return new PatchGraphMonad(state).bind(addProp(node, prop));
 		} else if (predicateNode) {
 			return new PatchGraphMonad(state).bind(addPropToPredicateNode(predicateNode.id, prop));
+		} else {
+			console.warn(
+				`Expected subject node with iri ${subjectIri} to be in a node store at this point.`
+			);
+			return new PatchGraphMonad(state);
+		}
+	};
+}
+
+export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
+	return (state: PatchGraphResult) => {
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+
+		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
+
+		// Ignoring IRI objects when adding props except for connectorId which should be treated as a property
+		// before applying custom rule
+		if (objectIsIri(rdfPatch) || !directKey) return new PatchGraphMonad(state);
+
+		const node = state.graphState.nodeStore[subjectIri];
+		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
+		const activeNode = node === undefined ? predicateNode : node;
+
+		// Remove quotes or `<>`
+		const oLiteralOrIri = objectTerm.slice(1, -1);
+		// NOTE: Derived props are ONLY removed via prop rules!
+
+		const key = directKey ? directKey : predicateIri;
+
+		const index = activeNode.props.findIndex((p) => p.key === key);
+		if (index === -1) {
+			console.warn("Asked to remove non existing prop")
+			return new PatchGraphMonad(state);
+		}
+
+		const prop = activeNode.props[index];
+
+		if (node) {
+			return new PatchGraphMonad(state).bind(deletePropFromNode(node, prop, oLiteralOrIri));
+		} else if (predicateNode) {
+			return new PatchGraphMonad(state).bind(deletePropFromPredicateNode(predicateNode, prop, oLiteralOrIri));
 		} else {
 			console.warn(
 				`Expected subject node with iri ${subjectIri} to be in a node store at this point.`

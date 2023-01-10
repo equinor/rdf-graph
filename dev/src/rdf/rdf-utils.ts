@@ -26,5 +26,3 @@ export function getKnownIris() {
 	}
 	return iris;
 }
-
-function predicateToShortForm(predicate: string) {}

@@ -77,7 +77,6 @@ export function addEdgeToPredicateNode(edgeId: string, predicateIri: string): Bi
 			edgeIds: [...pNode.edgeIds, edgeId],
 		};
 		return new PatchGraphMonad({
-			...state,
 			graphState: {
 				...state.graphState,
 				predicateNodeStore: {
@@ -85,6 +84,7 @@ export function addEdgeToPredicateNode(edgeId: string, predicateIri: string): Bi
 					[predicateIri]: predicateNode,
 				},
 			},
+			graphPatches: [...state.graphPatches, ...createEdgePropPatches(pNode, 'add', edgeId)]
 		});
 	};
 }
@@ -211,16 +211,11 @@ export function addPropToPredicateNode(nodeId: string, newProp: Prop): BindFunct
 	};
 }
 
-export function createEdgePropPatches(predicateIri: string): BindFunction {
-	return (state: PatchGraphResult) => {
-		const graphState = state.graphState;
-		const predicateStore = graphState.predicateNodeStore;
-		const predicateNode = predicateStore[predicateIri];
-		if (!predicateNode) {
-			return new PatchGraphMonad(state);
-		}
+function createEdgePropPatches(predicateNode: PredicateNode, action: 'add' | 'remove', edgeId?: string, prop?: PatchProp): GraphPatch[] {
+	const edgeIds = edgeId ? [edgeId] : predicateNode.edgeIds;
+	const props = prop ? [prop] :
 
-		const patchProps: PatchProp[] = predicateNode.props.flatMap((prop) => {
+		predicateNode.props.flatMap((prop) => {
 			if (prop.type === 'derived') {
 				return [toPatchProp(prop, prop.value)];
 			} else {
@@ -228,24 +223,19 @@ export function createEdgePropPatches(predicateIri: string): BindFunction {
 			}
 		});
 
-		const edgePatches: GraphPatch[] = patchProps.flatMap((prop) =>
-			predicateNode.edgeIds.map((e) => {
-				return {
-					action: 'add',
-					content: {
-						type: 'property',
-						id: e,
-						prop,
-					},
-				};
-			})
-		);
-		return new PatchGraphMonad({
-			...state,
-			graphPatches: [...state.graphPatches, ...edgePatches],
-		});
-	};
-}
+	return props.flatMap((prop) =>
+		edgeIds.map((e) => {
+			return {
+				action: action,
+				content: {
+					type: 'property',
+					id: e,
+					prop,
+				},
+			};
+		})
+	);
+};
 
 export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -317,9 +307,9 @@ export function burninatePropFromNode(node: GraphNode, prop: Prop): BindFunction
 }
 
 export function deletePropFromPredicateNode(
-	node: GraphNode,
+	node: PredicateNode,
 	prop: Prop,
-	value: unknown
+	value: PatchProp['value']
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.predicateNodeStore;
@@ -342,14 +332,7 @@ export function deletePropFromPredicateNode(
 			},
 			graphPatches: [
 				...state.graphPatches,
-				{
-					action: 'remove',
-					content: {
-						id: node.id,
-						type: 'property',
-						prop: { key: prop.key, type: 'direct', value: value } as PatchDirectProp,
-					} as GraphPropertyPatch,
-				},
+				...createEdgePropPatches(node, 'remove', undefined, toPatchProp(prop, value))
 			],
 		});
 	};
