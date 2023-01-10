@@ -89,11 +89,12 @@ export function addEdgeToPredicateNode(edgeId: string, predicateIri: string): Bi
 	};
 }
 
-export function addEdge(
+export function createEdgeChange(
 	edgeId: string,
 	predicateIri: string,
 	sourceId: string,
-	targetId: string
+	targetId: string,
+	action: 'add' | 'remove'
 ): BindFunction {
 	return (state: PatchGraphResult) => {
 		const newEdge: GraphEdge = {
@@ -110,7 +111,7 @@ export function addEdge(
 				...state.graphState,
 				edgeStore: { ...state.graphState.edgeStore, [edgeId]: newEdge },
 			},
-			graphPatches: [...state.graphPatches, { action: 'add', content: newEdge }],
+			graphPatches: [...state.graphPatches, { action: action, content: newEdge }],
 		});
 	};
 }

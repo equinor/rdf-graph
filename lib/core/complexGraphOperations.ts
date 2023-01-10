@@ -2,7 +2,7 @@ import { termToId } from 'n3';
 import crypto from 'crypto';
 
 import {
-	addEdge,
+	createEdgeChange,
 	addEdgeToPredicateNode,
 	addNode,
 	addPredicateNode,
@@ -65,7 +65,7 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 		// For library to be used with or without window (unittest vs normal client)
 		const edgeId = window.crypto.randomUUID ? window.crypto.randomUUID() : crypto.randomUUID();
 
-		bindings.push(addEdge(edgeId, predicateIri, subjectIri, objectTerm));
+		bindings.push(createEdgeChange(edgeId, predicateIri, subjectIri, objectTerm, 'add'));
 
 		if (predicateIri in state.graphState.nodeStore) {
 			bindings.push(convertNode(predicateIri, 'predicate'));
@@ -73,6 +73,39 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 			bindings.push(addPredicateNode(createNewNode(predicateIri, 'predicate') as PredicateNode));
 		}
 		bindings.push(addEdgeToPredicateNode(edgeId, predicateIri));
+
+		return new PatchGraphMonad(state).bindMany(bindings);
+	};
+}
+
+export function ensureEdgeRemoved(rdfPatch: RdfPatch): BindFunction {
+	return (state: PatchGraphResult) => {
+		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
+		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
+
+		// Direct keys should be handled elsewhere, only unknown predicates should be normal edges
+		if (!objectIsIri(rdfPatch) || directKey) return new PatchGraphMonad(state);
+
+		let bindings: BindFunction[] = [];
+
+		const edgeStore = state.graphState.edgeStore;
+		const edgeId = Object.keys(edgeStore).find(edgeKey => {
+			const edge = edgeStore[edgeKey];
+			return edge.sourceId === subjectIri && edge.predicateIri === predicateIri && edge.targetId === objectTerm
+		});
+
+		if (! edgeId) {
+			console.warn("Asked to delete non existing edge");
+			return new PatchGraphMonad(state);
+		}
+
+		bindings.push(createEdgeChange(edgeId, predicateIri, subjectIri, objectTerm, 'remove'));
+
+		const predicateNode = state.graphState.predicateNodeStore[predicateIri];
+
+		if (predicateNode.edgeIds.length === 0) {
+			bindings.push(convertNode(predicateIri, 'default'));
+		}
 
 		return new PatchGraphMonad(state).bindMany(bindings);
 	};
@@ -209,7 +242,9 @@ export function convertNode(
 
 		// remember node
 		const nodeStore = graphState.nodeStore;
-		const oldNode = nodeStore[nodeIri];
+		const normalNode = nodeStore[nodeIri];
+		const oldPredicateNode = graphState.predicateNodeStore[nodeIri];
+		const oldNode = normalNode ?? oldPredicateNode;
 
 		const bindings: BindFunction[] = [];
 		// create bindings to delete old stuff
@@ -230,7 +265,7 @@ export function convertNode(
 		} else {
 			bindings.push(addNode(newNode as GraphNode));
 			bindings.push(...oldNode.props.map((prop) => addProp(oldNode, prop)));
-			bindings.push(...oldEdges.map((e) => addEdge(e.id, e.predicateIri, e.sourceId, e.targetId)));
+			bindings.push(...oldEdges.map((e) => createEdgeChange(e.id, e.predicateIri, e.sourceId, e.targetId, 'add')));
 		}
 
 		return new PatchGraphMonad(state).bindMany(bindings);

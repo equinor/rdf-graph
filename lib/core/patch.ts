@@ -1,5 +1,6 @@
 import {
 	applyRules,
+	ensureEdgeRemoved,
 	ensureObjectNode,
 	ensurePredicateNodeWithEdge,
 	ensurePredicatePropAdded,
@@ -47,7 +48,10 @@ function rdfToGraphPatch(
 				)
 
 			} else {
-				bindings.push(ensurePredicatePropRemoved(rdfPatch));
+				bindings.push(
+					ensurePredicatePropRemoved(rdfPatch),
+					ensureEdgeRemoved(rdfPatch)
+				);
 			}
 			bindings.push(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }))
 			return acc.bindMany(bindings)
