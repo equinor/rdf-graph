@@ -44,7 +44,7 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 		const objectIri = termToId(rdfPatch.data.object);
 		const nodeExists =
 			objectIri in state.graphState.nodeStore || objectIri in state.graphState.predicateNodeStore;
-		if (rdfPatch.action === 'add' && !nodeExists && objectIsIri(rdfPatch)) {
+		if (rdfPatch.action === 'add' && !nodeExists && isEdgePatch(rdfPatch)) {
 			const newNode = createNewNode(objectIri, 'default') as GraphNode;
 			return new PatchGraphMonad(state).bind(addNode(newNode));
 		}
@@ -55,10 +55,8 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
-		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
-		// Direct keys should be handled elsewhere, only unknown predicates should be normal edges
-		if (!objectIsIri(rdfPatch) || directKey) return new PatchGraphMonad(state);
+		if (isPropPatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
 		
@@ -81,10 +79,8 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 export function ensureEdgeRemoved(rdfPatch: RdfPatch): BindFunction {
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
-		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
-		// Direct keys should be handled elsewhere, only unknown predicates should be normal edges
-		if (!objectIsIri(rdfPatch) || directKey) return new PatchGraphMonad(state);
+		if (isPropPatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
 
@@ -117,9 +113,7 @@ export function ensurePredicatePropAdded(rdfPatch: RdfPatch): BindFunction {
 
 		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
-		// Ignoring IRI objects when adding props except for connectorId which should be treated as a property
-		// before applying custom rule
-		if (objectIsIri(rdfPatch) || !directKey) return new PatchGraphMonad(state);
+		if (isEdgePatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		const node = state.graphState.nodeStore[subjectIri];
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
@@ -138,7 +132,7 @@ export function ensurePredicatePropAdded(rdfPatch: RdfPatch): BindFunction {
 				: [...(activeNode.props[index].value as string[]), objectLiteral];
 		const prop: Prop = directKey
 			? { key: directKey, type: 'direct', value }
-			: { key: objectLiteral, type: 'custom', value };
+			: { key: predicateIri, type: 'custom', value };
 
 		if (node) {
 			return new PatchGraphMonad(state).bind(addProp(node, prop));
@@ -159,9 +153,8 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 
 		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
-		// Ignoring IRI objects when adding props except for connectorId which should be treated as a property
-		// before applying custom rule
-		if (objectIsIri(rdfPatch) || !directKey) return new PatchGraphMonad(state);
+
+		if (isEdgePatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		const node = state.graphState.nodeStore[subjectIri];
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
@@ -306,9 +299,18 @@ function createNewNode(
 	}
 }
 
-function objectIsIri(rdfPatch: RdfPatch) {
-	return rdfPatch.data.object.termType !== 'Literal';
+// Ignoring IRI objects when adding props except for connectorId which should be treated as a property
+// before applying custom rule
+function isEdgePatch(rdfPatch: RdfPatch) {
+	const isIri = rdfPatch.data.object.termType !== 'Literal';
+	const isSpecialProp = !! directPropKeys.find(directKey => directPropConfig[directKey].iri === rdfPatch.data.predicate.id);
+	return isIri && !isSpecialProp;
 }
+
+function isPropPatch(rdfPatch: RdfPatch) {
+	return !isEdgePatch(rdfPatch);
+}
+
 
 type TripleAsStrings = {
 	subjectIri: string;
