@@ -22,8 +22,13 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 				}
 				break;
 			case 'property':
-				addEdgeProp(diagram, patch.content);
-				addNodeProp(diagram, patch.content);
+				if (patch.action === 'add') {
+					addEdgeProp(diagram, patch.content);
+					addNodeProp(diagram, patch.content);
+				} else {
+					removeNodeProp(diagram, patch.content);
+				}
+
 				break;
 			default:
 				break;
@@ -57,6 +62,30 @@ function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 		});
 	} else {
 		diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
+	}
+}
+
+function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
+	if (!nodeData) return;
+	if (propPatch.prop.type === 'custom') {
+		const newData = { ...nodeData.data };
+		delete newData[propPatch.prop.key];
+		diagram.model.setDataProperty(nodeData, 'data', newData);
+	} else {
+		let deleteValue = undefined;
+		// Define specific default values for delete props
+		switch (propPatch.prop.key) {
+			case 'fill':
+				deleteValue = 'lightgreen';
+				break;
+			case 'stroke':
+				deleteValue = '#ccc';
+				break;
+			default:
+				break;
+		}
+		diagram.model.setDataProperty(nodeData, propPatch.prop.key, deleteValue);
 	}
 }
 
