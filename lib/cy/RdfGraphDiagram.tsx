@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import Cytoscape from 'cytoscape';
 import { GraphPatch, GraphState, RdfPatch } from 'core/types/core';
 
 import { applyPatch } from './applyPatch';
@@ -27,6 +26,7 @@ export type RdfGraphDiagramProps = {
 	onErrorCallback?: (error: RdfGraphError) => void;
 	onGraphStateChanged?: (state: GraphState) => void;
 	onGraphSelectionChanged?: (selection: GraphSelection) => void;
+	onCyInit?: (cy: cytoscape.Core) => void;
 	//onSelectionChanged?: (e: go.DiagramEvent) => void;
 };
 
@@ -41,12 +41,13 @@ export const RdfGraphDiagram = ({
 	symbolProvider,
 	onGraphStateChanged,
 	onGraphSelectionChanged,
+	onCyInit,
 }: RdfGraphDiagramProps) => {
 	const selectedLayout = layoutDagre;
 
 	const divRef = useRef<HTMLDivElement>(null);
 
-	const cyRef = useRef<Cytoscape.Core>();
+	const cyRef = useRef<cytoscape.Core>();
 	const [initialized, setInitialized] = useState(false);
 
 	const [graphState, setGraphState] = useState<GraphState>({
@@ -91,7 +92,7 @@ export const RdfGraphDiagram = ({
 	};
 
 	const loadCy = () => {
-		cyRef.current = cytoscape({
+		const cy = cytoscape({
 			container: divRef.current,
 			elements: [],
 			style: [
@@ -194,6 +195,9 @@ export const RdfGraphDiagram = ({
 			const selectedNodes = cyRef.current?.$('node:selected').map((n) => n.data().id);
 			onGraphSelectionChanged({ nodes: selectedNodes ?? [], edges: [] });
 		});
+
+		if (onCyInit) onCyInit(cy);
+		cyRef.current = cy;
 
 		setInitialized(true);
 	};
