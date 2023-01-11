@@ -27,6 +27,7 @@ const RdfGoGraph = forwardRef(
 			initDiagram,
 			style,
 			rdfPatches,
+			customGraphPatches,
 			symbolProvider,
 			onGraphStateChanged,
 			onGraphSelectionChanged,
@@ -112,6 +113,14 @@ const RdfGoGraph = forwardRef(
 
 			console.log('GraphPatches:', patchGraphResult.graphPatches);
 		}, [rdfPatches]);
+
+		useEffect(() => {
+			if (!initialized) return;
+			console.log('Custom graphPatches:', customGraphPatches);
+			const diagram = getDiagram();
+			if (!diagram) return;
+			applyPatch(customGraphPatches, diagram);
+		}, [customGraphPatches]);
 
 		return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;
 	}

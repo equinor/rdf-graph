@@ -30,6 +30,7 @@ export const GoUi = () => {
 			<RdfGoGraph
 				ref={diagramRef}
 				initDiagram={() => defaultInitDiagram()}
+				customGraphPatches={graphContext.customPatches}
 				rdfPatches={graphContext.rdfPatches}
 				style={{ height: 'calc(100vh - var(--menu-height))' }}
 				onGraphStateChanged={graphStateChangedHandler}

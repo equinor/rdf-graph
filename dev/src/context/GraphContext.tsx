@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { GraphState, RdfPatch } from '@rdf-graph/types/core';
+import { GraphPatch, GraphState, RdfPatch } from '@rdf-graph/types/core';
 import { useParams } from 'react-router-dom';
 import { UiKey } from '../setup';
 
@@ -13,6 +13,7 @@ export type GraphContextData = {
 	rdfPatches: RdfPatch[];
 	graphSelection: GraphSelection;
 	graphState: GraphState;
+	customPatches: GraphPatch[];
 };
 
 const getDefaultContext: () => GraphContextData = () => {
@@ -21,18 +22,24 @@ const getDefaultContext: () => GraphContextData = () => {
 		rdfPatchesHistory: [],
 		graphSelection: { nodes: [], edges: [] },
 		graphState: { nodeStore: {}, edgeStore: {}, predicateNodeStore: {} },
+		customPatches: [],
 	};
 };
 
 type SetGraphSelectionAction = { type: 'SetGraphSelection'; selection: GraphSelection };
 
 type DispatchRdfPatchesAction = { type: 'DispatchRdfPatches'; rdfPatches: RdfPatch[] };
+type DispatchCustomGraphPatchesAction = {
+	type: 'DispatchCustomGraphPatches';
+	graphPatches: GraphPatch[];
+};
 
 type SetGraphStateAction = { type: 'SetGraphState'; graphState: GraphState };
 
 type ResetAction = { type: 'Reset' };
 
 type GraphContextAction =
+	| DispatchCustomGraphPatchesAction
 	| SetGraphSelectionAction
 	| DispatchRdfPatchesAction
 	| SetGraphStateAction
@@ -43,6 +50,11 @@ function graphContextReducer(
 	action: GraphContextAction
 ): GraphContextData {
 	switch (action.type) {
+		case 'DispatchCustomGraphPatches':
+			return {
+				...state,
+				customPatches: action.graphPatches,
+			};
 		case 'DispatchRdfPatches':
 			return {
 				...state,

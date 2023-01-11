@@ -59,7 +59,7 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 		if (isPropPatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		let bindings: BindFunction[] = [];
-		
+
 		// For library to be used with or without window (unittest vs normal client)
 		const edgeId = window.crypto.randomUUID ? window.crypto.randomUUID() : crypto.randomUUID();
 
@@ -85,13 +85,17 @@ export function ensureEdgeRemoved(rdfPatch: RdfPatch): BindFunction {
 		let bindings: BindFunction[] = [];
 
 		const edgeStore = state.graphState.edgeStore;
-		const edgeId = Object.keys(edgeStore).find(edgeKey => {
+		const edgeId = Object.keys(edgeStore).find((edgeKey) => {
 			const edge = edgeStore[edgeKey];
-			return edge.sourceId === subjectIri && edge.predicateIri === predicateIri && edge.targetId === objectTerm
+			return (
+				edge.sourceId === subjectIri &&
+				edge.predicateIri === predicateIri &&
+				edge.targetId === objectTerm
+			);
 		});
 
-		if (! edgeId) {
-			console.warn("Asked to delete non existing edge");
+		if (!edgeId) {
+			console.warn('Asked to delete non existing edge');
 			return new PatchGraphMonad(state);
 		}
 
@@ -153,7 +157,6 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 
 		const directKey = directPropKeys.find((k) => directPropConfig[k].iri === predicateIri);
 
-
 		if (isEdgePatch(rdfPatch)) return new PatchGraphMonad(state);
 
 		const node = state.graphState.nodeStore[subjectIri];
@@ -168,7 +171,7 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 
 		const index = activeNode.props.findIndex((p) => p.key === key);
 		if (index === -1) {
-			console.warn("Asked to remove non existing prop")
+			console.warn('Asked to remove non existing prop');
 			return new PatchGraphMonad(state);
 		}
 
@@ -177,7 +180,9 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 		if (node) {
 			return new PatchGraphMonad(state).bind(deletePropFromNode(node, prop, oLiteralOrIri));
 		} else if (predicateNode) {
-			return new PatchGraphMonad(state).bind(deletePropFromPredicateNode(predicateNode, prop, oLiteralOrIri));
+			return new PatchGraphMonad(state).bind(
+				deletePropFromPredicateNode(predicateNode, prop, oLiteralOrIri)
+			);
 		} else {
 			console.warn(
 				`Expected subject node with iri ${subjectIri} to be in a node store at this point.`
@@ -258,7 +263,11 @@ export function convertNode(
 		} else {
 			bindings.push(addNode(newNode as GraphNode));
 			bindings.push(...oldNode.props.map((prop) => addProp(oldNode, prop)));
-			bindings.push(...oldEdges.map((e) => createEdgeChange(e.id, e.predicateIri, e.sourceId, e.targetId, 'add')));
+			bindings.push(
+				...oldEdges.map((e) =>
+					createEdgeChange(e.id, e.predicateIri, e.sourceId, e.targetId, 'add')
+				)
+			);
 		}
 
 		return new PatchGraphMonad(state).bindMany(bindings);
@@ -303,14 +312,15 @@ function createNewNode(
 // before applying custom rule
 function isEdgePatch(rdfPatch: RdfPatch) {
 	const isIri = rdfPatch.data.object.termType !== 'Literal';
-	const isSpecialProp = !! directPropKeys.find(directKey => directPropConfig[directKey].iri === rdfPatch.data.predicate.id);
+	const isSpecialProp = !!directPropKeys.find(
+		(directKey) => directPropConfig[directKey].iri === rdfPatch.data.predicate.id
+	);
 	return isIri && !isSpecialProp;
 }
 
 function isPropPatch(rdfPatch: RdfPatch) {
 	return !isEdgePatch(rdfPatch);
 }
-
 
 type TripleAsStrings = {
 	subjectIri: string;

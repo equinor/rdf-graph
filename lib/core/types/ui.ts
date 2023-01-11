@@ -1,10 +1,11 @@
-import { GraphState, RdfPatch } from './core';
+import { GraphPatch, GraphState, RdfPatch } from './core';
 import { RdfGraphError } from './RdfGraphError';
 import { UiSymbolProvider } from './UiSymbol';
 
 export type RdfGraphProps<TDiagramSelectionEvent> = {
 	style?: React.CSSProperties;
 	rdfPatches: RdfPatch[];
+	customGraphPatches: GraphPatch[];
 	symbolProvider?: UiSymbolProvider;
 	onErrorCallback?: (error: RdfGraphError) => void;
 	onGraphStateChanged?: (state: GraphState) => void;
@@ -16,3 +17,5 @@ export type GraphSelection = {
 	nodes: string[];
 	edges: string[];
 };
+
+export type SelectionEffect = (selection: GraphSelection) => GraphPatch[];

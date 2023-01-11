@@ -84,7 +84,7 @@ export function addEdgeToPredicateNode(edgeId: string, predicateIri: string): Bi
 					[predicateIri]: predicateNode,
 				},
 			},
-			graphPatches: [...state.graphPatches, ...createEdgePropPatches(pNode, 'add', edgeId)]
+			graphPatches: [...state.graphPatches, ...createEdgePropPatches(pNode, 'add', edgeId)],
 		});
 	};
 }
@@ -212,17 +212,22 @@ export function addPropToPredicateNode(nodeId: string, newProp: Prop): BindFunct
 	};
 }
 
-function createEdgePropPatches(predicateNode: PredicateNode, action: 'add' | 'remove', edgeId?: string, prop?: PatchProp): GraphPatch[] {
+function createEdgePropPatches(
+	predicateNode: PredicateNode,
+	action: 'add' | 'remove',
+	edgeId?: string,
+	prop?: PatchProp
+): GraphPatch[] {
 	const edgeIds = edgeId ? [edgeId] : predicateNode.edgeIds;
-	const props = prop ? [prop] :
-
-		predicateNode.props.flatMap((prop) => {
-			if (prop.type === 'derived') {
-				return [toPatchProp(prop, prop.value)];
-			} else {
-				return prop.value.map((v) => toPatchProp(prop, v));
-			}
-		});
+	const props = prop
+		? [prop]
+		: predicateNode.props.flatMap((prop) => {
+				if (prop.type === 'derived') {
+					return [toPatchProp(prop, prop.value)];
+				} else {
+					return prop.value.map((v) => toPatchProp(prop, v));
+				}
+		  });
 
 	return props.flatMap((prop) =>
 		edgeIds.map((e) => {
@@ -236,7 +241,7 @@ function createEdgePropPatches(predicateNode: PredicateNode, action: 'add' | 're
 			};
 		})
 	);
-};
+}
 
 export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown): BindFunction {
 	return (state: PatchGraphResult) => {
@@ -333,7 +338,7 @@ export function deletePropFromPredicateNode(
 			},
 			graphPatches: [
 				...state.graphPatches,
-				...createEdgePropPatches(node, 'remove', undefined, toPatchProp(prop, value))
+				...createEdgePropPatches(node, 'remove', undefined, toPatchProp(prop, value)),
 			],
 		});
 	};

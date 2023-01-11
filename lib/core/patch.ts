@@ -45,16 +45,12 @@ function rdfToGraphPatch(
 					ensureObjectNode(rdfPatch),
 					ensurePredicateNodeWithEdge(rdfPatch),
 					ensurePredicatePropAdded(rdfPatch)
-				)
-
-			} else {
-				bindings.push(
-					ensurePredicatePropRemoved(rdfPatch),
-					ensureEdgeRemoved(rdfPatch)
 				);
+			} else {
+				bindings.push(ensurePredicatePropRemoved(rdfPatch), ensureEdgeRemoved(rdfPatch));
 			}
-			bindings.push(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }))
-			return acc.bindMany(bindings)
+			bindings.push(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }));
+			return acc.bindMany(bindings);
 		}, new PatchGraphMonad(state));
 	};
 	return f;

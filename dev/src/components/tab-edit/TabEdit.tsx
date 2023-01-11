@@ -7,10 +7,19 @@ import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
-import { GraphEdge, GraphNode, RdfPatch } from '@rdf-graph/types/core';
+import {
+	GraphEdge,
+	GraphNode,
+	RdfPatch,
+	GraphPropertyPatch,
+	GraphElement,
+	GraphPatch,
+} from '@rdf-graph/types/core';
 import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
+
+import { bfs } from '@rdf-graph/graphAlgorithms';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -46,6 +55,26 @@ export const TabEdit = () => {
 				},
 			],
 		});
+	};
+	const highlightNode = (selection: GraphElement): GraphPatch[] => {
+		const patch: GraphPropertyPatch = {
+			id: selection.id,
+			prop: { type: 'direct', key: 'fill', value: 'pink' },
+			type: 'property',
+		};
+		return [{ action: 'add', content: patch }];
+	};
+
+	const runBfs = (_id?: string) => {
+		if (selectedItem)
+			dispatch({
+				type: 'DispatchCustomGraphPatches',
+				graphPatches: bfs(
+					{ nodes: [selectedItem.id], edges: [] },
+					graphContext.graphState,
+					highlightNode
+				),
+			});
 	};
 
 	const addCluster = () => {
@@ -159,8 +188,8 @@ export const TabEdit = () => {
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
 				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
-
 				<Button onClick={() => addCluster()}>Add Cluster</Button>
+				<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection title="Edge">
