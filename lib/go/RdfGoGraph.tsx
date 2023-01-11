@@ -117,5 +117,5 @@ const RdfGoGraph = forwardRef(
 	}
 );
 
-RdfGoGraph.displayName = 'RdfGraphDiagram';
+RdfGoGraph.displayName = 'RdfGoGraph';
 export { RdfGoGraph };
