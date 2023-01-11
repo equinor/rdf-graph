@@ -4,19 +4,28 @@ import { GraphSelection } from './types/ui';
 export function bfs(
 	selection: GraphSelection,
 	state: GraphState,
-	onElementMarked: (element: GraphElement) => GraphPatch[]
+	onElementMarked: (element: GraphElement) => GraphPatch[],
+	onFinished?: (elementIris: string[]) => GraphPatch[]
 ) {
 	const effect: GraphPatch[] = [];
-	const visited = new Set<string>(selection.nodes.concat(selection.edges));
-	const stack = [...visited];
+	const visitedNodes = new Set<string>(selection.nodes);
+	const visitedEdges = new Set<string>(selection.edges);
+	const stack = [...visitedNodes, ...visitedEdges];
+
+	const emptyIndex = Object.keys(state.nodeStore).reduce<Record<string, GraphEdge[]>>(
+		(acc, current) => {
+			acc[current] = [];
+			return acc;
+		},
+		{}
+	);
 
 	const outgoing = Object.keys(state.edgeStore)
 		.map((key) => state.edgeStore[key])
 		.reduce<Record<string, GraphEdge[]>>((acc, current) => {
-			acc[current.sourceId] =
-				current.sourceId in acc ? acc[current.sourceId].concat([current]) : [current];
+			acc[current.sourceId] = acc[current.sourceId].concat([current]);
 			return acc;
-		}, {});
+		}, emptyIndex);
 
 	while (stack.length > 0) {
 		const currentId = stack.pop();
@@ -35,17 +44,22 @@ export function bfs(
 
 		if (currentElement?.type === 'node') {
 			for (const edge of outgoing[currentId]) {
-				if (visited.has(edge.id)) continue;
-				visited.add(edge.id);
+				if (visitedEdges.has(edge.id)) continue;
+				visitedEdges.add(edge.id);
 				stack.push(edge.id);
 			}
 		}
 
 		if (currentElement?.type === 'edge') {
-			if (visited.has(currentElement.targetId)) continue;
-			visited.add(currentElement.targetId);
+			if (visitedNodes.has(currentElement.targetId)) continue;
+			visitedNodes.add(currentElement.targetId);
 			stack.push(currentElement.targetId);
 		}
+	}
+
+	if (onFinished) {
+		console.log('Visited: ', visitedNodes);
+		effect.push(...onFinished(Array.from(visitedNodes)));
 	}
 
 	return effect;

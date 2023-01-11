@@ -1,4 +1,4 @@
-import { Button, Chip, Divider, Typography, Table } from '@equinor/eds-core-react';
+import { Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
 import { DataFactory } from 'n3';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
@@ -14,6 +14,7 @@ import {
 	GraphPropertyPatch,
 	GraphElement,
 	GraphPatch,
+	DirectProp,
 } from '@rdf-graph/types/core';
 import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
@@ -32,12 +33,10 @@ function generateNodeName() {
 
 export const TabEdit = () => {
 	const { graphContext, dispatch } = useGraphContext();
-
 	const [canAddEdge, setCanAddEdge] = useState(false);
-
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
-
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
+	const [latestCustomPatch, setLatestCustomPatch] = useState<GraphPatch[]>();
 
 	const addNewNode = (_id?: string) => {
 		const name = generateNodeName();
@@ -56,25 +55,62 @@ export const TabEdit = () => {
 			],
 		});
 	};
-	const highlightNode = (selection: GraphElement): GraphPatch[] => {
+	const highlightElement = (element: GraphElement): GraphPatch[] => {
 		const patch: GraphPropertyPatch = {
-			id: selection.id,
+			id: element.id,
 			prop: { type: 'direct', key: 'fill', value: 'pink' },
 			type: 'property',
 		};
 		return [{ action: 'add', content: patch }];
 	};
 
+	const createSummary = (element: GraphElement, visited: string[]): GraphPatch[] => {
+		if (element.type === 'node') {
+			const oldProp = element.props.find((p) => p.type === 'direct' && p.key === 'label');
+			const oldLabel = oldProp ? (oldProp as DirectProp).value[0] : '';
+			const patches: GraphPatch[] = [];
+			if (oldLabel) {
+				patches.push({
+					action: 'remove',
+					content: {
+						id: element.id,
+						prop: { type: 'direct', key: 'label', value: oldLabel },
+						type: 'property',
+					},
+				});
+			}
+
+			const reachable = visited.length - 1;
+			const plural = reachable === 1 ? '' : 's';
+			const newLabel = `${oldLabel} (${reachable} node${plural} reachable from this node`;
+
+			patches.push({
+				action: 'add',
+				content: {
+					id: element.id,
+					prop: { type: 'direct', key: 'label', value: newLabel },
+					type: 'property',
+				},
+			});
+			return patches;
+		}
+		return [];
+	};
+
 	const runBfs = (_id?: string) => {
-		if (selectedItem)
+		if (selectedItem && selectedItem.type === 'node') {
+			const patches = bfs(
+				{ nodes: [selectedItem.id], edges: [] },
+				graphContext.graphState,
+				highlightElement,
+				(iris: string[]) => createSummary(selectedItem, iris)
+			);
+			setLatestCustomPatch(patches);
 			dispatch({
 				type: 'DispatchCustomGraphPatches',
-				graphPatches: bfs(
-					{ nodes: [selectedItem.id], edges: [] },
-					graphContext.graphState,
-					highlightNode
-				),
+				graphPatches: patches,
 			});
+		}
 	};
 
 	const addCluster = () => {
@@ -153,6 +189,19 @@ export const TabEdit = () => {
 	};
 
 	useEffect(() => {
+		if (latestCustomPatch) {
+			dispatch({
+				type: 'DispatchCustomGraphPatches',
+				graphPatches: latestCustomPatch.map((p) => {
+					const revertedPatch: GraphPatch = {
+						action: p.action === 'add' ? 'remove' : 'add',
+						content: p.content,
+					};
+					return revertedPatch;
+				}),
+			});
+			setLatestCustomPatch(undefined);
+		}
 		const n = graphContext.graphSelection.nodes;
 		const e = graphContext.graphSelection.edges;
 		if (n.length === 1) {
