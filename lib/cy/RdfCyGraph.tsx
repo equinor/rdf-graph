@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { GraphPatch, GraphState, RdfPatch } from 'core/types/core';
+import cytoscape from 'cytoscape';
 
+import { GraphPatch, GraphState } from 'core/types/core';
+import { RdfGraphProps } from 'core/types/ui';
 import { applyPatch } from './applyPatch';
-import { RdfGraphError } from '../core/types/RdfGraphError';
 import { patchGraphState } from '../core/patch';
 import { layoutDagre } from './layout';
-import { UiSymbolProvider } from 'core/types/UiSymbol';
-import cytoscape from 'cytoscape';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -14,35 +13,19 @@ const defaultDiagramStyle: React.CSSProperties = {
 	overflow: 'hidden',
 };
 
-export type GraphSelection = {
-	nodes: string[];
-	edges: string[];
-};
-
-export type RdfGraphDiagramProps = {
-	style?: React.CSSProperties;
-	rdfPatches: RdfPatch[];
-	symbolProvider?: UiSymbolProvider;
-	onErrorCallback?: (error: RdfGraphError) => void;
-	onGraphStateChanged?: (state: GraphState) => void;
-	onGraphSelectionChanged?: (selection: GraphSelection) => void;
+export type RdfCyGraphProps = RdfGraphProps<cytoscape.EventObject> & {
 	onCyInit?: (cy: cytoscape.Core) => void;
-	//onSelectionChanged?: (e: go.DiagramEvent) => void;
 };
 
-export type RdfGraphDiagramRef = {
-	getDiagram(): go.Diagram | null;
-	getGraphState(): GraphState;
-};
-
-export const RdfGraphDiagram = ({
+export const RdfCyGraph = ({
 	style,
 	rdfPatches,
 	symbolProvider,
 	onGraphStateChanged,
 	onGraphSelectionChanged,
+	onSelectionChanged,
 	onCyInit,
-}: RdfGraphDiagramProps) => {
+}: RdfCyGraphProps) => {
 	const selectedLayout = layoutDagre;
 
 	const divRef = useRef<HTMLDivElement>(null);
@@ -190,10 +173,11 @@ export const RdfGraphDiagram = ({
 					},
 				},
 			],
-		}).on('select', () => {
+		}).on('select', (ev) => {
 			if (!onGraphSelectionChanged) return;
 			const selectedNodes = cyRef.current?.$('node:selected').map((n) => n.data().id);
 			onGraphSelectionChanged({ nodes: selectedNodes ?? [], edges: [] });
+			if (onSelectionChanged) onSelectionChanged(ev);
 		});
 
 		if (onCyInit) onCyInit(cy);

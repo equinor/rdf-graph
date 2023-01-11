@@ -1,4 +1,4 @@
-import { RdfGraphDiagram } from '../../../../lib/cy/RdfGraphDiagram';
+import { RdfCyGraph } from '../../../../lib/cy/RdfCyGraph';
 import { GraphState } from '@rdf-graph/types/core';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 
@@ -22,7 +22,7 @@ export const CyUi = () => {
 
 	return (
 		<div>
-			<RdfGraphDiagram
+			<RdfCyGraph
 				rdfPatches={graphContext.rdfPatches}
 				style={{ height: 'calc(100vh - var(--menu-height))' }}
 				onGraphStateChanged={graphStateChangedHandler}

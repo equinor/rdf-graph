@@ -1,6 +1,9 @@
 import { GraphEdge, GraphNodePatch, GraphPatch, GraphPropertyPatch } from 'core/types/core';
 
 export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
+	const transactionId = new Date().getTime().toString();
+	diagram.startTransaction(transactionId);
+
 	for (const patch of patches) {
 		switch (patch.content.type) {
 			case 'node':
@@ -34,6 +37,8 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 				break;
 		}
 	}
+
+	diagram.commitTransaction(transactionId);
 
 	diagram.nodes.each((n) => {
 		console.log(n.data);

@@ -1,10 +1,10 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import * as go from 'gojs';
-import { GraphState, RdfPatch, SymbolProvider } from 'core/types/core';
+import { GraphState } from 'core/types/core';
 
 import { applyPatch } from './applyPatch';
-import { RdfGraphError } from '../core/types/RdfGraphError';
 import { patchGraphState } from '../core/patch';
+import { GraphSelection, RdfGraphProps } from 'core/types/ui';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -12,28 +12,16 @@ const defaultDiagramStyle: React.CSSProperties = {
 	overflow: 'hidden',
 };
 
-export type GraphSelection = {
-	nodes: string[];
-	edges: string[];
-};
-
-export type RdfGraphDiagramProps = {
+export type RdfGoGraphProps = RdfGraphProps<go.DiagramEvent> & {
 	initDiagram: () => go.Diagram;
-	style?: React.CSSProperties;
-	rdfPatches: RdfPatch[];
-	symbolProvider?: SymbolProvider;
-	onErrorCallback?: (error: RdfGraphError) => void;
-	onGraphStateChanged?: (state: GraphState) => void;
-	onGraphSelectionChanged?: (selection: GraphSelection) => void;
-	onSelectionChanged?: (e: go.DiagramEvent) => void;
 };
 
-export type RdfGraphDiagramRef = {
+export type RdfGoGraphDiagramRef = {
 	getDiagram(): go.Diagram | null;
 	getGraphState(): GraphState;
 };
 
-const RdfGraphDiagram = forwardRef(
+const RdfGoGraph = forwardRef(
 	(
 		{
 			initDiagram,
@@ -43,8 +31,8 @@ const RdfGraphDiagram = forwardRef(
 			onGraphStateChanged,
 			onGraphSelectionChanged,
 			onSelectionChanged,
-		}: RdfGraphDiagramProps,
-		ref: React.ForwardedRef<RdfGraphDiagramRef>
+		}: RdfGoGraphProps,
+		ref: React.ForwardedRef<RdfGoGraphDiagramRef>
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
 		const [initialized, setInitialized] = useState(false);
@@ -64,7 +52,7 @@ const RdfGraphDiagram = forwardRef(
 					getGraphState() {
 						return graphState;
 					},
-				} as RdfGraphDiagramRef;
+				} as RdfGoGraphDiagramRef;
 			},
 			[]
 		);
@@ -129,5 +117,5 @@ const RdfGraphDiagram = forwardRef(
 	}
 );
 
-RdfGraphDiagram.displayName = 'RdfGraphDiagram';
-export { RdfGraphDiagram };
+RdfGoGraph.displayName = 'RdfGraphDiagram';
+export { RdfGoGraph };

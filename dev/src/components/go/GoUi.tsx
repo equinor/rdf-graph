@@ -1,13 +1,13 @@
 import { useRef } from 'react';
 
-import { RdfGraphDiagram, RdfGraphDiagramRef } from '@rdf-graph-go/RdfGraphDiagram';
+import { RdfGoGraph, RdfGoGraphDiagramRef } from '@rdf-graph-go/RdfGoGraph';
 
 import { defaultInitDiagram } from './init';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 import { GraphState } from '@rdf-graph/types/core';
 
 export const GoUi = () => {
-	const diagramRef = useRef<RdfGraphDiagramRef>(null);
+	const diagramRef = useRef<RdfGoGraphDiagramRef>(null);
 	const { graphContext, dispatch } = useGraphContext();
 
 	const graphStateChangedHandler: (state: GraphState) => void = (state) => {
@@ -27,7 +27,7 @@ export const GoUi = () => {
 
 	return (
 		<div>
-			<RdfGraphDiagram
+			<RdfGoGraph
 				ref={diagramRef}
 				initDiagram={() => defaultInitDiagram()}
 				rdfPatches={graphContext.rdfPatches}
