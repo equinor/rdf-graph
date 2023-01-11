@@ -19,6 +19,7 @@ export type RdfCyGraphProps = RdfGraphProps<cytoscape.EventObject> & {
 
 export const RdfCyGraph = ({
 	style,
+	customGraphPatches,
 	rdfPatches,
 	symbolProvider,
 	onGraphStateChanged,
@@ -61,6 +62,11 @@ export const RdfCyGraph = ({
 
 		console.log('GraphPatches:', patchGraphResult.graphPatches);
 	}, [rdfPatches]);
+
+	useEffect(() => {
+		if (!initialized) return;
+		applyPatches(customGraphPatches);
+	}, [customGraphPatches]);
 
 	const applyPatches = (patches: GraphPatch[]) => {
 		if (cyRef.current === undefined) return;

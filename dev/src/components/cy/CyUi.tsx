@@ -17,13 +17,13 @@ export const CyUi = () => {
 			type: 'SetGraphSelection',
 			selection,
 		});
-		console.log('Selection:', { selection });
 	};
 
 	return (
 		<div>
 			<RdfCyGraph
 				rdfPatches={graphContext.rdfPatches}
+				customGraphPatches={graphContext.customPatches}
 				style={{ height: 'calc(100vh - var(--menu-height))' }}
 				onGraphStateChanged={graphStateChangedHandler}
 				onGraphSelectionChanged={graphSelectionChangedHandler}

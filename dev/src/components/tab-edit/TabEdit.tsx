@@ -82,7 +82,7 @@ export const TabEdit = () => {
 
 			const reachable = visited.length - 1;
 			const plural = reachable === 1 ? '' : 's';
-			const newLabel = `${oldLabel} (${reachable} node${plural} reachable from this node`;
+			const newLabel = `${oldLabel} (${reachable} node${plural} reachable from this node)`;
 
 			patches.push({
 				action: 'add',
