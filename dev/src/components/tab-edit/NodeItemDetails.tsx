@@ -18,6 +18,7 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 
 	useEffect(() => {
 		const n = graphContext.graphState.nodeStore[node.id];
+		if (!n) return;
 		setProps(
 			n.props
 				.filter((p) => p.type !== 'custom')

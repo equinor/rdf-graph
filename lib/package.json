@@ -85,7 +85,6 @@
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
 		"n3": "^1.16.2",
-		"react-cytoscapejs": "^2.0.0",
 		"react-force-graph": "^1.41.14",
 		"three": "^0.145.0"
 	},
@@ -96,7 +95,6 @@
 		"@types/n3": "^1.10.4",
 		"@types/node": "^18.7.16",
 		"@types/react": "^18.0.15",
-		"@types/react-cytoscapejs": "^1.2.2",
 		"@types/react-dom": "^18.0.6",
 		"@types/three": "^0.144.0",
 		"@vitejs/plugin-react": "^2.1.0",

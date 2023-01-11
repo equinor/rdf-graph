@@ -18,7 +18,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@rdf-graph/*": ["../lib/core/*"],
-			"@rdf-graph-go/*": ["../lib/go/*"]
+			"@rdf-graph-go/*": ["../lib/go/*"],
+			"@rdf-graph-cy/*": ["../lib/cy/*"]
 		}
 	},
 	"include": ["src"],

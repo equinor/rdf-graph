@@ -1,29 +1,33 @@
-import { RdfPatch } from '@rdf-graph/types/core';
-import { useEffect, useState } from 'react';
-import { useGraphContext } from '../../context/GraphContext';
+import { RdfGraphDiagram } from '../../../../lib/cy/RdfGraphDiagram';
+import { GraphState } from '@rdf-graph/types/core';
+import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 
 export const CyUi = () => {
-	const [patches, setPatches] = useState<RdfPatch[]>([]);
-	const [hasInit, setHasInit] = useState<boolean>(false);
+	const { graphContext, dispatch } = useGraphContext();
 
-	const { graphContext } = useGraphContext();
+	const graphStateChangedHandler: (state: GraphState) => void = (state) => {
+		dispatch({
+			type: 'SetGraphState',
+			graphState: state,
+		});
+	};
 
-	useEffect(() => {
-		if (graphContext.rdfPatchesHistory.length > 0) {
-			setPatches(graphContext.rdfPatchesHistory);
-		}
-		setHasInit(true);
-	}, []);
-
-	useEffect(() => {
-		if (!hasInit) return;
-		setPatches(graphContext.rdfPatches);
-	}, [graphContext.rdfPatches]);
+	const graphSelectionChangedHandler: (selection: GraphSelection) => void = (selection) => {
+		dispatch({
+			type: 'SetGraphSelection',
+			selection,
+		});
+		console.log('Selection:', { selection });
+	};
 
 	return (
 		<div>
-			<h1>TODO: Cytoscape</h1>
-			<p>Patch count (history): {graphContext.rdfPatchesHistory.length}</p>
+			<RdfGraphDiagram
+				rdfPatches={graphContext.rdfPatches}
+				style={{ height: 'calc(100vh - var(--menu-height))' }}
+				onGraphStateChanged={graphStateChangedHandler}
+				onGraphSelectionChanged={graphSelectionChangedHandler}
+			/>
 		</div>
 	);
 };
