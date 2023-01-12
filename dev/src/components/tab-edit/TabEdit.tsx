@@ -7,17 +7,12 @@ import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
-import {
-	GraphEdge,
-	GraphNode,
-	RdfPatch,
-	GraphPatch,
-} from '@rdf-graph/types/core';
+import { GraphEdge, GraphNode, RdfPatch, GraphPatch } from '@rdf-graph/types/core';
 import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import { getConnectorSymbol } from '../../../../lib/core/symbol-api';
+import { getConnectorSymbol, SymbolLibraryKey } from '../../../../lib/core/symbol-api';
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
 import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
@@ -72,8 +67,11 @@ export const TabEdit = () => {
 				type: 'DispatchCustomGraphPatches',
 				graphPatches: result.patches,
 			});
-			const revertedPatches = result.patches.map(p => {
-				const reverted: GraphPatch = {action: p.action === 'remove' ? 'add' : 'remove', content: p.content};
+			const revertedPatches = result.patches.map((p) => {
+				const reverted: GraphPatch = {
+					action: p.action === 'remove' ? 'add' : 'remove',
+					content: p.content,
+				};
 				return reverted;
 			});
 			setUndoPatch([...revertedPatches, ...result.undoPatches]);
@@ -151,17 +149,23 @@ export const TabEdit = () => {
 		});
 	};
 
-	const addSymbolWithConnectors = () => {
+	const createSymbolWithConnectors: (symbolId: SymbolLibraryKey) => {
+		patches: RdfPatch[];
+		connectors: string[];
+	} = (symbolId: SymbolLibraryKey) => {
 		const { name, name_pretty } = generateNodeName();
 
 		const symbolNodeIri = 'http://example.com/animals/' + name;
 
-		const symbol: UiSymbol = getConnectorSymbol('ND0012');
+		const symbol: UiSymbol = getConnectorSymbol(symbolId);
 
 		const symbolNodePatches: RdfPatch[] = [];
 
+		const connectorIds: string[] = [];
+
 		const connectorPatches: RdfPatch[] = symbol.connectors.flatMap((c) => {
 			const connectorNodeIri = symbolNodeIri + '_C' + c.id;
+			connectorIds.push(connectorNodeIri);
 			return [
 				{ action: 'add', data: q(n(symbolNodeIri), n(P.connectorIds.iri), n(connectorNodeIri)) },
 				{ action: 'add', data: q(n(connectorNodeIri), n(P.connectorName.iri), l(c.id)) },
@@ -184,18 +188,30 @@ export const TabEdit = () => {
 			...connectorPatches
 		);
 
-		console.log(symbolNodePatches);
+		return { patches: symbolNodePatches, connectors: connectorIds };
+	};
+
+	const addTwoConnectedSymbolNodes = () => {
+		const sym1 = createSymbolWithConnectors('ND0012');
+		const sym2 = createSymbolWithConnectors('ND0016');
 
 		dispatch({
 			type: 'DispatchRdfPatches',
-			rdfPatches: symbolNodePatches,
+			rdfPatches: [
+				...sym1.patches,
+				...sym2.patches,
+				{
+					action: 'add',
+					data: q(n(sym1.connectors[1]), n('connectedTo'), n(sym2.connectors[0])),
+				},
+			],
 		});
 	};
 
 	useEffect(() => {
 		if (undoPatch) {
 			dispatch({
-				type: 'DispatchCustomGraphPatches',	
+				type: 'DispatchCustomGraphPatches',
 				graphPatches: undoPatch,
 			});
 			setUndoPatch(undefined);
@@ -236,7 +252,7 @@ export const TabEdit = () => {
 			<MenuSection title="Node">
 				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
 				<Button onClick={() => addCluster()}>Add Cluster</Button>
-				<Button onClick={() => addSymbolWithConnectors()}>Add Symbol Node</Button>
+				<Button onClick={() => addTwoConnectedSymbolNodes()}>Add Two Connected Symbol Nodes</Button>
 				<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />

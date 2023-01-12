@@ -38,7 +38,7 @@ export function defaultInitDiagram() {
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;
 	d.toolManager.rotatingTool.snapAngleEpsilon = 22.5;
 	d.model.modelData.portSize = 3;
-	d.model.modelData.portOpacity = 0.0;
+	d.model.modelData.portOpacity = 1.0;
 
 	return d;
 }

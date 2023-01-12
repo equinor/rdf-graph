@@ -50,19 +50,7 @@ export function createSymbolNodeTemplate(
 					.add(
 						new go.TextBlock({ name: 'LABEL' })
 							.bind('text', 'label')
-							.bind(
-								new go.Binding('stroke', 'uiTheme', ({ symbol }, obj) => {
-									const node = obj.part.findObject('NODE');
-									if (node && node.isSelected) return symbol.hover.text;
-									return symbol.text;
-								}).ofModel()
-							)
-							.bind(
-								new go.Binding('stroke', 'isSelected', (v, targetObj) => {
-									const theme = targetObj.diagram.model.modelData.uiTheme;
-									return v ? theme.symbol.hover.text : theme.symbol.text;
-								}).ofObject('')
-							)
+							.bind('stroke', 'fill')
 							.trigger(new go.AnimationTrigger('stroke', { duration: 150 }))
 					)
 					.bind(new go.Binding('angle', 'angle', (a) => -a).ofObject())
