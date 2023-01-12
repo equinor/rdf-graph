@@ -123,9 +123,7 @@ export function ensurePredicatePropAdded(rdfPatch: RdfPatch): BindFunction {
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
 		const activeNode = node === undefined ? predicateNode : node;
 
-		// Remove quotes or `<>`
-		const objTermHasQuotes = objectTerm[0] === '"' && objectTerm.at(-1) === '"';
-		const objectLiteral = objTermHasQuotes ? objectTerm.slice(1, -1) : objectTerm;
+		const objectLiteral = objectTerm;
 
 		// NOTE: Derived props are ONLY added via prop rules!
 
@@ -165,8 +163,8 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 		const predicateNode = state.graphState.predicateNodeStore[subjectIri];
 		const activeNode = node === undefined ? predicateNode : node;
 
-		// Remove quotes or `<>`
-		const oLiteralOrIri = objectTerm.slice(1, -1);
+		const oLiteralOrIri = objectTerm;
+
 		// NOTE: Derived props are ONLY removed via prop rules!
 
 		const key = directKey ? directKey : predicateIri;
@@ -333,9 +331,10 @@ type TripleAsStrings = {
 };
 
 function getTripleAsString(rdfPatch: RdfPatch): TripleAsStrings {
+	const objectTerm = termToId(rdfPatch.data.object);
 	return {
 		subjectIri: termToId(rdfPatch.data.subject),
 		predicateIri: termToId(rdfPatch.data.predicate),
-		objectTerm: termToId(rdfPatch.data.object),
+		objectTerm: rdfPatch.data.object.termType === 'Literal' ? objectTerm.slice(1, -1) : objectTerm,
 	};
 }

@@ -131,8 +131,11 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 				);
 
 				if (!connectorInfo && oldProp) {
+					// This is not a connector node anymore, but 'connectorDirection' prop is still
+					// around, we delete all prop values.
 					return new PatchGraphMonad(state).bind(burninatePropFromNode(connectorNode, oldProp));
 				} else if (!connectorInfo) {
+					// This is not a connector node anymore, just ignore...
 					return new PatchGraphMonad(state);
 				}
 
@@ -206,6 +209,7 @@ function getConnectorInfo(state: PatchGraphResult, connectorNode: GraphNode) {
 	}
 	const symbolNode = state.graphState.nodeStore[connectorNode.symbolNodeId];
 	const symbol = findDerivedProp<UiSymbol>(symbolNode, 'symbol');
+
 	return symbol?.connectors.find(
 		(c) => c.id === findSingleDirectProp(connectorNode, 'connectorName')
 	);
