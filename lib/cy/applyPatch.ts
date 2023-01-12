@@ -1,17 +1,9 @@
 import Cytoscape, { ElementDefinition } from 'cytoscape';
 import { GraphEdgePatch, GraphNodePatch, GraphPatch, GraphPropertyPatch } from 'core/types/core';
-import { json } from 'stream/consumers';
+import { UiSymbol } from 'core/types/UiSymbol';
+import { imageHeightKey, imageKey, imageWidthKey, layoutIgnoreKey, NodeType, nodeTypeKey } from './common';
 
-const nodeTypeKey = 'nodeType';
-const layoutIgnoreKey = 'layoutIgnore';
 
-enum NodeType {
-	SymbolContainer = 'SymbolContainer',
-	SymbolImage = 'SymbolImage',
-	SymbolConnector = 'SymbolConnector',
-	SymbolOrigin = 'SymbolOrigin',
-	Default = 'Default',
-}
 
 export function applyPatch(patches: GraphPatch[], cy: Cytoscape.Core) {
 	for (const patch of patches) {
@@ -44,7 +36,7 @@ export function applyPatch(patches: GraphPatch[], cy: Cytoscape.Core) {
 function addNode(cy: Cytoscape.Core, node: GraphNodePatch) {
 	const el: ElementDefinition = { data: { id: node.id, label: node.id } };
 	if (node.variant === 'connector') {
-		el.data.parent = node.id;
+		el.data.parent = node.symbolNodeId;
 	}
 	cy.add(el);
 }
@@ -61,15 +53,16 @@ const addProperty = (cy: Cytoscape.Core, { id, prop }: GraphPropertyPatch) => {
 
 	const { key, type, value } = prop;
 
-	console.log('GOT PROP ', JSON.stringify(prop, undefined, 2));
 	if (type !== 'custom') {
 		switch (key) {
 			case 'symbol':
 				elementById.data(nodeTypeKey, NodeType.SymbolContainer);
 				elementById.data(key, value);
+				createImageNode(cy, id, value);
 				break;
 			case 'connectorRelativePosition':
 				elementById.data(nodeTypeKey, NodeType.SymbolConnector);
+				//elementById.data(layoutIgnoreKey, true);
 				elementById.data(key, value);
 				break;
 			case 'group':
@@ -89,3 +82,33 @@ const addProperty = (cy: Cytoscape.Core, { id, prop }: GraphPropertyPatch) => {
 		}
 	}
 };
+
+
+const createImageNode = (cy: Cytoscape.Core, nodeId: string, symbol: UiSymbol) => {
+	
+
+	const dataUri = 'data:image/svg+xml;utf8,' + encodeURIComponent(symbol.svg);
+	console.log("Creating image node from ", dataUri);
+
+	console.log("imageWidth: ", symbol.width);
+
+	const imageElement: ElementDefinition = {
+		data: {
+			id: getImageNodeId(nodeId),
+			[nodeTypeKey]: NodeType.SymbolImage,
+			[imageKey]: dataUri,
+			[imageWidthKey]: symbol.width,
+			[imageHeightKey]: symbol.height,
+			[layoutIgnoreKey]: true,
+			parent: nodeId,
+		},
+		position: { x: 0, y: 0 },
+	};
+
+	console.log("SYMBOL CREATED ", imageElement);
+
+
+	cy.add(imageElement);
+};
+
+const getImageNodeId = (compoundNodeId: string) => `${compoundNodeId.replace('#', 'HASH')}_svg`;

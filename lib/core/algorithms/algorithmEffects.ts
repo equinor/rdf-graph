@@ -53,9 +53,36 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
                 type: 'property',
             },
         });
+
+        const oldColorProp = element.props.find((p) => p.type === 'direct' && p.key === 'fill');
+        let undoPatches: GraphPatch[] = [];
+        if (oldColorProp) {
+            const oldColor = (oldColorProp as DirectProp).value[0];
+            undoPatches.push({
+                action: 'add',
+                content: {
+                    id: element.id,
+                    prop: { type: 'direct', key: 'fill', value: oldColor },
+                    type: 'property',
+                },
+            });
+        }
+        
+        
+
+
+        patches.push({
+            action: 'add',
+            content: {
+                id: element.id,
+                prop: { type: 'direct', key: 'fill', value: 'yellow' },
+                type: 'property',
+            },
+        });
+        
         return {
             patches: patches,
-            undoPatches: []
+            undoPatches: undoPatches
         }
     }
     return {
