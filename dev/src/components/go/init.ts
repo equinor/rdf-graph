@@ -1,7 +1,10 @@
+import { nodeCategory } from '@rdf-graph-go/applyPatch';
 import * as go from 'gojs';
-import { GraphSelection } from '../../context/GraphContext';
+
+import { createDefaultGroupTemplate } from './templates/default-group-template';
 import { createDefaultLinkTemplate } from './templates/default-link-template';
 import { createDefaultNodeTemplate } from './templates/default-node-template';
+import { createSymbolNodeTemplate } from './templates/symbol-node-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
 	// console.log('Node clicked!');
@@ -25,10 +28,11 @@ export function defaultInitDiagram() {
 			linkToPortIdProperty: 'toPort',
 		}),
 		layout: new go.ForceDirectedLayout(),
-		nodeTemplateMap: new go.Map<string, go.Part>().add('', createDefaultNodeTemplate(clickHandler)),
-		// 	.add(NodeUiCategory.ConnectorSymbol, createSymbolNodeTemplate(symbolNodeClickHandler)),
+		nodeTemplateMap: new go.Map<string, go.Part>()
+			.add(nodeCategory.default, createDefaultNodeTemplate(clickHandler))
+			.add(nodeCategory.symbolWithConnectors, createSymbolNodeTemplate(symbolNodeClickHandler)),
 		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
-		// groupTemplate: createDefaultGroupTemplate(),
+		groupTemplate: createDefaultGroupTemplate(),
 	});
 
 	d.toolManager.rotatingTool.snapAngleMultiple = 45;

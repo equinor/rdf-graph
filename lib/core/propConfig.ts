@@ -1,7 +1,7 @@
 // PROPERTY CONFIGURATION
 
-import { addProp, burninatePropFromNode } from './baseGraphOperations';
-import { convertNode } from './complexGraphOperations';
+import { addNode, addProp, burninatePropFromNode } from './baseGraphOperations';
+import { convertNode, createNewNode } from './complexGraphOperations';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import {
 	DerivedPropKey,
@@ -39,8 +39,14 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 		rule: ({ subjectIri, objectIri }: RuleInputs) => {
 			const o = objectIri as string;
 			return (state: PatchGraphResult) => {
+				let nodeAction: BindFunction;
+				if (o in state.graphState.nodeStore) {
+					nodeAction = convertNode(o, 'connector', subjectIri);
+				} else {
+					nodeAction = addNode(createNewNode(o, 'connector', subjectIri) as GraphNode);
+				}
 				return new PatchGraphMonad(state).bindMany([
-					convertNode(o, 'connector', subjectIri),
+					nodeAction,
 					derivedPropConfig['connectorRelativePosition'].rule({ subjectIri: o }),
 					derivedPropConfig['connectorDirection'].rule({ subjectIri: o }),
 				]);
@@ -119,7 +125,7 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
-				const connectorInfo = getConnectorInfo(connectorNode);
+				const connectorInfo = getConnectorInfo(state, connectorNode);
 
 				const oldProp = connectorNode.props.find(
 					(p) => p.type === 'derived' && p.key === 'connectorDirection'
@@ -147,7 +153,7 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 			return (state: PatchGraphResult) => {
 				const store = state.graphState.nodeStore;
 				const connectorNode = store[nodeIri];
-				const connectorInfo = getConnectorInfo(connectorNode);
+				const connectorInfo = getConnectorInfo(state, connectorNode);
 
 				const oldProp = connectorNode.props.find(
 					(p) => p.type === 'derived' && p.key === 'connectorRelativePosition'
@@ -195,12 +201,12 @@ function findDerivedProp<T>(node: GraphNode, key: DerivedPropKey): T | undefined
 }
 
 /**  */
-function getConnectorInfo(connectorNode: GraphNode) {
+function getConnectorInfo(state: PatchGraphResult, connectorNode: GraphNode) {
 	if (connectorNode.variant !== 'connector') {
 		return undefined;
 	}
-
-	const symbol = findDerivedProp<UiSymbol>(connectorNode.symbolNodeRef, 'symbol');
+	const symbolNode = state.graphState.nodeStore[connectorNode.symbolNodeId];
+	const symbol = findDerivedProp<UiSymbol>(symbolNode, 'symbol');
 	return symbol?.connectors.find(
 		(c) => c.id === findSingleDirectProp(connectorNode, 'connectorName')
 	);

@@ -20,7 +20,7 @@ function nodeToGraphPatch(node: GraphNode): GraphNodePatch {
 			id: node.id,
 			type: 'node',
 			variant: node.variant,
-			symbolNodeId: node.symbolNodeRef.id,
+			symbolNodeId: node.symbolNodeId,
 		} as GraphNodePatch;
 	}
 	return { id: node.id, type: 'node', variant: node.variant } as GraphNodePatch;

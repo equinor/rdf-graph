@@ -41,7 +41,7 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 					return { key: p.key, value: (p.value as string[])[0] };
 				})
 		);
-	}, [graphContext.graphState.nodeStore]);
+	}, [graphContext.graphState.nodeStore, node.id]);
 
 	const dispatchProp = (action: 'add' | 'remove') => {
 		console.log(selectedPredicate);

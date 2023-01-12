@@ -68,7 +68,7 @@ export type SymbolNode = GraphNodeBase<'symbol'> & {};
 export type GroupNode = GraphNodeBase<'group'> & {};
 
 export type ConnectorNode = GraphNodeBase<'connector'> & {
-	symbolNodeRef: GraphNode;
+	symbolNodeId: string;
 };
 export type PredicateNode = GraphNodeBase<'predicate'> & {
 	/** NOTE: the 'id' is the predicate */

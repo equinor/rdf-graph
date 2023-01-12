@@ -21,14 +21,23 @@ import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
 import { bfs } from '@rdf-graph/graphAlgorithms';
+import { getConnectorSymbol } from '../../../../lib/core/symbol-api';
+import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 function generateNodeName() {
-	return uniqueNamesGenerator({
+	const name = uniqueNamesGenerator({
 		dictionaries: [adjectives, animals],
 		length: 2,
 	});
+
+	const name_pretty = name
+		.split('_')
+		.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+		.join(' ');
+
+	return { name, name_pretty };
 }
 
 export const TabEdit = () => {
@@ -39,11 +48,7 @@ export const TabEdit = () => {
 	const [latestCustomPatch, setLatestCustomPatch] = useState<GraphPatch[]>();
 
 	const addNewNode = (_id?: string) => {
-		const name = generateNodeName();
-		const name_pretty = name
-			.split('_')
-			.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-			.join(' ');
+		const { name, name_pretty } = generateNodeName();
 
 		dispatch({
 			type: 'DispatchRdfPatches',
@@ -114,17 +119,13 @@ export const TabEdit = () => {
 	};
 
 	const addCluster = () => {
-		const nodes = [0, 1, 2]
-			.map((_i) => generateNodeName())
-			.map((n) => {
-				return {
-					id: n,
-					label: n
-						.split('_')
-						.map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-						.join(' '),
-				};
-			});
+		const nodes = [0, 1, 2].map(() => {
+			const { name, name_pretty } = generateNodeName();
+			return {
+				id: name,
+				label: name_pretty,
+			};
+		});
 
 		dispatch({
 			type: 'DispatchRdfPatches',
@@ -188,6 +189,47 @@ export const TabEdit = () => {
 		});
 	};
 
+	const addSymbolWithConnectors = () => {
+		const { name, name_pretty } = generateNodeName();
+
+		const symbolNodeIri = 'http://example.com/animals/' + name;
+
+		const symbol: UiSymbol = getConnectorSymbol('ND0012');
+
+		const symbolNodePatches: RdfPatch[] = [];
+
+		const connectorPatches: RdfPatch[] = symbol.connectors.flatMap((c) => {
+			const connectorNodeIri = symbolNodeIri + '_C' + c.id;
+			return [
+				{ action: 'add', data: q(n(symbolNodeIri), n(P.connectorIds.iri), n(connectorNodeIri)) },
+				{ action: 'add', data: q(n(connectorNodeIri), n(P.connectorName.iri), l(c.id)) },
+			];
+		});
+
+		symbolNodePatches.push(
+			{
+				action: 'add',
+				data: q(n(symbolNodeIri), n(P.label.iri), l(name_pretty)),
+			},
+			{
+				action: 'add',
+				data: q(n(symbolNodeIri), n(P.fill.iri), l('yellow')),
+			},
+			{
+				action: 'add',
+				data: q(n(symbolNodeIri), n(P.symbolId.iri), l(symbol.id)),
+			},
+			...connectorPatches
+		);
+
+		console.log(symbolNodePatches);
+
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: symbolNodePatches,
+		});
+	};
+
 	useEffect(() => {
 		if (latestCustomPatch) {
 			dispatch({
@@ -238,6 +280,7 @@ export const TabEdit = () => {
 			<MenuSection title="Node">
 				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
 				<Button onClick={() => addCluster()}>Add Cluster</Button>
+				<Button onClick={() => addSymbolWithConnectors()}>Add Symbol Node</Button>
 				<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />

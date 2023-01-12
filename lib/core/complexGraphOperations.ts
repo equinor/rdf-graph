@@ -124,7 +124,9 @@ export function ensurePredicatePropAdded(rdfPatch: RdfPatch): BindFunction {
 		const activeNode = node === undefined ? predicateNode : node;
 
 		// Remove quotes or `<>`
-		const objectLiteral = objectTerm.slice(1, -1);
+		const objTermHasQuotes = objectTerm[0] === '"' && objectTerm.at(-1) === '"';
+		const objectLiteral = objTermHasQuotes ? objectTerm.slice(1, -1) : objectTerm;
+
 		// NOTE: Derived props are ONLY added via prop rules!
 
 		const key = directKey ? directKey : predicateIri;
@@ -226,7 +228,7 @@ export function convertNode(
 	return (state: PatchGraphResult) => {
 		const graphState = state.graphState;
 
-		// remember edges
+		// Remember edges
 		const edgeStore = graphState.edgeStore;
 		const edgeKeys = Object.keys(edgeStore);
 		const outgoing = edgeKeys
@@ -238,25 +240,27 @@ export function convertNode(
 
 		const oldEdges = outgoing.concat(incoming);
 
-		// remember node
+		// Remember node
 		const nodeStore = graphState.nodeStore;
 		const normalNode = nodeStore[nodeIri];
 		const oldPredicateNode = graphState.predicateNodeStore[nodeIri];
 		const oldNode = normalNode ?? oldPredicateNode;
 
+		if (!oldNode)
+			throw new Error(
+				`Tried to convert node ${nodeIri} to a ${variant} node, but the node does not exist. This is probably a mistake.`
+			);
+
+		// Create bindings to delete old stuff
 		const bindings: BindFunction[] = [];
-		// create bindings to delete old stuff
 
 		bindings.push(...oldNode.props.map((prop) => burninatePropFromNode(oldNode, prop)));
 		bindings.push(deleteEdges(oldEdges.map((e) => e.id)));
 		bindings.push(deleteNode(nodeIri));
-		let symbolNode = undefined;
-		if (variant === 'connector' && symbolNodeIri) {
-			symbolNode = state.graphState.nodeStore[symbolNodeIri];
-		}
-		const newNode = createNewNode(nodeIri, variant, symbolNode);
 
-		// create bindings to readd stuff. For predicates, props are handled elsewhere
+		const newNode = createNewNode(nodeIri, variant, symbolNodeIri);
+
+		// Create bindings to read stuff. For predicates, props are handled elsewhere
 		if (variant === 'predicate') {
 			bindings.push(addPredicateNode(newNode as PredicateNode));
 			bindings.push(...oldNode.props.map((prop) => addPropToPredicateNode(newNode.id, prop)));
@@ -274,10 +278,10 @@ export function convertNode(
 	};
 }
 
-function createNewNode(
+export function createNewNode(
 	nodeIri: string,
 	variant: NodeVariantInternal,
-	symbolNodeRef?: GraphNode
+	symbolNodeId?: string
 ): GraphNode | PredicateNode {
 	if (variant === 'predicate') {
 		return {
@@ -286,18 +290,18 @@ function createNewNode(
 			variant: 'predicate',
 			edgeIds: [],
 			props: [],
-		};
+		} as PredicateNode;
 	} else if (variant === 'connector') {
-		if (!symbolNodeRef) {
-			console.error('Connector node added without symbolnoderef, entering bad state');
+		if (!symbolNodeId) {
+			console.error('Connector node added without symbolNodeId, entering bad state');
 		}
 		return {
 			id: nodeIri,
 			type: 'node',
 			variant: 'connector',
 			props: [],
-			symbolNodeRef: symbolNodeRef as GraphNode,
-		};
+			symbolNodeId: symbolNodeId ?? '',
+		} as GraphNode;
 	} else {
 		return {
 			id: nodeIri,

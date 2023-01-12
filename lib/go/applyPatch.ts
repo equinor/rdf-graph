@@ -1,4 +1,10 @@
 import { GraphEdge, GraphNodePatch, GraphPatch, GraphPropertyPatch } from 'core/types/core';
+import { UiSymbol } from 'core/types/UiSymbol';
+
+export const nodeCategory = {
+	default: '',
+	symbolWithConnectors: 'symbolWithConnectors',
+} as const;
 
 export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 	const transactionId = new Date().getTime().toString();
@@ -13,6 +19,8 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 					case 'connector':
 						if (patch.action === 'add') {
 							addNode(diagram, patch.content);
+						} else {
+							removeNode(diagram, patch.content);
 						}
 						break;
 					default:
@@ -57,6 +65,12 @@ function addNode(diagram: go.Diagram, node: GraphNodePatch) {
 	});
 }
 
+function removeNode(diagram: go.Diagram, node: GraphNodePatch) {
+	const nodeData = diagram.model.findNodeDataForKey(node.id);
+	if (!nodeData) return;
+	diagram.model.removeNodeData(nodeData);
+}
+
 function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
 	if (!nodeData) return;
@@ -66,6 +80,16 @@ function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 			[propPatch.prop.key]: propPatch.prop.value,
 		});
 	} else {
+		if (propPatch.prop.key === 'symbol') {
+			const symbol = propPatch.prop.value as UiSymbol;
+
+			diagram.model.setCategoryForNodeData(nodeData, nodeCategory.symbolWithConnectors);
+			diagram.model.setDataProperty(nodeData, 'symbolGeometry', symbol.geometry);
+			diagram.model.setDataProperty(nodeData, 'symbolHeight', symbol.height);
+			diagram.model.setDataProperty(nodeData, 'symbolWidth', symbol.width);
+			return;
+		}
+
 		diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
 	}
 }
