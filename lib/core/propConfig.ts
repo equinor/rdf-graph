@@ -39,12 +39,11 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 		rule: ({ subjectIri, objectIri }: RuleInputs) => {
 			const o = objectIri as string;
 			return (state: PatchGraphResult) => {
-				let nodeAction: BindFunction;
-				if (o in state.graphState.nodeStore) {
-					nodeAction = convertNode(o, 'connector', subjectIri);
-				} else {
-					nodeAction = addNode(createNewNode(o, 'connector', subjectIri) as GraphNode);
-				}
+				const nodeAction =
+					o in state.graphState.nodeStore
+						? convertNode(o, 'connector', subjectIri)
+						: addNode(createNewNode(o, 'connector', subjectIri) as GraphNode);
+
 				return new PatchGraphMonad(state).bindMany([
 					nodeAction,
 					derivedPropConfig['connectorRelativePosition'].rule({ subjectIri: o }),
