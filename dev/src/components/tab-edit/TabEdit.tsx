@@ -12,7 +12,7 @@ import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import { getConnectorSymbol, SymbolLibraryKey } from '../../../../lib/core/symbol-api';
+import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../../../lib/core/symbol-api';
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
 import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
@@ -208,6 +208,14 @@ export const TabEdit = () => {
 		});
 	};
 
+	const addCompleteSymbolLibrary = () => {
+		const patches = Object.keys(symbolLibrary).map(x => createSymbolWithConnectors(x as SymbolLibraryKey)).flatMap(x => x.patches);
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: patches
+		})
+	}
+
 	useEffect(() => {
 		if (undoPatch) {
 			dispatch({
@@ -253,6 +261,7 @@ export const TabEdit = () => {
 				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
 				<Button onClick={() => addCluster()}>Add Cluster</Button>
 				<Button onClick={() => addTwoConnectedSymbolNodes()}>Add Two Connected Symbol Nodes</Button>
+				<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>
 				<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
