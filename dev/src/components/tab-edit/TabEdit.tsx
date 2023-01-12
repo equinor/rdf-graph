@@ -68,13 +68,12 @@ export const TabEdit = () => {
 				(iris: string[]) => createSummary(selectedItem, iris)
 			);
 
-			console.log("PATCHES: ", JSON.stringify(result.patches, undefined, 2))
 			dispatch({
 				type: 'DispatchCustomGraphPatches',
 				graphPatches: result.patches,
 			});
 			const revertedPatches = result.patches.map(p => {
-				const reverted: GraphPatch = {action: (p.action = p.action === 'remove' ? 'add' : 'remove'), content: p.content};
+				const reverted: GraphPatch = {action: p.action === 'remove' ? 'add' : 'remove', content: p.content};
 				return reverted;
 			});
 			setUndoPatch([...revertedPatches, ...result.undoPatches]);
