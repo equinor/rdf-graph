@@ -1,13 +1,15 @@
-import { GraphEdge, GraphElement, GraphPatch, GraphState } from './types/core';
-import { GraphSelection } from './types/ui';
+import { GraphEdge, GraphElement, GraphState } from '../types/core';
+import { GraphSelection } from '../types/ui';
+import { emptyResult, mergeResult } from './algorithmHelpers';
+import { AlgorithmResult } from './algorithms.types';
 
 export function bfs(
 	selection: GraphSelection,
 	state: GraphState,
-	onElementMarked: (element: GraphElement) => GraphPatch[],
-	onFinished?: (elementIris: string[]) => GraphPatch[]
+	onElementMarked: (element: GraphElement) => AlgorithmResult,
+	onFinished?: (elementIris: string[]) => AlgorithmResult
 ) {
-	const effect: GraphPatch[] = [];
+	let result = emptyResult;
 	const visitedNodes = new Set<string>(selection.nodes);
 	const visitedEdges = new Set<string>(selection.edges);
 	const stack = [...visitedNodes, ...visitedEdges];
@@ -39,7 +41,7 @@ export function bfs(
 		}
 
 		if (currentElement) {
-			effect.push(...onElementMarked(currentElement));
+			result = mergeResult(result, onElementMarked(currentElement));
 		}
 
 		if (currentElement?.type === 'node') {
@@ -58,9 +60,8 @@ export function bfs(
 	}
 
 	if (onFinished) {
-		console.log('Visited: ', visitedNodes);
-		effect.push(...onFinished(Array.from(visitedNodes)));
+		result = mergeResult(result, onFinished(Array.from(visitedNodes)));
 	}
 
-	return effect;
+	return result;
 }

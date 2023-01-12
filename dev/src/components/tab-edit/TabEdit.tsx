@@ -11,18 +11,16 @@ import {
 	GraphEdge,
 	GraphNode,
 	RdfPatch,
-	GraphPropertyPatch,
-	GraphElement,
 	GraphPatch,
-	DirectProp,
 } from '@rdf-graph/types/core';
 import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import { bfs } from '@rdf-graph/graphAlgorithms';
 import { getConnectorSymbol } from '../../../../lib/core/symbol-api';
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
+import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
+import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -45,7 +43,7 @@ export const TabEdit = () => {
 	const [canAddEdge, setCanAddEdge] = useState(false);
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
-	const [latestCustomPatch, setLatestCustomPatch] = useState<GraphPatch[]>();
+	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
 
 	const addNewNode = (_id?: string) => {
 		const { name, name_pretty } = generateNodeName();
@@ -60,61 +58,26 @@ export const TabEdit = () => {
 			],
 		});
 	};
-	const highlightElement = (element: GraphElement): GraphPatch[] => {
-		const patch: GraphPropertyPatch = {
-			id: element.id,
-			prop: { type: 'direct', key: 'fill', value: 'pink' },
-			type: 'property',
-		};
-		return [{ action: 'add', content: patch }];
-	};
-
-	const createSummary = (element: GraphElement, visited: string[]): GraphPatch[] => {
-		if (element.type === 'node') {
-			const oldProp = element.props.find((p) => p.type === 'direct' && p.key === 'label');
-			const oldLabel = oldProp ? (oldProp as DirectProp).value[0] : '';
-			const patches: GraphPatch[] = [];
-			if (oldLabel) {
-				patches.push({
-					action: 'remove',
-					content: {
-						id: element.id,
-						prop: { type: 'direct', key: 'label', value: oldLabel },
-						type: 'property',
-					},
-				});
-			}
-
-			const reachable = visited.length - 1;
-			const plural = reachable === 1 ? '' : 's';
-			const newLabel = `${oldLabel} (${reachable} node${plural} reachable from this node)`;
-
-			patches.push({
-				action: 'add',
-				content: {
-					id: element.id,
-					prop: { type: 'direct', key: 'label', value: newLabel },
-					type: 'property',
-				},
-			});
-			return patches;
-		}
-		return [];
-	};
 
 	const runBfs = (_id?: string) => {
 		if (selectedItem && selectedItem.type === 'node') {
-			const patches = bfs(
+			const result = bfs(
 				{ nodes: [selectedItem.id], edges: [] },
 				graphContext.graphState,
 				highlightElement,
 				(iris: string[]) => createSummary(selectedItem, iris)
 			);
-			setLatestCustomPatch(patches);
+
+			console.log("PATCHES: ", JSON.stringify(result.patches, undefined, 2))
 			dispatch({
 				type: 'DispatchCustomGraphPatches',
-				graphPatches: patches,
+				graphPatches: result.patches,
 			});
+			const revertedPatches = result.patches.map(p => {
+				const reverted: GraphPatch = {action: (p.action = p.action === 'remove' ? 'add' : 'remove'), content: p.content};
+				return reverted;
+			});
+			setUndoPatch([...revertedPatches, ...result.undoPatches]);
 		}
 	};
 
@@ -231,18 +194,12 @@ export const TabEdit = () => {
 	};
 
 	useEffect(() => {
-		if (latestCustomPatch) {
+		if (undoPatch) {
 			dispatch({
-				type: 'DispatchCustomGraphPatches',
-				graphPatches: latestCustomPatch.map((p) => {
-					const revertedPatch: GraphPatch = {
-						action: p.action === 'add' ? 'remove' : 'add',
-						content: p.content,
-					};
-					return revertedPatch;
-				}),
+				type: 'DispatchCustomGraphPatches',	
+				graphPatches: undoPatch,
 			});
-			setLatestCustomPatch(undefined);
+			setUndoPatch(undefined);
 		}
 		const n = graphContext.graphSelection.nodes;
 		const e = graphContext.graphSelection.edges;
