@@ -3,10 +3,11 @@ import cytoscape from 'cytoscape';
 
 import { GraphPatch, GraphState } from 'core/types/core';
 import { RdfGraphProps } from 'core/types/ui';
-import { applyPatch } from './applyPatch';
+import { internalApplyPatches } from './applyPatch';
 import { patchGraphState } from '../core/patch';
 import { layoutDagre } from './layout';
 import { imageHeightKey, imageWidthKey, NodeType } from './common';
+import { UiSymbol } from 'core/types/UiSymbol';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -28,18 +29,22 @@ const layoutHandler = (_event: cytoscape.EventObject) => {
 			name: 'preset',
 			animate: false,
 			transform: (node) => {
-				const parentPosition = node.parent().first().position();
-				const parentSize = node.parent().first().data(imageWidthKey);
-				console.log("PAREN width ",	 parentSize);
+				const parent = node.parent().first();
+				const parentPosition = parent.position();
+				const symbol = parent.data('symbol') as UiSymbol | undefined;
+				let extra = { x: 0, y: 0 };
+				if (symbol && node.data('nodeType') === NodeType.SymbolImage) {
+					extra.x = symbol.width / 2;
+					extra.y = symbol.height / 2;
+				}
+
 				const relativePosition = node.data('connectorRelativePosition') || {
 					x: 0,
 					y: 0,
 				};
-				console.log("REL POS = ", relativePosition);
-				console.log("Parent POS = ", parentPosition);
 				const position = {
-					x: parentPosition.x + relativePosition.x,
-					y: parentPosition.y + relativePosition.y,
+					x: parentPosition.x + relativePosition.x + extra.x,
+					y: parentPosition.y + relativePosition.y + extra.y,
 				};
 				return position;
 			},
@@ -78,8 +83,6 @@ export const RdfCyGraph = ({
 	useEffect(() => {
 		if (!initialized) return;
 
-		console.log('RdfPatches:', rdfPatches);
-
 		const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
 
 		setGraphState(patchGraphResult.graphState);
@@ -89,7 +92,6 @@ export const RdfCyGraph = ({
 		}
 
 		applyPatches(patchGraphResult.graphPatches);
-
 	}, [rdfPatches]);
 
 	useEffect(() => {
@@ -99,7 +101,7 @@ export const RdfCyGraph = ({
 
 	const applyPatches = (patches: GraphPatch[]) => {
 		if (cyRef.current === undefined) return;
-		applyPatch(patches, cyRef.current);
+		internalApplyPatches(patches, cyRef.current);
 		runLayout(cyRef.current);
 	};
 
@@ -132,7 +134,10 @@ export const RdfCyGraph = ({
 						'background-image': `data(image)`,
 						width: `data(${imageWidthKey})`,
 						height: `data(${imageHeightKey})`,
+						//width: 50,
+						//height: 50,
 						'border-width': 0,
+						'background-opacity': 0.5,
 						'padding-bottom': '0px',
 						events: 'no',
 					},

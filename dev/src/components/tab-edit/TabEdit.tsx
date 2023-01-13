@@ -12,7 +12,11 @@ import { directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../../../lib/core/symbol-api';
+import {
+	getConnectorSymbol,
+	symbolLibrary,
+	SymbolLibraryKey,
+} from '../../../../lib/core/symbol-api';
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
 import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
@@ -209,12 +213,14 @@ export const TabEdit = () => {
 	};
 
 	const addCompleteSymbolLibrary = () => {
-		const patches = Object.keys(symbolLibrary).map(x => createSymbolWithConnectors(x as SymbolLibraryKey)).flatMap(x => x.patches);
+		const patches = Object.keys(symbolLibrary)
+			.map((x) => createSymbolWithConnectors(x as SymbolLibraryKey))
+			.flatMap((x) => x.patches);
 		dispatch({
 			type: 'DispatchRdfPatches',
-			rdfPatches: patches
-		})
-	}
+			rdfPatches: patches,
+		});
+	};
 
 	useEffect(() => {
 		if (undoPatch) {

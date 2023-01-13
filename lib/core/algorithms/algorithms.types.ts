@@ -1,6 +1,6 @@
-import { GraphPatch } from "core/types/core"
+import { GraphPatch } from 'core/types/core';
 
 export type AlgorithmResult = {
-    patches: GraphPatch[],
-    undoPatches: GraphPatch[]
-}
+	patches: GraphPatch[];
+	undoPatches: GraphPatch[];
+};
