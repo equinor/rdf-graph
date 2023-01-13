@@ -192,7 +192,7 @@ export function ensurePredicatePropRemoved(rdfPatch: RdfPatch): BindFunction {
 	};
 }
 
-export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptions>): BindFunction {
+export function applyRules(rdfPatch: RdfPatch, options: PatchGraphOptions): BindFunction {
 	return (state: PatchGraphResult) => {
 		const { subjectIri, predicateIri, objectTerm } = getTripleAsString(rdfPatch);
 
@@ -211,7 +211,7 @@ export function applyRules(rdfPatch: RdfPatch, options?: Partial<PatchGraphOptio
 		const target: RuleInputs = {
 			subjectIri: subjectIri,
 			objectIri: objectTerm,
-			symbolProvider: options?.symbolProvider,
+			symbolProvider: options.symbolProvider,
 		};
 
 		return new PatchGraphMonad(state).bind(config.rule(target));
@@ -335,6 +335,7 @@ function getTripleAsString(rdfPatch: RdfPatch): TripleAsStrings {
 	return {
 		subjectIri: termToId(rdfPatch.data.subject),
 		predicateIri: termToId(rdfPatch.data.predicate),
+		// Remove double quotes from literal string values (added by termToId)
 		objectTerm: rdfPatch.data.object.termType === 'Literal' ? objectTerm.slice(1, -1) : objectTerm,
 	};
 }

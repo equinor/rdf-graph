@@ -1,10 +1,16 @@
 import { useRef } from 'react';
 
-import { RdfGoGraph, RdfGoGraphDiagramRef } from '@rdf-graph-go/RdfGoGraph';
+import { RdfGoGraph, RdfGoGraphDiagramRef } from '../../../../lib/go/RdfGoGraph';
 
 import { defaultInitDiagram } from './init';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 import { GraphState } from '@rdf-graph/types/core';
+import { UiSymbol } from '@rdf-graph/types/UiSymbol';
+import { getConnectorSymbol, SymbolLibraryKey } from '@rdf-graph/symbol-api';
+
+function goSymbolProvider(id: string, _rotation: number) {
+	return getConnectorSymbol(id as SymbolLibraryKey) as UiSymbol;
+}
 
 export const GoUi = () => {
 	const diagramRef = useRef<RdfGoGraphDiagramRef>(null);
@@ -30,6 +36,7 @@ export const GoUi = () => {
 			<RdfGoGraph
 				ref={diagramRef}
 				initDiagram={() => defaultInitDiagram()}
+				symbolProvider={goSymbolProvider}
 				customGraphPatches={graphContext.customPatches}
 				rdfPatches={graphContext.rdfPatches}
 				style={{ height: 'calc(100vh - var(--menu-height))' }}

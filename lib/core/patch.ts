@@ -16,8 +16,10 @@ export type PatchGraphOptions = {
 	symbolProvider: UiSymbolProvider;
 };
 
-const _defaultSymbolProvider: UiSymbolProvider = (id: string, rotation?: number) =>
-	getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation });
+const defaultOptions: PatchGraphOptions = {
+	symbolProvider: (id: string, rotation?: number) =>
+		getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation }),
+};
 
 export function patchGraphState(
 	state: GraphState,
@@ -28,16 +30,13 @@ export function patchGraphState(
 		graphState: state,
 		graphPatches: [],
 	})
-		.bind(rdfToGraphPatch(rdfPatches, options))
+		.bind(rdfToGraphPatch(rdfPatches, { ...defaultOptions, ...options }))
 		.getState();
 }
 
-function rdfToGraphPatch(
-	rdfPatches: RdfPatch[],
-	_options?: Partial<PatchGraphOptions>
-): BindFunction {
-	const f = (state: PatchGraphResult) => {
-		return rdfPatches.reduce((acc, rdfPatch) => {
+function rdfToGraphPatch(rdfPatches: RdfPatch[], options: PatchGraphOptions): BindFunction {
+	return (state: PatchGraphResult) =>
+		rdfPatches.reduce((acc, rdfPatch) => {
 			const bindings: BindFunction[] = [];
 			if (rdfPatch.action === 'add') {
 				bindings.push(
@@ -49,11 +48,9 @@ function rdfToGraphPatch(
 			} else {
 				bindings.push(ensurePredicatePropRemoved(rdfPatch), ensureEdgeRemoved(rdfPatch));
 			}
-			bindings.push(applyRules(rdfPatch, { symbolProvider: _defaultSymbolProvider }));
+			bindings.push(applyRules(rdfPatch, options));
 			return acc.bindMany(bindings);
 		}, new PatchGraphMonad(state));
-	};
-	return f;
 }
 
 // ADD ----------------
