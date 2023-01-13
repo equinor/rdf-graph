@@ -6,6 +6,7 @@ import { RdfGraphProps } from 'core/types/ui';
 import { applyPatch } from './applyPatch';
 import { patchGraphState } from '../core/patch';
 import { layoutDagre } from './layout';
+import { imageHeightKey, imageWidthKey, NodeType } from './common';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -15,6 +16,35 @@ const defaultDiagramStyle: React.CSSProperties = {
 
 export type RdfCyGraphProps = RdfGraphProps<cytoscape.EventObject> & {
 	onCyInit?: (cy: cytoscape.Core) => void;
+};
+
+const layoutHandler = (_event: cytoscape.EventObject) => {
+	const connectorSelector = `[nodeType = "${NodeType.SymbolConnector}"]`;
+	const imageSelector = `[nodeType = "${NodeType.SymbolImage}"]`;
+
+	_event.cy
+		.$(`${connectorSelector}, ${imageSelector}`)
+		.layout({
+			name: 'preset',
+			animate: false,
+			transform: (node) => {
+				const parentPosition = node.parent().first().position();
+				const parentSize = node.parent().first().data(imageWidthKey);
+				console.log("PAREN width ",	 parentSize);
+				const relativePosition = node.data('connectorRelativePosition') || {
+					x: 0,
+					y: 0,
+				};
+				console.log("REL POS = ", relativePosition);
+				console.log("Parent POS = ", parentPosition);
+				const position = {
+					x: parentPosition.x + relativePosition.x,
+					y: parentPosition.y + relativePosition.y,
+				};
+				return position;
+			},
+		})
+		.run();
 };
 
 export const RdfCyGraph = ({
@@ -60,7 +90,6 @@ export const RdfCyGraph = ({
 
 		applyPatches(patchGraphResult.graphPatches);
 
-		console.log('GraphPatches:', patchGraphResult.graphPatches);
 	}, [rdfPatches]);
 
 	useEffect(() => {
@@ -76,7 +105,7 @@ export const RdfCyGraph = ({
 
 	const runLayout = (cy: cytoscape.Core) => {
 		const layout = cy.layout(selectedLayout);
-		layout.on('layoutstop', () => {}); // TODO: must implement to get symbols to work...
+		layout.on('layoutstop', layoutHandler);
 		layout.run();
 	};
 
@@ -101,10 +130,8 @@ export const RdfCyGraph = ({
 						'background-clip': 'none',
 						'background-fit': 'contain',
 						'background-image': `data(image)`,
-						width: `data(imageWidth)`,
-						height: `data(imageHeight)`,
-						'background-color': 'blue',
-						'background-opacity': 0.15,
+						width: `data(${imageWidthKey})`,
+						height: `data(${imageHeightKey})`,
 						'border-width': 0,
 						'padding-bottom': '0px',
 						events: 'no',
@@ -139,7 +166,7 @@ export const RdfCyGraph = ({
 					},
 				},
 				{
-					selector: `[label]`,
+					selector: `[label][nodeType != "SymbolConnector"]`,
 					style: {
 						color: '#ccc',
 						label: `data(label)`,
