@@ -1,4 +1,4 @@
-import { Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
+import { Autocomplete, Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
 import { DataFactory } from 'n3';
 import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
@@ -8,7 +8,7 @@ import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
 import { GraphEdge, GraphNode, RdfPatch, GraphPatch } from '@rdf-graph/types/core';
-import { directPropConfig as P } from '@rdf-graph/propConfig';
+import { directPropConfig, directPropConfig as P } from '@rdf-graph/propConfig';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
@@ -41,6 +41,7 @@ export const TabEdit = () => {
 	const { graphContext, dispatch } = useGraphContext();
 	const [canAddEdge, setCanAddEdge] = useState(false);
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
+	const [predicate, setPredicate] = useState<string>('connectedTo');
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
 
@@ -147,7 +148,7 @@ export const TabEdit = () => {
 			rdfPatches: [
 				{
 					action: 'add',
-					data: q(n(sourceIri), n('connectedTo'), n(targetIri)),
+					data: q(n(sourceIri), n(predicate), n(targetIri)),
 				},
 			],
 		});
@@ -222,6 +223,13 @@ export const TabEdit = () => {
 		});
 	};
 
+	const createPredicateSuggestions = () => [
+		'connectedTo',
+		directPropConfig.connectorIds.iri,
+		...Object.keys(graphContext.graphState.predicateNodeStore),
+		...Object.keys(graphContext.graphState.nodeStore),
+	];
+
 	useEffect(() => {
 		if (undoPatch) {
 			dispatch({
@@ -277,7 +285,7 @@ export const TabEdit = () => {
 				{canAddEdge ? (
 					<>
 						<Typography variant="h6">{edgeNodes[0]}</Typography>
-						<Typography variant="h6">connectedTo</Typography>
+						<Typography variant="h6">{predicate}</Typography>
 						<Typography variant="h6">{edgeNodes[1]}</Typography>
 					</>
 				) : (
@@ -285,6 +293,12 @@ export const TabEdit = () => {
 						Select exactly two nodes
 					</Typography>
 				)}
+				<Autocomplete
+					className={css.addPropInput}
+					label="Iri for predicate"
+					options={createPredicateSuggestions()}
+					onOptionsChange={(c) => c.selectedItems[0] && setPredicate(c.selectedItems[0] as string)}
+				/>
 				<Button onClick={() => addEdge()} disabled={!canAddEdge}>
 					Add Edge
 				</Button>
