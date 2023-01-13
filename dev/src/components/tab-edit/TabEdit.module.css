@@ -27,3 +27,10 @@
 .addPropInput input {
 	color: black;
 }
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	flex-wrap: wrap;
+}

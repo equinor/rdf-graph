@@ -264,11 +264,13 @@ export const TabEdit = () => {
 	return (
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
-				<Button onClick={() => addNewNode()}>Add Animal Node</Button>
-				<Button onClick={() => addCluster()}>Add Cluster</Button>
-				<Button onClick={() => addTwoConnectedSymbolNodes()}>Add Two Connected Symbol Nodes</Button>
-				<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>
-				<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
+				<div className={css.buttons}>
+					<Button onClick={() => addNewNode()}>Add Animal Node</Button>
+					<Button onClick={() => addCluster()}>Add Cluster</Button>
+					<Button onClick={() => addTwoConnectedSymbolNodes()}>Add connected Symbols</Button>
+					<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>
+					<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
+				</div>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection title="Edge">
