@@ -6,20 +6,16 @@ import {
 	KnownPropKey,
 } from 'core/types/core';
 import { UiSymbol } from 'core/types/UiSymbol';
+
 import go from 'gojs';
+import { RdfGoGraphState } from './RdfGoGraph';
 
 export const nodeCategory = {
 	default: '',
 	symbolWithConnectors: 'symbolWithConnectors',
 } as const;
 
-type RdfGoGraphState = {
-	connectorNodes: Record<string, { symbolNodeId?: string; portId?: string }>;
-};
-
-const goState: RdfGoGraphState = { connectorNodes: {} };
-
-export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
+export function applyPatch(patches: GraphPatch[], diagram: go.Diagram, state: RdfGoGraphState) {
 	const transactionId = new Date().getTime().toString();
 	diagram.startTransaction(transactionId);
 
@@ -37,9 +33,9 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 						break;
 					case 'connector':
 						if (patch.action === 'add') {
-							addShadowConnector(diagram, goState, patch.content);
+							addShadowConnector(diagram, state, patch.content);
 						} else {
-							removeShadowConnector(diagram, goState, patch.content);
+							removeShadowConnector(diagram, state, patch.content);
 						}
 						break;
 					default:
@@ -48,7 +44,7 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 				break;
 			case 'edge':
 				if (patch.action === 'add') {
-					addEdge(diagram, patch.content);
+					addEdge(diagram, state, patch.content);
 				} else {
 					removeEdge(diagram, patch.content);
 				}
@@ -56,7 +52,7 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 			case 'property':
 				if (patch.action === 'add') {
 					addEdgeProp(diagram, patch.content);
-					addNodeProp(diagram, patch.content);
+					addNodeProp(diagram, state, patch.content);
 				} else {
 					removeNodeProp(diagram, patch.content);
 				}
@@ -69,11 +65,15 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram) {
 
 	diagram.commitTransaction(transactionId);
 
+	console.log('GO NODES');
 	diagram.nodes.each((n) => {
 		console.log(n.data);
 	});
 
-	console.log(goState);
+	//console.log('GRAPH PATCHES');
+	//printPatches(patches);
+
+	//console.log(process.env);
 }
 
 function addNode(diagram: go.Diagram, node: GraphNodePatch) {
@@ -100,22 +100,14 @@ const ignoredProps: KnownPropKey[] = [
 	'connectorRelativePosition',
 ];
 
-function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: GraphPropertyPatch) {
 	if (ignoredProps.includes(propPatch.prop.key as KnownPropKey)) return;
 
 	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
 
 	if (!nodeData) {
 		if (propPatch.prop.type === 'custom') return;
-
-		if (propPatch.prop.key === 'connectorName') {
-			if (propPatch.id in goState.connectorNodes) {
-				goState.connectorNodes[propPatch.id].portId = propPatch.prop.value;
-			} else {
-				goState.connectorNodes[propPatch.id] = { portId: propPatch.prop.value };
-			}
-		}
-
+		addConnectorNodeProp(diagram, state, propPatch);
 		return;
 	}
 
@@ -151,6 +143,43 @@ function addNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
 }
 
+function addConnectorNodeProp(
+	diagram: go.Diagram,
+	state: RdfGoGraphState,
+	propPatch: GraphPropertyPatch
+) {
+	if (propPatch.prop.type !== 'custom' && propPatch.prop.key !== 'connectorName') return;
+
+	const portId = propPatch.prop.value;
+
+	if (propPatch.id in state.connectorNodes) {
+		state.connectorNodes[propPatch.id].portId = portId;
+	} else {
+		state.connectorNodes[propPatch.id] = { portId: portId };
+	}
+
+	// Update any links that use this connector
+	const symbolNodeId = state.connectorNodes[propPatch.id].symbolNodeId;
+
+	if (!symbolNodeId) return;
+
+	const linkMod = diagram.model as go.GraphLinksModel;
+
+	diagram.links.each((link) => {
+		const d = link.data;
+
+		if (d.to === symbolNodeId) {
+			const exLink = linkMod.findLinkDataForKey(d.id);
+			if (exLink) linkMod.setToPortIdForLinkData(exLink, portId);
+		}
+
+		if (d.from === symbolNodeId) {
+			const exLink = linkMod.findLinkDataForKey(d.id);
+			if (exLink) linkMod.setFromPortIdForLinkData(exLink, portId);
+		}
+	});
+}
+
 function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
 	if (!nodeData) return;
@@ -175,11 +204,10 @@ function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	}
 }
 
-function addEdge(diagram: go.Diagram, edge: GraphEdge) {
+function addEdge(diagram: go.Diagram, state: RdfGoGraphState, edge: GraphEdge) {
 	// Check if 'from' and/or 'to' is a symbol connector
-
-	const sourceConnector = goState.connectorNodes[edge.sourceId];
-	const targetConnector = goState.connectorNodes[edge.targetId];
+	const sourceConnector = state.connectorNodes[edge.sourceId];
+	const targetConnector = state.connectorNodes[edge.targetId];
 
 	let from = edge.sourceId;
 	let fromPort = undefined;
@@ -221,7 +249,7 @@ function addEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 }
 
 function addShadowConnector(
-	diagram: go.Diagram,
+	_diagram: go.Diagram,
 	state: RdfGoGraphState,
 	connector: GraphNodePatch
 ) {
@@ -232,14 +260,14 @@ function addShadowConnector(
 	} else {
 		state.connectorNodes[connector.id] = { symbolNodeId: connector.symbolNodeId };
 	}
-
-	console.log(state);
 }
 
 function removeShadowConnector(
-	diagram: go.Diagram,
+	_diagram: go.Diagram,
 	state: RdfGoGraphState,
 	connector: GraphNodePatch
 ) {
-	console.log(state);
+	if (connector.id in state.connectorNodes) {
+		delete state.connectorNodes[connector.id];
+	}
 }

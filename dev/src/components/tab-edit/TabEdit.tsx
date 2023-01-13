@@ -167,8 +167,8 @@ export const TabEdit = () => {
 			const connectorNodeIri = symbolNodeIri + '_C' + c.id;
 			connectorIds.push(connectorNodeIri);
 			return [
-				{ action: 'add', data: q(n(symbolNodeIri), n(P.connectorIds.iri), n(connectorNodeIri)) },
 				{ action: 'add', data: q(n(connectorNodeIri), n(P.connectorName.iri), l(c.id)) },
+				{ action: 'add', data: q(n(symbolNodeIri), n(P.connectorIds.iri), n(connectorNodeIri)) },
 			];
 		});
 
@@ -198,12 +198,12 @@ export const TabEdit = () => {
 		dispatch({
 			type: 'DispatchRdfPatches',
 			rdfPatches: [
-				...sym1.patches,
-				...sym2.patches,
 				{
 					action: 'add',
 					data: q(n(sym1.connectors[1]), n('connectedTo'), n(sym2.connectors[0])),
 				},
+				...sym1.patches,
+				...sym2.patches,
 			],
 		});
 	};

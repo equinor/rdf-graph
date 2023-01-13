@@ -21,6 +21,12 @@ export type RdfGoGraphDiagramRef = {
 	getGraphState(): GraphState;
 };
 
+export type RdfGoGraphState = {
+	connectorNodes: Record<string, { symbolNodeId?: string; portId?: string }>;
+};
+
+//const goState: RdfGoGraphState = { connectorNodes: {} };
+
 const RdfGoGraph = forwardRef(
 	(
 		{
@@ -36,6 +42,7 @@ const RdfGoGraph = forwardRef(
 		ref: React.ForwardedRef<RdfGoGraphDiagramRef>
 	) => {
 		const divElRef = useRef<HTMLDivElement>(null);
+		const goState = useRef<RdfGoGraphState>({ connectorNodes: {} });
 		const [initialized, setInitialized] = useState(false);
 		const [graphState, setGraphState] = useState<GraphState>({
 			nodeStore: {},
@@ -109,7 +116,7 @@ const RdfGoGraph = forwardRef(
 
 			const diagram = getDiagram();
 			if (!diagram) return;
-			applyPatch(patchGraphResult.graphPatches, diagram);
+			applyPatch(patchGraphResult.graphPatches, diagram, goState.current);
 
 			console.log('GraphPatches:', patchGraphResult.graphPatches);
 		}, [rdfPatches]);
@@ -119,7 +126,7 @@ const RdfGoGraph = forwardRef(
 			console.log('Custom graphPatches:', customGraphPatches);
 			const diagram = getDiagram();
 			if (!diagram) return;
-			applyPatch(customGraphPatches, diagram);
+			applyPatch(customGraphPatches, diagram, goState.current);
 		}, [customGraphPatches]);
 
 		return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;
