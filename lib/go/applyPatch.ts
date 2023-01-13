@@ -140,6 +140,11 @@ function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: Gra
 		return;
 	}
 
+	if (propPatch.prop.key === 'template') {
+		diagram.model.setCategoryForNodeData(nodeData, propPatch.prop.value);
+		return;
+	}
+
 	diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
 }
 

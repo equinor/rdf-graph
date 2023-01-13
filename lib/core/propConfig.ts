@@ -81,6 +81,9 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 	group: {
 		iri: 'http://rdf.equinor.com/ui/partOfGroup',
 	},
+	template: {
+		iri: 'http://rdf.equinor.com/ui/hasTemplate',
+	},
 } as const;
 
 export const directPropKeys = Object.keys(directPropConfig) as DirectPropKey[];

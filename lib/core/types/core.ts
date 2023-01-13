@@ -21,7 +21,8 @@ export type DirectProp = BaseProp<'direct', string[]> & {
 		| 'symbolId'
 		| 'connectorIds'
 		| 'connectorName'
-		| 'group';
+		| 'group'
+		| 'template';
 };
 
 export type CustomProp = BaseProp<'custom', string[]> & {};
