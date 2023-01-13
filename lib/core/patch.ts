@@ -30,7 +30,7 @@ export function patchGraphState(
 		graphState: state,
 		graphPatches: [],
 	})
-		.bind(rdfToGraphPatch(rdfPatches, { ...defaultOptions, ...options }))
+		.bind(rdfToGraphPatch(rdfPatches, options ? {...options, ...defaultOptions} : defaultOptions))
 		.getState();
 }
 
