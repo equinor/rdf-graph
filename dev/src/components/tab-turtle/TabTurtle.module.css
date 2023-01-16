@@ -16,3 +16,9 @@
 	font-size: medium;
 	line-height: 13px;
 }
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
