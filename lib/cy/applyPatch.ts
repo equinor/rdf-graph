@@ -72,36 +72,38 @@ function addEdge(cy: Cytoscape.Core, edge: GraphEdgePatch) {
 }
 
 const addProperty = (cy: Cytoscape.Core, { id, prop }: GraphPropertyPatch) => {
-	const elementById = cy.getElementById(id);
+	const currentElement = cy.getElementById(id);
 
 	const { key, type, value } = prop;
 
 	if (type !== 'custom') {
 		switch (key) {
 			case 'symbol':
-				elementById.data(nodeTypeKey, NodeType.SymbolContainer);
-				elementById.data(key, value);
+				currentElement.data(nodeTypeKey, NodeType.SymbolContainer);
+				currentElement.data(key, value);
 				createImageNode(cy, id, value);
 				break;
 			case 'connectorRelativePosition':
-				elementById.data(nodeTypeKey, NodeType.SymbolConnector);
-				elementById.data(layoutIgnoreKey, true);
-				elementById.data(key, value);
+				currentElement.data(nodeTypeKey, NodeType.SymbolConnector);
+				currentElement.data(layoutIgnoreKey, true);
+				currentElement.data(key, value);
 				break;
 			case 'group':
-				elementById.move({ parent: value });
+				currentElement.move({ parent: value });
+				const parent = cy.getElementById(value);
+				parent.data(nodeTypeKey, NodeType.Parent)
 				break;
 			case 'stroke':
-				if (elementById.isEdge()) {
-					elementById.data('lineColor', value);
+				if (currentElement.isEdge()) {
+					currentElement.data('lineColor', value);
 				}
-				elementById.data(key, value);
+				currentElement.data(key, value);
 				break;
 			case 'fill':
-				elementById.data(key, value);
+				currentElement.data(key, value);
 				break;
 			default:
-				elementById.data(key, value);
+				currentElement.data(key, value);
 		}
 	}
 };

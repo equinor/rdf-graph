@@ -6,6 +6,7 @@ export const imageWidthKey = 'imageWidth';
 export const imageHeightKey = 'imageHeight';
 
 export enum NodeType {
+	Parent = 'Parent',
 	SymbolContainer = 'SymbolContainer',
 	SymbolImage = 'SymbolImage',
 	SymbolConnector = 'SymbolConnector',
