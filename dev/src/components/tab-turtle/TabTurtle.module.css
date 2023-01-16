@@ -1,0 +1,18 @@
+.wrapper {
+	margin: 10px;
+	padding: 0;
+	/* margin: 20px; */
+
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.wrapper textarea {
+	color: black;
+}
+
+.json {
+	font-size: medium;
+	line-height: 13px;
+}

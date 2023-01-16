@@ -19,7 +19,6 @@ import {
 } from '../../../../lib/core/symbol-api';
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
-import { turtleToQuads } from '@rdf-graph/turtleToQuads';
 import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
@@ -45,16 +44,6 @@ export const TabEdit = () => {
 	const [predicate, setPredicate] = useState<string>('connectedTo');
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
-	const [rawTurtle, setRawTurtle] = useState<string>('');
-
-	const addRawTurtle = () => {
-		dispatch({
-			type: 'DispatchRdfPatches',
-			rdfPatches: turtleToQuads(rawTurtle).map((q) => {
-				return { action: 'add', data: q };
-			}),
-		});
-	};
 
 	const addNewNode = (_id?: string) => {
 		const { name, name_pretty } = generateNodeName();
@@ -314,15 +303,6 @@ export const TabEdit = () => {
 					Add Edge
 				</Button>
 			</MenuSection>
-			<MenuSection title="Raw turtle">
-				<textarea
-					name="Turtle"
-					cols={40}
-					rows={5}
-					onChange={(e) => setRawTurtle(e.target.value)}></textarea>
-				<Button onClick={addRawTurtle}>Load Turtle</Button>
-			</MenuSection>
-
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection
 				title="Selection"

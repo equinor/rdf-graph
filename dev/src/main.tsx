@@ -8,6 +8,7 @@ import { rdfGraphUis } from './setup';
 import { TabEdit } from './components/tab-edit/TabEdit';
 import { TabGraphState } from './components/tab-graph-state/TabGraphState';
 import { TabHistory } from './components/tab-history/TabHistory';
+import { TabTurtle } from './components/tab-turtle/TabTurtle';
 
 const uiSlugs = Object.keys(rdfGraphUis);
 
@@ -17,6 +18,7 @@ type RouteObjectExtended = RouteObject & { title: string };
 
 export const pages: RouteObjectExtended[] = [
 	{ path: 'edit', element: <TabEdit />, title: 'Edit' },
+	{ path: 'turtle', element: <TabTurtle />, title: 'Turtle' },
 	//{ path: 'cases', element: <h1>Cases</h1>, title: 'Cases' },
 	{ path: 'history', element: <TabHistory />, title: 'RDF History' },
 	{ path: 'graph-state', element: <TabGraphState />, title: 'Graph State' },
