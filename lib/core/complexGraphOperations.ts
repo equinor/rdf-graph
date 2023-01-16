@@ -44,7 +44,7 @@ export function ensureObjectNode(rdfPatch: RdfPatch): BindFunction {
 		const objectIri = termToId(rdfPatch.data.object);
 		const nodeExists =
 			objectIri in state.graphState.nodeStore || objectIri in state.graphState.predicateNodeStore;
-		if (rdfPatch.action === 'add' && !nodeExists && isEdgePatch(rdfPatch)) {
+		if (rdfPatch.action === 'add' && !nodeExists && rdfPatch.data.object.termType === 'NamedNode') {
 			const newNode = createNewNode(objectIri, 'default') as GraphNode;
 			return new PatchGraphMonad(state).bind(addNode(newNode));
 		}

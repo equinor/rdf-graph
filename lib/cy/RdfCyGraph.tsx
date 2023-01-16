@@ -182,6 +182,12 @@ export const RdfCyGraph = ({
 					},
 				},
 				{
+					selector: `[nodeType = "Parent"]`,
+					style: {
+						'background-opacity': 0.3,
+					},
+				},
+				{
 					selector: `[simpleSvg]`,
 					style: {
 						'background-clip': 'none',
