@@ -20,6 +20,7 @@ import {
 import { UiSymbol } from '@rdf-graph/types/UiSymbol';
 import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
 import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
+import { predicateIri } from '../../rdf/rdf-utils';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -41,7 +42,7 @@ export const TabEdit = () => {
 	const { graphContext, dispatch } = useGraphContext();
 	const [canAddEdge, setCanAddEdge] = useState(false);
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
-	const [predicate, setPredicate] = useState<string>('connectedTo');
+	const [predicate, setPredicate] = useState<string>(predicateIri.connectedTo);
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
 
@@ -224,7 +225,7 @@ export const TabEdit = () => {
 	};
 
 	const createPredicateSuggestions = () => [
-		'connectedTo',
+		predicateIri.connectedTo,
 		directPropConfig.connectorIds.iri,
 		...Object.keys(graphContext.graphState.predicateNodeStore),
 		...Object.keys(graphContext.graphState.nodeStore),
@@ -285,23 +286,27 @@ export const TabEdit = () => {
 				{canAddEdge ? (
 					<>
 						<Typography variant="h6">{edgeNodes[0]}</Typography>
-						<Typography variant="h6">{predicate}</Typography>
+						{/* <Typography variant="h6">{predicate}</Typography> */}
+
+						<Autocomplete
+							className={css.addPropInput}
+							label="Iri for predicate"
+							options={createPredicateSuggestions()}
+							initialSelectedOptions={[predicate]}
+							onOptionsChange={(c) =>
+								c.selectedItems[0] && setPredicate(c.selectedItems[0] as string)
+							}
+						/>
 						<Typography variant="h6">{edgeNodes[1]}</Typography>
+						<Button onClick={() => addEdge()} disabled={!canAddEdge}>
+							Add Edge
+						</Button>
 					</>
 				) : (
 					<Typography variant="h5" style={{ marginBottom: '10px' }}>
 						Select exactly two nodes
 					</Typography>
 				)}
-				<Autocomplete
-					className={css.addPropInput}
-					label="Iri for predicate"
-					options={createPredicateSuggestions()}
-					onOptionsChange={(c) => c.selectedItems[0] && setPredicate(c.selectedItems[0] as string)}
-				/>
-				<Button onClick={() => addEdge()} disabled={!canAddEdge}>
-					Add Edge
-				</Button>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection
