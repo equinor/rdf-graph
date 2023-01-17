@@ -1,4 +1,4 @@
-import { RdfF3dGraph } from '../../../../src/f3d/RdfF3dGraph';
+import { RdfF3dGraph } from '@rdf-graph/f3d/RdfF3dGraph';
 import { GraphState } from '@rdf-graph/core';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 
@@ -24,7 +24,6 @@ export const F3dUi = () => {
 			<RdfF3dGraph
 				rdfPatches={graphContext.rdfPatches}
 				customGraphPatches={graphContext.customPatches}
-				style={{ height: 'calc(100vh - var(--menu-height))', width:  'calc(100vw - var(--side-menu-width))'}}
 				onGraphStateChanged={graphStateChangedHandler}
 				onGraphSelectionChanged={graphSelectionChangedHandler}
 			/>
