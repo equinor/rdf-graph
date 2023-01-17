@@ -89,7 +89,7 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 	};
 
 	useEffect(() => {
-		console.info('INIT RdfGraphDiagram');
+		// console.info('INIT RdfGraphDiagram');
 		const diagram = initDiagram();
 		diagram.div = divElRef.current;
 		diagram.addDiagramListener('ChangedSelection', selectionChangedHandler);
@@ -115,12 +115,12 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 		if (!diagram) return;
 		applyPatch(patchGraphResult.graphPatches, diagram, goState.current);
 
-		console.log('GraphPatches:', patchGraphResult.graphPatches);
+		// console.log('GraphPatches:', patchGraphResult.graphPatches);
 	}, [rdfPatches]);
 
 	useEffect(() => {
 		if (!initialized) return;
-		console.log('Custom graphPatches:', customGraphPatches);
+		// console.log('Custom graphPatches:', customGraphPatches);
 		const diagram = getDiagram();
 		if (!diagram) return;
 		applyPatch(customGraphPatches, diagram, goState.current);
