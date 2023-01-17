@@ -2,6 +2,7 @@ import { EdsProvider } from '@equinor/eds-core-react';
 import { useParams } from 'react-router-dom';
 import appCss from './App.module.css';
 import { CyUi } from './components/cy/CyUi';
+import { F3dUi } from './components/f3d/F3dUi';
 import { GoUi } from './components/go/GoUi';
 import { MenuSide } from './components/menu-side/MenuSide';
 import { MenuTop } from './components/menu-top/MenuTop';
@@ -20,7 +21,7 @@ function App() {
 					<div className={appCss.uiContainer}>
 						{ui !== undefined
 							? {
-									fg3d: <h1>f3d</h1>,
+									fg3d: <F3dUi />,
 									go: <GoUi />,
 									cy: <CyUi />,
 							  }[ui]
