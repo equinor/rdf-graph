@@ -1,6 +1,6 @@
 import { Button, TextField } from '@equinor/eds-core-react';
 
-import { turtleToQuads } from '@rdf-graph/turtleToQuads';
+import { turtleToQuads } from '@rdf-graph/core';
 
 import { useEffect, useRef } from 'react';
 import { useGraphContext } from '../../context/GraphContext';

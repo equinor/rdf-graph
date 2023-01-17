@@ -2,12 +2,6 @@
 	"extends": ["react-app", "react-app/jest"],
 	"overrides": [
 		{
-			"files": ["**/*.stories.*"],
-			"rules": {
-				"import/no-anonymous-default-export": "off"
-			}
-		},
-		{
 			"files": ["**/*/*.*"],
 			"rules": {
 				"react/no-unknown-property": 2,

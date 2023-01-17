@@ -7,20 +7,26 @@ import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 
 import css from './TabEdit.module.css';
-import { GraphEdge, GraphNode, RdfPatch, GraphPatch } from '@rdf-graph/types/core';
-import { directPropConfig, directPropConfig as P } from '@rdf-graph/propConfig';
+
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import {
-	getConnectorSymbol,
-	symbolLibrary,
-	SymbolLibraryKey,
-} from '../../../../lib/core/symbol-api';
-import { UiSymbol } from '@rdf-graph/types/UiSymbol';
-import { bfs } from '@rdf-graph/algorithms/graphAlgorithms';
-import { highlightElement, createSummary } from '@rdf-graph/algorithms/algorithmEffects';
+import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../symbol-api';
+
 import { predicateIri } from '../../rdf/rdf-utils';
+
+import {
+	bfs,
+	createSummary,
+	GraphEdge,
+	GraphNode,
+	GraphPatch,
+	highlightElement,
+	RdfPatch,
+	UiSymbol,
+} from '@rdf-graph/core';
+
+import { directPropConfig, directPropConfig as P } from '@rdf-graph/core/propConfig';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 

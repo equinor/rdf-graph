@@ -1,4 +1,4 @@
-import { nodeCategory } from '@rdf-graph-go/applyPatch';
+import { nodeCategory } from '@rdf-graph/go';
 import * as go from 'gojs';
 
 import { createDefaultGroupTemplate } from './templates/default-group-template';

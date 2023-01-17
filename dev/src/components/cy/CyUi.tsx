@@ -1,6 +1,11 @@
-import { RdfCyGraph } from '../../../../lib/cy/RdfCyGraph';
-import { GraphState } from '@rdf-graph/types/core';
+import { GraphState, UiSymbol } from '@rdf-graph/core';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
+import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
+import { RdfCyGraph } from '@rdf-graph/cy';
+
+function cySymbolProvider(id: string, rotation?: number) {
+	return getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation }) as UiSymbol;
+}
 
 export const CyUi = () => {
 	const { graphContext, dispatch } = useGraphContext();
@@ -23,6 +28,7 @@ export const CyUi = () => {
 		<div>
 			<RdfCyGraph
 				rdfPatches={graphContext.rdfPatches}
+				symbolProvider={cySymbolProvider}
 				customGraphPatches={graphContext.customPatches}
 				style={{ height: 'calc(100vh - var(--menu-height))' }}
 				onGraphStateChanged={graphStateChangedHandler}

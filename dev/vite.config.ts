@@ -12,8 +12,7 @@ export default defineConfig({
 	},
 	resolve: {
 		alias: {
-			'@rdf-graph': path.resolve(__dirname, '../lib/core'),
-			'@rdf-graph-go': path.resolve(__dirname, '../lib/go'),
+			'@rdf-graph': path.resolve(__dirname, '../src'),
 		},
 	},
 });

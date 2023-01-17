@@ -1,6 +1,5 @@
-import { Button, Chip, Divider, EdsProvider, Table, Typography } from '@equinor/eds-core-react';
+import { Table } from '@equinor/eds-core-react';
 
-import { useContext, useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 
 //import css from './TabGraphState.module.css';
@@ -40,19 +39,5 @@ export const TabHistory = () => {
 				))}
 			</Table.Body>
 		</Table>
-	);
-};
-
-const MenuSection: React.FunctionComponent<React.PropsWithChildren<{ title: string }>> = ({
-	title,
-	children,
-}) => {
-	return (
-		<div className={css.section}>
-			<Typography variant="h5" style={{ marginBottom: '10px' }}>
-				{title}
-			</Typography>
-			{children}
-		</div>
 	);
 };

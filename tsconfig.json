@@ -1,11 +1,12 @@
 {
 	"compilerOptions": {
+		"baseUrl": ".",
+		"outDir": "./dist",
 		"target": "ESNext",
-		"useDefineForClassFields": true,
-		"lib": ["DOM", "DOM.Iterable", "ESNext"],
+		"lib": ["dom", "dom.iterable", "esnext"],
 		"allowJs": false,
 		"skipLibCheck": true,
-		"esModuleInterop": false,
+		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
@@ -13,13 +14,10 @@
 		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
+		"noImplicitOverride": true,
 		"noEmit": true,
 		"jsx": "react-jsx",
-		"baseUrl": ".",
-		"paths": {
-			"@rdf-graph/*": ["../src/*"]
-		}
+		"types": ["vitest/globals"]
 	},
-	"include": ["src"],
-	"references": [{ "path": "./tsconfig.node.json" }]
+	"include": ["vite.config.ts", "src"]
 }

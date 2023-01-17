@@ -1,4 +1,4 @@
-import { Button, EdsProvider, Radio, Typography } from '@equinor/eds-core-react';
+import { EdsProvider, Radio, Typography } from '@equinor/eds-core-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // import appCss from './App.module.css';
@@ -26,7 +26,7 @@ export const MenuTop = ({ ui }: { ui: UiKey }) => {
 		navigate('/' + uiKey + subPath);
 	};
 
-	const resetState = () => {};
+	//const resetState = () => {};
 
 	return (
 		<EdsProvider density="compact">
