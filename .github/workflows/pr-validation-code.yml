@@ -3,7 +3,7 @@ name: ✅ Validate PR - Code
 on:
   pull_request:
     paths:
-      - 'src/**'
+      - 'lib/**'
 
 env:
   NODE_VERSION: 16
@@ -12,6 +12,9 @@ jobs:
   validate_code:
     name: 👮‍♂️ Code validation
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lib
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -28,6 +31,9 @@ jobs:
   unit_test:
     name: 🧪 Unit test
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lib
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3

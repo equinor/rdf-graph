@@ -1,0 +1,5 @@
+.tabContent {
+	overflow: auto;
+	height: calc(100vh - var(--menu-height) - 48px);
+	width: var(--side-menu-width);
+}

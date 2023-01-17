@@ -1,17 +1,5 @@
 # Changelog
 
-## [0.15.1](https://github.com/equinor/rdf-graph/compare/v0.15.0...v0.15.1) (2022-12-23)
-
-
-### Bug Fixes
-
-* propagate ALL rdf literal properties to graph ([#310](https://github.com/equinor/rdf-graph/issues/310)) ([13ec237](https://github.com/equinor/rdf-graph/commit/13ec237c4999eb1ea50af7252473a43304433078))
-
-
-### For Developers
-
-* add Azure devops issues action ([53d500f](https://github.com/equinor/rdf-graph/commit/53d500fd341cf1c390e9e8bbe43da0b740eabf73))
-
 ## [0.15.0](https://github.com/equinor/rdf-graph/compare/v0.14.1...v0.15.0) (2022-11-24)
 
 

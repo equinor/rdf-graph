@@ -19,6 +19,5 @@
 		"jsx": "react-jsx",
 		"types": ["vitest/globals"]
 	},
-	"include": ["vite.config.ts", "src", ".storybook/preview.js"],
-	"exclude": ["**/*.stories.tsx"]
+	"include": ["vite.config.ts", "src"]
 }

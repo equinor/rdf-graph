@@ -1,0 +1,40 @@
+.wrapper {
+	padding: 0;
+	margin: 0;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	flex-direction: column;
+	/* align-content: stretch; */
+}
+
+.menu {
+	height: var(--menu-height);
+	/* width: 100%; */
+	background: white;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.main {
+	display: flex;
+	height: calc(100vh - var(--menu-height));
+	flex-direction: row;
+}
+
+.uiContainer {
+	height: calc(100vh - var(--menu-height));
+	width: calc(100vw - var(--side-menu-width));
+}
+
+.sideMenu {
+	width: var(--side-menu-width);
+	height: calc(100vh - var(--menu-height));
+	background-color: white;
+	box-shadow: 0px 1px 0px #ccc inset;
+}
+
+.overlayContent {
+	position: absolute;
+}

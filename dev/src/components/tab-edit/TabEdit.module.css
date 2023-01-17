@@ -1,0 +1,36 @@
+.wrapper {
+	padding: 0;
+	/* margin: 20px; */
+
+	display: flex;
+	flex-direction: column;
+	/* background-color: aqua; */
+	/* align-content: stretch; */
+}
+
+.section {
+	padding: 0;
+	margin: 10px;
+
+	display: flex;
+	flex-direction: column;
+	/* background-color: aqua; */
+	/* align-content: stretch; */
+}
+
+.sectionTitle {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.addPropInput input {
+	color: black;
+}
+
+.buttons {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	flex-wrap: wrap;
+}

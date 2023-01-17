@@ -7,5 +7,5 @@
 		"emitDeclarationOnly": false,
 		"sourceMap": true
 	},
-	"exclude": ["**/storybook", "**/test", "**/tests", "vite.config.ts"]
+	"exclude": ["**/test", "*.test.ts", "*.spec.ts", "**/tests", "*.config.ts", "dev"]
 }
