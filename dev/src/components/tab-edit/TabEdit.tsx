@@ -1,7 +1,7 @@
 import { Autocomplete, Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
 import { DataFactory } from 'n3';
-import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
+import { uniqueNamesGenerator, adjectives, animals, starWars } from 'unique-names-generator';
 
 import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
@@ -23,7 +23,6 @@ import {
 	GraphPatch,
 	highlightElement,
 	RdfPatch,
-	UiSymbol,
 } from '@rdf-graph/core';
 
 import { directPropConfig, directPropConfig as P } from '@rdf-graph/core/propConfig';
@@ -31,10 +30,18 @@ import { directPropConfig, directPropConfig as P } from '@rdf-graph/core/propCon
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 function generateNodeName() {
-	const name = uniqueNamesGenerator({
-		dictionaries: [adjectives, animals],
-		length: 2,
-	});
+	const cfg =
+		Math.random() > 0.5
+			? {
+					dictionaries: [adjectives, animals],
+					length: 2,
+			  }
+			: {
+					dictionaries: [starWars],
+					length: 1,
+			  };
+
+	const name = uniqueNamesGenerator(cfg);
 
 	const name_pretty = name
 		.split('_')
@@ -169,7 +176,9 @@ export const TabEdit = () => {
 
 		const symbolNodeIri = 'http://example.com/animals/' + name;
 
-		const symbol: UiSymbol = getConnectorSymbol(symbolId);
+		const symbol = getConnectorSymbol(symbolId);
+
+		if (!symbol) throw new Error(`Symbol not found: ${symbolId}`);
 
 		const symbolNodePatches: RdfPatch[] = [];
 
@@ -280,7 +289,7 @@ export const TabEdit = () => {
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
 				<div className={css.buttons}>
-					<Button onClick={() => addNewNode()}>Add Animal Node</Button>
+					<Button onClick={() => addNewNode()}>Add Node</Button>
 					<Button onClick={() => addCluster()}>Add Cluster</Button>
 					<Button onClick={() => addTwoConnectedSymbolNodes()}>Add connected Symbols</Button>
 					<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>
