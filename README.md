@@ -2,8 +2,6 @@
 
 An open source library for visualizing RDF as a graph network.
 
-➡ Insert illustration here! (Turtle to image of nodes with connectors and edges)
-
 ## UI frameworks
 
 The following UI implementations (React components) are shipped with the library:
