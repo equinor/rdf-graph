@@ -1,11 +1,10 @@
 import { useRef } from 'react';
 
-import { GraphState, UiSymbol } from '@rdf-graph/main';
-import { RdfGoGraph, RdfGoGraphDiagramRef } from '@rdf-graph/go';
-
 import { defaultInitDiagram } from './init';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 import { getConnectorSymbol, SymbolLibraryKey } from '../../symbol-api';
+
+import { GraphState, RdfGoGraph, RdfGoGraphDiagramRef, UiSymbol } from '@rdf-graph';
 
 function goSymbolProvider(id: string, _rotation?: number) {
 	return getConnectorSymbol(id as SymbolLibraryKey) as UiSymbol;

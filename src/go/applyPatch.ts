@@ -66,12 +66,11 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram, state: Rd
 
 	diagram.commitTransaction(transactionId);
 
-	// console.log('GO NODES');
+	//console.log('GO NODES');
 	// diagram.nodes.each((n) => {
 	// 	console.log(n.data);
 	// });
 
-	//console.log('GRAPH PATCHES');
 	//printPatches(patches);
 
 	//console.log(process.env);

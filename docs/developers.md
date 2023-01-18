@@ -7,8 +7,8 @@
 ```sh
 # Make sure you are on version 8 of the npm CLI
 $ node -v && npm -v
-v16.14.0
-8.31.0
+v18.12.1
+8.19.2
 
 #  Install npm if not already installed
 npm install --global npm
@@ -16,7 +16,7 @@ npm install --global npm
 # Install project dependencies
 npm i
 
-# Run a local dev version of Storybook
+# Run the development app locally
 npm run dev
 ```
 
@@ -43,11 +43,8 @@ npm run test
 ## Construction
 
 ```sh
- # Build Storybook static files, and deploy for Vercel for pull requests and merging for main
-npm run build:storybook
-
-# Build library (excluding Storybook) - This step is executed before `npm publish`
-npm run build:lib
+# Build library - This step is executed before `npm publish`
+npm run build
 ```
 
 ## PR's & Package Release
