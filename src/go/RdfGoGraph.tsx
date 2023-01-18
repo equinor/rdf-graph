@@ -11,7 +11,7 @@ const defaultDiagramStyle: React.CSSProperties = {
 	overflow: 'hidden',
 };
 
-export type RdfGoGraphProps = RdfGraphProps<go.DiagramEvent> & {
+type RdfGoGraphProps = RdfGraphProps<go.DiagramEvent> & {
 	initDiagram: () => go.Diagram;
 };
 

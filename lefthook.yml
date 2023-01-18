@@ -5,7 +5,6 @@ pre-commit:
   parallel: true
   commands:
     tsc-compile-test:
-      root: src/
       run: npx tsc --noEmit
     eslint:
       glob: '*.{js,ts,jsx,tsx}'

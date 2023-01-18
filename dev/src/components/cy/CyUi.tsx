@@ -1,5 +1,4 @@
-//import { GraphState, RdfCyGraph, UiSymbol } from '@equinor/rdf-graph';
-import { GraphState, UiSymbol, RdfCyGraph } from '@rdf-graph';
+import { GraphState, RdfCyGraph, UiSymbol } from '@rdf-graph';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
 
