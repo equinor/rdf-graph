@@ -26,18 +26,13 @@ function applyPatch(f3d: ForceGraph3DInstance, patch: GraphPatch) {
 }
 
 function addNode(f3d: ForceGraph3DInstance, _node: GraphNodePatch) {
-	
 	const data = {
-		nodes: [{id: 1}],
-		links: []
-	}
+		nodes: [{ id: 1 }],
+		links: [],
+	};
 	f3d.graphData(data);
 }
 
+function addEdge(_f3d: ForceGraph3DInstance, _edge: GraphEdgePatch) {}
 
-function addEdge(_f3d: ForceGraph3DInstance, _edge: GraphEdgePatch) {
-	
-}
-
-const addProperty = (_f3d: ForceGraph3DInstance, _p: GraphPropertyPatch) => {
-};
+const addProperty = (_f3d: ForceGraph3DInstance, _p: GraphPropertyPatch) => {};

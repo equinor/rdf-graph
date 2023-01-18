@@ -23,25 +23,20 @@ import {
 	GraphPatch,
 	highlightElement,
 	RdfPatch,
-} from '@rdf-graph/core';
+	directPropConfig as P,
+} from '@rdf-graph';
 
-import { directPropConfig, directPropConfig as P } from '@rdf-graph/core/propConfig';
+import { kantoPokemons } from './pokemon';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 function generateNodeName() {
-	const cfg =
-		Math.random() > 0.5
-			? {
-					dictionaries: [adjectives, animals],
-					length: 2,
-			  }
-			: {
-					dictionaries: [starWars],
-					length: 1,
-			  };
-
-	const name = uniqueNamesGenerator(cfg);
+	const dicts = [animals, starWars, kantoPokemons];
+	const randDict = dicts[Math.floor(Math.random() * dicts.length)];
+	const name = uniqueNamesGenerator({
+		dictionaries: [adjectives, randDict],
+		length: 2,
+	});
 
 	const name_pretty = name
 		.split('_')
@@ -241,7 +236,7 @@ export const TabEdit = () => {
 
 	const createPredicateSuggestions = () => [
 		predicateIri.connectedTo,
-		directPropConfig.connectorIds.iri,
+		P.connectorIds.iri,
 		...Object.keys(graphContext.graphState.predicateNodeStore),
 		...Object.keys(graphContext.graphState.nodeStore),
 	];

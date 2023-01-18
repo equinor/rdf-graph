@@ -1,5 +1,4 @@
-import { directPropConfig } from '@rdf-graph/core/propConfig';
-import { DirectPropKey } from '@rdf-graph/core';
+import { directPropConfig, DirectPropKey } from '@rdf-graph';
 
 export type RdfNamespaceKey = 'ui' | 'io' | 'animals' | 'rdfs';
 

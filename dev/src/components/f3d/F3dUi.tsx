@@ -1,5 +1,5 @@
-import { RdfF3dGraph } from '@rdf-graph/f3d/RdfF3dGraph';
-import { GraphState } from '@rdf-graph/core';
+import { RdfF3dGraph, GraphState } from '@rdf-graph';
+
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 
 export const F3dUi = () => {

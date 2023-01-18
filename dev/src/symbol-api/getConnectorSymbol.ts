@@ -2,7 +2,7 @@ import { stringToSvgElement } from './utils/svg-manipulation';
 import { pointToCenterCenter, rotatePoint } from './utils/point-utils';
 import symbolLib from './symbol-library/symbol-library.json';
 import { SymbolLibraryKey } from './symbol-library/symbol-library.types';
-import { SymbolOptions, UiSymbol } from '@rdf-graph/core';
+import { SymbolOptions, UiSymbol } from '@rdf-graph';
 
 export const symbolLibrary = symbolLib as Record<SymbolLibraryKey, Readonly<UiSymbol>>;
 

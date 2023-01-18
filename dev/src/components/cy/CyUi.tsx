@@ -1,7 +1,7 @@
-import { GraphState, UiSymbol } from '@rdf-graph/core';
+//import { GraphState, RdfCyGraph, UiSymbol } from '@equinor/rdf-graph';
+import { GraphState, UiSymbol, RdfCyGraph } from '@rdf-graph';
 import { GraphSelection, useGraphContext } from '../../context/GraphContext';
 import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
-import { RdfCyGraph } from '@rdf-graph/cy';
 
 function cySymbolProvider(id: string, rotation?: number) {
 	return getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation }) as UiSymbol;

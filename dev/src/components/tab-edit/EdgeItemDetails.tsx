@@ -1,5 +1,5 @@
 import { Table } from '@equinor/eds-core-react';
-import { GraphEdge } from '@rdf-graph/core';
+import { GraphEdge } from '@rdf-graph';
 import { useGraphContext } from '../../context/GraphContext';
 
 export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ edge }) => {

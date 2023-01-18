@@ -3,3 +3,4 @@ export type { PatchGraphOptions } from './patch';
 export * from './types';
 export { turtleToQuads } from './turtleToQuads';
 export * from './algorithms';
+export { directPropConfig } from './propConfig';
