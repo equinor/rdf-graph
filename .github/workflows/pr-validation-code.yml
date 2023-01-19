@@ -3,10 +3,10 @@ name: ✅ Validate PR - Code
 on:
   pull_request:
     paths:
-      - 'lib/**'
+      - 'src/**'
 
 env:
-  NODE_VERSION: 16
+  NODE_VERSION: 18
 
 jobs:
   validate_code:
