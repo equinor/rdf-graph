@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.16.0](https://github.com/equinor/rdf-graph/compare/v0.15.1...v0.16.0) (2023-01-18)
+
+
+### Features
+
+* add star wars dict to random node names ([922329a](https://github.com/equinor/rdf-graph/commit/922329a4e60a3dcbc6f9a784acda127f18755f29))
+* Complete refactor of core ([#303](https://github.com/equinor/rdf-graph/issues/303)) ([6e2b94a](https://github.com/equinor/rdf-graph/commit/6e2b94aa082ac9437160d4773c4550d1db104959)), closes [#302](https://github.com/equinor/rdf-graph/issues/302)
+
+
+### For Developers
+
+* code cleanup [skip ci] ([0ae4fa5](https://github.com/equinor/rdf-graph/commit/0ae4fa53c1925f424a3cf643465e443fcd1ebcfe))
+* simplify project structure ([#316](https://github.com/equinor/rdf-graph/issues/316)) ([c61d30a](https://github.com/equinor/rdf-graph/commit/c61d30a2aa108901a6c711f3f2b2bbe31cae2df8))
+
+
+### Documentation
+
+* update README.md ([adf1529](https://github.com/equinor/rdf-graph/commit/adf152906dff3bfdbf1305983a91c784b58ea83b))
+
 ## [0.15.0](https://github.com/equinor/rdf-graph/compare/v0.14.1...v0.15.0) (2022-11-24)
 
 

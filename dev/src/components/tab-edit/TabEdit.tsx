@@ -1,7 +1,7 @@
 import { Autocomplete, Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
 import { DataFactory } from 'n3';
-import { uniqueNamesGenerator, adjectives, animals } from 'unique-names-generator';
+import { uniqueNamesGenerator, adjectives, animals, starWars } from 'unique-names-generator';
 
 import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
@@ -23,16 +23,18 @@ import {
 	GraphPatch,
 	highlightElement,
 	RdfPatch,
-	UiSymbol,
-} from '@rdf-graph/core';
+	directPropConfig as P,
+} from '@rdf-graph';
 
-import { directPropConfig, directPropConfig as P } from '@rdf-graph/core/propConfig';
+import { kantoPokemons } from './pokemon';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
 function generateNodeName() {
+	const dicts = [animals, starWars, kantoPokemons];
+	const randDict = dicts[Math.floor(Math.random() * dicts.length)];
 	const name = uniqueNamesGenerator({
-		dictionaries: [adjectives, animals],
+		dictionaries: [adjectives, randDict],
 		length: 2,
 	});
 
@@ -169,7 +171,9 @@ export const TabEdit = () => {
 
 		const symbolNodeIri = 'http://example.com/animals/' + name;
 
-		const symbol: UiSymbol = getConnectorSymbol(symbolId);
+		const symbol = getConnectorSymbol(symbolId);
+
+		if (!symbol) throw new Error(`Symbol not found: ${symbolId}`);
 
 		const symbolNodePatches: RdfPatch[] = [];
 
@@ -232,7 +236,7 @@ export const TabEdit = () => {
 
 	const createPredicateSuggestions = () => [
 		predicateIri.connectedTo,
-		directPropConfig.connectorIds.iri,
+		P.connectorIds.iri,
 		...Object.keys(graphContext.graphState.predicateNodeStore),
 		...Object.keys(graphContext.graphState.nodeStore),
 	];
@@ -280,7 +284,7 @@ export const TabEdit = () => {
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
 				<div className={css.buttons}>
-					<Button onClick={() => addNewNode()}>Add Animal Node</Button>
+					<Button onClick={() => addNewNode()}>Add Node</Button>
 					<Button onClick={() => addCluster()}>Add Cluster</Button>
 					<Button onClick={() => addTwoConnectedSymbolNodes()}>Add connected Symbols</Button>
 					<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>

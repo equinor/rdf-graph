@@ -1,5 +1,5 @@
 import { Autocomplete, Button, Table, TextField, Typography } from '@equinor/eds-core-react';
-import { GraphNode } from '@rdf-graph/core';
+import { GraphNode } from '@rdf-graph';
 import { DataFactory } from 'n3';
 import { useEffect, useRef, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
