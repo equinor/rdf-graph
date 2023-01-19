@@ -5,8 +5,7 @@ import { internalApplyPatches } from './applyPatch';
 import { layoutDagre } from './layout';
 import { imageHeightKey, imageWidthKey, NodeType } from './common';
 
-import { GraphPatch, GraphState, RdfGraphProps, UiSymbol } from '../core/types';
-import { patchGraphState } from '../core/patch';
+import { GraphPatch, RdfGraphProps, UiSymbol } from '../core/types';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -53,13 +52,10 @@ const layoutHandler = (_event: cytoscape.EventObject) => {
 
 export const RdfCyGraph = ({
 	style,
-	customGraphPatches,
-	rdfPatches,
-	symbolProvider,
-	onGraphStateChanged,
 	onGraphSelectionChanged,
 	onSelectionChanged,
 	onCyInit,
+	graphPatches,
 }: RdfCyGraphProps) => {
 	const selectedLayout = layoutDagre;
 
@@ -68,12 +64,6 @@ export const RdfCyGraph = ({
 	const cyRef = useRef<cytoscape.Core>();
 	const [initialized, setInitialized] = useState(false);
 
-	const [graphState, setGraphState] = useState<GraphState>({
-		nodeStore: {},
-		predicateNodeStore: {},
-		edgeStore: {},
-	});
-
 	useEffect(() => {
 		loadCy();
 		setInitialized(true);
@@ -81,22 +71,8 @@ export const RdfCyGraph = ({
 
 	useEffect(() => {
 		if (!initialized) return;
-
-		const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
-
-		setGraphState(patchGraphResult.graphState);
-
-		if (onGraphStateChanged) {
-			onGraphStateChanged({ ...patchGraphResult.graphState });
-		}
-
-		applyPatches(patchGraphResult.graphPatches);
-	}, [rdfPatches]);
-
-	useEffect(() => {
-		if (!initialized) return;
-		applyPatches(customGraphPatches);
-	}, [customGraphPatches]);
+		applyPatches(graphPatches);
+	}, [graphPatches]);
 
 	const applyPatches = (patches: GraphPatch[]) => {
 		if (cyRef.current === undefined) return;

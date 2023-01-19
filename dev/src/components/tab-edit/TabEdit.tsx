@@ -33,10 +33,13 @@ const { quad: q, literal: l, namedNode: n } = DataFactory;
 function generateNodeName() {
 	const dicts = [animals, starWars, kantoPokemons];
 	const randDict = dicts[Math.floor(Math.random() * dicts.length)];
-	const name = uniqueNamesGenerator({
+	let name = uniqueNamesGenerator({
 		dictionaries: [adjectives, randDict],
 		length: 2,
+		separator: '_',
 	});
+
+	name = name.split(' ').join('_').toLowerCase();
 
 	const name_pretty = name
 		.split('_')
