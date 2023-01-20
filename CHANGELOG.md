@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/equinor/rdf-graph/compare/v0.17.1...v0.17.2) (2023-01-20)
+
+
+### Bug Fixes
+
+* change react peer dep to &gt;=16.14 ([572dba5](https://github.com/equinor/rdf-graph/commit/572dba50aa613486bff847b6668fd96880a2bc11))
+
 ## [0.17.1](https://github.com/equinor/rdf-graph/compare/v0.17.0...v0.17.1) (2023-01-20)
 
 
