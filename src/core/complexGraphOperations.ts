@@ -18,6 +18,7 @@ import { PatchGraphOptions } from './patch';
 import { BindFunction, PatchGraphMonad } from './PatchGraphMonad';
 import { directPropConfig, directPropKeys, RuleInputs } from './propConfig';
 import {
+	GraphEdge,
 	GraphNode,
 	NodeVariantInternal,
 	PatchGraphResult,
@@ -218,6 +219,27 @@ export function applyRules(rdfPatch: RdfPatch, options: PatchGraphOptions): Bind
 	};
 }
 
+export function cleanEmptyNodes(rdfPatch: RdfPatch): BindFunction {
+	return (state: PatchGraphResult) => {
+		const { subjectIri, objectTerm } = getTripleAsString(rdfPatch);
+
+		const subjectNode = state.graphState.nodeStore[subjectIri];
+		const objectNode = state.graphState.nodeStore[objectTerm];
+		let bindings = [];
+		const edges = Object.keys(state.graphState.edgeStore).map(
+			(key) => state.graphState.edgeStore[key]
+		);
+		if (isEmpty(subjectNode, edges)) {
+			bindings.push(deleteNode(subjectIri));
+		}
+		if (objectNode && isEmpty(objectNode, edges)) {
+			bindings.push(deleteNode(objectTerm));
+		}
+
+		return new PatchGraphMonad(state).bindMany(bindings);
+	};
+}
+
 export function convertNode(
 	nodeIri: string,
 	variant: NodeVariantInternal,
@@ -308,6 +330,13 @@ export function createNewNode(
 			props: [],
 		};
 	}
+}
+
+function isEmpty(node: GraphNode, edges: GraphEdge[]) {
+	return (
+		node.props.length === 0 &&
+		edges.find((e) => e.sourceId === node.id || e.targetId === node.id) === undefined
+	);
 }
 
 // Ignoring IRI objects when adding props except for connectorId which should be treated as a property
