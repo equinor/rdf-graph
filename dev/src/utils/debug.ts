@@ -1,4 +1,4 @@
-import { GraphPatch } from '../types';
+import { GraphPatch } from '../../../src/core/types';
 
 export function printGraphPatchesToConsole(patches: GraphPatch[]) {
 	patches.forEach((p) => {

@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { GraphPatch, GraphState, KnownPropKey, PatchProp } from '../core/types/core';
-import { RdfGraphProps } from '../core/types/ui';
-import { patchGraphState } from '../core/patch';
+import { GraphPatch, KnownPropKey, PatchProp, RdfGraphProps } from '../core/types';
 
 import ForceGraph3D, { ForceGraph3DInstance } from '3d-force-graph';
 import { CustomGraphStore } from './custom.types';
@@ -11,21 +9,10 @@ export type RdfF3dGraphProps = RdfGraphProps<Event> & {
 	onF3dInit?: (f3d: ForceGraph3DInstance) => void;
 };
 
-export const RdfF3dGraph = ({
-	customGraphPatches,
-	rdfPatches,
-	symbolProvider,
-	onGraphSelectionChanged,
-}: RdfF3dGraphProps) => {
+export const RdfF3dGraph = ({ graphPatches, onGraphSelectionChanged }: RdfF3dGraphProps) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const f3dGraphInstance = useRef<ForceGraph3DInstance>();
-	const [initialized, setInitialized] = useState(false);
-
-	const [graphState, setGraphState] = useState<GraphState>({
-		nodeStore: {},
-		predicateNodeStore: {},
-		edgeStore: {},
-	});
+	const [_initialized, setInitialized] = useState(false);
 
 	const [fg3Model, setFg3Model] = useState<CustomGraphStore>({
 		nodes: [],
@@ -42,9 +29,11 @@ export const RdfF3dGraph = ({
 
 		if (element) {
 			const instance = f3dGraph(element);
-			instance.onNodeClick((n, _e) =>
-				onGraphSelectionChanged({ nodes: [(n as { id: string }).id], edges: [] })
-			);
+			if (onGraphSelectionChanged) {
+				instance.onNodeClick((n, _e) =>
+					onGraphSelectionChanged({ nodes: [(n as { id: string }).id], edges: [] })
+				);
+			}
 			f3dGraphInstance.current = instance;
 		} else {
 			console.error('Fatal error during f3dgraph startup');
@@ -53,15 +42,8 @@ export const RdfF3dGraph = ({
 	}, []);
 
 	useEffect(() => {
-		if (!initialized) return;
-		const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
-		setGraphState(patchGraphResult.graphState);
-		applyPatches(patchGraphResult.graphPatches);
-	}, [rdfPatches]);
-
-	useEffect(() => {
-		applyPatches(customGraphPatches);
-	}, [customGraphPatches]);
+		applyPatches(graphPatches);
+	}, [graphPatches]);
 
 	useEffect(() => {
 		if (!f3dGraphInstance.current) return;

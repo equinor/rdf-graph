@@ -4,7 +4,7 @@ on:
   pull_request:
 
 env:
-  NODE_VERSION: 16
+  NODE_VERSION: 18
 
 jobs:
   build:
@@ -22,4 +22,4 @@ jobs:
       - name: TS compile test
         run: npm run ts:compileTest
       - name: Build library
-        run: npm run build:lib
+        run: npm run build

@@ -1,38 +1,13 @@
-import { RdfF3dGraph, GraphState, UiSymbol} from '@rdf-graph';
-
-import { GraphSelection, useGraphContext } from '../../context/GraphContext';
-import { getConnectorSymbolAdvanced, SymbolLibraryKey } from '../../symbol-api';
+import { RdfF3dGraph } from '@rdf-graph';
+import { useRdfGraph } from '../../hooks/useRdfGraph';
 
 export const F3dUi = () => {
-	const { graphContext, dispatch } = useGraphContext();
-
-	function fg3SymbolProvider(id: string, rotation?: number) {
-		return getConnectorSymbolAdvanced(id as SymbolLibraryKey, { rotation: rotation }) as UiSymbol;
-	}
-
-	const graphStateChangedHandler: (state: GraphState) => void = (state) => {
-		dispatch({
-			type: 'SetGraphState',
-			graphState: state,
-		});
-	};
-
-	const graphSelectionChangedHandler: (selection: GraphSelection) => void = (selection) => {
-		dispatch({
-			type: 'SetGraphSelection',
-			selection,
-		});
-	};
+	const { graphPatches, graphSelectionChangedHandler } = useRdfGraph();
 
 	return (
-		<div>
-			<RdfF3dGraph
-				rdfPatches={graphContext.rdfPatches}
-				customGraphPatches={graphContext.customPatches}
-				symbolProvider={fg3SymbolProvider}
-				onGraphStateChanged={graphStateChangedHandler}
-				onGraphSelectionChanged={graphSelectionChangedHandler}
-			/>
-		</div>
+		<RdfF3dGraph
+			graphPatches={graphPatches}
+			onGraphSelectionChanged={graphSelectionChangedHandler}
+		/>
 	);
 };

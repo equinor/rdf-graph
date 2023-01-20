@@ -2,8 +2,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 're
 import * as go from 'gojs';
 
 import { applyPatch } from './applyPatch';
-import { patchGraphState } from '../core/patch';
-import { GraphSelection, GraphState, RdfGraphProps } from '../core/types';
+import { GraphSelection, RdfGraphProps } from '../core/types';
 
 const defaultDiagramStyle: React.CSSProperties = {
 	height: '100vh',
@@ -17,7 +16,6 @@ type RdfGoGraphProps = RdfGraphProps<go.DiagramEvent> & {
 
 export type RdfGoGraphDiagramRef = {
 	getDiagram(): go.Diagram | null;
-	getGraphState(): GraphState;
 };
 
 export type RdfGoGraphState = {
@@ -25,27 +23,12 @@ export type RdfGoGraphState = {
 };
 
 export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(function RdfGoGraph(
-	{
-		customGraphPatches,
-		initDiagram,
-		rdfPatches,
-		//onErrorCallback,
-		onGraphSelectionChanged,
-		onGraphStateChanged,
-		onSelectionChanged,
-		style,
-		symbolProvider,
-	},
+	{ graphPatches, initDiagram, onGraphSelectionChanged, onSelectionChanged, style },
 	ref
 ) {
 	const divElRef = useRef<HTMLDivElement>(null);
 	const goState = useRef<RdfGoGraphState>({ connectorNodes: {} });
 	const [initialized, setInitialized] = useState(false);
-	const [graphState, setGraphState] = useState<GraphState>({
-		nodeStore: {},
-		predicateNodeStore: {},
-		edgeStore: {},
-	});
 
 	useImperativeHandle(
 		ref,
@@ -53,9 +36,6 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 			return {
 				getDiagram() {
 					return divElRef.current ? go.Diagram.fromDiv(divElRef.current) : null;
-				},
-				getGraphState() {
-					return graphState;
 				},
 			} as RdfGoGraphDiagramRef;
 		},
@@ -89,7 +69,6 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 	};
 
 	useEffect(() => {
-		// console.info('INIT RdfGraphDiagram');
 		const diagram = initDiagram();
 		diagram.div = divElRef.current;
 		diagram.addDiagramListener('ChangedSelection', selectionChangedHandler);
@@ -102,29 +81,10 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 
 	useEffect(() => {
 		if (!initialized) return;
-		//console.log('RdfPatches:', rdfPatches);
-		const patchGraphResult = patchGraphState(graphState, rdfPatches, { symbolProvider });
-
-		setGraphState(patchGraphResult.graphState);
-
-		if (onGraphStateChanged) {
-			onGraphStateChanged({ ...patchGraphResult.graphState });
-		}
-
 		const diagram = getDiagram();
 		if (!diagram) return;
-		applyPatch(patchGraphResult.graphPatches, diagram, goState.current);
-
-		// console.log('GraphPatches:', patchGraphResult.graphPatches);
-	}, [rdfPatches]);
-
-	useEffect(() => {
-		if (!initialized) return;
-		// console.log('Custom graphPatches:', customGraphPatches);
-		const diagram = getDiagram();
-		if (!diagram) return;
-		applyPatch(customGraphPatches, diagram, goState.current);
-	}, [customGraphPatches]);
+		applyPatch(graphPatches, diagram, goState.current);
+	}, [graphPatches]);
 
 	return <div ref={divElRef} style={style ?? defaultDiagramStyle}></div>;
 });

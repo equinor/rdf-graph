@@ -63,7 +63,7 @@ function applyPatch(cy: Cytoscape.Core, patch: GraphPatch) {
 
 function addNode(cy: Cytoscape.Core, node: GraphNodePatch) {
 	const el: ElementDefinition = { data: { id: node.id, label: node.id } };
-	console.log('variant: ', node.variant);
+	//console.log('variant: ', node.variant);
 	if (node.variant === 'connector') {
 		el.data.parent = node.symbolNodeId;
 	}
