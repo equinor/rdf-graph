@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/equinor/rdf-graph/compare/v0.17.0...v0.17.1) (2023-01-20)
+
+
+### Bug Fixes
+
+* change react peer dep version ([65a61b3](https://github.com/equinor/rdf-graph/commit/65a61b38e5c97de1478c4e5fd8dd53a257faaf7c))
+
 ## [0.17.0](https://github.com/equinor/rdf-graph/compare/v0.16.0...v0.17.0) (2023-01-20)
 
 
