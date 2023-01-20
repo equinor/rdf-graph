@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.17.0](https://github.com/equinor/rdf-graph/compare/v0.16.0...v0.17.0) (2023-01-20)
+
+
+### Features
+
+* new library interaction flow ([#319](https://github.com/equinor/rdf-graph/issues/319)) ([bbc8385](https://github.com/equinor/rdf-graph/commit/bbc8385b692539096443bfabe0a0a431f0e0ab98))
+
+
+### For Developers
+
+* some force graph 3d fixes ([#317](https://github.com/equinor/rdf-graph/issues/317)) ([5e79097](https://github.com/equinor/rdf-graph/commit/5e79097dbf86f0ba38745c49eb89c63bbc5c7249))
+
 ## [0.16.0](https://github.com/equinor/rdf-graph/compare/v0.15.1...v0.16.0) (2023-01-18)
 
 
