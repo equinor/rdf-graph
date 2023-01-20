@@ -1,7 +1,7 @@
 import { GraphPatch, RdfGraph, UiSymbolProvider } from '@rdf-graph';
 import { useEffect, useRef, useState } from 'react';
 import { GraphSelection, useGraphContext } from '../context/GraphContext';
-import { printGraphPatchesToConsole } from '../../../src/core/utils/debug';
+import { printGraphPatchesToConsole } from '../utils/debug';
 
 export const useRdfGraph = (symbolProvider?: UiSymbolProvider) => {
 	const { graphContext, dispatch } = useGraphContext();
@@ -25,6 +25,8 @@ export const useRdfGraph = (symbolProvider?: UiSymbolProvider) => {
 		const newPatches = rdfGraphRef.current.patch(graphContext.rdfPatches);
 
 		setGraphPatches(newPatches);
+
+		console.log('Graph Patches:');
 		printGraphPatchesToConsole(newPatches);
 
 		dispatch({
