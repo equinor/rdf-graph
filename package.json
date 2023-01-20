@@ -77,8 +77,8 @@
 		"cytoscape-cose-bilkent": "^4.1.0",
 		"cytoscape-dagre": "^2.4.0",
 		"gojs": ">=2.2.22",
-		"react": "^16.14.0 || ^17.0.0 || ^18.2.0",
-		"react-dom": "^16.14.0 || ^17.0.0 || ^18.2.0",
+		"react": ">=16.14.0",
+		"react-dom": ">=16.14.0",
 		"three": "^0.145.0"
 	},
 	"dependencies": {
