@@ -3,7 +3,6 @@ import { patchGraphState } from './patch';
 import { GraphPatch, GraphState, RdfPatch, UiSymbolProvider } from './types';
 
 export type RdfGraphOptions = {
-	graphState: GraphState;
 	symbolProvider: UiSymbolProvider;
 };
 
@@ -13,13 +12,11 @@ export class RdfGraph {
 	#symbolProvider?: UiSymbolProvider;
 
 	constructor(options?: Partial<RdfGraphOptions>) {
-		this.#state = options?.graphState
-			? options.graphState
-			: {
-					nodeStore: {},
-					predicateNodeStore: {},
-					edgeStore: {},
-			  };
+		this.#state = {
+			nodeStore: {},
+			predicateNodeStore: {},
+			edgeStore: {},
+		};
 		this.#quadStore = new N3QuadStore();
 		this.#symbolProvider = options?.symbolProvider;
 	}
