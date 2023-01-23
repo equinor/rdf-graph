@@ -333,10 +333,9 @@ export function createNewNode(
 }
 
 function isEmpty(node: GraphNode, edges: GraphEdge[]) {
-	return (
-		node.props.length === 0 &&
-		edges.find((e) => e.sourceId === node.id || e.targetId === node.id) === undefined
-	);
+	const noProps = node.props.length === 0;
+	const hasEdges = edges.some((e) => e.sourceId === node.id || e.targetId === node.id)
+	return noProps && !hasEdges;
 }
 
 // Ignoring IRI objects when adding props except for connectorId which should be treated as a property
