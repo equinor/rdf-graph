@@ -1,5 +1,6 @@
 import { GraphState, RdfPatch, UiSymbol, UiSymbolConnector, UiSymbolProvider } from '../types';
-import { Quad } from 'n3';
+import { DataFactory, Quad } from 'n3';
+import { patchGraphState } from '../patch';
 
 export function newGraphState(): GraphState {
 	return {
@@ -48,3 +49,18 @@ export const testSymbol: UiSymbol = {
 };
 
 export const testSymbolProvider: UiSymbolProvider = (_id, _rot) => testSymbol;
+
+export const createChangePatches = (original: Quad[], change: RdfPatch[]) => {
+	const state = newGraphState();
+	const oldPatches = toAddPatch(original);
+	const oldResult = patchGraphState(state, oldPatches);
+
+	return patchGraphState(oldResult.graphState, change).graphPatches;
+};
+
+const { quad: q, literal: l, namedNode: n } = DataFactory;
+
+export const testNode1 = 'A';
+export const testNode2 = 'B';
+export const simpleProp = q(n(testNode1), n('SomeDataProp'), l('someValue'));
+export const simpleEdge = q(n('A'), n('SomeDataProp'), n(testNode2));

@@ -1,5 +1,6 @@
 import {
 	applyRules,
+	cleanEmptyNodes,
 	ensureEdgeRemoved,
 	ensureObjectNode,
 	ensurePredicateNodeWithEdge,
@@ -47,7 +48,11 @@ function rdfToGraphPatch(rdfPatches: RdfPatch[], options: PatchGraphOptions): Bi
 					ensurePredicatePropAdded(rdfPatch)
 				);
 			} else {
-				bindings.push(ensurePredicatePropRemoved(rdfPatch), ensureEdgeRemoved(rdfPatch));
+				bindings.push(
+					ensurePredicatePropRemoved(rdfPatch),
+					ensureEdgeRemoved(rdfPatch),
+					cleanEmptyNodes(rdfPatch)
+				);
 			}
 			bindings.push(applyRules(rdfPatch, options));
 			return acc.bindMany(bindings);

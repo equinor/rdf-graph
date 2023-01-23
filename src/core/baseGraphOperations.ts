@@ -105,11 +105,16 @@ export function createEdgeChange(
 			targetId: targetId,
 		};
 
+		const newEdgeStore =
+			action === 'add'
+				? { ...state.graphState.edgeStore, [edgeId]: newEdge }
+				: deleteEntriesFromRecord(state.graphState.edgeStore, [edgeId]);
+
 		return new PatchGraphMonad({
 			...state,
 			graphState: {
 				...state.graphState,
-				edgeStore: { ...state.graphState.edgeStore, [edgeId]: newEdge },
+				edgeStore: newEdgeStore,
 			},
 			graphPatches: [...state.graphPatches, { action: action, content: newEdge }],
 		});
