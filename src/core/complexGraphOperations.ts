@@ -334,7 +334,7 @@ export function createNewNode(
 
 function isEmpty(node: GraphNode, edges: GraphEdge[]) {
 	const noProps = node.props.length === 0;
-	const hasEdges = edges.some((e) => e.sourceId === node.id || e.targetId === node.id)
+	const hasEdges = edges.some((e) => e.sourceId === node.id || e.targetId === node.id);
 	return noProps && !hasEdges;
 }
 
