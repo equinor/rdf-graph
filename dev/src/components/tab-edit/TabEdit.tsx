@@ -1,6 +1,6 @@
 import { Autocomplete, Button, Chip, Divider, Typography } from '@equinor/eds-core-react';
 
-import { DataFactory } from 'n3';
+import { DataFactory, Quad } from 'n3';
 import { uniqueNamesGenerator, adjectives, animals, starWars } from 'unique-names-generator';
 
 import { useEffect, useState } from 'react';
@@ -51,7 +51,6 @@ function generateNodeName() {
 
 export const TabEdit = () => {
 	const { graphContext, dispatch } = useGraphContext();
-	const [canAddEdge, setCanAddEdge] = useState(false);
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
 	const [predicate, setPredicate] = useState<string>(predicateIri.connectedTo);
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
@@ -150,19 +149,34 @@ export const TabEdit = () => {
 	};
 
 	const addEdge = () => {
-		if (!canAddEdge) return;
-		addEdgeFromIris(graphContext.graphSelection.nodes[0], graphContext.graphSelection.nodes[1]);
+		if (graphContext.graphSelection.nodes.length === 2) return;
+		const dummyEdge = {
+			sourceId: graphContext.graphSelection.nodes[0],
+			predicate,
+			targetId: graphContext.graphSelection.nodes[1],
+		};
+		patchEdges([dummyEdge], 'add');
 	};
 
-	const addEdgeFromIris = (sourceIri: string, targetIri: string) => {
+	const removeEdges = () => {
+		const edges = graphContext.graphSelection.edges.map(
+			(edgeId) => graphContext.graphState.edgeStore[edgeId]
+		);
+		patchEdges(edges, 'remove');
+	};
+
+	const patchEdges = (edges: Partial<GraphEdge>[], action: 'add' | 'remove') => {
+		const quads: Quad[] = [];
+		for (const edge of edges) {
+			const { sourceId, predicateIri, targetId } = edge;
+			if (!sourceId || !predicateIri || !targetId) continue;
+			quads.push(q(n(sourceId), n(predicateIri), n(targetId)));
+		}
 		dispatch({
 			type: 'DispatchRdfPatches',
-			rdfPatches: [
-				{
-					action: 'add',
-					data: q(n(sourceIri), n(predicate), n(targetIri)),
-				},
-			],
+			rdfPatches: quads.map((data) => {
+				return { action, data };
+			}),
 		});
 	};
 
@@ -279,10 +293,6 @@ export const TabEdit = () => {
 		}
 	}, [graphContext.graphSelection]);
 
-	useEffect(() => {
-		setCanAddEdge(edgeNodes.length === 2);
-	}, [edgeNodes]);
-
 	return (
 		<div className={css.wrapper}>
 			<MenuSection title="Node">
@@ -296,7 +306,7 @@ export const TabEdit = () => {
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection title="Edge">
-				{canAddEdge ? (
+				{graphContext.graphSelection.nodes.length === 2 && (
 					<>
 						<Typography variant="h6">{edgeNodes[0]}</Typography>
 						{/* <Typography variant="h6">{predicate}</Typography> */}
@@ -311,15 +321,20 @@ export const TabEdit = () => {
 							}
 						/>
 						<Typography variant="h6">{edgeNodes[1]}</Typography>
-						<Button onClick={() => addEdge()} disabled={!canAddEdge}>
-							Add Edge
-						</Button>
+						<Button onClick={() => addEdge()}>Add Edge</Button>
 					</>
-				) : (
-					<Typography variant="h5" style={{ marginBottom: '10px' }}>
-						Select exactly two nodes
-					</Typography>
 				)}
+				{graphContext.graphSelection.edges.length > 0 && (
+					<>
+						<Button onClick={() => removeEdges()}>Remove Edge</Button>
+					</>
+				)}
+				{graphContext.graphSelection.edges.length === 0 &&
+					graphContext.graphSelection.nodes.length !== 2 && (
+						<Typography variant="h5" style={{ marginBottom: '10px' }}>
+							Select edges to delete, or select exactly two nodes to add an edge
+						</Typography>
+					)}
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />
 			<MenuSection
