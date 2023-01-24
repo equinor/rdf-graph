@@ -1,6 +1,8 @@
-import { Store as N3QuadStore } from 'n3';
+import { Store, Quad } from 'n3';
 import { patchGraphState } from './patch';
 import { GraphPatch, GraphState, RdfPatch, UiSymbolProvider } from './types';
+
+export type N3QuadStore = Store<Quad, Quad, Quad, Quad>;
 
 export type RdfGraphOptions = {
 	symbolProvider: UiSymbolProvider;
@@ -17,7 +19,7 @@ export class RdfGraph {
 			predicateNodeStore: {},
 			edgeStore: {},
 		};
-		this.#quadStore = new N3QuadStore();
+		this.#quadStore = new Store();
 		this.#symbolProvider = options?.symbolProvider;
 	}
 
@@ -47,5 +49,15 @@ export class RdfGraph {
 		});
 		this.#state = patchGraphResult.graphState;
 		return patchGraphResult.graphPatches;
+	}
+
+	/** Resets internal GraphState and Quad Store only. */
+	reset() {
+		this.#state = {
+			nodeStore: {},
+			predicateNodeStore: {},
+			edgeStore: {},
+		};
+		this.#quadStore = new Store();
 	}
 }
