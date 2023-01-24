@@ -13,7 +13,7 @@ import { NodeItemDetails } from './NodeItemDetails';
 
 import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../symbol-api';
 
-import { predicateIri } from '../../rdf/rdf-utils';
+import { predicateIri as PREDICATES } from '../../rdf/rdf-utils';
 
 import {
 	bfs,
@@ -52,7 +52,7 @@ function generateNodeName() {
 export const TabEdit = () => {
 	const { graphContext, dispatch } = useGraphContext();
 	const [edgeNodes, setEdgeNodes] = useState<string[]>([]);
-	const [predicate, setPredicate] = useState<string>(predicateIri.connectedTo);
+	const [predicate, setPredicate] = useState<string>(PREDICATES.connectedTo);
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
 
@@ -149,11 +149,11 @@ export const TabEdit = () => {
 	};
 
 	const addEdge = () => {
-		if (graphContext.graphSelection.nodes.length === 2) return;
-		const dummyEdge = {
-			sourceId: graphContext.graphSelection.nodes[0],
-			predicate,
-			targetId: graphContext.graphSelection.nodes[1],
+		if (graphContext.graphSelection.nodes.length !== 2) return;
+		const dummyEdge: Partial<GraphEdge> = {
+			sourceId: edgeNodes[0],
+			predicateIri: predicate,
+			targetId: edgeNodes[1],
 		};
 		patchEdges([dummyEdge], 'add');
 	};
@@ -174,9 +174,7 @@ export const TabEdit = () => {
 		}
 		dispatch({
 			type: 'DispatchRdfPatches',
-			rdfPatches: quads.map((data) => {
-				return { action, data };
-			}),
+			rdfPatches: quads.map((data) => ({ action, data })),
 		});
 	};
 
@@ -252,7 +250,7 @@ export const TabEdit = () => {
 	};
 
 	const createPredicateSuggestions = () => [
-		predicateIri.connectedTo,
+		PREDICATES.connectedTo,
 		P.connectorIds.iri,
 		...Object.keys(graphContext.graphState.predicateNodeStore),
 		...Object.keys(graphContext.graphState.nodeStore),
@@ -326,7 +324,7 @@ export const TabEdit = () => {
 				)}
 				{graphContext.graphSelection.edges.length > 0 && (
 					<>
-						<Button onClick={() => removeEdges()}>Remove Edge</Button>
+						<Button onClick={() => removeEdges()}>Remove Selected Edge(s)</Button>
 					</>
 				)}
 				{graphContext.graphSelection.edges.length === 0 &&
