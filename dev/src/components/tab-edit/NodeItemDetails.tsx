@@ -44,7 +44,6 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 	}, [graphContext.graphState.nodeStore, node.id]);
 
 	const dispatchProp = (action: 'add' | 'remove') => {
-		console.log(selectedPredicate);
 		const value = inputValueRef.current?.value;
 		if (!value || !selectedPredicate) return;
 

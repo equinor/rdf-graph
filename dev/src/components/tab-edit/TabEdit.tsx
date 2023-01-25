@@ -256,6 +256,26 @@ export const TabEdit = () => {
 		...Object.keys(graphContext.graphState.nodeStore),
 	];
 
+	function convertToPizza() {
+		if (!selectedItem || selectedItem.type !== 'node') return;
+
+		const label = selectedItem.props.find((prop) => prop.key === 'label')?.value ?? '';
+
+		dispatch({
+			type: 'DispatchRdfPatches',
+			rdfPatches: [
+				{
+					action: 'add',
+					data: q(n(selectedItem.id), n(P.template.iri), l('pizza')),
+				},
+				{
+					action: 'add',
+					data: q(n(selectedItem.id), n('pizzaName'), l('Pepperoni with ' + label)),
+				},
+			],
+		});
+	}
+
 	useEffect(() => {
 		if (undoPatch) {
 			dispatch({
@@ -299,7 +319,12 @@ export const TabEdit = () => {
 					<Button onClick={() => addCluster()}>Add Cluster</Button>
 					<Button onClick={() => addTwoConnectedSymbolNodes()}>Add connected Symbols</Button>
 					<Button onClick={() => addCompleteSymbolLibrary()}>Add all symbols</Button>
-					<Button onClick={() => runBfs()}>Highlight connected nodes</Button>
+					<Button onClick={() => runBfs()} disabled={selectedItem?.type !== 'node'}>
+						Highlight connected nodes
+					</Button>
+					<Button onClick={convertToPizza} disabled={selectedItem?.type !== 'node'}>
+						Convert to Pizza
+					</Button>
 				</div>
 			</MenuSection>
 			<Divider variant="small" style={{ width: '100%' }} />

@@ -6,6 +6,7 @@ import {
 	GraphPatch,
 	GraphPropertyPatch,
 	KnownPropKey,
+	PatchProp,
 	UiSymbol,
 } from '../core/types';
 
@@ -15,6 +16,8 @@ export const nodeCategory = {
 	default: '',
 	symbolWithConnectors: 'symbolWithConnectors',
 } as const;
+
+export const customPropPrefix = 'custom_';
 
 export function applyPatch(patches: GraphPatch[], diagram: go.Diagram, state: RdfGoGraphState) {
 	const transactionId = new Date().getTime().toString();
@@ -95,7 +98,6 @@ function addNode(diagram: go.Diagram, node: GraphNodePatch) {
 		label: node.id,
 		category: '',
 		ports: [],
-		data: {},
 	});
 }
 
@@ -123,10 +125,7 @@ function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: Gra
 	}
 
 	if (propPatch.prop.type === 'custom') {
-		diagram.model.setDataProperty(nodeData, 'data', {
-			...nodeData.data,
-			[propPatch.prop.key]: propPatch.prop.value,
-		});
+		diagram.model.setDataProperty(nodeData, getPropKey(propPatch.prop), propPatch.prop.value);
 		return;
 	}
 
@@ -200,9 +199,7 @@ function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const nodeData = diagram.model.findNodeDataForKey(propPatch.id);
 	if (!nodeData) return;
 	if (propPatch.prop.type === 'custom') {
-		const newData = { ...nodeData.data };
-		delete newData[propPatch.prop.key];
-		diagram.model.setDataProperty(nodeData, 'data', newData);
+		diagram.model.setDataProperty(nodeData, getPropKey(propPatch.prop), undefined);
 	} else {
 		let deleteValue = undefined;
 		// Define specific default values for delete props
@@ -260,13 +257,17 @@ function removeEdge(diagram: go.Diagram, edge: GraphEdge): void {
 function addEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
 	if (!linkData) return;
-	diagram.model.setDataProperty(linkData, propPatch.prop.key, propPatch.prop.value);
+	diagram.model.setDataProperty(linkData, getPropKey(propPatch.prop), propPatch.prop.value);
 }
 
 function removeEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
 	if (!linkData) return;
-	diagram.model.setDataProperty(linkData, propPatch.prop.key, undefined);
+	diagram.model.setDataProperty(linkData, getPropKey(propPatch.prop), undefined);
+}
+
+function getPropKey(patchProp: PatchProp) {
+	return patchProp.type === 'custom' ? customPropPrefix + patchProp.key : patchProp.key;
 }
 
 function addShadowConnector(
