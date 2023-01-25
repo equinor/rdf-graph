@@ -251,7 +251,11 @@ function createEdgePropPatches(
 	);
 }
 
-export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown): BindFunction {
+export function deletePropFromNode(
+	node: GraphNode,
+	prop: Prop,
+	value: PatchProp['value']
+): BindFunction {
 	return (state: PatchGraphResult) => {
 		const store = state.graphState.nodeStore;
 
@@ -279,7 +283,7 @@ export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown):
 						id: node.id,
 						type: 'property',
 						elementType: 'node',
-						prop: { key: prop.key, type: 'direct', value: value } as PatchDirectProp,
+						prop: toPatchProp(prop, value),
 					} as GraphPropertyPatch,
 				},
 			],
@@ -383,7 +387,7 @@ export function addEdgeProp(
 	};
 }
 
-function toPatchProp(prop: Prop, value: GraphPropertyPatch['prop']['value']): PatchProp {
+function toPatchProp(prop: Prop, value: PatchProp['value']): PatchProp {
 	switch (prop.type) {
 		case 'direct':
 			const directProp: PatchDirectProp = {
