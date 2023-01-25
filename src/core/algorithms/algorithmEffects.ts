@@ -10,6 +10,7 @@ export const highlightElement = (element: GraphElement): AlgorithmResult => {
 		id: element.id,
 		prop: { type: 'direct', key: 'fill', value: 'pink' },
 		type: 'property',
+		elementType: 'node',
 	};
 	const oldProp = element.props.find((p) => p.type === 'direct' && p.key === 'fill') as
 		| DirectProp
@@ -20,6 +21,7 @@ export const highlightElement = (element: GraphElement): AlgorithmResult => {
 			content: {
 				id: element.id,
 				type: 'property',
+				elementType: 'node',
 				prop: {
 					key: 'fill',
 					type: 'direct',
@@ -48,6 +50,7 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
 					id: element.id,
 					prop: { type: 'direct', key: 'label', value: oldLabel },
 					type: 'property',
+					elementType: 'node',
 				},
 			});
 		}
@@ -62,6 +65,7 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
 				id: element.id,
 				prop: { type: 'direct', key: 'label', value: newLabel },
 				type: 'property',
+				elementType: 'node',
 			},
 		});
 
@@ -75,6 +79,7 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
 					id: element.id,
 					prop: { type: 'direct', key: 'fill', value: oldColor },
 					type: 'property',
+					elementType: 'node',
 				},
 			});
 		}
@@ -85,6 +90,7 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
 				id: element.id,
 				prop: { type: 'direct', key: 'fill', value: 'yellow' },
 				type: 'property',
+				elementType: 'node',
 			},
 		});
 
