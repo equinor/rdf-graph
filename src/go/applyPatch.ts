@@ -51,13 +51,24 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram, state: Rd
 				}
 				break;
 			case 'property':
-				if (patch.action === 'add') {
-					addEdgeProp(diagram, patch.content);
-					addNodeProp(diagram, state, patch.content);
-				} else {
-					removeNodeProp(diagram, patch.content);
+				switch (patch.content.elementType) {
+					case 'node':
+						if (patch.action === 'add') {
+							addNodeProp(diagram, state, patch.content);
+						} else {
+							removeNodeProp(diagram, patch.content);
+						}
+						break;
+					case 'edge':
+						if (patch.action === 'add') {
+							addEdgeProp(diagram, patch.content);
+						} else {
+							removeEdgeProp(diagram, patch.content);
+						}
+						break;
+					default:
+						break;
 				}
-
 				break;
 			default:
 				break;
@@ -248,9 +259,14 @@ function removeEdge(diagram: go.Diagram, edge: GraphEdge): void {
 
 function addEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
-
 	if (!linkData) return;
 	diagram.model.setDataProperty(linkData, propPatch.prop.key, propPatch.prop.value);
+}
+
+function removeEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
+	if (!linkData) return;
+	diagram.model.setDataProperty(linkData, propPatch.prop.key, undefined);
 }
 
 function addShadowConnector(

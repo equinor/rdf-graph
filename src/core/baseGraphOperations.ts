@@ -159,6 +159,7 @@ export function addProp(node: GraphNode, newProp: Prop): BindFunction {
 				content: {
 					id: node.id,
 					type: 'property',
+					elementType: 'node',
 					prop: {
 						...newProp,
 						value: Array.isArray(newProp.value) ? newProp.value[0] : newProp.value,
@@ -198,6 +199,7 @@ export function addPropToPredicateNode(nodeId: string, newProp: Prop): BindFunct
 				action: 'add',
 				content: {
 					type: 'property',
+					elementType: 'edge',
 					id: e,
 					prop: toPatchProp(newProp, value),
 				},
@@ -240,6 +242,7 @@ function createEdgePropPatches(
 				action: action,
 				content: {
 					type: 'property',
+					elementType: 'edge',
 					id: e,
 					prop,
 				},
@@ -275,6 +278,7 @@ export function deletePropFromNode(node: GraphNode, prop: Prop, value: unknown):
 					content: {
 						id: node.id,
 						type: 'property',
+						elementType: 'node',
 						prop: { key: prop.key, type: 'direct', value: value } as PatchDirectProp,
 					} as GraphPropertyPatch,
 				},
@@ -365,6 +369,7 @@ export function addEdgeProp(
 					action: 'add',
 					content: {
 						type: 'property',
+						elementType: 'edge',
 						id: edge.id,
 						prop: {
 							type: 'direct',
@@ -409,6 +414,7 @@ function createValueRemovalPatch(
 		content: {
 			id: nodeId,
 			type: 'property',
+			elementType: 'node',
 			prop: toPatchProp(prop, value),
 		},
 	};

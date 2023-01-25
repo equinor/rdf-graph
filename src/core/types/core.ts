@@ -123,6 +123,7 @@ export type PatchProp = PatchDirectProp | DerivedProp | PatchCustomProp;
 
 export type GraphPropertyPatch = GraphPatchBase<'property'> & {
 	prop: PatchProp;
+	elementType: ElementType;
 };
 
 export interface GraphPatch {
