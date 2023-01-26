@@ -1,9 +1,9 @@
 import { Autocomplete, Button, TextField } from '@equinor/eds-core-react';
 import { GraphEdge, GraphNode } from '@rdf-graph';
 import { DataFactory } from 'n3';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
-import { getKnownIris } from '../../rdf/rdf-utils';
+import { getKnownPredicateIrisPretty, prettyIri, prettyToFullIri } from '../../rdf/rdf-utils';
 import css from './TabEdit.module.css';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
@@ -13,8 +13,28 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 }) => {
 	const [selectedPredicate, setSelectedPredicate] = useState<string>();
 	const [selectedIriValue, setSelectedIriValue] = useState<string>();
+	const [iriValueSuggestions, setIriValueSuggestions] = useState<string[]>([]);
+	const [predicateSuggestions, setPredicateSuggestions] = useState<string[]>([]);
 	const { graphContext, dispatch } = useGraphContext();
 	const inputValueRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		updateDropdowns();
+	}, []);
+
+	useEffect(() => {
+		updateDropdowns();
+	}, [element]);
+
+	function updateDropdowns() {
+		setPredicateSuggestions(getKnownPredicateIrisPretty());
+
+		setIriValueSuggestions([
+			...Object.keys(graphContext.graphState.nodeStore)
+				.filter((k) => k !== element.id)
+				.map((iri) => prettyIri(iri)),
+		]);
+	}
 
 	const dispatchProp = (action: 'add' | 'remove') => {
 		const literalValue = inputValueRef.current?.value;
@@ -43,10 +63,6 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 		setSelectedPredicate(value);
 	};
 
-	const iriValueSuggestions = [
-		...Object.keys(graphContext.graphState.nodeStore).filter((k) => k !== element.id),
-	];
-
 	return (
 		<>
 			<div className={css.addPropInput}>
@@ -55,8 +71,8 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 					className={css.addPropInput}
 					label="Property (Predicate - IRI or custom string)"
 					//initialSelectedOptions={['http://rdf.equinor.com/ui/fill']}
-					options={getKnownIris()}
-					onOptionsChange={(c) => setSelectedPredicate(c.selectedItems[0])}
+					options={predicateSuggestions}
+					onOptionsChange={(c) => setSelectedPredicate(prettyToFullIri(c.selectedItems[0]))}
 				/>
 				<Autocomplete
 					onInput={onInp}
@@ -64,7 +80,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 					label="Value (Object - IRI)"
 					//initialSelectedOptions={['http://rdf.equinor.com/ui/fill']}
 					options={iriValueSuggestions}
-					onOptionsChange={(c) => setSelectedIriValue(c.selectedItems[0])}
+					onOptionsChange={(c) => setSelectedIriValue(prettyToFullIri(c.selectedItems[0]))}
 				/>
 				<TextField inputRef={inputValueRef} id="predicateValue" label="Value (Object - Literal)" />
 				<div className={css.addPropButtons}>

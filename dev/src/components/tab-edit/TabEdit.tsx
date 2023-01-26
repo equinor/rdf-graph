@@ -13,7 +13,12 @@ import { NodeItemDetails } from './NodeItemDetails';
 
 import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../symbol-api';
 
-import { predicateIri as PREDICATES } from '../../rdf/rdf-utils';
+import {
+	devPrefixes,
+	predicateIri as PREDICATES,
+	prettyIri,
+	prettyToFullIri,
+} from '../../rdf/rdf-utils';
 
 import {
 	bfs,
@@ -65,7 +70,7 @@ export const TabEdit = () => {
 			rdfPatches: [
 				{
 					action: 'add',
-					data: q(n('http://example.com/animals/' + name), n(P.label.iri), l(name_pretty)),
+					data: q(n(devPrefixes.animals + name), n(P.label.iri), l(name_pretty)),
 				},
 			],
 		});
@@ -104,46 +109,37 @@ export const TabEdit = () => {
 			};
 		});
 
+		const nsp = devPrefixes.animals;
+		const connectedToIri = PREDICATES.connectedTo;
+
 		dispatch({
 			type: 'DispatchRdfPatches',
 			rdfPatches: [
 				...nodes.map<RdfPatch>((node) => {
 					return {
 						action: 'add',
-						data: q(n('http://example.com/animals/' + node.id), n(P.label.iri), l(node.label)),
+						data: q(n(nsp + node.id), n(P.label.iri), l(node.label)),
 					};
 				}),
 				{
 					action: 'add',
-					data: q(
-						n('http://example.com/animals/' + nodes[0].id),
-						n('connectedTo'),
-						n('http://example.com/animals/' + nodes[1].id)
-					),
+					data: q(n(nsp + nodes[0].id), n(connectedToIri), n(nsp + nodes[1].id)),
 				},
 				{
 					action: 'add',
-					data: q(
-						n('http://example.com/animals/' + nodes[1].id),
-						n('connectedTo'),
-						n('http://example.com/animals/' + nodes[2].id)
-					),
+					data: q(n(nsp + nodes[1].id), n(connectedToIri), n(nsp + nodes[2].id)),
 				},
 				{
 					action: 'add',
-					data: q(
-						n('http://example.com/animals/' + nodes[2].id),
-						n('connectedTo'),
-						n('http://example.com/animals/' + nodes[0].id)
-					),
+					data: q(n(nsp + nodes[2].id), n(connectedToIri), n(nsp + nodes[0].id)),
 				},
 				{
 					action: 'add',
-					data: q(n('connectedTo'), n(P.label.iri), l('Test!')),
+					data: q(n(connectedToIri), n(P.label.iri), l('Test!')),
 				},
 				{
 					action: 'add',
-					data: q(n('connectedTo'), n(P.stroke.iri), l('green')),
+					data: q(n(connectedToIri), n(P.stroke.iri), l('green')),
 				},
 			],
 		});
@@ -185,7 +181,7 @@ export const TabEdit = () => {
 	} = (symbolId: SymbolLibraryKey) => {
 		const { name, name_pretty } = generateNodeName();
 
-		const symbolNodeIri = 'http://example.com/animals/' + name;
+		const symbolNodeIri = devPrefixes.animals + name;
 
 		const symbol = getConnectorSymbol(symbolId);
 
@@ -250,13 +246,14 @@ export const TabEdit = () => {
 		});
 	};
 
-	const createPredicateSuggestions = () => [
-		PREDICATES.connectedTo,
-		P.group.iri,
-		P.connectorIds.iri,
-		...Object.keys(graphContext.graphState.predicateNodeStore),
-		...Object.keys(graphContext.graphState.nodeStore),
-	];
+	const createPredicateSuggestions = () =>
+		[
+			PREDICATES.connectedTo,
+			P.group.iri,
+			P.connectorIds.iri,
+			...Object.keys(graphContext.graphState.predicateNodeStore),
+			...Object.keys(graphContext.graphState.nodeStore),
+		].map((iri) => prettyIri(iri));
 
 	function convertToPizza() {
 		if (!selectedItem || selectedItem.type !== 'node') return;
@@ -333,19 +330,17 @@ export const TabEdit = () => {
 			<MenuSection title="Edge">
 				{graphContext.graphSelection.nodes.length === 2 && (
 					<>
-						<Typography variant="h6">{edgeNodes[0]}</Typography>
+						<Typography variant="h6">{prettyIri(edgeNodes[0])}</Typography>
 						{/* <Typography variant="h6">{predicate}</Typography> */}
 
 						<Autocomplete
 							className={css.addPropInput}
 							label="Iri for predicate"
 							options={createPredicateSuggestions()}
-							initialSelectedOptions={[predicate]}
-							onOptionsChange={(c) =>
-								c.selectedItems[0] && setPredicate(c.selectedItems[0] as string)
-							}
+							initialSelectedOptions={[prettyIri(predicate)]}
+							onOptionsChange={(c) => setPredicate(prettyToFullIri(c.selectedItems[0]))}
 						/>
-						<Typography variant="h6">{edgeNodes[1]}</Typography>
+						<Typography variant="h6">{prettyIri(edgeNodes[1])}</Typography>
 						<Button onClick={() => addEdge()}>Add Edge</Button>
 					</>
 				)}
@@ -382,7 +377,7 @@ export const TabEdit = () => {
 					<Divider variant="small" style={{ width: '100%' }} />
 					<MenuSection
 						title="Add or Remove Property (Triple)"
-						chips={[`Subject: ${selectedItem?.id ?? ''}`]}>
+						chips={[`Subject: ${prettyIri(selectedItem?.id) ?? '?'}`]}>
 						<AddOrRemoveProp element={selectedItem} />
 					</MenuSection>
 				</>

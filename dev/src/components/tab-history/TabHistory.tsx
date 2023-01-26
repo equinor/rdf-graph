@@ -1,4 +1,5 @@
 import { Table } from '@equinor/eds-core-react';
+import { prettyIri } from '../../rdf/rdf-utils';
 
 import { useGraphContext } from '../../context/GraphContext';
 
@@ -32,9 +33,9 @@ export const TabHistory = () => {
 					<Table.Row key={i}>
 						<Table.Cell>{i + 1}</Table.Cell>
 						<Table.Cell>{p.action}</Table.Cell>
-						<Table.Cell>{p.data.subject.value}</Table.Cell>
-						<Table.Cell>{p.data.predicate.value}</Table.Cell>
-						<Table.Cell>{p.data.object.value}</Table.Cell>
+						<Table.Cell>{prettyIri(p.data.subject.value)}</Table.Cell>
+						<Table.Cell>{prettyIri(p.data.predicate.value)}</Table.Cell>
+						<Table.Cell>{prettyIri(p.data.object.value)}</Table.Cell>
 					</Table.Row>
 				))}
 			</Table.Body>
