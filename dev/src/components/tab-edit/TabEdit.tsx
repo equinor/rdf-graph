@@ -33,6 +33,7 @@ import {
 
 import { kantoPokemons } from './pokemon';
 import { AddOrRemoveProp } from './AddOrRemoveProp';
+import { RdfIri } from '../rdf-iri/RdfIri';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -330,7 +331,8 @@ export const TabEdit = () => {
 			<MenuSection title="Edge">
 				{graphContext.graphSelection.nodes.length === 2 && (
 					<>
-						<Typography variant="h6">{prettyIri(edgeNodes[0])}</Typography>
+						<RdfIri iri={edgeNodes[0]} variant="h6" />
+						{/* <Typography variant="h6">{prettyIri(edgeNodes[0])}</Typography> */}
 						{/* <Typography variant="h6">{predicate}</Typography> */}
 
 						<Autocomplete
@@ -338,9 +340,11 @@ export const TabEdit = () => {
 							label="Iri for predicate"
 							options={createPredicateSuggestions()}
 							initialSelectedOptions={[prettyIri(predicate)]}
-							onOptionsChange={(c) => setPredicate(prettyToFullIri(c.selectedItems[0]))}
+							onOptionsChange={(c) => {
+								if (c.selectedItems[0]) setPredicate(prettyToFullIri(c.selectedItems[0]));
+							}}
 						/>
-						<Typography variant="h6">{prettyIri(edgeNodes[1])}</Typography>
+						<RdfIri iri={edgeNodes[1]} variant="h6" />
 						<Button onClick={() => addEdge()}>Add Edge</Button>
 					</>
 				)}

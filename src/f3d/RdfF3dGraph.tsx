@@ -22,7 +22,7 @@ export const RdfF3dGraph = ({ graphPatches, onGraphSelectionChanged }: RdfF3dGra
 	useEffect(() => {
 		const f3dGraph = ForceGraph3D();
 
-		f3dGraph.width(window.innerWidth - 550);
+		f3dGraph.width(window.innerWidth - 700);
 		f3dGraph.height(window.innerHeight - 60);
 
 		const element = divRef.current;

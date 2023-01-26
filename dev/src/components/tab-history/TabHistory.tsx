@@ -1,20 +1,12 @@
 import { Table } from '@equinor/eds-core-react';
-import { prettyIri } from '../../rdf/rdf-utils';
 
 import { useGraphContext } from '../../context/GraphContext';
+import { RdfIri } from '../rdf-iri/RdfIri';
 
 //import css from './TabGraphState.module.css';
 
 export const TabHistory = () => {
 	const { graphContext } = useGraphContext();
-
-	// const [canAddEdge, setCanAddEdge] = useState(false);
-
-	// useEffect(() => {
-	// 	const s = graphContext.graphSelection;
-
-	// 	setCanAddEdge(s.nodes.length === 2 && s.edges.length === 0);
-	// }, [graphContext.graphSelection]);
 
 	return (
 		<Table>
@@ -33,9 +25,15 @@ export const TabHistory = () => {
 					<Table.Row key={i}>
 						<Table.Cell>{i + 1}</Table.Cell>
 						<Table.Cell>{p.action}</Table.Cell>
-						<Table.Cell>{prettyIri(p.data.subject.value)}</Table.Cell>
-						<Table.Cell>{prettyIri(p.data.predicate.value)}</Table.Cell>
-						<Table.Cell>{prettyIri(p.data.object.value)}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.subject.value} singleLine={false} />
+						</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.predicate.value} singleLine={false} />
+						</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.object.value} singleLine={false} />
+						</Table.Cell>
 					</Table.Row>
 				))}
 			</Table.Body>

@@ -8,7 +8,7 @@ export const TabGraphState = () => {
 	return (
 		<div className={css.json}>
 			<pre style={{ color: 'black', fontSize: '12', padding: '5px' }}>
-				{JSON.stringify(graphContext.graphState, undefined, 2)}
+				{JSON.stringify(graphContext.graphState, undefined, 3)}
 			</pre>
 		</div>
 	);

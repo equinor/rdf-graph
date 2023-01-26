@@ -1,0 +1,8 @@
+.rdfIri {
+	display: flex;
+	/* flex-direction: column; */
+}
+
+.prefix {
+	color: 'red';
+}
