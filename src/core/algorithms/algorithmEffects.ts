@@ -3,18 +3,22 @@ import { AlgorithmResult } from './algorithms.types';
 
 export const highlightElement = (element: GraphElement): AlgorithmResult => {
 	const undoPatches = [];
+
 	if (element.type !== 'node') {
 		return { patches: [], undoPatches: [] };
 	}
+
 	const patch: GraphPropertyPatch = {
 		id: element.id,
 		prop: { type: 'direct', key: 'fill', value: 'pink' },
 		type: 'property',
-		elementType: 'node',
+		elementType: element.type,
 	};
+
 	const oldProp = element.props.find((p) => p.type === 'direct' && p.key === 'fill') as
 		| DirectProp
 		| undefined;
+
 	if (oldProp) {
 		const newPatch: GraphPatch = {
 			action: 'add',

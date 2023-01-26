@@ -27,6 +27,7 @@ import {
 } from '@rdf-graph';
 
 import { kantoPokemons } from './pokemon';
+import { AddOrRemoveProp } from './AddOrRemoveProp';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
 
@@ -251,6 +252,7 @@ export const TabEdit = () => {
 
 	const createPredicateSuggestions = () => [
 		PREDICATES.connectedTo,
+		P.group.iri,
 		P.connectorIds.iri,
 		...Object.keys(graphContext.graphState.predicateNodeStore),
 		...Object.keys(graphContext.graphState.nodeStore),
@@ -375,6 +377,16 @@ export const TabEdit = () => {
 					<Typography variant="h6">Select a single item</Typography>
 				)}
 			</MenuSection>
+			{selectedItem ? (
+				<>
+					<Divider variant="small" style={{ width: '100%' }} />
+					<MenuSection
+						title="Add or Remove Property (Triple)"
+						chips={[`Subject: ${selectedItem?.id ?? ''}`]}>
+						<AddOrRemoveProp element={selectedItem} />
+					</MenuSection>
+				</>
+			) : null}
 		</div>
 	);
 };

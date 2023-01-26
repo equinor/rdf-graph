@@ -59,41 +59,45 @@ export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ 
 				</Table.Body>
 			</Table>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Known Property (Predicate node)</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
-
-				<Table.Body>
-					{props.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{props.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Known Property (Predicate node)</Table.Cell>
+							<Table.Cell>Value</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Custom Property (Predicate node)</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
+					<Table.Body>
+						{props.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 
-				<Table.Body>
-					{propsCustom.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{propsCustom.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Custom Property (Predicate node)</Table.Cell>
+							<Table.Cell>Value</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
+
+					<Table.Body>
+						{propsCustom.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 		</>
 	);
 };

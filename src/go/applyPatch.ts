@@ -15,6 +15,7 @@ import { RdfGoGraphState } from './RdfGoGraph';
 export const nodeCategory = {
 	default: '',
 	symbolWithConnectors: 'symbolWithConnectors',
+	group: 'group',
 } as const;
 
 export const customPropPrefix = 'custom_';
@@ -80,14 +81,13 @@ export function applyPatch(patches: GraphPatch[], diagram: go.Diagram, state: Rd
 
 	diagram.commitTransaction(transactionId);
 
-	//console.log('GO NODES');
 	// diagram.nodes.each((n) => {
 	// 	console.log(n.data);
 	// });
 
-	//printPatches(patches);
-
-	//console.log(process.env);
+	// diagram.links.each((n) => {
+	// 	console.log(n.data);
+	// });
 }
 
 function addNode(diagram: go.Diagram, node: GraphNodePatch) {
@@ -96,7 +96,6 @@ function addNode(diagram: go.Diagram, node: GraphNodePatch) {
 		type: node.type,
 		variant: node.variant,
 		label: node.id,
-		category: '',
 		ports: [],
 	});
 }
@@ -155,6 +154,22 @@ function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: Gra
 		return;
 	}
 
+	if (propPatch.prop.key === 'group') {
+		const groupNodeData = diagram.model.findNodeDataForKey(propPatch.prop.value);
+		if (!groupNodeData) return;
+
+		// Convert existing node to a group node.
+		if (!Object.hasOwn(groupNodeData, 'isGroup') || groupNodeData['isGroup'] === false) {
+			// We must remove node from the model and add it again
+			// (data prop "isGroup" is not dynamic!)
+			diagram.model.removeNodeData(groupNodeData);
+			diagram.model.addNodeData({ ...groupNodeData, isGroup: true });
+		}
+
+		(diagram.model as go.GraphLinksModel).setGroupKeyForNodeData(nodeData, propPatch.prop.value);
+		return;
+	}
+
 	diagram.model.setDataProperty(nodeData, propPatch.prop.key, propPatch.prop.value);
 }
 
@@ -210,11 +225,39 @@ function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 			case 'stroke':
 				deleteValue = '#ccc';
 				break;
+			case 'group':
+				removeGroupProp(diagram, propPatch);
+				return;
 			default:
 				break;
 		}
 		diagram.model.setDataProperty(nodeData, propPatch.prop.key, deleteValue);
 	}
+}
+
+function removeGroupProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
+	console.log('rem:', propPatch);
+	const model = diagram.model as go.GraphLinksModel;
+	const nodeData = model.findNodeDataForKey(propPatch.id);
+
+	if (!nodeData) return;
+	model.setGroupKeyForNodeData(nodeData, undefined);
+
+	const groupId = propPatch.prop.value;
+	if (typeof groupId !== 'string') return;
+
+	const nodeGroupKeyProperty =
+		typeof model.nodeGroupKeyProperty === 'string' ? model.nodeGroupKeyProperty : 'group';
+
+	// Convert group back to a regular node if there are no nodes left in group
+	if (diagram.nodes.any((n) => n.data[nodeGroupKeyProperty] === groupId)) return;
+
+	const groupNodeData = diagram.model.findNodeDataForKey(groupId);
+
+	if (!groupNodeData) return;
+
+	diagram.model.removeNodeData(groupNodeData);
+	diagram.model.addNodeData({ ...groupNodeData, isGroup: false });
 }
 
 function addEdge(diagram: go.Diagram, state: RdfGoGraphState, edge: GraphEdge) {

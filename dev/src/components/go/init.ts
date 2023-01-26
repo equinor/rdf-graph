@@ -27,6 +27,7 @@ export function defaultInitDiagram() {
 			linkKeyProperty: 'id',
 			linkFromPortIdProperty: 'fromPort',
 			linkToPortIdProperty: 'toPort',
+			nodeGroupKeyProperty: 'groupNodeId',
 		}),
 		layout: new go.ForceDirectedLayout(),
 		nodeTemplateMap: new go.Map<string, go.Part>()

@@ -21,7 +21,7 @@ export function createDefaultGroupTemplate(): go.Group {
 		),
 		$(
 			go.TextBlock, // group title
-			{ alignment: go.Spot.Right, font: 'Bold 12pt Sans-Serif' },
+			{ alignment: go.Spot.Center, font: 'Bold 12pt Sans-Serif', stroke: 'white' },
 			new go.Binding('text', 'label')
 		)
 	);
