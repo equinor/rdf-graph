@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.18.0](https://github.com/equinor/rdf-graph/compare/v0.17.2...v0.18.0) (2023-01-25)
+
+
+### Features
+
+* Add button to remove edges in dev app ([#327](https://github.com/equinor/rdf-graph/issues/327)) ([4f986fe](https://github.com/equinor/rdf-graph/commit/4f986fe2c2fb3d8851229cee98347e027c080e84))
+* add elementType to GraphPropertyPatch type ([#329](https://github.com/equinor/rdf-graph/issues/329)) ([751edd1](https://github.com/equinor/rdf-graph/commit/751edd10e228cd0f9f3c0a56ff8f6a36e1c12bc4))
+* add reset functions to go comp and RdfGraph.ts ([#328](https://github.com/equinor/rdf-graph/issues/328)) ([ff4a5a1](https://github.com/equinor/rdf-graph/commit/ff4a5a14ef679fc4ca77d2ddb713f318b6c62612))
+
+
+### Bug Fixes
+
+* custom property remove patch ([#330](https://github.com/equinor/rdf-graph/issues/330)) ([c882b31](https://github.com/equinor/rdf-graph/commit/c882b3181459e5921e5ebca4fa67b9d37f145c69))
+
+
+### For Developers
+
+* remove nodes when empty ([#322](https://github.com/equinor/rdf-graph/issues/322)) ([75e75f5](https://github.com/equinor/rdf-graph/commit/75e75f5ff57ddf6c4959f2dbc75968112ecc04ea))
+
 ## [0.17.2](https://github.com/equinor/rdf-graph/compare/v0.17.1...v0.17.2) (2023-01-20)
 
 
