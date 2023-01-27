@@ -1,8 +1,8 @@
-import { Table } from '@equinor/eds-core-react';
+import { Table, Icon } from '@equinor/eds-core-react';
+import { add_circle_filled, remove } from '@equinor/eds-icons';
 
 import { useGraphContext } from '../../context/GraphContext';
 import { RdfIri } from '../rdf-iri/RdfIri';
-
 //import css from './TabGraphState.module.css';
 
 export const TabHistory = () => {
@@ -24,7 +24,13 @@ export const TabHistory = () => {
 				{graphContext.rdfPatchesHistory.map((p, i) => (
 					<Table.Row key={i}>
 						<Table.Cell>{i + 1}</Table.Cell>
-						<Table.Cell>{p.action}</Table.Cell>
+						<Table.Cell>
+							{p.action === 'add' ? (
+								<Icon data={add_circle_filled} color="SeaGreen" />
+							) : (
+								<Icon data={remove} color="Tomato" />
+							)}
+						</Table.Cell>
 						<Table.Cell>
 							<RdfIri iri={p.data.subject.value} singleLine={false} />
 						</Table.Cell>
