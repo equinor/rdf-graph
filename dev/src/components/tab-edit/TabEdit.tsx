@@ -229,7 +229,7 @@ export const TabEdit = () => {
 			rdfPatches: [
 				{
 					action: 'add',
-					data: q(n(sym1.connectors[1]), n('connectedTo'), n(sym2.connectors[0])),
+					data: q(n(sym1.connectors[1]), n(PREDICATES.connectedTo), n(sym2.connectors[0])),
 				},
 				...sym1.patches,
 				...sym2.patches,
@@ -355,8 +355,8 @@ export const TabEdit = () => {
 				)}
 				{graphContext.graphSelection.edges.length === 0 &&
 					graphContext.graphSelection.nodes.length !== 2 && (
-						<Typography variant="h5" style={{ marginBottom: '10px' }}>
-							Select edges to delete, or select exactly two nodes to add an edge
+						<Typography variant="h6" style={{ marginBottom: '10px' }}>
+							Select one or more edges to delete, or select exactly two nodes to add an edge
 						</Typography>
 					)}
 			</MenuSection>
