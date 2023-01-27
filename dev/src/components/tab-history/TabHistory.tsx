@@ -1,19 +1,12 @@
-import { Table } from '@equinor/eds-core-react';
+import { Table, Icon } from '@equinor/eds-core-react';
+import { add_circle_filled, remove } from '@equinor/eds-icons';
 
 import { useGraphContext } from '../../context/GraphContext';
-
+import { RdfIri } from '../rdf-iri/RdfIri';
 //import css from './TabGraphState.module.css';
 
 export const TabHistory = () => {
 	const { graphContext } = useGraphContext();
-
-	// const [canAddEdge, setCanAddEdge] = useState(false);
-
-	// useEffect(() => {
-	// 	const s = graphContext.graphSelection;
-
-	// 	setCanAddEdge(s.nodes.length === 2 && s.edges.length === 0);
-	// }, [graphContext.graphSelection]);
 
 	return (
 		<Table>
@@ -31,10 +24,22 @@ export const TabHistory = () => {
 				{graphContext.rdfPatchesHistory.map((p, i) => (
 					<Table.Row key={i}>
 						<Table.Cell>{i + 1}</Table.Cell>
-						<Table.Cell>{p.action}</Table.Cell>
-						<Table.Cell>{p.data.subject.value}</Table.Cell>
-						<Table.Cell>{p.data.predicate.value}</Table.Cell>
-						<Table.Cell>{p.data.object.value}</Table.Cell>
+						<Table.Cell>
+							{p.action === 'add' ? (
+								<Icon data={add_circle_filled} color="SeaGreen" />
+							) : (
+								<Icon data={remove} color="Tomato" />
+							)}
+						</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.subject.value} singleLine={false} />
+						</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.predicate.value} singleLine={false} />
+						</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={p.data.object.value} singleLine={false} />
+						</Table.Cell>
 					</Table.Row>
 				))}
 			</Table.Body>

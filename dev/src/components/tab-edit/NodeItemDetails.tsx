@@ -1,17 +1,13 @@
-import { Autocomplete, Button, Table, TextField, Typography } from '@equinor/eds-core-react';
+import { Table } from '@equinor/eds-core-react';
 import { GraphNode } from '@rdf-graph';
-import { DataFactory } from 'n3';
-import { useEffect, useRef, useState } from 'react';
-import { useGraphContext } from '../../context/GraphContext';
-import { getKnownIris } from '../../rdf/rdf-utils';
-import css from './TabEdit.module.css';
 
-const { quad: q, literal: l, namedNode: n } = DataFactory;
+import { useEffect, useState } from 'react';
+import { useGraphContext } from '../../context/GraphContext';
+import { RdfIri } from '../rdf-iri/RdfIri';
+//import css from './TabEdit.module.css';
 
 export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ node }) => {
-	const [selectedPredicate, setSelectedPredicate] = useState<string>();
-	const { graphContext, dispatch } = useGraphContext();
-	const inputValueRef = useRef<HTMLInputElement>(null);
+	const { graphContext } = useGraphContext();
 
 	const [props, setProps] = useState<{ key: string; value: string }[]>([]);
 	const [propsCustom, setPropsCustom] = useState<{ key: string; value: string }[]>([]);
@@ -27,7 +23,7 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 					if (p.type === 'derived') {
 						val = JSON.stringify(p.value);
 					} else {
-						val = p.value[0];
+						val = JSON.stringify(p.value); //p.value[0];
 					}
 
 					return { key: p.key, value: val };
@@ -38,31 +34,10 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 			n.props
 				.filter((p) => p.type === 'custom')
 				.map((p) => {
-					return { key: p.key, value: (p.value as string[])[0] };
+					return { key: p.key, value: JSON.stringify(p.value) }; //(p.value as string[])[0] };
 				})
 		);
 	}, [graphContext.graphState.nodeStore, node.id]);
-
-	const dispatchProp = (action: 'add' | 'remove') => {
-		const value = inputValueRef.current?.value;
-		if (!value || !selectedPredicate) return;
-
-		dispatch({
-			type: 'DispatchRdfPatches',
-			rdfPatches: [
-				{
-					action: action,
-					data: q(n(node.id), n(selectedPredicate), l(value)),
-				},
-			],
-		});
-	};
-
-	const onInp: React.FormEventHandler<HTMLDivElement> = (e) => {
-		e.preventDefault();
-		const value = (e.target as HTMLInputElement).value;
-		setSelectedPredicate(value);
-	};
 
 	return (
 		<>
@@ -77,7 +52,9 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell>Id</Table.Cell>
-						<Table.Cell>{node.id}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={node.id} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Type</Table.Cell>
@@ -90,61 +67,45 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 				</Table.Body>
 			</Table>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Known Property</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
-
-				<Table.Body>
-					{props.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{props.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Known Property</Table.Cell>
+							<Table.Cell>Value (Raw)</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Custom Property</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
+					<Table.Body>
+						{props.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 
-				<Table.Body>
-					{propsCustom.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{propsCustom.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Custom Property</Table.Cell>
+							<Table.Cell>Value</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
 
-			<div className={css.addPropInput}>
-				<Typography variant="h6">Add or Remove property</Typography>
-
-				<Autocomplete
-					onInput={onInp}
-					className={css.addPropInput}
-					label="Property (predicate)"
-					//initialSelectedOptions={['http://rdf.equinor.com/ui/fill']}
-					options={getKnownIris()}
-					onOptionsChange={(c) => setSelectedPredicate(c.selectedItems[0])}
-				/>
-				<TextField inputRef={inputValueRef} id="predicateValue" label="Value (literal)" />
-				<Button variant="contained" onClick={() => dispatchProp('add')}>
-					Add
-				</Button>
-				<Button variant="contained" onClick={() => dispatchProp('remove')}>
-					Remove
-				</Button>
-			</div>
+					<Table.Body>
+						{propsCustom.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 		</>
 	);
 };

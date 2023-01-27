@@ -1,6 +1,7 @@
 import { Table } from '@equinor/eds-core-react';
 import { GraphEdge } from '@rdf-graph';
 import { useGraphContext } from '../../context/GraphContext';
+import { RdfIri } from '../rdf-iri/RdfIri';
 
 export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ edge }) => {
 	const { graphContext } = useGraphContext();
@@ -46,54 +47,64 @@ export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ 
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Predicate Iri</Table.Cell>
-						<Table.Cell>{edge.predicateIri}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.predicateIri} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Source Id</Table.Cell>
-						<Table.Cell>{edge.sourceId}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.sourceId} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Target Id</Table.Cell>
-						<Table.Cell>{edge.targetId}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.targetId} />
+						</Table.Cell>
 					</Table.Row>
 				</Table.Body>
 			</Table>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Known Property (Predicate node)</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
-
-				<Table.Body>
-					{props.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{props.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Known Property (Predicate node)</Table.Cell>
+							<Table.Cell>Value</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
 
-			<Table>
-				<Table.Head>
-					<Table.Row>
-						<Table.Cell>Custom Property (Predicate node)</Table.Cell>
-						<Table.Cell>Value</Table.Cell>
-					</Table.Row>
-				</Table.Head>
+					<Table.Body>
+						{props.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 
-				<Table.Body>
-					{propsCustom.map((p) => (
-						<Table.Row key={p.key}>
-							<Table.Cell>{p.key}</Table.Cell>
-							<Table.Cell>{p.value}</Table.Cell>
+			{propsCustom.length > 0 ? (
+				<Table>
+					<Table.Head>
+						<Table.Row>
+							<Table.Cell>Custom Property (Predicate node)</Table.Cell>
+							<Table.Cell>Value</Table.Cell>
 						</Table.Row>
-					))}
-				</Table.Body>
-			</Table>
+					</Table.Head>
+
+					<Table.Body>
+						{propsCustom.map((p) => (
+							<Table.Row key={p.key}>
+								<Table.Cell>{p.key}</Table.Cell>
+								<Table.Cell>{p.value}</Table.Cell>
+							</Table.Row>
+						))}
+					</Table.Body>
+				</Table>
+			) : null}
 		</>
 	);
 };

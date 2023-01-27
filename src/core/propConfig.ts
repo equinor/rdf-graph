@@ -30,13 +30,20 @@ export type DerivedPropConfig = {
 	rule: PropRule;
 };
 
+export const RdfPrefix = {
+	ui: 'http://rdf.equinor.com/ui/',
+	rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
+} as const;
+
+export type KnownRdfPrefix = keyof typeof RdfPrefix;
+
 export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 	symbolId: {
-		iri: 'http://rdf.equinor.com/ui/hasEngineeringSymbol',
+		iri: RdfPrefix.ui + 'hasEngineeringSymbol',
 		rule: (ruleInputs: RuleInputs) => derivedPropConfig['symbol'].rule(ruleInputs),
 	},
 	connectorIds: {
-		iri: 'http://rdf.equinor.com/ui/hasConnector',
+		iri: RdfPrefix.ui + 'hasConnector',
 		rule: ({ subjectIri, objectIri }: RuleInputs) => {
 			const o = objectIri as string;
 			return (state: PatchGraphResult) => {
@@ -54,7 +61,7 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 		},
 	},
 	connectorName: {
-		iri: 'http://rdf.equinor.com/ui/hasConnectorName',
+		iri: RdfPrefix.ui + 'hasConnectorName',
 		rule: (ruleInputs: RuleInputs) => {
 			return (state: PatchGraphResult) => {
 				return new PatchGraphMonad(state).bindMany([
@@ -65,25 +72,25 @@ export const directPropConfig: Record<DirectPropKey, DirectPropConfig> = {
 		},
 	},
 	rotation: {
-		iri: 'http://rdf.equinor.com/ui/hasRotation',
+		iri: RdfPrefix.ui + 'hasRotation',
 	},
 	fill: {
-		iri: 'http://rdf.equinor.com/ui/fill',
+		iri: RdfPrefix.ui + 'fill',
 	},
 	stroke: {
-		iri: 'http://rdf.equinor.com/ui/stroke',
+		iri: RdfPrefix.ui + 'stroke',
 	},
 	label: {
-		iri: 'http://www.w3.org/2000/01/rdf-schema#label',
+		iri: RdfPrefix.rdfs + 'label',
 	},
 	description: {
-		iri: 'http://rdf.equinor.com/ui/description',
+		iri: RdfPrefix.rdfs + 'description',
 	},
 	group: {
-		iri: 'http://rdf.equinor.com/ui/partOfGroup',
+		iri: RdfPrefix.ui + 'partOfGroup',
 	},
 	template: {
-		iri: 'http://rdf.equinor.com/ui/hasTemplate',
+		iri: RdfPrefix.ui + 'hasTemplate',
 	},
 } as const;
 
@@ -206,7 +213,6 @@ function findDerivedProp<T>(node: GraphNode, key: DerivedPropKey): T | undefined
 	return prop.value as T;
 }
 
-/**  */
 function getConnectorInfo(state: PatchGraphResult, connectorNode: GraphNode) {
 	if (connectorNode.variant !== 'connector') {
 		return undefined;
