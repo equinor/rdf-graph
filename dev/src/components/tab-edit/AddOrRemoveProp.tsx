@@ -1,9 +1,10 @@
-import { Autocomplete, Button, TextField } from '@equinor/eds-core-react';
+import { Autocomplete, Button, Label, TextField } from '@equinor/eds-core-react';
 import { GraphEdge, GraphNode, Prop } from '@rdf-graph';
 import { DataFactory } from 'n3';
 import { useEffect, useRef, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
 import { getKnownPredicateIrisPretty, prettyIri, prettyToFullIri } from '../../rdf/rdf-utils';
+import { RdfIri } from '../rdf-iri/RdfIri';
 import css from './TabEdit.module.css';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
@@ -18,6 +19,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 	const [selectedIriValue, setSelectedIriValue] = useState<string>();
 	const [iriValueSuggestions, setIriValueSuggestions] = useState<string[]>([]);
 	const [predicateSuggestions, setPredicateSuggestions] = useState<string[]>([]);
+	const [subject, setSubject] = useState<string>(element.id);
 
 	useEffect(() => {
 		updateDropdowns();
@@ -25,6 +27,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 
 	useEffect(() => {
 		updateDropdowns();
+		setSubject(element.type === 'node' ? element.id : element.predicateIri);
 	}, [element, graphContext.graphState]);
 
 	function updateDropdowns() {
@@ -36,7 +39,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 			props = graphContext.graphState.predicateNodeStore[element.predicateIri]?.props;
 		}
 
-		const customProps = props.filter((p) => p.type === 'custom').map((p) => p.key) ?? [];
+		const customProps = props?.filter((p) => p.type === 'custom').map((p) => p.key) ?? [];
 
 		setPredicateSuggestions(getKnownPredicateIrisPretty().concat(customProps));
 
@@ -55,9 +58,9 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 			? l(literalValue)
 			: undefined;
 
-		if (!selectedPredicate || !object) return;
+		if (!subject || !selectedPredicate || !object) return;
 
-		const subject = element.type === 'node' ? element.id : element.predicateIri;
+		//const subject = element.type === 'node' ? element.id : element.predicateIri;
 
 		dispatch({
 			type: 'DispatchRdfPatches',
@@ -79,6 +82,10 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 	return (
 		<>
 			<div className={css.addPropInput}>
+				<Label label="Subject" />
+				<div style={{ marginLeft: '12px', height: '30px', display: 'flex', alignItems: 'center' }}>
+					<RdfIri iri={subject} />
+				</div>
 				<Autocomplete
 					onInput={onInp}
 					className={css.addPropInput}

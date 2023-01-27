@@ -381,7 +381,7 @@ export const TabEdit = () => {
 					<Divider variant="small" style={{ width: '100%' }} />
 					<MenuSection
 						title="Add or Remove Property (Triple)"
-						chips={[`Subject: ${prettyIri(selectedItem?.id) ?? '?'}`]}>
+						chips={[`Target: ${prettyIri(selectedItem?.id) ?? '?'}`]}>
 						<AddOrRemoveProp element={selectedItem} />
 					</MenuSection>
 				</>

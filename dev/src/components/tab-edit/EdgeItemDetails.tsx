@@ -1,6 +1,7 @@
 import { Table } from '@equinor/eds-core-react';
 import { GraphEdge } from '@rdf-graph';
 import { useGraphContext } from '../../context/GraphContext';
+import { RdfIri } from '../rdf-iri/RdfIri';
 
 export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ edge }) => {
 	const { graphContext } = useGraphContext();
@@ -46,15 +47,21 @@ export const EdgeItemDetails: React.FunctionComponent<{ edge: GraphEdge }> = ({ 
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Predicate Iri</Table.Cell>
-						<Table.Cell>{edge.predicateIri}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.predicateIri} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Source Id</Table.Cell>
-						<Table.Cell>{edge.sourceId}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.sourceId} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Target Id</Table.Cell>
-						<Table.Cell>{edge.targetId}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={edge.targetId} />
+						</Table.Cell>
 					</Table.Row>
 				</Table.Body>
 			</Table>

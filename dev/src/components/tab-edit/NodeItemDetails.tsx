@@ -3,6 +3,7 @@ import { GraphNode } from '@rdf-graph';
 
 import { useEffect, useState } from 'react';
 import { useGraphContext } from '../../context/GraphContext';
+import { RdfIri } from '../rdf-iri/RdfIri';
 //import css from './TabEdit.module.css';
 
 export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ node }) => {
@@ -51,7 +52,9 @@ export const NodeItemDetails: React.FunctionComponent<{ node: GraphNode }> = ({ 
 				<Table.Body>
 					<Table.Row>
 						<Table.Cell>Id</Table.Cell>
-						<Table.Cell>{node.id}</Table.Cell>
+						<Table.Cell>
+							<RdfIri iri={node.id} />
+						</Table.Cell>
 					</Table.Row>
 					<Table.Row>
 						<Table.Cell>Type</Table.Cell>
