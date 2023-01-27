@@ -57,12 +57,14 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 
 		if (!selectedPredicate || !object) return;
 
+		const subject = element.type === 'node' ? element.id : element.predicateIri;
+
 		dispatch({
 			type: 'DispatchRdfPatches',
 			rdfPatches: [
 				{
 					action: action,
-					data: q(n(element.id), n(selectedPredicate), object),
+					data: q(n(subject), n(selectedPredicate), object),
 				},
 			],
 		});
