@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useReducer } from 'react';
-import { GraphPatch, GraphState, RdfPatch } from '@rdf-graph';
+import { GraphPatch, GraphState, N3QuadStore, RdfPatch } from '@rdf-graph';
 import { useParams } from 'react-router-dom';
 import { UiKey } from '../setup';
 
@@ -11,9 +11,10 @@ export type GraphSelection = {
 export type GraphContextData = {
 	rdfPatchesHistory: RdfPatch[];
 	rdfPatches: RdfPatch[];
+	customPatches: GraphPatch[];
 	graphSelection: GraphSelection;
 	graphState: GraphState;
-	customPatches: GraphPatch[];
+	quadStore?: N3QuadStore;
 };
 
 const getDefaultContext: () => GraphContextData = () => {
@@ -23,6 +24,7 @@ const getDefaultContext: () => GraphContextData = () => {
 		graphSelection: { nodes: [], edges: [] },
 		graphState: { nodeStore: {}, edgeStore: {}, predicateNodeStore: {} },
 		customPatches: [],
+		quadStore: undefined,
 	};
 };
 
@@ -36,6 +38,8 @@ type DispatchCustomGraphPatchesAction = {
 
 type SetGraphStateAction = { type: 'SetGraphState'; graphState: GraphState };
 
+type SetQuadStoreAction = { type: 'SetQuadStore'; quadStore: N3QuadStore };
+
 type ResetAction = { type: 'Reset' };
 
 type GraphContextAction =
@@ -43,6 +47,7 @@ type GraphContextAction =
 	| SetGraphSelectionAction
 	| DispatchRdfPatchesAction
 	| SetGraphStateAction
+	| SetQuadStoreAction
 	| ResetAction;
 
 function graphContextReducer(
@@ -65,6 +70,8 @@ function graphContextReducer(
 			return { ...state, graphSelection: action.selection };
 		case 'SetGraphState':
 			return { ...state, graphState: action.graphState };
+		case 'SetQuadStore':
+			return { ...state, quadStore: action.quadStore };
 		case 'Reset':
 			return getDefaultContext();
 		default:

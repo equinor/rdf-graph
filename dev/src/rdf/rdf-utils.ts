@@ -35,7 +35,7 @@ export function getKnownPredicateIrisPretty() {
 
 const rdfPrefixes: Map<string, string> = new Map();
 
-function getRdfPrefixes() {
+export function getRdfPrefixes() {
 	if (rdfPrefixes.size > 0) return rdfPrefixes;
 
 	(Object.keys(devPrefixes) as RdfNamespaceKey[]).forEach((k) => {
