@@ -33,6 +33,11 @@ export const useRdfGraph = (symbolProvider?: UiSymbolProvider) => {
 			type: 'SetGraphState',
 			graphState: rdfGraphRef.current.getState(),
 		});
+
+		dispatch({
+			type: 'SetQuadStore',
+			quadStore: rdfGraphRef.current.getQuadStore(),
+		});
 	}, [graphContext.rdfPatches]);
 
 	useEffect(() => {

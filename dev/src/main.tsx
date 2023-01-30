@@ -9,6 +9,7 @@ import { TabEdit } from './components/tab-edit/TabEdit';
 import { TabGraphState } from './components/tab-graph-state/TabGraphState';
 import { TabHistory } from './components/tab-history/TabHistory';
 import { TabTurtle } from './components/tab-turtle/TabTurtle';
+import { TabRdf } from './components/tab-rdf/TabRdf';
 
 const uiSlugs = Object.keys(rdfGraphUis);
 
@@ -21,6 +22,7 @@ export const pages: RouteObjectExtended[] = [
 	{ path: 'turtle', element: <TabTurtle />, title: 'Turtle' },
 	//{ path: 'cases', element: <h1>Cases</h1>, title: 'Cases' },
 	{ path: 'history', element: <TabHistory />, title: 'RDF History' },
+	{ path: 'rdf-head', element: <TabRdf />, title: 'RDF Head' },
 	{ path: 'graph-state', element: <TabGraphState />, title: 'Graph State' },
 ];
 

@@ -236,7 +236,6 @@ function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 }
 
 function removeGroupProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
-	console.log('rem:', propPatch);
 	const model = diagram.model as go.GraphLinksModel;
 	const nodeData = model.findNodeDataForKey(propPatch.id);
 
