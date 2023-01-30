@@ -59,11 +59,7 @@ export const TabRdf = () => {
 	async function exportToClipboardHandler() {
 		if (quads.length === 0) return;
 		const res = exportQuadsAsString(quads, exportFormat);
-		try {
-			await copyTextToClipboard(res);
-		} catch (error) {
-			return;
-		}
+		await copyTextToClipboard(res);
 		console.log(res);
 		setIsCopied(true);
 		setTimeout(() => {
