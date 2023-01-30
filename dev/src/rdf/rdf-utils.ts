@@ -1,15 +1,20 @@
 import { directPropConfig, DirectPropKey, KnownRdfPrefix, RdfPrefix } from '@rdf-graph';
 
-export type RdfNamespaceKey = 'io' | 'animals' | 'ex';
+export type RdfNamespaceKey = 'io' | 'animals' | 'ex' | 'rec';
 
 export const devPrefixes: Record<string, string> = {
 	io: 'http://rdf-graph.io/',
 	animals: 'http://rdf-graph.io/dyr/',
 	ex: 'http://example.com/',
+	rec: 'https://rdf.equinor.com/ontology/record/' , 
 } as const;
 
 export const predicateIri = {
 	connectedTo: devPrefixes.io + 'connectedTo',
+	describes: devPrefixes.rec + 'describes' ,
+	isInScope: devPrefixes.rec + 'isInScope' ,
+	type: RdfPrefix.rdfs + 'type' ,
+
 } as const;
 
 const iris: string[] = [];
@@ -49,7 +54,7 @@ export function getRdfPrefixes() {
 }
 
 export function prettyIri(iri: string) {
-	if (!iri || !iri.startsWith('http://')) return iri;
+	if (!iri || !iri.startsWith('http') ) return iri;
 
 	let n = 0;
 	let resolved_pre = '';
