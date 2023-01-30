@@ -225,11 +225,12 @@ export function cleanEmptyNodes(rdfPatch: RdfPatch): BindFunction {
 
 		const subjectNode = state.graphState.nodeStore[subjectIri];
 		const objectNode = state.graphState.nodeStore[objectTerm];
+
 		let bindings = [];
 		const edges = Object.keys(state.graphState.edgeStore).map(
 			(key) => state.graphState.edgeStore[key]
 		);
-		if (isEmpty(subjectNode, edges)) {
+		if (subjectNode && isEmpty(subjectNode, edges)) {
 			bindings.push(deleteNode(subjectIri));
 		}
 		if (objectNode && isEmpty(objectNode, edges)) {
