@@ -1,0 +1,11 @@
+.export {
+	display: flex;
+	/* flex-direction: row; */
+	align-items: flex-end;
+	gap: 20px;
+	margin: 10px;
+}
+
+.exportFormatOpt input {
+	color: black;
+}
