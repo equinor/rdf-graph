@@ -73,10 +73,16 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 		});
 	};
 
-	const onInp: React.FormEventHandler<HTMLDivElement> = (e) => {
+	const onPropertyInput: React.FormEventHandler<HTMLDivElement> = (e) => {
 		e.preventDefault();
 		const value = (e.target as HTMLInputElement).value;
-		setSelectedPredicate(value);
+		setSelectedPredicate(prettyToFullIri(value));
+	};
+
+	const onObjectIriInput: React.FormEventHandler<HTMLDivElement> = (e) => {
+		e.preventDefault();
+		const value = (e.target as HTMLInputElement).value;
+		setSelectedIriValue(prettyToFullIri(value));
 	};
 
 	return (
@@ -87,7 +93,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 					<RdfIri iri={subject} />
 				</div>
 				<Autocomplete
-					onInput={onInp}
+					onInput={onPropertyInput}
 					className={css.addPropInput}
 					label="Property (Predicate - IRI or custom string)"
 					//initialSelectedOptions={['http://rdf.equinor.com/ui/fill']}
@@ -97,7 +103,7 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 					}}
 				/>
 				<Autocomplete
-					onInput={onInp}
+					onInput={onObjectIriInput}
 					className={css.addPropInput}
 					label="Value (Object - IRI)"
 					//initialSelectedOptions={['http://rdf.equinor.com/ui/fill']}
