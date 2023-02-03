@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.19.0](https://github.com/equinor/rdf-graph/compare/v0.18.0...v0.19.0) (2023-02-01)
+
+
+### Features
+
+* **dev:** RDF Head tab ([#338](https://github.com/equinor/rdf-graph/issues/338)) ([215fda8](https://github.com/equinor/rdf-graph/commit/215fda8efc03a270005e349c1a2defb64c97eecf))
+* gojs group + add/rm IRI prop + IRI prefix in UI ([#331](https://github.com/equinor/rdf-graph/issues/331)) ([d620320](https://github.com/equinor/rdf-graph/commit/d6203208b3c7dd58b01ed6a3239c69347c1c9086))
+
+
+### Bug Fixes
+
+* bug when removing predicate data ([#337](https://github.com/equinor/rdf-graph/issues/337)) ([a4ffcd3](https://github.com/equinor/rdf-graph/commit/a4ffcd36985ebec6a0e3fe0384a3b8d0a8f20f9b))
+* **dev:** allow custom IRI for add/rm prop ([0c2ff12](https://github.com/equinor/rdf-graph/commit/0c2ff12cff96888c2e139090efd95b9b6ad3a90b))
+
 ## [0.18.0](https://github.com/equinor/rdf-graph/compare/v0.17.2...v0.18.0) (2023-01-25)
 
 
