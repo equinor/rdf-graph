@@ -21,17 +21,19 @@ Spin up the development application for a demonstration of the library and diffe
 git clone git@github.com:equinor/rdf-graph.git
 
 // Install 
-cd rdf-graph && npm install
+cd rdf-graph && pnpm install
 
-// Open development app 
-npm run dev
+// Open development app
+nx serve playground
+# or
+pnpm nx serve playground
 ```
 
 Please refer to the development application for the respective UI implementations:
 
-- [RdfGoGraph](/dev/src/components/go/)
-- [RdfCyGraph](/dev/src/components/cy/)
-- [Rdf3dGraph](/dev/src/components/f3d/)
+- [RdfGoGraph](/apps/playground/src/components/go/)
+- [RdfCyGraph](/apps/playground/src/components/cy/)
+- [Rdf3dGraph](/apps/playground/src/components/f3d/)
 
 ## License 🪶
 

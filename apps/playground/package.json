@@ -1,0 +1,45 @@
+{
+	"name": "playground",
+	"version": "0.1.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"serve": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"3d-force-graph": "^1.70.13",
+		"@equinor/eds-icons": "^0.19.1",
+		"@equinor/rdf-graph": "workspace:*",
+		"@equinor/rdf-graph-cy": "workspace:*",
+		"@equinor/rdf-graph-fg3d": "workspace:*",
+		"@equinor/rdf-graph-go": "workspace:*",
+		"cytoscape": "^3.23.0",
+		"cytoscape-cola": "^2.5.1",
+		"cytoscape-cose-bilkent": "^4.1.0",
+		"cytoscape-dagre": "^2.4.0",
+		"gojs": "^2.2.22",
+		"n3": "^1.16.3",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.6.2",
+		"styled-components": "^5.3.9",
+		"three": "^0.145.0",
+		"unique-names-generator": "^4.7.1"
+	},
+	"devDependencies": {
+		"@equinor/eds-core-react": "^0.28.0",
+		"@rdfjs/types": "^1.1.0",
+		"@types/cytoscape": "^3.19.9",
+		"@types/estree": "^1.0.0",
+		"@types/n3": "^1.10.4",
+		"@types/node": "^18.7.16",
+		"@types/react": "^18.0.28",
+		"@types/react-dom": "^18.0.11",
+		"@types/three": "^0.144.0",
+		"@vitejs/plugin-react": "^3.1.0",
+		"typescript": "^4.9.3",
+		"vite": "^4.2.0"
+	}
+}
