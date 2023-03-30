@@ -1,3 +1,4 @@
+### NOTE: This is the changelog before @equinor/rdf-graph was splitted into multiple packages!
 # Changelog
 
 ## [0.19.0](https://github.com/equinor/rdf-graph/compare/v0.18.0...v0.19.0) (2023-02-01)

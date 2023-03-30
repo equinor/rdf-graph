@@ -7,7 +7,8 @@
 		"url": "https://github.com/equinor/rdf-graph"
 	},
 	"publishConfig": {
-		"registry": "https://registry.npmjs.org"
+		"registry": "https://registry.npmjs.org",
+		"access": "public"
 	},
 	"contributors": [
 		{
@@ -35,6 +36,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
+		"prepack": "pnpm build",
 		"test": "vitest run --pass-with-no-tests",
 		"clean": "rm -rf dist"
 	},

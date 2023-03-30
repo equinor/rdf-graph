@@ -1,0 +1,20 @@
+{
+	"$schema": "node_modules/lerna/schemas/lerna-schema.json",
+	"useWorkspaces": true,
+	"npmClient": "pnpm",
+	"useNx": true,
+	"version": "independent",
+	"changelogPreset": "conventionalcommits",
+	"command": {
+		"version": {
+			"allowBranch": ["main", "alpha", "beta"],
+			"conventionalCommits": true,
+			"ignoreChanges": ["*.spec.ts", "*.test.ts", "*.md"]
+		},
+		"publish": {
+			"conventionalCommits": true,
+			"ignoreChanges": ["*.spec.ts", "*.test.ts", "*.md"],
+			"message": "chore(release): publish"
+		}
+	}
+}

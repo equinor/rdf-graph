@@ -6,18 +6,23 @@
 
 ```sh
 # Make sure you are on version 8 of the npm CLI
-$ node -v && npm -v
+$ node -v && pnpm -v
 v18.12.1
-8.19.2
+7.30.0
 
-#  Install npm if not already installed
-npm install --global npm
+# Clone repo
+git clone git@github.com:equinor/rdf-graph.git
 
-# Install project dependencies
-npm i
+# Install pnpm (if not already installed)
+# https://pnpm.io/installation
 
-# Run the development app locally
-npm run dev
+# Install dependencies 
+cd rdf-graph && pnpm install
+
+# Open development app
+pnpm nx serve playground
+# or just (if nx is installed globally on your system or you use an alias: nx="pnpm nx")
+nx serve playground
 ```
 
 ## Lefthook - Git hooks manager
@@ -29,7 +34,7 @@ Hooks are defined in `lefthook.yml`. You may need to run `git config --unset cor
 The project is set up with TypeScript, Eslint, Prettier, and the following is run when validating each pull request:
 
 ```sh
-npm run validateCode
+# TODO
 ```
 
 ## Testing
@@ -37,21 +42,18 @@ npm run validateCode
 We write unit tests on critical functionality. Test files should suffixed by `*.test.tsx`.
 
 ```sh
-npm run test
+# TODO
 ```
 
 ## Construction
 
 ```sh
-# Build library - This step is executed before `npm publish`
-npm run build
+# TODO
 ```
 
 ## PR's & Package Release
 
-This repo uses [Release Please](https://github.com/googleapis/release-please) for automating CHANGELOG generation, the creation of GitHub releases, and version bumping. Release Please assumes you are using [Conventional Commit messages](https://www.conventionalcommits.org).
-
-To bump version and release the package to [npmjs.com/package/@equinor/rdf-graph](https://www.npmjs.com/package/@equinor/rdf-graph), squash merge a pull request to "main". Make sure the commit message follows the Conventional Commit specification. A new release PR will be created automatically, and when this PR is merged, a github release will created and the CHANGELOG.md will be updated. A successful github release triggers the deployment of the package.
+This repo uses [Lerna](https://lerna.js.org) for automating CHANGELOG generation, the creation of GitHub releases, and version bumping. Lerna assumes you are using [Conventional Commit messages](https://www.conventionalcommits.org).
 
 The most important commit message prefixes you should have in mind are:
 

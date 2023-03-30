@@ -1,0 +1,69 @@
+name: 🔖 Release
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Publish packages
+    # Do not create release for merged dependabot or Snyk PRs
+    if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true &&  }}
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Fetch all tags needed for lerna / semantic release
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+          cache-dependency-path: '**/pnpm-lock.yaml'
+          registry-url: https://registry.npmjs.org
+          scope: '@equinor'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Configure git user
+        run: |
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+      - name: Bump versions
+        run: pnpm lerna version --no-commit-hooks --no-private --force-git-tag --conventional-commits --conventional-graduate --create-release github --yes
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Release packages
+        run: pnpm lerna publish from-package --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  #publish:
+  #  name: '📦 Publish'
+  #  needs: release_please
+  #  if: ${{ needs.release_please.outputs.release_created }}
+  #  environment:
+  #    name: production
+  #    url: https://www.npmjs.com/package/@equinor/rdf-graph
+  #  runs-on: ubuntu-latest
+  #  permissions:
+  #    contents: read
+  #    packages: write
+  #  steps:
+  #    - uses: actions/checkout@v3
+  #    - uses: actions/setup-node@v3
+  #      with:
+  #        node-version: 18
+  #        registry-url: https://registry.npmjs.org
+  #        scope: '@equinor'
+  #    - run: npm ci
+  #      env:
+  #        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+  #    - run: npm publish --access=public
+  #      env:
+  #        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
