@@ -1,4 +1,4 @@
-name: 🔖 Release
+name: 🎉 Bump and Release
 on:
   workflow_dispatch:
   pull_request:
@@ -13,6 +13,9 @@ jobs:
     name: Publish packages
     # Do not create release for merged dependabot or Snyk PRs
     if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true }}
+    environment:
+      name: production
+      url: https://www.npmjs.com/package/@equinor/rdf-graph
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,6 +51,8 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Configure git user
         run: |
@@ -59,6 +64,11 @@ jobs:
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 📦 Publish packages
+        run: pnpm lerna publish from-package --yes
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   #publish:
   #  name: '📦 Publish'
