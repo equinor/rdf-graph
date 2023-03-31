@@ -37,6 +37,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
 		"prepack": "pnpm build",
+		"lint": "eslint .",
 		"test": "vitest run",
 		"coverage": "vitest run --pass-with-no-tests",
 		"clean": "rm -rf dist"
