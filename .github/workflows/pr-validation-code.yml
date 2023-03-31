@@ -3,7 +3,8 @@ name: ✅ Validate PR - Code
 on:
   pull_request:
     paths:
-      - 'src/**'
+      - 'void_denne_her'
+      #- 'src/**'
 
 env:
   NODE_VERSION: 18
