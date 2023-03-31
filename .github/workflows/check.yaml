@@ -55,13 +55,8 @@ jobs:
       #    echo "BASE: ${{ env.NX_BASE }}"
       #    echo "HEAD: ${{ env.NX_HEAD }}"
 
-      #- name: Git
-      #  run: |
-      #    git branch -a
-      #    echo "---"
-      #    git branch --track main origin/main
-      #    echo "---"
-      #    git branch -a
+      - name: Track main branch
+        run: git branch --track main origin/main
 
       - name: Check formatting
         run: pnpm nx format:check --all
