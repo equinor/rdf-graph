@@ -1,4 +1,4 @@
-name: PR Checks
+name: ✅ PR Checks
 on:
   workflow_dispatch:
   pull_request:
@@ -61,17 +61,56 @@ jobs:
       - name: Check formatting
         run: pnpm nx format:check --all
 
-      - name: Lint, build and test affected projects
+      - name: 🧪 Lint, build and test affected projects
         run: pnpm nx affected --base=origin/main --target=lint,build,test --parallel=5
 
-      #- name: Lint affected projects
-      #  run: pnpm nx affected:lint --base=origin/main
+  #security_vulnerabilities:
+  #    name: 🐩 Snyk (Security vulnerabilities)
+  #    runs-on: ubuntu-latest
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - uses: actions/setup-node@v3
+  #        with:
+  #          node-version: ${{ env.NODE_VERSION }}
+  #          cache: 'npm'
+  #      - uses: snyk/actions/setup@master
+  #      - name: Install dependencies
+  #        run: npm ci
+  #      - name: Authenticator
+  #        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+  #      - name: Test dependencies for known issues
+  #        run: snyk test --fail-on=all --severity-threshold=high
+  #        env:
+  #          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+  #      - name: Continuously monitor new vulnerabilities
+  #        if: inputs.snyk-monitor
+  #        run: snyk monitor
+  #        env:
+  #          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 #
-#- name: Build affected projects
-#  run: pnpm nx affected:build --base=origin/main
+#  code_ql:
+#    name: 🛡️ CodeQL
+#    runs-on: ubuntu-latest
+#    permissions:
+#      actions: read
+#      contents: read
+#      security-events: write
 #
-#  #--parallel=3 --configuration=ci
-#- name: Test affected projects
-#  run: |
-#    git branch -a
-#    pnpm nx affected:test --base=origin/main --parallel=5
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        language: ['javascript']
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v2
+#
+#      - name: Initialize CodeQL
+#        uses: github/codeql-action/init@v2
+#        with:
+#          languages: ${{ matrix.language }}
+#      - name: Autobuild
+#        uses: github/codeql-action/autobuild@v2
+#
+#      - name: Perform CodeQL Analysis
+#        uses: github/codeql-action/analyze@v2

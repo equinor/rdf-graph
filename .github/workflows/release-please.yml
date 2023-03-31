@@ -2,7 +2,7 @@ name: 🔖 Release Please
 on:
   push:
     branches:
-      - main_VOID
+      - main_VOID_VOID
 
 jobs:
   release_please:

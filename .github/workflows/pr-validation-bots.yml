@@ -1,7 +1,8 @@
-name: 🤖 Validate Bot PR
+name: 🤖 Validate Bot PR  | DISABLED!!!
 
 on:
-  pull_request:
+  workflow_call:
+  #pull_request:
 
 env:
   NODE_VERSION: 18
