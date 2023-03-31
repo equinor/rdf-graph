@@ -33,6 +33,10 @@ function addNode(f3d: ForceGraph3DInstance, _node: GraphNodePatch) {
 	f3d.graphData(data);
 }
 
-function addEdge(_f3d: ForceGraph3DInstance, _edge: GraphEdgePatch) {}
+function addEdge(_f3d: ForceGraph3DInstance, _edge: GraphEdgePatch) {
+	// TODO: Implement this
+}
 
-const addProperty = (_f3d: ForceGraph3DInstance, _p: GraphPropertyPatch) => {};
+const addProperty = (_f3d: ForceGraph3DInstance, _p: GraphPropertyPatch) => {
+	// TODO: Implement this
+};

@@ -96,8 +96,7 @@ const addProperty = (cy: Cytoscape.Core, { id, prop }: GraphPropertyPatch) => {
 				break;
 			case 'group':
 				currentElement.move({ parent: value });
-				const parent = cy.getElementById(value);
-				parent.data(nodeTypeKey, NodeType.Parent);
+				cy.getElementById(value).data(nodeTypeKey, NodeType.Parent);
 				break;
 			case 'stroke':
 				if (currentElement.isEdge()) {

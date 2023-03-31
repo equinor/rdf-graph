@@ -31,7 +31,7 @@ const layoutHandler = (_event: cytoscape.EventObject) => {
 				const parent = node.parent().first();
 				const parentPosition = parent.position();
 				const symbol = parent.data('symbol') as UiSymbol | undefined;
-				let extra = { x: 0, y: 0 };
+				const extra = { x: 0, y: 0 };
 				if (symbol && node.data('nodeType') === NodeType.SymbolImage) {
 					extra.x = symbol.width / 2;
 					extra.y = symbol.height / 2;
