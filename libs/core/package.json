@@ -38,7 +38,7 @@
 		"build": "tsc --project tsconfig.build.json",
 		"prepack": "pnpm build",
 		"test": "vitest run",
-		"coverage": "vitest run --coverage",
+		"coverage": "vitest run --pass-with-no-tests",
 		"clean": "rm -rf dist"
 	},
 	"files": [

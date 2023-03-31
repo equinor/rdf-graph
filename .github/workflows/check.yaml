@@ -1,0 +1,77 @@
+name: PR Checks
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - main
+
+jobs:
+  check-code:
+    name: Check Code
+    # Do not create release for merged dependabot or Snyk PRs
+    #if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true &&  }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        #with:
+        #  fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - uses: pnpm/action-setup@v2
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        id: pnpm-cache-setup
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      #- name: Derive appropriate SHAs for base and head for `nx affected` commands
+      #  uses: nrwl/nx-set-shas@v3
+
+      #- run: |
+      #    echo "BASE: ${{ env.NX_BASE }}"
+      #    echo "HEAD: ${{ env.NX_HEAD }}"
+
+      #- name: Git
+      #  run: |
+      #    git branch -a
+      #    echo "---"
+      #    git branch --track main origin/main
+      #    echo "---"
+      #    git branch -a
+
+      - name: Check formatting
+        run: pnpm nx format:check --all
+
+      - name: Build affected projects
+        run: |
+          pnpm nx affected:build --base=origin/main
+
+        #--parallel=3 --configuration=ci
+      - name: Run tests for affected projects
+        run: |
+          git branch -a
+          pnpm nx affected:test --base=origin/main --parallel=5

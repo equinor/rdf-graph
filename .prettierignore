@@ -1,6 +1,9 @@
 dist
+out
+build
 node_modules
 README.md
 CHANGELOG.md
 docs/*
 .gitignore
+pnpm-lock.yaml

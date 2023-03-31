@@ -4,7 +4,6 @@
 	"npmClient": "pnpm",
 	"useNx": true,
 	"version": "independent",
-	"changelogPreset": "conventionalcommits",
 	"command": {
 		"version": {
 			"allowBranch": ["main", "alpha", "beta"],

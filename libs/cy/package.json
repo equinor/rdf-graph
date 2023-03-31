@@ -54,12 +54,10 @@
 		"cytoscape": "^3.23.0",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
-		"cytoscape-dagre": "^2.4.0",
-		"n3": "^1.16.3"
+		"cytoscape-dagre": "^2.4.0"
 	},
 	"devDependencies": {
-		"@types/n3": "^1.10.4",
-		"@types/react": "^18.0.28",
-		"@types/cytoscape": "^3.19.9"
+		"@types/cytoscape": "^3.19.9",
+		"@types/react": "^18.0.28"
 	}
 }

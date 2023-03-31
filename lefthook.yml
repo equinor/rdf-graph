@@ -12,3 +12,11 @@
 #    prettier-check:
 #      exclude: '.prettierignore'
 #      run: npx prettier --check {staged_files}
+
+pre-commit:
+  parallel: true
+  commands:
+    formatting:
+      run: pnpm nx format:check --files {staged_files}
+    test:
+      run: pnpm nx affected:test
