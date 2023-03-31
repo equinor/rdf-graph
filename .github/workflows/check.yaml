@@ -67,7 +67,7 @@ jobs:
         run: pnpm nx format:check --all
 
       - name: Lint, build and test affected projects
-        run: nx affected --base=origin/main --target=lint,build,test --parallel=5
+        run: pnpm nx affected --base=origin/main --target=lint,build,test --parallel=5
 
       #- name: Lint affected projects
       #  run: pnpm nx affected:lint --base=origin/main
