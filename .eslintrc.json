@@ -9,7 +9,8 @@
 				"varsIgnorePattern": "^_",
 				"caughtErrorsIgnorePattern": "^_"
 			}
-		]
+		],
+		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"]
 	},
 	"overrides": [
 		//{

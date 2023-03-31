@@ -59,7 +59,7 @@ export function ensurePredicateNodeWithEdge(rdfPatch: RdfPatch): BindFunction {
 
 		if (isPropPatch(rdfPatch)) return new PatchGraphMonad(state);
 
-		let bindings: BindFunction[] = [];
+		const bindings: BindFunction[] = [];
 
 		// For library to be used with or without window (unittest vs normal client)
 		const edgeId = window.crypto?.randomUUID ? window.crypto.randomUUID() : crypto.randomUUID();
@@ -83,7 +83,7 @@ export function ensureEdgeRemoved(rdfPatch: RdfPatch): BindFunction {
 
 		if (isPropPatch(rdfPatch)) return new PatchGraphMonad(state);
 
-		let bindings: BindFunction[] = [];
+		const bindings: BindFunction[] = [];
 
 		const edgeStore = state.graphState.edgeStore;
 		const edgeId = Object.keys(edgeStore).find((edgeKey) => {
@@ -226,7 +226,7 @@ export function cleanEmptyNodes(rdfPatch: RdfPatch): BindFunction {
 		const subjectNode = state.graphState.nodeStore[subjectIri];
 		const objectNode = state.graphState.nodeStore[objectTerm];
 
-		let bindings = [];
+		const bindings = [];
 		const edges = Object.keys(state.graphState.edgeStore).map(
 			(key) => state.graphState.edgeStore[key]
 		);

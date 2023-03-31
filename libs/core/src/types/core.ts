@@ -25,7 +25,7 @@ export type DirectProp = BaseProp<'direct', string[]> & {
 		| 'template';
 };
 
-export type CustomProp = BaseProp<'custom', string[]> & {};
+export type CustomProp = BaseProp<'custom', string[]>;
 
 export type DerivedProp =
 	| (BaseProp<'derived', UiSymbol> & { key: 'symbol' })
@@ -62,11 +62,11 @@ type GraphNodeBase<TNodeVariant extends NodeVariantInternal> = GraphElementBase<
 	props: Prop[];
 };
 
-export type DefaultNode = GraphNodeBase<'default'> & {};
+export type DefaultNode = GraphNodeBase<'default'>;
 
-export type SymbolNode = GraphNodeBase<'symbol'> & {};
+export type SymbolNode = GraphNodeBase<'symbol'>;
 
-export type GroupNode = GraphNodeBase<'group'> & {};
+export type GroupNode = GraphNodeBase<'group'>;
 
 export type ConnectorNode = GraphNodeBase<'connector'> & {
 	symbolNodeId: string;

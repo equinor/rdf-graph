@@ -390,19 +390,17 @@ export function addEdgeProp(
 function toPatchProp(prop: Prop, value: PatchProp['value']): PatchProp {
 	switch (prop.type) {
 		case 'direct':
-			const directProp: PatchDirectProp = {
+			return {
 				type: 'direct',
 				key: prop.key,
 				value: value as string,
-			};
-			return directProp;
+			} as PatchDirectProp;
 		case 'custom':
-			const customProp: PatchCustomProp = {
+			return {
 				type: 'custom',
 				key: prop.key,
 				value: value as string,
-			};
-			return customProp;
+			} as PatchCustomProp;
 		case 'derived':
 			return prop;
 	}
@@ -426,7 +424,7 @@ function createValueRemovalPatch(
 
 function deleteEntriesFromRecord<T>(record: Record<string, T>, ids: string[]) {
 	const newRecord: Record<string, T> = {};
-	for (let key in record) {
+	for (const key in record) {
 		if (!ids.includes(key)) {
 			newRecord[key] = record[key];
 		}

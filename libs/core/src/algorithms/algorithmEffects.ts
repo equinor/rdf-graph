@@ -74,7 +74,7 @@ export const createSummary = (element: GraphElement, visited: string[]): Algorit
 		});
 
 		const oldColorProp = element.props.find((p) => p.type === 'direct' && p.key === 'fill');
-		let undoPatches: GraphPatch[] = [];
+		const undoPatches: GraphPatch[] = [];
 		if (oldColorProp) {
 			const oldColor = (oldColorProp as DirectProp).value[0];
 			undoPatches.push({
