@@ -20,5 +20,5 @@ pre-commit:
       run: pnpm nx format:check --files {staged_files}
     test:
       run: pnpm nx affected:test
-    #lint:
-    #  run: pnpm nx affected:lint
+    lint:
+      run: pnpm nx affected:lint

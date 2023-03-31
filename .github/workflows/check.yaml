@@ -66,12 +66,17 @@ jobs:
       - name: Check formatting
         run: pnpm nx format:check --all
 
-      - name: Build affected projects
-        run: |
-          pnpm nx affected:build --base=origin/main
+      - name: Lint, build and test affected projects
+        run: nx affected --base=origin/main --target=lint,build,test --parallel=5
 
-        #--parallel=3 --configuration=ci
-      - name: Run tests for affected projects
-        run: |
-          git branch -a
-          pnpm nx affected:test --base=origin/main --parallel=5
+      #- name: Lint affected projects
+      #  run: pnpm nx affected:lint --base=origin/main
+#
+#- name: Build affected projects
+#  run: pnpm nx affected:build --base=origin/main
+#
+#  #--parallel=3 --configuration=ci
+#- name: Test affected projects
+#  run: |
+#    git branch -a
+#    pnpm nx affected:test --base=origin/main --parallel=5
