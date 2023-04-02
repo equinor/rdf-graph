@@ -1,28 +1,54 @@
-# @equinor/rdf-graph - For developers 🥷
+# @equinor/rdf-graph Contributing Guide
 
-## Setup of development environment
+## Repository Setup
 
-[Node.js LTS](https://nodejs.org) version is required.
+This repo is a monorepo using [pnpm](https://pnpm.io) workspaces and [NX](https://nx.dev) build system. [Node.js LTS](https://nodejs.org) version and pnpm is required.
+
+> NOTE: All commands should be ran from repository root if not stated otherwise
 
 ```sh
-# Make sure you are on version 8 of the npm CLI
-$ node -v && pnpm -v
-v18.12.1
-7.30.0
+# Make sure you are on version 8 of the pnpm CLI
+node -v && pnpm -v
+v18.12.0
+8.1.0
 
-# Clone repo
-git clone git@github.com:equinor/rdf-graph.git
+# Install dependencies (from repo root)
+ pnpm i
+```
 
-# Install pnpm (if not already installed)
-# https://pnpm.io/installation
+If NX is not installed globally on your system, a tip is to add an alias for `nx` in your terminal to avoid needing to prepend "pnpm" to all commands (ex: `alias nx="pnpm nx"`).
 
-# Install dependencies 
-cd rdf-graph && pnpm install
+## Development UI
 
+```sh
 # Open development app
 pnpm nx serve playground
 # or just (if nx is installed globally on your system or you use an alias: nx="pnpm nx")
 nx serve playground
+
+# Watch all shared packages and build on change
+pnpm watch:playground:deps
+```
+
+## NX and Lerna Introduction
+
+TODO
+
+## Testing
+
+We write unit tests on critical functionality. Test files should suffixed by `*.test.ts` or `*.test.tsx`.
+
+```sh
+# Run all tests
+pnpm test
+# or
+nx run-many -t test
+
+# Run a tests for core package
+nx test @equinor/rdf-graph
+
+# Run a tests for gojs package
+nx test @equinor/rdf-graph-go
 ```
 
 ## Lefthook - Git hooks manager
@@ -32,20 +58,6 @@ Hooks are defined in `lefthook.yml`. You may need to run `git config --unset cor
 ## Code quality
 
 The project is set up with TypeScript, Eslint, Prettier, and the following is run when validating each pull request:
-
-```sh
-# TODO
-```
-
-## Testing
-
-We write unit tests on critical functionality. Test files should suffixed by `*.test.tsx`.
-
-```sh
-# TODO
-```
-
-## Construction
 
 ```sh
 # TODO

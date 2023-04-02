@@ -34,10 +34,11 @@
 	"license": "MIT",
 	"scripts": {
 		"test": "vitest --run",
+		"watch:playground:deps": "./scripts/watch_deps.sh playground",
 		"clean": "pnpm -r exec rimraf tsconfig.build.tsbuildinfo dist coverage out node_modules && rimraf node_modules"
 	},
 	"engines": {
-		"node": ">=18.15.0",
+		"node": ">=18.12.0",
 		"pnpm": ">=8.1.0"
 	},
 	"devDependencies": {
