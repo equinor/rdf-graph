@@ -9,8 +9,8 @@ on:
 jobs:
   check-code:
     name: Check Code
-    # Do not create release for merged dependabot or Snyk PRs
-    #if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true &&  }}
+    # Do run on dependabot or Snyk PRs
+    if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -48,13 +48,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      #- name: Derive appropriate SHAs for base and head for `nx affected` commands
-      #  uses: nrwl/nx-set-shas@v3
-
-      #- run: |
-      #    echo "BASE: ${{ env.NX_BASE }}"
-      #    echo "HEAD: ${{ env.NX_HEAD }}"
-
       - name: Track main branch
         run: git branch --track main origin/main
 
@@ -64,53 +57,4 @@ jobs:
       - name: 🧪 Lint, build and test affected projects
         run: pnpm nx affected --base=origin/main --target=lint,build,test --parallel=5
 
-  #security_vulnerabilities:
-  #    name: 🐩 Snyk (Security vulnerabilities)
-  #    runs-on: ubuntu-latest
-  #    steps:
-  #      - uses: actions/checkout@v3
-  #      - uses: actions/setup-node@v3
-  #        with:
-  #          node-version: ${{ env.NODE_VERSION }}
-  #          cache: 'npm'
-  #      - uses: snyk/actions/setup@master
-  #      - name: Install dependencies
-  #        run: npm ci
-  #      - name: Authenticator
-  #        run: snyk auth ${{ secrets.SNYK_TOKEN }}
-  #      - name: Test dependencies for known issues
-  #        run: snyk test --fail-on=all --severity-threshold=high
-  #        env:
-  #          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-  #      - name: Continuously monitor new vulnerabilities
-  #        if: inputs.snyk-monitor
-  #        run: snyk monitor
-  #        env:
-  #          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-#
-#  code_ql:
-#    name: 🛡️ CodeQL
-#    runs-on: ubuntu-latest
-#    permissions:
-#      actions: read
-#      contents: read
-#      security-events: write
-#
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        language: ['javascript']
-#
-#    steps:
-#      - name: Checkout repository
-#        uses: actions/checkout@v2
-#
-#      - name: Initialize CodeQL
-#        uses: github/codeql-action/init@v2
-#        with:
-#          languages: ${{ matrix.language }}
-#      - name: Autobuild
-#        uses: github/codeql-action/autobuild@v2
-#
-#      - name: Perform CodeQL Analysis
-#        uses: github/codeql-action/analyze@v2
+  # TODO: Add Snyk and Code QL jobs

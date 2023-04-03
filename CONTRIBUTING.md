@@ -2,7 +2,7 @@
 
 ## Repository Setup
 
-This repo is a monorepo using [pnpm](https://pnpm.io) workspaces and [NX](https://nx.dev) build system. [Node.js LTS](https://nodejs.org) version and pnpm is required.
+This repo is a monorepo using [pnpm](https://pnpm.io) workspaces and the [NX](https://nx.dev) build system. [Node.js LTS](https://nodejs.org) version and pnpm is required.
 
 > NOTE: All commands should be ran from repository root if not stated otherwise
 
@@ -27,6 +27,7 @@ pnpm nx serve playground
 nx serve playground
 
 # Watch all shared packages and build on change
+chmod +x ./scripts/watch_shared.sh
 pnpm watch:playground:deps
 ```
 

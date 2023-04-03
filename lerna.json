@@ -6,7 +6,7 @@
 	"version": "independent",
 	"command": {
 		"version": {
-			"allowBranch": ["main", "alpha", "beta", "refactor/move-to-nx-pnpm"],
+			"allowBranch": ["main", "alpha", "beta"],
 			"conventionalCommits": true,
 			"ignoreChanges": ["*.spec.ts", "*.test.ts", "*.md"]
 		},

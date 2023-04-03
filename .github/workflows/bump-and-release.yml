@@ -69,28 +69,3 @@ jobs:
         run: pnpm lerna publish from-package --yes
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  #publish:
-  #  name: '📦 Publish'
-  #  needs: release_please
-  #  if: ${{ needs.release_please.outputs.release_created }}
-  #  environment:
-  #    name: production
-  #    url: https://www.npmjs.com/package/@equinor/rdf-graph
-  #  runs-on: ubuntu-latest
-  #  permissions:
-  #    contents: read
-  #    packages: write
-  #  steps:
-  #    - uses: actions/checkout@v3
-  #    - uses: actions/setup-node@v3
-  #      with:
-  #        node-version: 18
-  #        registry-url: https://registry.npmjs.org
-  #        scope: '@equinor'
-  #    - run: npm ci
-  #      env:
-  #        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-  #    - run: npm publish --access=public
-  #      env:
-  #        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}

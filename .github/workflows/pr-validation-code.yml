@@ -1,11 +1,9 @@
 name: ✅ Validate PR - Code | DISABLED!!!
 
 on:
-  workflow_call:
-  #pull_request:
-  #  paths:
-  #    - 'void_denne_her'
-  #    #- 'src/**'
+  pull_request:
+    paths:
+      - 'tmp_disabled'
 
 env:
   NODE_VERSION: 18
