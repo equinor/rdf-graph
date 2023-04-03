@@ -26,3 +26,7 @@ yarn-error.log*
 .idea
 
 data-no-vc
+
+dist
+coverage
+tsconfig.build.tsbuildinfo

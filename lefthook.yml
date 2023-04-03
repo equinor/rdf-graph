@@ -1,14 +1,24 @@
 # Refer for explanation to following link:
 # https://github.com/evilmartians/lefthook/blob/master/docs/full_guide.md
 
+#pre-commit:
+#  parallel: true
+#  commands:
+#    tsc-compile-test:
+#      run: npx tsc --noEmit
+#    eslint:
+#      glob: '*.{js,ts,jsx,tsx}'
+#      run: npx eslint {staged_files}
+#    prettier-check:
+#      exclude: '.prettierignore'
+#      run: npx prettier --check {staged_files}
+
 pre-commit:
   parallel: true
   commands:
-    tsc-compile-test:
-      run: npx tsc --noEmit
-    eslint:
-      glob: '*.{js,ts,jsx,tsx}'
-      run: npx eslint {staged_files}
-    prettier-check:
-      exclude: '.prettierignore'
-      run: npx prettier --check {staged_files}
+    formatting:
+      run: pnpm nx format:check --files {staged_files}
+    test:
+      run: pnpm nx affected:test
+    lint:
+      run: pnpm nx affected:lint

@@ -1,0 +1,26 @@
+{
+	"tasksRunnerOptions": {
+		"default": {
+			"runner": "nx/tasks-runners/default",
+			"options": {
+				"cacheableOperations": ["build", "test", "lint"]
+			}
+		}
+	},
+	"defaultBase": "main",
+	"targetDefaults": {
+		"build": {
+			"dependsOn": ["^build"]
+		},
+		"serve": {
+			"dependsOn": ["^build"]
+		},
+		"test": {
+			"dependsOn": ["build"],
+			"inputs": ["default", "^default"]
+		},
+		"lint": {
+			"inputs": ["default", "{workspaceRoot}/.eslintrc.json", "{workspaceRoot}/.eslintignore"]
+		}
+	}
+}

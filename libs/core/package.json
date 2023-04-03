@@ -1,0 +1,57 @@
+{
+	"name": "@equinor/rdf-graph",
+	"version": "0.19.0",
+	"description": "Visualize RDF as a graph network",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/equinor/rdf-graph"
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org",
+		"access": "public"
+	},
+	"contributors": [
+		{
+			"name": "Lorentz Fjellanger Barstad",
+			"email": "loba@equinor.com"
+		},
+		{
+			"name": "Martin Tofteberg Ulvesæter",
+			"email": "mulv@equinor.com"
+		},
+		{
+			"name": "Dzianis Makeichyk",
+			"email": "dzm@equinor.com"
+		},
+		{
+			"name": "Eirik Nordstrand",
+			"email": "einor@equinor.com"
+		},
+		{
+			"name": "Arne Måge",
+			"email": "arnm@equinor.com"
+		}
+	],
+	"license": "MIT",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"prepack": "pnpm build",
+		"lint": "eslint .",
+		"test": "vitest run",
+		"coverage": "vitest run --pass-with-no-tests",
+		"clean": "rm -rf dist"
+	},
+	"files": [
+		"dist",
+		"CHANGELOG.md",
+		"README.md",
+		"LICENSE"
+	],
+	"dependencies": {
+		"n3": "^1.16.3"
+	},
+	"devDependencies": {
+		"@types/n3": "^1.10.4"
+	}
+}

@@ -1,0 +1,7 @@
+{
+	"root": "apps/playground",
+	"sourceRoot": "apps/playground/src",
+	"projectType": "application",
+	"generators": {},
+	"targets": {}
+}

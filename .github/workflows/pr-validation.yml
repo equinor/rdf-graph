@@ -6,8 +6,6 @@ on:
       - opened
       - edited
       - reopened
-    paths:
-      - 'src/**'
 
 jobs:
   validate_name:

@@ -1,42 +1,39 @@
-# @equinor/rdf-graph
+# rdf-graph
 
 An open source library for visualizing RDF as a graph network.
 
-## UI frameworks
+## Packages
 
-The following UI implementations (React components) are shipped with the library:
+| Package  | Version | Description |
+| ------------- | ------------- | ------------- |
+| [@equinor/rdf-graph](libs/core/) | [![core version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/core/CHANGELOG.md) | Core library |
+| [@equinor/rdf-graph-go](libs/go/) | [![go version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/go/CHANGELOG.md) | GoJS UI Implementation |
+| [@equinor/rdf-graph-cy](libs/cy/) | [![cy version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/cy/CHANGELOG.md) | Cytoscape.js UI Implementation |
+| [@equinor/rdf-graph-fg3d](libs/fg3d/) | [![fg3d version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/fg3d/CHANGELOG.md) | 3D Force-Directed UI Implementation |
 
-- RdfGoGraph - [GoJS](https://gojs.net/latest/index.html) (Licensed)
-- RdfCyGraph - [Cytoscape.js](https://js.cytoscape.org) (Open Source)
-- Rdf3dGraph - [3D Force-Directed Graph](https://github.com/vasturiano/3d-force-graph) (Open Source) - Experimental
+## Demo
 
-> Note: The team will focus on the GoJS implementation for further development.
-
-## Examples in Development UI
-
-Spin up the development application for a demonstration of the library and different UI implementations:
+Spin up the development application for a demonstration of the library and different UI implementations/packages:
 
 ```sh
-// Clone repo
+# Clone repo
 git clone git@github.com:equinor/rdf-graph.git
 
-// Install 
-cd rdf-graph && npm install
+# Install pnpm (if not already installed)
+# https://pnpm.io/installation
 
-// Open development app 
-npm run dev
+# Install dependencies 
+cd rdf-graph && pnpm install
+
+# Open development app
+pnpm nx serve playground
 ```
 
-Please refer to the development application for the respective UI implementations:
+## Contribute
 
-- [RdfGoGraph](/dev/src/components/go/)
-- [RdfCyGraph](/dev/src/components/cy/)
-- [Rdf3dGraph](/dev/src/components/f3d/)
+See our [contributing guide](CONTRIBUTING.md).
 
 ## License 🪶
 
-The core of this project is open source, but it also ships with an UI implementation using [GoJS](https://gojs.net/latest/index.html), which will require a GoJS [software license](https://gojs.net/latest/license.html) if used.
+The core of this project is open source, but the [@equinor/rdf-graph-go](https://www.npmjs.com/package/@equinor/rdf-graph-go) package requires a GoJS [software license](https://gojs.net/latest/license.html).
 
-## Developers
-
-See [docs/developers.md](docs/developers.md)

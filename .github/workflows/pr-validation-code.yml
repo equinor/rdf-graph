@@ -1,9 +1,9 @@
-name: ✅ Validate PR - Code
+name: ✅ Validate PR - Code | DISABLED!!!
 
 on:
   pull_request:
     paths:
-      - 'src/**'
+      - 'tmp_disabled'
 
 env:
   NODE_VERSION: 18

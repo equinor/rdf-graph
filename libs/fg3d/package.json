@@ -1,0 +1,61 @@
+{
+	"name": "@equinor/rdf-graph-fg3d",
+	"version": "0.0.1",
+	"description": "Visualize RDF as a graph network",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/equinor/rdf-graph"
+	},
+	"publishConfig": {
+		"registry": "https://registry.npmjs.org",
+		"access": "public"
+	},
+	"contributors": [
+		{
+			"name": "Lorentz Fjellanger Barstad",
+			"email": "loba@equinor.com"
+		},
+		{
+			"name": "Martin Tofteberg Ulvesæter",
+			"email": "mulv@equinor.com"
+		},
+		{
+			"name": "Dzianis Makeichyk",
+			"email": "dzm@equinor.com"
+		},
+		{
+			"name": "Eirik Nordstrand",
+			"email": "einor@equinor.com"
+		},
+		{
+			"name": "Arne Måge",
+			"email": "arnm@equinor.com"
+		}
+	],
+	"license": "MIT",
+	"main": "dist/index.js",
+	"scripts": {
+		"build": "tsc --project tsconfig.build.json",
+		"prepack": "pnpm build",
+		"lint": "eslint .",
+		"test": "vitest run --pass-with-no-tests",
+		"clean": "rm -rf dist"
+	},
+	"files": [
+		"dist",
+		"CHANGELOG.md",
+		"README.md",
+		"LICENSE"
+	],
+	"peerDependencies": {
+		"react": ">=18.2.0"
+	},
+	"dependencies": {
+		"3d-force-graph": "^1.70.13",
+		"@equinor/rdf-graph": "workspace:*",
+		"three": "^0.145.0"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.28"
+	}
+}
