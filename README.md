@@ -7,9 +7,9 @@ An open source library for visualizing RDF as a graph network.
 | Package  | Version | Description |
 | ------------- | ------------- | ------------- |
 | [@equinor/rdf-graph](libs/core/) | [![core version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/core/CHANGELOG.md) | Core library |
-| [@equinor/rdf-graph-go](libs/go/) | [![go version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/go/CHANGELOG.md) | GoJS UI Implementation |
-| [@equinor/rdf-graph-cy](libs/cy/) | [![cy version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/cy/CHANGELOG.md) | Cytoscape.js UI Implementation |
-| [@equinor/rdf-graph-fg3d](libs/fg3d/) | [![fg3d version](https://img.shields.io/npm/v/@equinor/rdf-graph)](libs/fg3d/CHANGELOG.md) | 3D Force-Directed UI Implementation |
+| [@equinor/rdf-graph-go](libs/go/) | [![go version](https://img.shields.io/npm/v/@equinor/rdf-graph-go)](libs/go/CHANGELOG.md) | GoJS UI Implementation |
+| [@equinor/rdf-graph-cy](libs/cy/) | [![cy version](https://img.shields.io/npm/v/@equinor/rdf-graph-cy)](libs/cy/CHANGELOG.md) | Cytoscape.js UI Implementation |
+| [@equinor/rdf-graph-fg3d](libs/fg3d/) | [![fg3d version](https://img.shields.io/npm/v/@equinor/rdf-graph-fg3d)](libs/fg3d/CHANGELOG.md) | 3D Force-Directed UI Implementation |
 
 ## Demo
 
