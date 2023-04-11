@@ -5,7 +5,9 @@
 		"outDir": "dist",
 		"sourceMap": true,
 		"noEmit": false,
-		"declaration": true
+		"declaration": true,
+		"declarationMap": true,
+		"types": []
 	},
 	"include": ["src/**/*"]
 }
