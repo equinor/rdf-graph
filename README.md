@@ -33,7 +33,7 @@ pnpm nx serve playground
 
 See our [contributing guide](CONTRIBUTING.md).
 
-## License 🪶
+## License
 
 The core of this project is open source, but the [@equinor/rdf-graph-go](https://www.npmjs.com/package/@equinor/rdf-graph-go) package requires a GoJS [software license](https://gojs.net/latest/license.html).
 

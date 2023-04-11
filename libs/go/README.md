@@ -12,6 +12,6 @@ Note: The team will focus on the GoJS implementation for further development.
 
 <https://www.npmjs.com/package/@equinor/rdf-graph-go>
 
-## License 🪶
+## License
 
 The core of this project is open source, but the [@equinor/rdf-graph-go](https://www.npmjs.com/package/@equinor/rdf-graph-go) package requires a GoJS [software license](https://gojs.net/latest/license.html).
