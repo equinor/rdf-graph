@@ -1,0 +1,14 @@
+{
+	"extends": ["./.eslintrc.json"],
+	"ignorePatterns": ["!**/*", "**/dist", "node_modules"],
+	"overrides": [
+		{
+			"files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
+			"extends": ["plugin:@nrwl/nx/react"],
+			"rules": {
+				"react-hooks/rules-of-hooks": "error",
+				"react-hooks/exhaustive-deps": "warn"
+			}
+		}
+	]
+}

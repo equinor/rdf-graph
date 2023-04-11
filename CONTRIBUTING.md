@@ -27,7 +27,7 @@ pnpm nx serve playground
 nx serve playground
 
 # Watch all shared packages and build on change
-chmod +x ./scripts/watch_shared.sh
+chmod +x ./scripts/watch_deps.sh
 pnpm watch:playground:deps
 ```
 
