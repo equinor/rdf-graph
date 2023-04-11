@@ -54,10 +54,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Configure git user
+      - name: Configure git
         run: |
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${{ github.actor }}@users.noreply.github.com"
+          git fetch --depth=1 origin +refs/tags/*:refs/tags/*
 
       - name: Bump versions
         run: pnpm lerna version --no-commit-hooks --no-private --force-git-tag --conventional-commits --create-release github --yes

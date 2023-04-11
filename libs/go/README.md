@@ -1,5 +1,7 @@
 # @equinor/rdf-graph-go
 
+[![go version](https://img.shields.io/npm/v/@equinor/rdf-graph-go)](CHANGELOG.md)
+
 ## GoJS UI implementation for [@equinor/rdf-graph](https://github.com/equinor/rdf-graph)
 
 React UI implementation using [GoJS](https://gojs.net/latest/index.html) (Licensed)
