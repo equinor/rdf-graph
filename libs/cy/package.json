@@ -39,7 +39,7 @@
 		"test": "vitest run --pass-with-no-tests",
 		"lint": "eslint .",
 		"clean": "rm -rf dist",
-		"prepack": "pnpm build"
+		"prepack": "pnpm nx build @equinor/rdf-graph-cy"
 	},
 	"files": [
 		"dist",

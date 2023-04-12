@@ -36,7 +36,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc --project tsconfig.build.json",
-		"prepack": "pnpm build",
+		"prepack": "pnpm nx build @equinor/rdf-graph-go",
 		"lint": "eslint .",
 		"test": "vitest run --pass-with-no-tests",
 		"clean": "rm -rf dist",

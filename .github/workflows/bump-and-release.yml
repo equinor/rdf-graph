@@ -12,7 +12,8 @@ jobs:
   release:
     name: Publish packages
     # Do not create release for merged dependabot or Snyk PRs
-    if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true }}
+    if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) }}
+    #if: ${{ !contains(fromJson('["dependabot[bot]", "snyk-bot"]'), github.event.head_commit.author.name) && github.event.pull_request.merged == true }}
     environment:
       name: production
       url: https://www.npmjs.com/package/@equinor/rdf-graph
