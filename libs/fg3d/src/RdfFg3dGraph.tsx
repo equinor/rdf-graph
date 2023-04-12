@@ -12,7 +12,6 @@ export type RdfFg3dGraphProps = RdfGraphProps<Event> & {
 export const RdfFg3dGraph = ({ graphPatches, onGraphSelectionChanged }: RdfFg3dGraphProps) => {
 	const divRef = useRef<HTMLDivElement>(null);
 	const f3dGraphInstance = useRef<ForceGraph3DInstance>();
-	const [_initialized, setInitialized] = useState(false);
 
 	const [fg3Model, setFg3Model] = useState<CustomGraphStore>({
 		nodes: [],
@@ -38,7 +37,6 @@ export const RdfFg3dGraph = ({ graphPatches, onGraphSelectionChanged }: RdfFg3dG
 		} else {
 			console.error('Fatal error during f3dgraph startup');
 		}
-		setInitialized(true);
 	}, []);
 
 	useEffect(() => {
