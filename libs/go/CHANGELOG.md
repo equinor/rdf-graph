@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.3.0](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.2.1...@equinor/rdf-graph-go@0.3.0) (2023-05-04)
+
+
+### Features
+
+* support gojs edge templates ([#358](https://github.com/equinor/rdf-graph/issues/358)) ([828987a](https://github.com/equinor/rdf-graph/commit/828987a92bae13325a27c3a7e4a241d48d7bb136)), closes [AB#110833](https://github.com/AB/issues/110833)
+
+
+
+
+
 ## 0.2.1 (2023-04-12)
 
 **Note:** Version bump only for package @equinor/rdf-graph-go
