@@ -6,6 +6,7 @@ import { createDefaultLinkTemplate } from './templates/default-link-template';
 import { createDefaultNodeTemplate } from './templates/default-node-template';
 import { createPizzaNodeTemplate } from './templates/pizza-node-template';
 import { createSymbolNodeTemplate } from './templates/symbol-node-template';
+import { createTestLinkTemplate } from './templates/test-link-template';
 
 const clickHandler = (_e: go.InputEvent, _thisObj: go.GraphObject) => {
 	// console.log('Node clicked!');
@@ -34,7 +35,9 @@ export function defaultInitDiagram() {
 			.add(nodeCategory.default, createDefaultNodeTemplate(clickHandler))
 			.add(nodeCategory.symbolWithConnectors, createSymbolNodeTemplate(symbolNodeClickHandler))
 			.add('pizza', createPizzaNodeTemplate()),
-		linkTemplateMap: new go.Map<string, go.Link>().add('', createDefaultLinkTemplate()),
+		linkTemplateMap: new go.Map<string, go.Link>()
+			.add('', createDefaultLinkTemplate())
+			.add('testlink', createTestLinkTemplate()),
 		groupTemplate: createDefaultGroupTemplate(),
 	});
 
