@@ -299,13 +299,15 @@ function removeEdge(diagram: go.Diagram, edge: GraphEdge): void {
 function addEdgeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
 	const linkData = (diagram.model as go.GraphLinksModel).findLinkDataForKey(propPatch.id);
 	if (!linkData) {
-		console.warn("Trying to set property on edge, but unable to find link for id " + propPatch.id)
+		console.warn('Trying to set property on edge, but unable to find link for id ' + propPatch.id);
 		return;
 	}
 	if (propPatch.prop.key === 'template') {
 		const linkForKey = diagram.findLinkForKey(propPatch.id);
 		if (!linkForKey) {
-			console.warn("Trying to set template on edge, but unable to find link for id " + propPatch.id)
+			console.warn(
+				'Trying to set template on edge, but unable to find link for id ' + propPatch.id
+			);
 			return;
 		}
 		(diagram.model as go.GraphLinksModel).setCategoryForNodeData(linkForKey, propPatch.prop.value);
