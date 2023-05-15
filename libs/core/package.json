@@ -40,7 +40,9 @@
 		"lint": "eslint .",
 		"test": "vitest run",
 		"coverage": "vitest run --pass-with-no-tests",
-		"clean": "rm -rf dist"
+		"clean": "rm -rf dist",
+		"snyk-test": "snyk test --severity-threshold=high",
+		"snyk-monitor": "snyk monitor"
 	},
 	"files": [
 		"dist",

@@ -6,7 +6,9 @@
 	"scripts": {
 		"serve": "vite",
 		"build": "tsc && vite build",
-		"preview": "vite preview"
+		"preview": "vite preview",
+		"snyk-test": "snyk test --severity-threshold=high",
+		"snyk-monitor": "snyk monitor"
 	},
 	"dependencies": {
 		"3d-force-graph": "^1.70.13",

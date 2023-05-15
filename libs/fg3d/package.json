@@ -39,7 +39,9 @@
 		"prepack": "pnpm nx build @equinor/rdf-graph-fg3d",
 		"lint": "eslint .",
 		"test": "vitest run --pass-with-no-tests",
-		"clean": "rm -rf dist"
+		"clean": "rm -rf dist",
+		"snyk-test": "snyk test --severity-threshold=high",
+		"snyk-monitor": "snyk monitor"
 	},
 	"files": [
 		"dist",

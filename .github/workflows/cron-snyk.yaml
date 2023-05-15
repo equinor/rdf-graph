@@ -1,0 +1,36 @@
+name: 🐩 Snyk Test & Monitor
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+jobs:
+  test-and-monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM & Install dependencies
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Authenticate
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Update snapshots at Snyk.io
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: pnpm nx run-many --target=snyk-monitor --output-style=stream
+
+      - name: Snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        continue-on-error: true
+        run: pnpm nx run-many --target=snyk-test --configuration=production --output-style=stream
