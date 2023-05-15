@@ -41,8 +41,8 @@
 		"test": "vitest run --pass-with-no-tests",
 		"clean": "rm -rf dist",
 		"clean:build": "rm -rf dist && rm tsconfig.build.tsbuildinfo",
-    "snyk-test": "snyk test --severity-threshold=high",
-    "snyk-monitor": "snyk monitor"
+		"snyk-test": "snyk test --severity-threshold=high",
+		"snyk-monitor": "snyk monitor"
 	},
 	"files": [
 		"dist",

@@ -40,8 +40,8 @@
 		"lint": "eslint .",
 		"clean": "rm -rf dist",
 		"prepack": "pnpm nx build @equinor/rdf-graph-cy",
-    "snyk-test": "snyk test --severity-threshold=high",
-    "snyk-monitor": "snyk monitor"
+		"snyk-test": "snyk test --severity-threshold=high",
+		"snyk-monitor": "snyk monitor"
 	},
 	"files": [
 		"dist",
