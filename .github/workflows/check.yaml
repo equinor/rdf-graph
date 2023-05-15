@@ -18,35 +18,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - uses: pnpm/action-setup@v2
-        name: Install pnpm
-        id: pnpm-install
-        with:
-          version: 8
-          run_install: false
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - uses: actions/cache@v3
-        name: Setup pnpm cache
-        id: pnpm-cache-setup
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup PNPM & Install dependencies
+        uses: ./.github/actions/setup-pnpm
 
       - name: Track main branch
         run: git branch --track main origin/main
@@ -56,5 +29,31 @@ jobs:
 
       - name: 🧪 Lint, build and test affected projects
         run: pnpm nx affected --base=origin/main --target=lint,build,test --parallel=5
+
+  snyk-test:
+    name: 🐩 Snyk Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM & Install dependencies
+        uses: ./.github/actions/setup-pnpm
+
+      - name: Derive appropriate SHAs for base and head for `nx affected` commands
+        uses: nrwl/nx-set-shas@v3
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Authenticator
+        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      - name: Test dependencies for known issues
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: pnpm nx affected --targets=snyk-test --configuration=production --output-style=stream --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }} --parallel=5
 
   # TODO: Add Snyk and Code QL jobs
