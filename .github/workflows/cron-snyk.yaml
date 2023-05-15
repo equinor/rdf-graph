@@ -3,7 +3,7 @@ name: 🐩 Snyk Test & Monitor
 on:
   schedule:
     # At 06:00 on every 3rd day
-    - cron: "0 6 */3 * *"
+    - cron: '0 6 */3 * *'
   workflow_dispatch:
 
 jobs:
