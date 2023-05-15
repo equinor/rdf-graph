@@ -34,16 +34,3 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         continue-on-error: true
         run: pnpm nx run-many --target=snyk-test --configuration=production --output-style=stream
-
-      - name: Upgrade dependencies
-        run: |
-          snyk remediation --package-manager=pnpm --severity-threshold=high
-          snyk apply snyk-patch.json
-
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          commit-message: Upgrade dependencies
-          title: Upgrade dependencies
-          branch: upgrade-dependencies
-          token: ${{ secrets.GITHUB_TOKEN }}
