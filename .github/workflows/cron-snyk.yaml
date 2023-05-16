@@ -1,12 +1,14 @@
 name: 🐩 Snyk Test & Monitor
 
 on:
-  pull_request:
-    types: [opened, synchronize]
-    branches: [main]
+  schedule:
+    # At 06:00 on every 3rd day
+    - cron: '0 6 */3 * *'
+  workflow_dispatch:
 
 jobs:
   test-and-monitor:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,5 +34,4 @@ jobs:
       - name: Snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
         run: pnpm nx run-many --target=snyk-test --configuration=production --output-style=stream
