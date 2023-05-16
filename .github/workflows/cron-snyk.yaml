@@ -34,5 +34,4 @@ jobs:
       - name: Snyk test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        continue-on-error: true
         run: pnpm nx run-many --target=snyk-test --configuration=production --output-style=stream
