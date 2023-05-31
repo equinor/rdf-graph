@@ -52,8 +52,5 @@ jobs:
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Test dependencies for known issues
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: pnpm nx affected --targets=snyk-test --configuration=production --output-style=stream --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }} --parallel=5
 
-  # TODO: Add Snyk and Code QL jobs
