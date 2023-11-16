@@ -5,4 +5,5 @@ This will be a smaller handover as we hope this library don't need much maintena
 - [ ] Admin Role of Github repo transferred to `SSI`
   - [ ] 1. `SSI` team promoted or added as Admin
   - [ ] 2. Dugtrio demoted / removed from team access list
-- [ ] Transfer ownership of CI/CD pipelines to `[receiving_team]`
+- [ ] Transfer ownership of CI/CD pipelines to `SSI`
+- [ ] Transfer ownership of Snyk to `SSI`
