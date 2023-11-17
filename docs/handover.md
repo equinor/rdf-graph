@@ -7,4 +7,5 @@ This will be a smaller handover as we hope this library don't need much maintena
   - [ ] 2. Dugtrio demoted / removed from team access list
 - [ ] Transfer ownership of CI/CD pipelines to `SSI`
   CD part of this consist of deploying the 4 NPM packages to npm npmjs.com. Will investigate what token is required to do this
-- [ ] Transfer ownership of Snyk to `SSI`
+- [x] Transfer ownership of Snyk to `SSI`
+    - SSI Used a personal SNYK_TOKEN, works for now, but should probably be replaced with service account token
