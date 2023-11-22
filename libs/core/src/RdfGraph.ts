@@ -32,6 +32,7 @@ export class RdfGraph {
 	}
 
 	patch(rdfPatches: RdfPatch[]): GraphPatch[] {
+		console.log("Patching in RdfGraph");
 		const newPatches: RdfPatch[] = [];
 
 		for (const patch of rdfPatches) {

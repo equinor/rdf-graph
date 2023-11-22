@@ -61,6 +61,7 @@ function graphContextReducer(
 				customPatches: action.graphPatches,
 			};
 		case 'DispatchRdfPatches':
+			console.log("Dispatching rdf patch")
 			return {
 				...state,
 				rdfPatches: action.rdfPatches,
@@ -101,6 +102,7 @@ export const GraphContextProvider: React.FunctionComponent<React.PropsWithChildr
 	useEffect(() => {
 		if (graphContext.rdfPatchesHistory.length === 0) return;
 		const history = [...graphContext.rdfPatchesHistory];
+		console.log("RESETTING...");
 		dispatch({ type: 'Reset' });
 		dispatch({ type: 'DispatchRdfPatches', rdfPatches: history });
 	}, [ui]);

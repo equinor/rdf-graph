@@ -11,8 +11,6 @@ import css from './TabEdit.module.css';
 import { EdgeItemDetails } from './EdgeItemDetails';
 import { NodeItemDetails } from './NodeItemDetails';
 
-import { getConnectorSymbol, symbolLibrary, SymbolLibraryKey } from '../../symbol-api';
-
 import {
 	devPrefixes,
 	predicateIri as PREDICATES,
@@ -29,13 +27,17 @@ import {
 	highlightElement,
 	RdfPatch,
 	directPropConfig as P,
+	UiSymbol,
 } from '@equinor/rdf-graph';
 
 import { kantoPokemons } from './pokemon';
 import { AddOrRemoveProp } from './AddOrRemoveProp';
 import { RdfIri } from '../rdf-iri/RdfIri';
+import { fetchAllSymbols } from '../../symbol-api/api';
+import { useQuery } from '@tanstack/react-query'
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
+
 
 function generateNodeName() {
 	const dicts = [animals, starWars, kantoPokemons];
@@ -62,6 +64,11 @@ export const TabEdit = () => {
 	const [predicate, setPredicate] = useState<string>(PREDICATES.connectedTo);
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
+
+	const { status, data: symbols, error, isFetching } = useQuery<UiSymbol[]>({
+		queryKey:['symbols'],
+		queryFn: fetchAllSymbols
+	});
 
 	const addNewNode = (_id?: string) => {
 		const { name, name_pretty } = generateNodeName();
@@ -176,15 +183,16 @@ export const TabEdit = () => {
 		});
 	};
 
-	const createSymbolWithConnectors: (symbolId: SymbolLibraryKey) => {
+	const createSymbolWithConnectors: (symbolId: string) => {
 		patches: RdfPatch[];
 		connectors: string[];
-	} = (symbolId: SymbolLibraryKey) => {
+	} = (symbolId: string) => {
 		const { name, name_pretty } = generateNodeName();
 
 		const symbolNodeIri = devPrefixes.animals + name;
 
-		const symbol = getConnectorSymbol(symbolId);
+
+		const symbol = symbols?.find(s => s.id === symbolId);
 
 		if (!symbol) throw new Error(`Symbol not found: ${symbolId}`);
 
@@ -221,8 +229,13 @@ export const TabEdit = () => {
 	};
 
 	const addTwoConnectedSymbolNodes = () => {
-		const sym1 = createSymbolWithConnectors('ND0012');
-		const sym2 = createSymbolWithConnectors('ND0016');
+		console.log("Button clicked");
+		if (!symbols) {
+			console.warn("No symbols");
+			return;
+		}
+		const sym1 = createSymbolWithConnectors(symbols[0].id);
+		const sym2 = createSymbolWithConnectors(symbols[1].id);
 
 		dispatch({
 			type: 'DispatchRdfPatches',
@@ -238,8 +251,12 @@ export const TabEdit = () => {
 	};
 
 	const addCompleteSymbolLibrary = () => {
-		const patches = Object.keys(symbolLibrary)
-			.map((x) => createSymbolWithConnectors(x as SymbolLibraryKey))
+		if (!symbols) {
+			console.warn("No symbols");
+			return;
+		}
+		const patches = symbols.map(s => s.id)
+			.map((x) => createSymbolWithConnectors(x))
 			.flatMap((x) => x.patches);
 		dispatch({
 			type: 'DispatchRdfPatches',
@@ -275,6 +292,7 @@ export const TabEdit = () => {
 			],
 		});
 	}
+
 
 	useEffect(() => {
 		if (undoPatch) {

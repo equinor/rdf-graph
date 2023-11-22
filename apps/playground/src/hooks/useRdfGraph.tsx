@@ -17,9 +17,10 @@ export const useRdfGraph = (symbolProvider?: UiSymbolProvider) => {
 
 	useEffect(() => {
 		rdfGraphRef.current = new RdfGraph({ symbolProvider });
-	}, []);
+	}, [symbolProvider]);
 
 	useEffect(() => {
+		console.log("Rdf patches changed !")
 		if (!rdfGraphRef.current || graphContext.rdfPatches.length === 0) return;
 
 		const newPatches = rdfGraphRef.current.patch(graphContext.rdfPatches);
