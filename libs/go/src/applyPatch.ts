@@ -189,25 +189,38 @@ function addConnectorNodeProp(
 	}
 
 	// Update any links that use this connector
-	const symbolNodeId = state.connectorNodes[propPatch.id].symbolNodeId;
 
-	if (!symbolNodeId) return;
+	// BUG: We cannot do this because there might be multiple links to/from the same node to/from different ports,
+	// and the code below will overwrite existing portIds for links to/from the node.
+	// This means that we relay on that the connector name is available when the edge is added in
+	//     'addEdge' func in:
+	// 				const sourceConnector = state.connectorNodes[edge.sourceId];
+	//  			const targetConnector = state.connectorNodes[edge.targetId];
+	//
 
-	const linkMod = diagram.model as go.GraphLinksModel;
+	// Disable rest of this function for now
 
-	diagram.links.each((link) => {
-		const d = link.data;
+	// const symbolNodeId = state.connectorNodes[propPatch.id].symbolNodeId;
 
-		if (d.to === symbolNodeId) {
-			const exLink = linkMod.findLinkDataForKey(d.id);
-			if (exLink) linkMod.setToPortIdForLinkData(exLink, portId);
-		}
+	// if (!symbolNodeId) return;
 
-		if (d.from === symbolNodeId) {
-			const exLink = linkMod.findLinkDataForKey(d.id);
-			if (exLink) linkMod.setFromPortIdForLinkData(exLink, portId);
-		}
-	});
+	// const linkMod = diagram.model as go.GraphLinksModel;
+
+	// diagram.links.each((link) => {
+	// 	const d = link.data;
+
+	// 	if (d.to === symbolNodeId) {
+	// 		const exLink = linkMod.findLinkDataForKey(d.id);
+	// 		if (exLink && !exLink.toPort) linkMod.setToPortIdForLinkData(exLink, portId);
+	// 		//if (exLink) linkMod.setToPortIdForLinkData(exLink, portId);
+	// 	}
+
+	// 	if (d.from === symbolNodeId) {
+	// 		const exLink = linkMod.findLinkDataForKey(d.id);
+	// 		if (exLink && !exLink.fromPort) linkMod.setFromPortIdForLinkData(exLink, portId);
+	// 		//if (exLink) linkMod.setFromPortIdForLinkData(exLink, portId);
+	// 	}
+	// });
 }
 
 function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
@@ -283,10 +296,10 @@ function addEdge(diagram: go.Diagram, state: RdfGoGraphState, edge: GraphEdge) {
 	(diagram.model as go.GraphLinksModel).addLinkData({
 		id: edge.id,
 		type: edge.type,
-		from: from,
-		fromPort: fromPort,
-		to: to,
-		toPort: toPort,
+		from,
+		fromPort,
+		to,
+		toPort,
 	});
 }
 
