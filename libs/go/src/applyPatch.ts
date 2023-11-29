@@ -180,6 +180,7 @@ function addConnectorNodeProp(
 ) {
 	if (propPatch.prop.type !== 'custom' && propPatch.prop.key !== 'connectorName') return;
 
+	// Just store the portId for now. We will use it when adding the edge.
 	const portId = propPatch.prop.value;
 
 	if (propPatch.id in state.connectorNodes) {
