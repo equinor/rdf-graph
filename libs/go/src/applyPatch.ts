@@ -174,7 +174,7 @@ function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: Gra
 }
 
 function addConnectorNodeProp(
-	diagram: go.Diagram,
+	_diagram: go.Diagram,
 	state: RdfGoGraphState,
 	propPatch: GraphPropertyPatch
 ) {
@@ -187,40 +187,6 @@ function addConnectorNodeProp(
 	} else {
 		state.connectorNodes[propPatch.id] = { portId: portId };
 	}
-
-	// Update any links that use this connector
-
-	// BUG: We cannot do this because there might be multiple links to/from the same node to/from different ports,
-	// and the code below will overwrite existing portIds for links to/from the node.
-	// This means that we relay on that the connector name is available when the edge is added in
-	//     'addEdge' func in:
-	// 				const sourceConnector = state.connectorNodes[edge.sourceId];
-	//  			const targetConnector = state.connectorNodes[edge.targetId];
-	//
-
-	// Disable rest of this function for now
-
-	// const symbolNodeId = state.connectorNodes[propPatch.id].symbolNodeId;
-
-	// if (!symbolNodeId) return;
-
-	// const linkMod = diagram.model as go.GraphLinksModel;
-
-	// diagram.links.each((link) => {
-	// 	const d = link.data;
-
-	// 	if (d.to === symbolNodeId) {
-	// 		const exLink = linkMod.findLinkDataForKey(d.id);
-	// 		if (exLink && !exLink.toPort) linkMod.setToPortIdForLinkData(exLink, portId);
-	// 		//if (exLink) linkMod.setToPortIdForLinkData(exLink, portId);
-	// 	}
-
-	// 	if (d.from === symbolNodeId) {
-	// 		const exLink = linkMod.findLinkDataForKey(d.id);
-	// 		if (exLink && !exLink.fromPort) linkMod.setFromPortIdForLinkData(exLink, portId);
-	// 		//if (exLink) linkMod.setFromPortIdForLinkData(exLink, portId);
-	// 	}
-	// });
 }
 
 function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
