@@ -31,8 +31,7 @@ export function useEngineeringSymbols(): EngineeringSymbolsResult {
 
 	const symbolProvider = (id: string, _rotation?: number) => {
 		// IGNORE ROTATION for GoJS!
-		const symbol = symbols.find((s) => s.id === id);
-		return symbol;
+		return symbols.find((s) => s.id === id);
 	};
 
 	return {

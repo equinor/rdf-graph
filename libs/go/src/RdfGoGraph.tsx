@@ -86,9 +86,7 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 	}, []);
 
 	useEffect(() => {
-		console.log("Got graph patch")
 		if (!initialized) return;
-		console.log("Inited")
 		const diagram = getDiagram();
 		if (!diagram) return;
 		applyPatch(graphPatches, diagram, goState.current);
