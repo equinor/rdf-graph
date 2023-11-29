@@ -174,12 +174,13 @@ function addNodeProp(diagram: go.Diagram, state: RdfGoGraphState, propPatch: Gra
 }
 
 function addConnectorNodeProp(
-	diagram: go.Diagram,
+	_diagram: go.Diagram,
 	state: RdfGoGraphState,
 	propPatch: GraphPropertyPatch
 ) {
 	if (propPatch.prop.type !== 'custom' && propPatch.prop.key !== 'connectorName') return;
 
+	// Just store the portId for now. We will use it when adding the edge.
 	const portId = propPatch.prop.value;
 
 	if (propPatch.id in state.connectorNodes) {
@@ -187,27 +188,6 @@ function addConnectorNodeProp(
 	} else {
 		state.connectorNodes[propPatch.id] = { portId: portId };
 	}
-
-	// Update any links that use this connector
-	const symbolNodeId = state.connectorNodes[propPatch.id].symbolNodeId;
-
-	if (!symbolNodeId) return;
-
-	const linkMod = diagram.model as go.GraphLinksModel;
-
-	diagram.links.each((link) => {
-		const d = link.data;
-
-		if (d.to === symbolNodeId) {
-			const exLink = linkMod.findLinkDataForKey(d.id);
-			if (exLink) linkMod.setToPortIdForLinkData(exLink, portId);
-		}
-
-		if (d.from === symbolNodeId) {
-			const exLink = linkMod.findLinkDataForKey(d.id);
-			if (exLink) linkMod.setFromPortIdForLinkData(exLink, portId);
-		}
-	});
 }
 
 function removeNodeProp(diagram: go.Diagram, propPatch: GraphPropertyPatch) {
@@ -283,10 +263,10 @@ function addEdge(diagram: go.Diagram, state: RdfGoGraphState, edge: GraphEdge) {
 	(diagram.model as go.GraphLinksModel).addLinkData({
 		id: edge.id,
 		type: edge.type,
-		from: from,
-		fromPort: fromPort,
-		to: to,
-		toPort: toPort,
+		from,
+		fromPort,
+		to,
+		toPort,
 	});
 }
 
