@@ -27,17 +27,15 @@ import {
 	highlightElement,
 	RdfPatch,
 	directPropConfig as P,
-	UiSymbol,
 } from '@equinor/rdf-graph';
 
 import { kantoPokemons } from './pokemon';
 import { AddOrRemoveProp } from './AddOrRemoveProp';
 import { RdfIri } from '../rdf-iri/RdfIri';
-import { fetchAllSymbols } from '../../symbol-api/api';
-import { useQuery } from '@tanstack/react-query'
+
+import { useEngineeringSymbols } from '../../hooks/useEngineeringSymbols';
 
 const { quad: q, literal: l, namedNode: n } = DataFactory;
-
 
 function generateNodeName() {
 	const dicts = [animals, starWars, kantoPokemons];
@@ -65,10 +63,7 @@ export const TabEdit = () => {
 	const [selectedItem, setSelectedItem] = useState<GraphNode | GraphEdge>();
 	const [undoPatch, setUndoPatch] = useState<GraphPatch[]>();
 
-	const { status, data: symbols, error, isFetching } = useQuery<UiSymbol[]>({
-		queryKey:['symbols'],
-		queryFn: fetchAllSymbols
-	});
+	const { data: symbols } = useEngineeringSymbols();
 
 	const addNewNode = (_id?: string) => {
 		const { name, name_pretty } = generateNodeName();
@@ -191,8 +186,7 @@ export const TabEdit = () => {
 
 		const symbolNodeIri = devPrefixes.animals + name;
 
-
-		const symbol = symbols?.find(s => s.id === symbolId);
+		const symbol = symbols?.find((s) => s.id === symbolId);
 
 		if (!symbol) throw new Error(`Symbol not found: ${symbolId}`);
 
@@ -201,7 +195,7 @@ export const TabEdit = () => {
 		const connectorIds: string[] = [];
 
 		const connectorPatches: RdfPatch[] = symbol.connectors.flatMap((c) => {
-			const connectorNodeIri = symbolNodeIri + '_C' + c.id;
+			const connectorNodeIri = symbolNodeIri + '_' + c.id;
 			connectorIds.push(connectorNodeIri);
 			return [
 				{ action: 'add', data: q(n(connectorNodeIri), n(P.connectorName.iri), l(c.id)) },
@@ -229,9 +223,8 @@ export const TabEdit = () => {
 	};
 
 	const addTwoConnectedSymbolNodes = () => {
-		console.log("Button clicked");
 		if (!symbols) {
-			console.warn("No symbols");
+			console.warn('No symbols');
 			return;
 		}
 		const sym1 = createSymbolWithConnectors(symbols[0].id);
@@ -252,12 +245,10 @@ export const TabEdit = () => {
 
 	const addCompleteSymbolLibrary = () => {
 		if (!symbols) {
-			console.warn("No symbols");
+			console.warn('No symbols');
 			return;
 		}
-		const patches = symbols.map(s => s.id)
-			.map((x) => createSymbolWithConnectors(x))
-			.flatMap((x) => x.patches);
+		const patches = symbols.map((s) => createSymbolWithConnectors(s.id)).flatMap((x) => x.patches);
 		dispatch({
 			type: 'DispatchRdfPatches',
 			rdfPatches: patches,
@@ -292,7 +283,6 @@ export const TabEdit = () => {
 			],
 		});
 	}
-
 
 	useEffect(() => {
 		if (undoPatch) {

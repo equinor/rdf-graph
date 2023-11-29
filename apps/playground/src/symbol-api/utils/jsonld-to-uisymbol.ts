@@ -1,6 +1,5 @@
 import { UiSymbol } from '@equinor/rdf-graph';
 
-
 export const jsonLdResponseToUiSymbol = (response: object): UiSymbol[] => {
 	if (!response) {
 		throw new Error('jsonLdResponseToDto: response is null or undefined');
@@ -18,23 +17,17 @@ export const jsonLdResponseToUiSymbol = (response: object): UiSymbol[] => {
 };
 
 function jsonLdSymbolToDto(obj: object): UiSymbol {
-	const iri = valueOrDefault<string>(obj, ['@id']);
-	const id = iri //iri.split('/').pop();
-
-	if (!id) throw new Error('jsonLdSymbolToDto: id is null or undefined');
+	const identifier = valueOrDefault<string>(obj, ['dc:identifier']);
+	if (!identifier) throw new Error('jsonLdSymbolToDto: identifier is null or undefined');
 
 	const result: UiSymbol = {
-		id,
-		// previousVersion: null,
-		// previousVersionIri: null,
-        svg: "",
-		geometry: valueOrDefault<object[]>(obj, ['sym:hasShape', 'sym:hasSerialization'])
-            .map((o) => valueOrDefault<string>(o, ['@value'])
+		id: identifier,
+		svg: '',
+		geometry: valueOrDefault<object[]>(obj, ['sym:hasShape', 'sym:hasSerialization']).map((o) =>
+			valueOrDefault<string>(o, ['@value'])
 		)[0],
 		width: parseInt(valueOrDefault<string>(obj, ['sym:width'])),
 		height: parseInt(valueOrDefault<string>(obj, ['sym:height'])),
-		// drawColor: valueOrDefault<string>(obj, ["sym:drawColor"], null),
-		// fillColor: valueOrDefault<string>(obj, ["sym:fillColor"], null),
 		connectors: toArray(valueOrDefault<object[]>(obj, ['sym:hasConnectionPoint'], []), (o) => ({
 			id: valueOrDefault<string>(o, ['dc:identifier']),
 			position: {
@@ -45,7 +38,6 @@ function jsonLdSymbolToDto(obj: object): UiSymbol {
 		})),
 	};
 
-	console.log("SYMBOL PARSED: ", result);
 	return result;
 }
 
@@ -53,7 +45,12 @@ function toArray<T>(obj: object, fn: (o: object) => T): T[] {
 	return Array.isArray(obj) ? obj.map(fn) : [fn(obj)];
 }
 
-function valueOrDefault<T>(obj: object, path: string[], useDefault?: T | null, defaultIsUndefined = false): T {
+function valueOrDefault<T>(
+	obj: object,
+	path: string[],
+	useDefault?: T | null,
+	defaultIsUndefined = false
+): T {
 	let current = obj;
 	let result = undefined;
 

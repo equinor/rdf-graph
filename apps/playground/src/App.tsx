@@ -10,10 +10,12 @@ import { GraphContextProvider } from './context/GraphContext';
 import { UiKey } from './setup';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+const queryClient = new QueryClient();
+
 function App() {
 	const { ui } = useParams<{ ui: UiKey }>();
 	return (
-		<QueryClientProvider client={new QueryClient()}>
+		<QueryClientProvider client={queryClient}>
 			<GraphContextProvider>
 				<div className={appCss.wrapper}>
 					<div className={appCss.menu}>
@@ -23,10 +25,10 @@ function App() {
 						<div className={appCss.uiContainer}>
 							{ui !== undefined
 								? {
-									fg3d: <Fg3dUi />,
-									go: <GoUi />,
-									cy: <CyUi />,
-								}[ui]
+										fg3d: <Fg3dUi />,
+										go: <GoUi />,
+										cy: <CyUi />,
+								  }[ui]
 								: null}
 						</div>
 						<div className={appCss.sideMenu}>

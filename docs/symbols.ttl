@@ -1,0 +1,27 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix attr: <http://example.com/attribute#>.
+@prefix eq: <http://example.com/equipment#>.
+@prefix facility: <http://example.com/facility#>.
+@prefix prov: <http://www.w3.org/ns/prov#>.
+@prefix rec: <https://rdf.equinor.com/ontology/record/>.
+@prefix sr: <http://example.com/shredderRecords#>.
+@prefix st: <http://example.com/subjectType#>.
+@prefix ui: <http://rdf.equinor.com/ui/>.
+@prefix ex: <http://example.com/>.
+@prefix exAlt: <http://example.org/>.
+
+ex:a rdfs:label "I am A";
+    ui:hasEngineeringSymbol "PP007A";
+    ui:hasConnector ex:a_c1, ex:a_c2.
+ex:a_c1 rdfs:label "a_c1";
+    ui:hasConnectorName "pyRjUAOWMM";
+    ex:connection_785463565 ex:vessel_b.
+ex:a_c2 rdfs:label "a_c2";
+    ui:hasConnectorName "DZAIWcIecx";
+    ex:connection_223444444 ex:c.
+ex:vessel_b rdfs:label "I am Vessel B".
+ex:c rdfs:label "C".
+ex:connection_785463565 rdfs:label "connection_785463565".
+ex:connection_223444444 rdfs:label "connection_223444444".

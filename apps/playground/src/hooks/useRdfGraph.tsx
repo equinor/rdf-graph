@@ -17,17 +17,21 @@ export const useRdfGraph = (symbolProvider?: UiSymbolProvider) => {
 
 	useEffect(() => {
 		rdfGraphRef.current = new RdfGraph({ symbolProvider });
+	}, []);
+
+	useEffect(() => {
+		if (!symbolProvider) return;
+		rdfGraphRef.current?.setSymbolProvider(symbolProvider);
 	}, [symbolProvider]);
 
 	useEffect(() => {
-		console.log("Rdf patches changed !")
 		if (!rdfGraphRef.current || graphContext.rdfPatches.length === 0) return;
 
 		const newPatches = rdfGraphRef.current.patch(graphContext.rdfPatches);
 
 		setGraphPatches(newPatches);
 
-		console.log('Graph Patches:');
+		//console.log('Graph Patches:');
 		printGraphPatchesToConsole(newPatches);
 
 		dispatch({

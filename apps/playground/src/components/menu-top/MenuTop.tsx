@@ -4,12 +4,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 // import appCss from './App.module.css';
 import { getUis, UiKey } from '../../setup';
 import css from './MenuTop.module.css';
+import { useEngineeringSymbols } from '../../hooks/useEngineeringSymbols';
 
 const uis = getUis();
 
 export const MenuTop = ({ ui }: { ui: UiKey }) => {
 	const navigate = useNavigate();
 	const loc = useLocation();
+
+	const { isLoading } = useEngineeringSymbols();
 
 	const onChange = (uiKey: UiKey) => {
 		const paths = loc.pathname.split('/');
@@ -45,6 +48,9 @@ export const MenuTop = ({ ui }: { ui: UiKey }) => {
 					))}
 				</div>
 				{/* <Button onClick={resetState}>Reset</Button> */}
+				{isLoading ? (
+					<Typography variant="body_short">Loading Engineering Symbols...</Typography>
+				) : null}
 			</div>
 		</EdsProvider>
 	);
