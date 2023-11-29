@@ -1,4 +1,4 @@
-import { EdsProvider, Radio, Typography } from '@equinor/eds-core-react';
+import { EdsProvider, Progress, Radio, Typography } from '@equinor/eds-core-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 // import appCss from './App.module.css';
@@ -34,23 +34,30 @@ export const MenuTop = ({ ui }: { ui: UiKey }) => {
 	return (
 		<EdsProvider density="compact">
 			<div className={css.wrapper}>
-				<Typography variant="h1">RDF-GRAPH</Typography>
-				<div>
-					{uis.map(({ key, name }) => (
-						<Radio
-							key={key}
-							label={name}
-							name="group"
-							value={key}
-							checked={ui === key}
-							onChange={() => onChange(key)}
-						/>
-					))}
+				<div className={css.flexRow}>
+					<Typography variant="h1">RDF-GRAPH</Typography>
+					<div>
+						{uis.map(({ key, name }) => (
+							<Radio
+								key={key}
+								label={name}
+								name="group"
+								value={key}
+								checked={ui === key}
+								onChange={() => onChange(key)}
+							/>
+						))}
+					</div>
+					{/* <Button onClick={resetState}>Reset</Button> */}
 				</div>
-				{/* <Button onClick={resetState}>Reset</Button> */}
-				{isLoading ? (
-					<Typography variant="body_short">Loading Engineering Symbols...</Typography>
-				) : null}
+				<div className={`${css.flexRow} ${css.right}`}>
+					{isLoading ? (
+						<>
+							<Typography variant="body_short">Loading Engineering Symbols</Typography>
+							<Progress.Dots color="primary" size={32} />
+						</>
+					) : null}
+				</div>
 			</div>
 		</EdsProvider>
 	);
