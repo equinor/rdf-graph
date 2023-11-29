@@ -61,7 +61,6 @@ function graphContextReducer(
 				customPatches: action.graphPatches,
 			};
 		case 'DispatchRdfPatches':
-			console.log('Dispatching rdf patch');
 			return {
 				...state,
 				rdfPatches: action.rdfPatches,

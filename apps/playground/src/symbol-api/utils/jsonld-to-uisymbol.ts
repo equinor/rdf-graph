@@ -20,14 +20,19 @@ function jsonLdSymbolToDto(obj: object): UiSymbol {
 	const identifier = valueOrDefault<string>(obj, ['dc:identifier']);
 	if (!identifier) throw new Error('jsonLdSymbolToDto: identifier is null or undefined');
 
+	const width = parseInt(valueOrDefault<string>(obj, ['sym:width']));
+	const height = parseInt(valueOrDefault<string>(obj, ['sym:height']));
+	const geometry = valueOrDefault<object[]>(obj, ['sym:hasShape', 'sym:hasSerialization']).map(
+		(o) => valueOrDefault<string>(o, ['@value'])
+	)[0];
+	const svg = pathToSvgString(width, height, geometry);
+
 	const result: UiSymbol = {
 		id: identifier,
-		svg: '',
-		geometry: valueOrDefault<object[]>(obj, ['sym:hasShape', 'sym:hasSerialization']).map((o) =>
-			valueOrDefault<string>(o, ['@value'])
-		)[0],
-		width: parseInt(valueOrDefault<string>(obj, ['sym:width'])),
-		height: parseInt(valueOrDefault<string>(obj, ['sym:height'])),
+		svg,
+		geometry,
+		width,
+		height,
 		connectors: toArray(valueOrDefault<object[]>(obj, ['sym:hasConnectionPoint'], []), (o) => ({
 			id: valueOrDefault<string>(o, ['dc:identifier']),
 			position: {
@@ -70,4 +75,7 @@ function valueOrDefault<T>(
 	}
 
 	return result as T;
+}
+function pathToSvgString(width: number, height: number, geometry: string): string {
+	return `<svg width="${width}" height="${height}" fill="black" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg"> <path d="${geometry}"/> </svg>`;
 }
