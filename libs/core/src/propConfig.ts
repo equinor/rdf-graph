@@ -107,12 +107,6 @@ export const derivedPropConfig: Record<DerivedPropKey, DerivedPropConfig> = {
 				let symbol = undefined;
 				if (symbolId) {
 					const rotation = rotationString ? parseInt(rotationString) : undefined;
-					if (symbolProvider) {
-						console.log("Symbol provider exist");
-					}
-					else {
-						console.log("SYmbol provider does not exist")
-					}
 					symbol = symbolProvider ? symbolProvider(symbolId, rotation) : undefined;
 				}
 
