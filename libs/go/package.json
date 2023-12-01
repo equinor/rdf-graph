@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/rdf-graph-go",
-	"version": "0.3.1",
+	"version": "0.4.0",
 	"description": "Visualize RDF as a graph network",
 	"repository": {
 		"type": "git",
