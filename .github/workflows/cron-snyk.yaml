@@ -26,7 +26,7 @@ jobs:
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
       - name: Update snapshots at Snyk.io
-        continue-on-error: true 
+        continue-on-error: true
         run: pnpm nx run-many --target=snyk-monitor --output-style=stream
 
       - name: Snyk test

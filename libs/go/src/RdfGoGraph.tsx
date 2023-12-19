@@ -17,7 +17,9 @@ type RdfGoGraphProps = RdfGraphProps<go.DiagramEvent> & {
 
 export type RdfGoGraphDiagramRef = {
 	getDiagram(): go.Diagram | null;
+	clearDiagram(): void;
 	resetDiagram(): void;
+	resetGoJsState(): void;
 };
 
 export type RdfGoGraphState = {
@@ -38,6 +40,13 @@ export const RdfGoGraph = forwardRef<RdfGoGraphDiagramRef, RdfGoGraphProps>(func
 			return {
 				getDiagram() {
 					return divElRef.current ? go.Diagram.fromDiv(divElRef.current) : null;
+				},
+				resetGoJsState() {
+					goState.current = { connectorNodes: {} };
+				},
+				clearDiagram() {
+					goState.current = { connectorNodes: {} };
+					if (divElRef.current) go.Diagram.fromDiv(divElRef.current)?.clear();
 				},
 				resetDiagram() {
 					goState.current = { connectorNodes: {} };

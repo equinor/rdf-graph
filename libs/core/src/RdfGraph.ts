@@ -31,6 +31,10 @@ export class RdfGraph {
 		return this.#quadStore;
 	}
 
+	setSymbolProvider(symbolProvider: UiSymbolProvider) {
+		this.#symbolProvider = symbolProvider;
+	}
+
 	patch(rdfPatches: RdfPatch[]): GraphPatch[] {
 		const newPatches: RdfPatch[] = [];
 
