@@ -1,0 +1,35 @@
+@prefix ex: <http://example.com/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ui:      <http://rdf.equinor.com/ui/> .
+
+# Add some kind of vessel
+ex:vessel_a rdfs:label "Vessel A" .
+
+# Add pump
+ex:pump rdfs:label "Liquid Pump 1";
+	ui:hasEngineeringSymbol "PP007A" ;
+	ui:fill "#B9E9FC" ;
+	ui:hasConnector ex:pump_c1 , ex:pump_c2 .
+
+ex:pump_c1 ui:hasConnectorName "1" .
+ex:pump_c2 ui:hasConnectorName "2" .
+
+# Add separator
+ex:separator rdfs:label "Separator";
+    ui:fill "#E49393";
+    ui:hasEngineeringSymbol "PT002AOption1";
+    ui:hasConnector ex:separator_C1, 
+					ex:separator_C2, 
+					ex:separator_C3, 
+					ex:separator_C4 .
+
+ex:separator_C1 ui:hasConnectorName "1".
+ex:separator_C2 ui:hasConnectorName "2".
+ex:separator_C3 ui:hasConnectorName "3".
+ex:separator_C4 ui:hasConnectorName "4".
+
+# Connect vessel and pump
+ex:vessel_a ui:connectedTo ex:pump_c2 .
+
+# Connect pump and separator
+ex:pump_c1 ui:connectedTo ex:separator_C3 .

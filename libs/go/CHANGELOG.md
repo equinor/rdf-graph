@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.3.1...@equinor/rdf-graph-go@0.4.0) (2023-12-01)
+
+
+### Features
+
+* add 2 extra util functions on RdfGoGraph ref ([#368](https://github.com/equinor/rdf-graph/issues/368)) ([50dd982](https://github.com/equinor/rdf-graph/commit/50dd9824b3bf166f6ff219690d66eef0c4e0808e))
+
+
+
+
+
+## [0.3.1](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.3.0...@equinor/rdf-graph-go@0.3.1) (2023-11-29)
+
+
+### Bug Fixes
+
+* **go:** port mapping bugfix in gojs impl ([#367](https://github.com/equinor/rdf-graph/issues/367)) ([dea2b85](https://github.com/equinor/rdf-graph/commit/dea2b853c5af2b2155752e80a4d44f698a5227bd))
+
+
+
+
+
 # [0.3.0](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.2.1...@equinor/rdf-graph-go@0.3.0) (2023-05-04)
 
 

@@ -53,4 +53,3 @@ jobs:
 
       - name: Test dependencies for known issues
         run: pnpm nx affected --targets=snyk-test --configuration=production --output-style=stream --base=${{ env.NX_BASE }} --head=${{ env.NX_HEAD }} --parallel=5
-

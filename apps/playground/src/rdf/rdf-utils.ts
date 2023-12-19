@@ -50,7 +50,7 @@ export function getRdfPrefixes() {
 
 	(Object.keys(RdfPrefix) as KnownRdfPrefix[]).forEach((k) => rdfPrefixes.set(k, RdfPrefix[k]));
 
-	console.log('rdfPrefixes', rdfPrefixes);
+	//console.log('rdfPrefixes', rdfPrefixes);
 	return rdfPrefixes;
 }
 
