@@ -11,7 +11,7 @@
 		"pnpm": ">=8.1.0"
 	},
 	"devDependencies": {
-		"@nrwl/eslint-plugin-nx": "^16.0.0",
+		"@nrwl/eslint-plugin-nx": "^17.3.0",
 		"@typescript-eslint/eslint-plugin": "^5.57.0",
 		"@vitest/coverage-c8": "^0.29.7",
 		"eslint": "^8.36.0",
