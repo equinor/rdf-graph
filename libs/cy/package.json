@@ -1,6 +1,6 @@
 {
 	"name": "@equinor/rdf-graph-cy",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"description": "Visualize RDF as a graph network",
 	"repository": {
 		"type": "git",

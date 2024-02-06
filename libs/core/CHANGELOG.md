@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.22.0 (2023-11-29)
+
+
+### Features
+
+* support remote symbol lib ([#366](https://github.com/equinor/rdf-graph/issues/366)) ([9c06263](https://github.com/equinor/rdf-graph/commit/9c06263e018a3ee1d8b812c89de7afc6a7696c06))
+
+
+
+
+
 ## 0.21.1 (2023-04-12)
 
 **Note:** Version bump only for package @equinor/rdf-graph

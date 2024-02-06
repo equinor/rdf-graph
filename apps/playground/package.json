@@ -17,6 +17,7 @@
 		"@equinor/rdf-graph-cy": "workspace:*",
 		"@equinor/rdf-graph-fg3d": "workspace:*",
 		"@equinor/rdf-graph-go": "workspace:*",
+		"@tanstack/react-query": "^5.8.4",
 		"cytoscape": "^3.23.0",
 		"cytoscape-cola": "^2.5.1",
 		"cytoscape-cose-bilkent": "^4.1.0",
