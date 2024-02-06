@@ -2,7 +2,7 @@
 # https://github.com/evilmartians/lefthook/blob/master/docs/full_guide.md
 
 pre-commit:
-  parallel: true
+  parallel: false
   commands:
     formatting:
       run: pnpm nx format:check --files {staged_files}
