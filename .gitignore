@@ -30,5 +30,3 @@ data-no-vc
 dist
 coverage
 tsconfig.build.tsbuildinfo
-
-.nx/cache/*
