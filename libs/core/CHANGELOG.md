@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 0.24.0 (2024-02-07)
+
+
+### Features
+
+* major package bump ([#379](https://github.com/equinor/rdf-graph/issues/379)) ([9b04631](https://github.com/equinor/rdf-graph/commit/9b04631748457464b5ae534b9a765addf7ed1e37))
+
+
+
+
+
 # 0.22.0 (2023-11-29)
 
 

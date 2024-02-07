@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.4.0...@equinor/rdf-graph-go@0.6.0) (2024-02-07)
+
+
+### Features
+
+* major package bump ([#379](https://github.com/equinor/rdf-graph/issues/379)) ([9b04631](https://github.com/equinor/rdf-graph/commit/9b04631748457464b5ae534b9a765addf7ed1e37))
+
+
+
+
+
 # [0.4.0](https://github.com/equinor/rdf-graph/compare/@equinor/rdf-graph-go@0.3.1...@equinor/rdf-graph-go@0.4.0) (2023-12-01)
 
 
