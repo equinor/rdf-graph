@@ -11,6 +11,10 @@ An open source library for visualizing RDF as a graph network.
 | [@equinor/rdf-graph-cy](libs/cy/) | [![cy version](https://img.shields.io/npm/v/@equinor/rdf-graph-cy)](libs/cy/CHANGELOG.md) | Cytoscape.js UI Implementation |
 | [@equinor/rdf-graph-fg3d](libs/fg3d/) | [![fg3d version](https://img.shields.io/npm/v/@equinor/rdf-graph-fg3d)](libs/fg3d/CHANGELOG.md) | 3D Force-Directed UI Implementation |
 
+## Releasing a new version
+Update package number for the relevant `package.json` located in the `libs` folder.
+Create a PR with the changes.
+
 ## Demo
 
 Spin up the development application for a demonstration of the library and different UI implementations/packages:
