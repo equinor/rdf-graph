@@ -12,7 +12,7 @@ An open source library for visualizing RDF as a graph network.
 | [@equinor/rdf-graph-fg3d](libs/fg3d/) | [![fg3d version](https://img.shields.io/npm/v/@equinor/rdf-graph-fg3d)](libs/fg3d/CHANGELOG.md) | 3D Force-Directed UI Implementation |
 
 ## Releasing a new version
-1. Update package number for the relevant `package.json` located in the `libs` folder.
+1. Update package number for the relevant `package.json` located in a subfolder of the `libs` folder.
 2. Create a PR with the changes.
 
 ## Demo
