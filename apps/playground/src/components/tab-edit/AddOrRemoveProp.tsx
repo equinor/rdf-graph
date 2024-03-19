@@ -55,8 +55,8 @@ export const AddOrRemoveProp: React.FunctionComponent<{ element: GraphNode | Gra
 		const object = selectedIriValue
 			? n(selectedIriValue)
 			: literalValue
-			? l(literalValue)
-			: undefined;
+				? l(literalValue)
+				: undefined;
 
 		if (!subject || !selectedPredicate || !object) return;
 

@@ -234,7 +234,7 @@ function createEdgePropPatches(
 				} else {
 					return prop.value.map((v) => toPatchProp(prop, v));
 				}
-		  });
+			});
 
 	return props.flatMap((prop) =>
 		edgeIds.map((e) => {

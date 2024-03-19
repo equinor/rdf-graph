@@ -28,7 +28,7 @@ function App() {
 										fg3d: <Fg3dUi />,
 										go: <GoUi />,
 										cy: <CyUi />,
-								  }[ui]
+									}[ui]
 								: null}
 						</div>
 						<div className={appCss.sideMenu}>
