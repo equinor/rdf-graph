@@ -12,7 +12,7 @@
 	},
 	"devDependencies": {
 		"@nrwl/eslint-plugin-nx": "^17.3.2",
-		"@typescript-eslint/eslint-plugin": "^5.62.0",
+		"@typescript-eslint/eslint-plugin": "^6.21.0",
 		"@typescript-eslint/parser": "^6.21.0",
 		"@vitest/coverage-c8": "^0.29.8",
 		"eslint": "^8.56.0",
@@ -20,14 +20,14 @@
 		"eslint-plugin-jsx-a11y": "^6.8.0",
 		"eslint-plugin-react": "^7.33.2",
 		"eslint-plugin-react-hooks": "^4.6.0",
-		"happy-dom": "^8.9.0",
+		"happy-dom": "^13.3.8",
 		"lefthook": "^1.6.1",
 		"lerna": "^8.1.2",
 		"nx": "17.3.0",
 		"prettier": "^3.2.5",
 		"rimraf": "^4.4.1",
 		"typescript": "^5.3.3",
-		"vite": "^4.5.2",
-		"vitest": "^0.29.8"
+		"vite": "^5.1.1",
+		"vitest": "^1.2.2"
 	}
 }
