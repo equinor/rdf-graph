@@ -32,7 +32,7 @@
 		"unique-names-generator": "^4.7.1"
 	},
 	"devDependencies": {
-		"@equinor/eds-core-react": "^0.28.0",
+		"@equinor/eds-core-react": "^0.33.0",
 		"@rdfjs/types": "^1.1.0",
 		"@types/cytoscape": "^3.19.9",
 		"@types/estree": "^1.0.0",
