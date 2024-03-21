@@ -18,8 +18,8 @@ importers:
         specifier: ^7.1.0
         version: 7.3.1(eslint@8.56.0)(typescript@5.3.3)
       '@vitest/coverage-c8':
-        specifier: ^0.29.8
-        version: 0.29.8(vitest@1.4.0)
+        specifier: ^0.33.0
+        version: 0.33.0(vitest@1.4.0)
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -3460,13 +3460,15 @@ packages:
       - supports-color
     dev: true
 
-  /@vitest/coverage-c8@0.29.8(vitest@1.4.0):
-    resolution: {integrity: sha512-y+sEMQMctWokjnSqm3FCQEYFkjLrYaznsxEZHxcx8z2aftpYg3A5tvI1S5himfdEFo7o+OeHzh40bPSWZHW4oQ==}
+  /@vitest/coverage-c8@0.33.0(vitest@1.4.0):
+    resolution: {integrity: sha512-DaF1zJz4dcOZS4k/neiQJokmOWqsGXwhthfmUdPGorXIQHjdPvV6JQSYhQDI41MyI8c+IieQUdIDs5XAMHtDDw==}
     deprecated: v8 coverage is moved to @vitest/coverage-v8 package
     peerDependencies:
-      vitest: '>=0.29.0 <1'
+      vitest: '>=0.30.0 <1'
     dependencies:
+      '@ampproject/remapping': 2.2.1
       c8: 7.14.0
+      magic-string: 0.30.8
       picocolors: 1.0.0
       std-env: 3.7.0
       vitest: 1.4.0(@types/node@18.19.14)(happy-dom@13.10.1)
