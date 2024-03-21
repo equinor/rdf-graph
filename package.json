@@ -11,10 +11,10 @@
 		"pnpm": ">=8.1.0"
 	},
 	"devDependencies": {
-		"@nrwl/eslint-plugin-nx": "^17.3.2",
-		"@typescript-eslint/eslint-plugin": "^6.21.0",
-		"@typescript-eslint/parser": "^6.21.0",
-		"@vitest/coverage-c8": "^0.29.8",
+		"@nrwl/eslint-plugin-nx": "^18.0.5",
+		"@typescript-eslint/eslint-plugin": "^7.1.0",
+		"@typescript-eslint/parser": "^7.1.0",
+		"@vitest/coverage-c8": "^0.33.0",
 		"eslint": "^8.56.0",
 		"eslint-plugin-import": "^2.29.1",
 		"eslint-plugin-jsx-a11y": "^6.8.0",
