@@ -1,3 +1,6 @@
+# Archived
+Observations indicate that there are no active users for this project. As a result, maintenance has ceased, and the repository has been archived. This change ensures the code remains available in a read-only format, signifying that active development and maintenance are no longer underway.
+
 # rdf-graph
 
 An open source library for visualizing RDF as a graph network.
